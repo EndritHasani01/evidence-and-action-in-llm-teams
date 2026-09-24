@@ -1,0 +1,58 @@
+{
+  "formula": {
+    "op": "and",
+    "name": null,
+    "children": [
+      {
+        "op": "atom",
+        "name": "permit",
+        "children": [],
+        "constant": null
+      },
+      {
+        "op": "or",
+        "name": null,
+        "children": [
+          {
+            "op": "atom",
+            "name": "x",
+            "children": [],
+            "constant": null
+          },
+          {
+            "op": "atom",
+            "name": "y",
+            "children": [],
+            "constant": null
+          }
+        ],
+        "constant": null
+      }
+    ],
+    "constant": null
+  },
+  "claim_before": [
+    [
+      "p@1",
+      "x@1"
+    ],
+    [
+      "p@1",
+      "y@1"
+    ]
+  ],
+  "claim_after": [
+    [
+      "p@1",
+      "y@1"
+    ]
+  ],
+  "dispatch_X_after": [],
+  "dispatch_Y_after": [
+    [
+      "p@1",
+      "y@1"
+    ]
+  ],
+  "not_an_llm_experiment": true
+}

@@ -1,0 +1,109 @@
+{
+  "prepared_at": "2026-09-24",
+  "intended_placement": "recovery_blueprint/codex_context/",
+  "original_zip": {
+    "filename": "recovery_blueprint.zip",
+    "sha256": "3a86d176d9bb9e6da4b6ab9ab7324f620fc0549b4b2fee067c73f43912345ba2",
+    "file_count": 34
+  },
+  "self_hash_excluded": true,
+  "files": [
+    {
+      "path": "00_READ_ME.md",
+      "bytes": 3193,
+      "sha256": "1459200457bdf9d1a94f78ba080756e8fb08303ec8cc4040f9370b7c469498e7",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "01_USER_CONTEXT_AND_PRIORITIES.md",
+      "bytes": 3602,
+      "sha256": "dfd86c055f9542b8ab67a387b019bea3cf53e7eb51ae5ed14817f196273a19ce",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "02_BLUEPRINT_AUDIT_AND_CORRECTIONS.md",
+      "bytes": 3880,
+      "sha256": "bd03a433845e0ec246a1a75d4e6b871dd859faba5952c255de7ba41130f518eb",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "03_RESEARCH_AND_NOVELTY_UPDATE.md",
+      "bytes": 4453,
+      "sha256": "becb58862e9877ec7664095b5629dd1c00f797ab7df41e5600b22bc6b711a259",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "04_FRAMEWORK_AND_TOOLING_EVIDENCE.md",
+      "bytes": 5381,
+      "sha256": "febc1bc820966a2ba65d668710ec0787868ca111d7e759b5a7c082dfd72debc8",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "05_COMPUTE_AND_PILOT_CONTEXT.md",
+      "bytes": 4775,
+      "sha256": "f450975e4da31e466eeda734b48b8dda89bc7cfc0d77f871e06243ea76e41961",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "06_SCIENTIFIC_DESIGN_REVIEW.md",
+      "bytes": 4626,
+      "sha256": "98187b50ff4b3c241bed184a21789a68807e5abe2198621033ce7f87a993ffa9",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "07_OPEN_DECISIONS_AND_ACCEPTANCE_GATES.md",
+      "bytes": 3219,
+      "sha256": "bac9074d154751141ea7f1f9c542aa7b4b4cea0eaa412f0ba1be3545f0cab630",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "08_CODEX_HANDOFF.md",
+      "bytes": 3688,
+      "sha256": "24ecd282fafdc7f6a7cc4592a80406951e170ec296a4534d037837a28c7e9215",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "09_SOURCE_REGISTER.md",
+      "bytes": 6919,
+      "sha256": "833a4d09d9bc3b13c4e433588c7aeffcbdc901c818681e334a0bb9fb4f8cdfb7",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "background/README.md",
+      "bytes": 1344,
+      "sha256": "cb8d20c81ccc2fa5f7605f8390e86683342dd258a40ba151129601dcb4dd7590",
+      "kind": "new context artifact"
+    },
+    {
+      "path": "background/classical_mas_vs_modern_llm_agents.md",
+      "bytes": 60235,
+      "sha256": "d0db93e4cb809312d5ef648f3a200701fbb8a008eed3238b0f5018c80a554431",
+      "kind": "unchanged historical report"
+    },
+    {
+      "path": "background/failure_attribution_diagnosis_recovery.md",
+      "bytes": 34965,
+      "sha256": "04070e13f121e366219c0b3e76652ab17332442d76f1d2f39874cc1ad7dd55fc",
+      "kind": "unchanged historical report"
+    },
+    {
+      "path": "background/multi_agent_evaluation_science.md",
+      "bytes": 45415,
+      "sha256": "831ea793f6ecd9b4c6dd38b894d86bce9ec830aba98fcce6f04cec3c4672c431",
+      "kind": "unchanged historical report"
+    },
+    {
+      "path": "background/shared_memory_distributed_knowledge_and_provenance.md",
+      "bytes": 45073,
+      "sha256": "8533524e0b1e60a54be950ab608fcb1f0f20ba8f3aea30d8e55c32a378c9a5bd",
+      "kind": "unchanged historical report"
+    },
+    {
+      "path": "context_facts.json",
+      "bytes": 2653,
+      "sha256": "b872b7093892af7f668ff21f0aa872c01619b46303636f3ef13dbbf156cc02c1",
+      "kind": "new context artifact"
+    }
+  ],
+  "revision_note": "Qwen3.5 preference; 9B 4-bit pilot candidate, 4B fallback; old forecast requires recalculation"
+}

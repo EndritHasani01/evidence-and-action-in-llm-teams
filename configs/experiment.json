@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "experiment_id": "recovery_v1",
+  "root_seed": 20260920,
+  "aggregate_gpu_hours": 30,
+  "pilot_and_reserve_hours": 4,
+  "agent_max_new_tokens": 256,
+  "long_max_new_tokens": 512,
+  "context_limit": 4096,
+  "temperature": 0.7,
+  "top_p": 0.8,
+  "top_k": 20,
+  "rows": [
+    {"id":"main","base_worlds":64,"variants":4,"prefix_calls_per_world":3,"extraction_calls_per_world":1,"arms":["N","R","E"],"recovery_calls_per_arm":3,"new_prefix":true,"subset":"all_primary"},
+    {"id":"scope_diagnostics","base_worlds":16,"variants":4,"arms":["O","OC","ON","OR"],"recovery_calls_per_arm":3,"new_prefix":false,"subset":"diagnostic16"},
+    {"id":"restart","base_worlds":16,"variants":4,"arms":["F"],"recovery_calls_per_arm":3,"new_prefix":false,"subset":"diagnostic16"},
+    {"id":"extra_inference","base_worlds":16,"variants":4,"arms":["B"],"recovery_calls_per_arm":3,"reviewer_calls_per_world":1,"new_prefix":false,"subset":"diagnostic16"},
+    {"id":"single_complete","base_worlds":16,"variants":4,"single_calls_per_world":1,"new_prefix":false,"subset":"diagnostic16"},
+    {"id":"no_event","base_worlds":8,"variants":4,"arms":["N","E"],"recovery_calls_per_arm":3,"new_prefix":false,"subset":"noevent8"},
+    {"id":"second_seed","base_worlds":16,"variants":4,"prefix_calls_per_world":3,"extraction_calls_per_world":1,"arms":["R","E"],"recovery_calls_per_arm":3,"new_prefix":true,"subset":"diagnostic16_replicate1"},
+    {"id":"transfer","base_worlds":16,"variants":4,"prefix_calls_per_world":3,"extraction_calls_per_world":1,"arms":["R","E"],"recovery_calls_per_arm":3,"new_prefix":true,"subset":"capex16"},
+    {"id":"second_model","base_worlds":8,"variants":4,"prefix_calls_per_world":3,"extraction_calls_per_world":1,"arms":["R","E"],"recovery_calls_per_arm":3,"new_prefix":true,"subset":"model8","model":"Qwen/Qwen2.5-7B-Instruct"}
+  ]
+}

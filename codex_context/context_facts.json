@@ -1,0 +1,66 @@
+{
+  "prepared_at": "2026-09-24",
+  "purpose": "Context for a future PROJECT_SPECIFICATION.md; not the specification or implementation",
+  "confirmed_user_context": {
+    "academic_scope": "Combined IIS + ABS courses; potential thesis extension",
+    "compute": "Two T4s, 30 GPU-hours",
+    "delivery": "Companion folder to place inside recovery_blueprint manually",
+    "reuse_preference": "Prefer established tools when fit; LangGraph not unconditionally mandated",
+    "model_family": "Qwen3.5; explicitly supersedes inherited Qwen3-4B primary choice"
+  },
+  "inherited_design": {
+    "source": "parent recovery_blueprint",
+    "base_worlds": 64,
+    "factors": [
+      "alternative support",
+      "witness-bound action"
+    ],
+    "roles": [
+      "A source owner",
+      "B integrating planner",
+      "C executor"
+    ],
+    "primary_model": "Qwen/Qwen3-4B, FP16, thinking off",
+    "secondary_model": "Qwen2.5-7B-Instruct, NF4",
+    "matrix_a_calls": 6400,
+    "matrix_b_calls": 6080,
+    "unmeasured_matrix_a_aggregate_gpu_hours": 29.121,
+    "initial_pilot_calls": 152,
+    "expanded_primary_pilot_calls_total": 476,
+    "optional_secondary_pilot_calls_max": 16,
+    "pilot_aggregate_gpu_hours_cap": 2
+  },
+  "recommendations_not_decisions": [
+    "Evaluate LangGraph first with mock semantic acceptance tests",
+    "Compare serving backends only on a small budgeted matched subset if needed",
+    "Select the minimum coherent stack"
+  ],
+  "resolved_corrections": [
+    "LangGraph is mentioned once in the original ZIP, as not required",
+    "Relevant MemTX and REVISE full-text sections are accessible",
+    "Incomplete provenance alone is not an adequate novelty claim"
+  ],
+  "unresolved": [
+    "OpenReview IJoWb6T3RJ full-text overlap",
+    "GPU measurements and account quota semantics",
+    "Final framework/backend/model revision lock",
+    "Deadline, grading rubric, supervisor approval",
+    "Power and precision admission",
+    "Code reuse license clearance"
+  ],
+  "experiment_run_for_this_companion": false,
+  "reference_tests_rerun_for_this_companion": false,
+  "original_zip": {
+    "filename": "recovery_blueprint.zip",
+    "sha256": "3a86d176d9bb9e6da4b6ab9ab7324f620fc0549b4b2fee067c73f43912345ba2",
+    "file_count": 34
+  },
+  "model_selection_update": {
+    "preferred_candidate": "Qwen/Qwen3.5-9B",
+    "quantization_candidate": "4-bit; exact supported format/backend to validate",
+    "fallback": "Qwen/Qwen3.5-4B",
+    "status": "User-confirmed family; recommended size conditional on pilot",
+    "old_forecast_applicable": false,
+    "secondary_model": "Reassess; inherited Qwen2.5-7B not automatically retained"
+  }
+}
