@@ -1,19 +1,19 @@
-﻿# Support-Aware Action Repair
+# Recovery after distributed reasoning
 
-A controlled study of whether stateful LLM teams can preserve still-valid conclusions while repairing concrete actions that depend on superseded evidence.
+A controlled study of how multi-agent teams recover when information used during distributed problem solving is corrected.
 
-The research design tests alternative evidential support and witness-bound actions after one factual correction. It uses deterministic task semantics and evaluation, with LangGraph and local SQLite checkpoints for execution.
+The design uses six SILO-derived tasks to separate correction delivery, reuse of gathered evidence, and retention of prior reasoning. Matched no-change continuations distinguish correction-specific effects from general reset benefits.
 
 ## Project status
 
-The specification and reference support algebra are present. The task generators, agent workflow, inference pilot, main experiments, and empirical results remain to be implemented or run. No model performance or recovery advantage is claimed yet.
+The full SILO repository and revised specification are present. Selected stored task answers have been independently checked on CPU. The new correction protocol, workflow, Qwen3.5/T4 pilot, and main experiments remain future work. No GPU performance or recovery advantage is claimed.
 
 ## Start here
 
 - [Project specification](PROJECT_SPECIFICATION.md) is the current source of truth.
-- [Start here](00_START_HERE.md) gives the blueprint reading order and background.
-- Run the existing reference tests with `python -m unittest discover -s tests -v`.
+- [SILO repository audit](SILO_REPOSITORY_AUDIT.md) records supporting inspection findings.
+- The numbered blueprint, `codex_context`, old configurations, and support-algebra tests are historical material; they do not define or validate the revised experiment.
 
 ## Scope
 
-The planned study focuses on alternative support × action binding in a three-agent team after a single diagnosed factual update. See the specification for the frozen design, budget gates, controls, and limitations.
+Four peers first solve a distributed task, then continue from matched checkpoints under four recovery conditions after an announced factual revision. The specification defines the comparisons, exact evaluation, pilot, and 30 aggregate GPU-hour ceiling.
