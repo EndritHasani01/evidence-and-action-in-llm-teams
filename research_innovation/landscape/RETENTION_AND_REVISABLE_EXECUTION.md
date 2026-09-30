@@ -21,3 +21,9 @@ Models interleaved agent execution and user revisions, separates epistemic and w
 [Hindsight, arXiv 2512.12818](https://arxiv.org/abs/2512.12818), December 2025; primary abstract inspected. Temporal/entity-aware retention, recall, and reflection separate observed information from beliefs. Relevant memory-engineering baseline, but no full-method claim made here.
 
 These leads complement the directly inspected 2026 recovery mechanisms. Avoid treating benchmark release/version labels or aggregate memory QA scores as evidence that a system repairs consumed collaborative state.
+
+## GA-Rollback (EMNLP 2025)
+
+[Primary ACL paper](https://aclanthology.org/2025.emnlp-main.892.pdf), [HTML](https://arxiv.org/html/2503.02519), method §3 and experiments §4 inspected.
+
+An assistant checks generator actions and triggers a bounded rollback to an earlier trajectory; resetting the environment and replaying the retained prefix restores controlled state. Feedback-confidence filtering and delayed review after gathering more information address unreliable critiques. Evaluations use Game of 24, ALFWorld, and WebShop with open models. Gains vary by combination; ReAct interactions can be unstable and longer embodied trajectories remain difficult. Its documented disagreement case concerns whether rejected search items need deeper inspection—evidence that reconsidering search sufficiency is not entirely new. It does not specifically study later world/requirement changes. Generic reviewer-triggered rollback and retaining failure feedback are established; the proposed contribution needs a distinct correction-driven reuse capability.

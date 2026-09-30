@@ -28,7 +28,26 @@
     {
       "archive": "III-30_n100.json.zip",
       "entry": "III-30_n100.json",
-      "matches_uncompressed": false
+      "matches_uncompressed_bytes": false,
+      "matches_uncompressed_semantics": false,
+      "changed_top_level_keys": [
+        "metadata",
+        "task_description",
+        "agent_configs",
+        "expected_output"
+      ],
+      "archived_first_shard_keys": [
+        "type",
+        "data",
+        "row_indices"
+      ],
+      "current_first_shard_keys": [
+        "type",
+        "A_rows",
+        "A_row_indices",
+        "B_matrix"
+      ],
+      "archived_sha256": "dc7511d256a8648da15c7560984bb75d60685c36a7f33b9c8fab88f9c44ec84b"
     }
   ],
   "summary": {
@@ -2683,6 +2702,50 @@
       "replacement_character_count": 0,
       "native_exact_selfscore": 1.0,
       "independent_oracle_matches": false,
+      "pagerank_rounding_differences": [
+        {
+          "node": "7",
+          "independent": 0.017812,
+          "stored": 0.017813
+        },
+        {
+          "node": "12",
+          "independent": 0.009312,
+          "stored": 0.009313
+        },
+        {
+          "node": "30",
+          "independent": 0.009312,
+          "stored": 0.009313
+        },
+        {
+          "node": "41",
+          "independent": 0.007187,
+          "stored": 0.007188
+        },
+        {
+          "node": "52",
+          "independent": 0.007187,
+          "stored": 0.007188
+        },
+        {
+          "node": "57",
+          "independent": 0.007187,
+          "stored": 0.007188
+        },
+        {
+          "node": "69",
+          "independent": 0.019937,
+          "stored": 0.019938
+        },
+        {
+          "node": "79",
+          "independent": 0.017812,
+          "stored": 0.017813
+        }
+      ],
+      "pagerank_max_absolute_difference": 1.000000000001e-06,
+      "pagerank_generator_arithmetic_matches": true,
       "native_partial_selfscore": 1.0
     },
     {
@@ -2699,6 +2762,9 @@
       "replacement_character_count": 0,
       "native_exact_selfscore": 1.0,
       "independent_oracle_matches": true,
+      "pagerank_rounding_differences": [],
+      "pagerank_max_absolute_difference": 0,
+      "pagerank_generator_arithmetic_matches": true,
       "native_partial_selfscore": 1.0
     },
     {
@@ -2715,6 +2781,9 @@
       "replacement_character_count": 0,
       "native_exact_selfscore": 1.0,
       "independent_oracle_matches": true,
+      "pagerank_rounding_differences": [],
+      "pagerank_max_absolute_difference": 0,
+      "pagerank_generator_arithmetic_matches": true,
       "native_partial_selfscore": 1.0
     },
     {
@@ -2731,6 +2800,30 @@
       "replacement_character_count": 0,
       "native_exact_selfscore": 1.0,
       "independent_oracle_matches": false,
+      "pagerank_rounding_differences": [
+        {
+          "node": "37",
+          "independent": 0.011562,
+          "stored": 0.011563
+        },
+        {
+          "node": "68",
+          "independent": 0.011562,
+          "stored": 0.011563
+        },
+        {
+          "node": "136",
+          "independent": 0.007312,
+          "stored": 0.007313
+        },
+        {
+          "node": "148",
+          "independent": 0.011562,
+          "stored": 0.011563
+        }
+      ],
+      "pagerank_max_absolute_difference": 1.000000000001e-06,
+      "pagerank_generator_arithmetic_matches": true,
       "native_partial_selfscore": 1.0
     },
     {
@@ -2747,6 +2840,20 @@
       "replacement_character_count": 0,
       "native_exact_selfscore": 1.0,
       "independent_oracle_matches": false,
+      "pagerank_rounding_differences": [
+        {
+          "node": "9",
+          "independent": 0.030312,
+          "stored": 0.030313
+        },
+        {
+          "node": "18",
+          "independent": 0.019687,
+          "stored": 0.019688
+        }
+      ],
+      "pagerank_max_absolute_difference": 1.000000000001e-06,
+      "pagerank_generator_arithmetic_matches": true,
       "native_partial_selfscore": 1.0
     },
     {
@@ -2763,6 +2870,15 @@
       "replacement_character_count": 0,
       "native_exact_selfscore": 1.0,
       "independent_oracle_matches": false,
+      "pagerank_rounding_differences": [
+        {
+          "node": "236",
+          "independent": 0.005687,
+          "stored": 0.005688
+        }
+      ],
+      "pagerank_max_absolute_difference": 1.0000000000001327e-06,
+      "pagerank_generator_arithmetic_matches": true,
       "native_partial_selfscore": 1.0
     },
     {

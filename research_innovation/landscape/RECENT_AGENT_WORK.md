@@ -20,9 +20,15 @@ Inspected 2026-09-30. Primary papers are preprints unless noted. Findings below 
 | MemTX | arXiv 2607.23929v2, July 2026 identifier | Full HTML; lifecycle, repair, assumptions | [Protocol recovery](PROTOCOL_RECOVERY.md) |
 | StateAuditor | arXiv 2608.01619, August 2026 | Full HTML opened; method inspection underway | [Semantic revision](SEMANTIC_REVISION.md) |
 | PACMI | SSRN 7480138, written 2026-09-17, posted 09-19 | Primary abstract accessible; full text not yet | [Semantic revision](SEMANTIC_REVISION.md) |
-| MemoRepair | arXiv 2605.07242, 2026-05-08 | Primary abstract; full text next | [Protocol recovery](PROTOCOL_RECOVERY.md) |
+| MemoRepair | arXiv 2605.07242v1, 2026-05-08 | Full method/results/limitations inspected | [Protocol recovery](PROTOCOL_RECOVERY.md) |
 | Repair Sets Before Repair Choices | OpenReview IJoWb6T3RJ | Forum browser challenge; API route failed; title search produced no verified primary result | Unverified, no technical claims inherited |
+| Reclaim Evaluation | arXiv 2606.25449v1, 2026-06-24 | Full HTML method/results inspected | [Retention and execution](RETENTION_AND_REVISABLE_EXECUTION.md) |
+| Revisable by Design | arXiv 2604.23283v1, 2026-04-25 | Full method, theorem assumptions, experiments | [Retention and execution](RETENTION_AND_REVISABLE_EXECUTION.md) |
+| GA-Rollback | arXiv 2503.02519, EMNLP 2025 | HTML and ACL primary PDF; method/results | [Retention and execution](RETENTION_AND_REVISABLE_EXECUTION.md) |
+| Conformal Agent Error Attribution | arXiv 2605.06788v1, 2026-05-07 | Full methods, rollback results, limitations | [Uncertain localization](UNCERTAIN_LOCALIZATION.md) |
 
 ## Search directions remaining
 
-Find semantic revision methods operating without complete provenance; check memory-unlearning and invalidation-contract work (parallel investigation); follow MemoRepair's contract carefully; look for inexpensive measurements separating harmful inherited reasoning from harmless expensive work.
+The most promising narrow distinction located here is [reopening closed search decisions](REOPENING_SEARCH_NOVELTY.md), while retaining valid facts. This remains a hypothesis requiring classical-search/query-maintenance novelty checks, not a firstness claim. Parallel investigation covers execution-state unlearning and invalidation contracts.
+
+Access limitations were retested directly: OpenReview API v1/v2 returned HTTP 429 and PDF returned 403; SSRN abstract and delivery routes returned 403. Indexed primary SSRN abstract remains available. These failures establish lack of access, not nonexistence.

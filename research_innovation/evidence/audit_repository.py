@@ -270,7 +270,23 @@ def main():
                "replacement_character_count": raw.count("\ufffd"),
                "native_exact_selfscore": metrics.compute_success_rate(submissions, case["expected_output"])}
         try:
-            row["independent_oracle_matches"] = independent_answer(case) == gold
+            computed = independent_answer(case)
+            row["independent_oracle_matches"] = computed == gold
+            if case["case_id"] == "III-28":
+                differences = [{"node": k, "independent": v, "stored": gold[0][k]}
+                               for k, v in computed[0].items() if v != gold[0][k]]
+                row["pagerank_rounding_differences"] = differences
+                row["pagerank_max_absolute_difference"] = max((abs(d["independent"]-d["stored"]) for d in differences), default=0)
+                # Supplemental reproduction of generator float-operation ordering,
+                # kept separate from independent computation rather than hiding it.
+                size = n * 8
+                edges = [tuple(edge) for agent in case["agent_configs"] for edge in agent["input_shard"]]
+                degree = Counter(a for a, b in edges)
+                ranks = {node: (1-0.85)/size for node in range(size)}
+                for a, b in sorted(edges):
+                    ranks[b] += 0.85 * (1.0 / size) / degree[a]
+                compatible = {str(k): round(v, 6) for k, v in ranks.items()}
+                row["pagerank_generator_arithmetic_matches"] = compatible == gold[0]
         except Exception as exc:
             row["oracle_exception"] = f"{type(exc).__name__}: {exc}"
         try:
@@ -293,8 +309,16 @@ def main():
                 if name.endswith("/"):
                     continue
                 local = path.parent/Path(name).name
+                archived_raw = archive.read(name)
+                archived = json.loads(archived_raw)
+                current = json.loads(local.read_text(encoding="utf-8")) if local.exists() else None
                 archives.append({"archive": path.name, "entry": name,
-                                 "matches_uncompressed": local.exists() and archive.read(name) == local.read_bytes()})
+                                 "matches_uncompressed_bytes": local.exists() and archived_raw == local.read_bytes(),
+                                 "matches_uncompressed_semantics": archived == current,
+                                 "changed_top_level_keys": [k for k in archived if current and archived[k] != current.get(k)],
+                                 "archived_first_shard_keys": list(archived["agent_configs"][0]["input_shard"]),
+                                 "current_first_shard_keys": list(current["agent_configs"][0]["input_shard"]) if current else None,
+                                 "archived_sha256": hashlib.sha256(archived_raw).hexdigest()})
     source_manifest = []
     for path in sorted(REPO.rglob("*")):
         if path.is_file() and path.suffix in {".py", ".md", ".toml", ".yaml", ".sh"}:

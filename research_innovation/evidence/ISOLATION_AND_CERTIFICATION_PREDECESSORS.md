@@ -20,7 +20,7 @@ The prototype lets agents repair pipelines on data branches, then uses an owner-
 
 ## ESC-CR (September 2026; history requires checking)
 
-Source: [Policy-Backed Selective Regeneration under Tainted Inter-Agent Communication](https://arxiv.org/html/2609.26072v1). Full HTML obtained; methods under inspection. Search date metadata conflicts with the arXiv identifier, so do not cite search-derived submission dates.
+Source: [Policy-Backed Selective Regeneration under Tainted Inter-Agent Communication](https://arxiv.org/html/2609.26072v1). Full HTML and methods (claim verification, taint closure, allowlist reconstruction, release boundary) inspected. Search date metadata conflicts with the arXiv identifier, so do not cite search-derived submission dates.
 
 The abstract explicitly combines evidence-backed information preservation, tainting of a responsible message and rejected artifact, a clean reconstructed context, and regeneration under an external release policy. It contrasts polluted-context retry with indiscriminate message removal and uses matched budgets. The target is unauthorized instructions in agent communication, not benign source revision.
 
@@ -28,7 +28,7 @@ The abstract explicitly combines evidence-backed information preservation, taint
 
 ## APPA (July 2026)
 
-Source: [Agentic Permissions Policy Algebra for Taint Confinement in LLM Agents](https://arxiv.org/html/2607.24625v1). Full HTML obtained; methods under inspection.
+Source: [Agentic Permissions Policy Algebra for Taint Confinement in LLM Agents](https://arxiv.org/html/2607.24625v1). Full HTML and branching/exit rules and limitations inspected.
 
 The abstract proposes engine-managed child contexts for inspecting unvetted data and a trusted sanitizer returning bounded derivatives, while preserving parent labels. It addresses utility loss from permanent context taint and gives both a formal model and multi-model experiments.
 
@@ -43,3 +43,4 @@ The abstract proposes engine-managed child contexts for inspecting unvetted data
 ## Revised hypothesis
 
 The scientifically interesting gap is unlikely to be another generic gate. It may be the mismatch between **recorded authority** and **actual semantic influence after change**: coarse runtime exposure is conservative but costly; self-reported fine dependencies are efficient but incomplete; clean contexts can still be recontaminated by an admitted summary. Compare these interfaces causally and report the conditions under which each works. Do not add the full CK/APPA machinery to a 30-GPU-hour thesis just to inherit their vocabulary.
+
