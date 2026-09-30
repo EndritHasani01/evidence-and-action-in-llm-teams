@@ -18,3 +18,13 @@
 - Missing metadata should expand reconsideration, never certify independence. But a broad fallback must be compared with simply using that fallback everywhere.
 - Native SILO has more state than prompts: submissions, message read cursors, persisted files and shared-file conflicts all affect branching semantics. Fresh CPU audit documents these.
 - More than one month of implementation time is available; the fixed compute budget still requires replacing secondary comparisons rather than adding every promising arm.
+
+## Independent-review lessons
+
+- Compare a mechanism against an artifact-identical control. Reset changes too many things to isolate reopening by itself.
+- Give the strongest provenance baseline the state representation introduced by the proposal. Hiding completion nodes from it creates an artificial advantage.
+- A current query receipt proves a query occurred; a wrong restrictive query can still miss the answer. Evaluate completion claims independently.
+- Reopen the current task, not every canceled child from its history. Otherwise recovery can resurrect obsolete requirements or wait forever.
+- The host must bind receipts to the snapshot actually used. Allowing the model to restamp old results defeats version semantics.
+- Centralized full-information competence does not establish distributed four-round feasibility.
+- A method equivalent to an existing control invalidation rule should be presented as an application/interface result, not renamed as a new algorithm.

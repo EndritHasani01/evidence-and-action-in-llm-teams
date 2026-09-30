@@ -18,7 +18,7 @@ The primary question becomes whether recovery must revoke a team's conclusion th
 
 Replace the six-family main inference matrix with three search-relevant structural families and one small independent finite-search adapter. All 30 original task definitions remain understood and documented; benchmark breadth need not dictate the causal design.
 
-Replace the primary reset interaction with the paired effect of reopening versus a fresh planner given the same acquired evidence. Retain the sham interaction as a key secondary check. Source delivery becomes common across policies; a separate dissemination experiment becomes secondary.
+Replace the primary reset interaction with the paired effect of enforced reopening versus a generic reconsideration planner given identical retained work and initial context. The fresh-source planner estimates a secondary package effect. Retain the sham interaction as a key secondary check. Source delivery becomes common across policies; a separate dissemination experiment becomes secondary.
 
 ## What is added
 
@@ -61,7 +61,7 @@ Distinguish three outcomes:
 - **Empirical finding:** when stale stopping decisions survive current evidence, and which interventions repair them.
 - **Reusable mechanism:** completion obligations whose lifetime is separate from retained artifacts, with conservative fallback under unknown scope.
 
-Only the second is necessarily a new scientific result after execution. The third is presently a useful engineering synthesis with close prior art, not an established novel algorithm.
+Execution may establish a new empirical result or a valuable replication; neither is automatic. The mechanism is presently a useful engineering synthesis with close prior art, not an established novel algorithm.
 
 ## Fallback decision
 

@@ -55,3 +55,16 @@ The compute table allocates only two before/after full-information calls per mai
 ## Recommendation after review
 
 Retain the direction conditionally. Before the main run, require (i) a natural omitted-work failure, (ii) a main matched-state generic-replanning control, and (iii) a closure-aware established-recovery reduction test. If these reveal no distinct behavior, use the existing mechanism and publish the empirical boundary rather than inventing a new algorithm name.
+
+## Resolution check after synthesis revisions
+
+Rechecked the revised `RECOMMENDED_INNOVATION.md` and `VALIDATION_STRATEGY.md`, plus the revised novelty sentence in `RESEARCH_REDIRECTION.md`, on 2026-09-30. **The substantive issues above are resolved at research-plan level. No remaining must-fix blocks this research recommendation.**
+
+- G is now a main arm with identical initial artifacts, task records, renderer, tools and allowance; O−G is primary. O−E is correctly identified as a package comparison.
+- P receives identical explicit closure, objective/control and membership information; a reduction fixture can establish equivalence. Existing-system specialization is explicitly an acceptable outcome.
+- The finite discharge rule now supplies an operational point of divergence: post-event query issuance and consumption before accepted completion. It expressly does not establish query adequacy or optimality. This is an enforceable process rule whose utility still requires the natural-prefix pilot; it is not an inferred semantic certificate.
+- Receipt schemas include domain/membership versions and host-bound invocation snapshots. Canceled children are retired rather than reopened indefinitely.
+- Centralized capability and distributed feasibility are distinguished. The staged pilot has an explicit cap. Main diagnostics and matched-observation runs are included in the revised call ceilings.
+- Empirical novelty is no longer guaranteed merely by executing the study.
+
+Two routine preregistration details remain: define the neutral no-change event's receipt boundary (there is no source revision, but O/G still need a common post-event clock), and say whether a proven-identical P reduction merits duplicate live inference or only CPU conformance plus the shared live implementation. Neither changes the recommendation. Keep the proposed benefit phrased as **enforced reconsideration, including induced acquisition**, rather than proof that runtime state independently improved reasoning.

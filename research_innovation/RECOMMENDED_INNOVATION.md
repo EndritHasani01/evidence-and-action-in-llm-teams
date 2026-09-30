@@ -23,8 +23,9 @@ Use ordinary persisted records, not a new agent framework. A task or search ques
 
 ```text
 obligation_id, parent_task, objective_revision
+source_domain_snapshot, membership_revision
 scope: known provider/query/subtask IDs, or UNKNOWN
-status: OPEN | CLOSED | NEEDS_RECONSIDERATION
+status: OPEN | CLOSED | NEEDS_RECONSIDERATION | RETIRED
 completion_receipts: tool/query/child-task references
 agent_notes: proposed stopping reason and excluded alternatives
 ```
@@ -34,10 +35,10 @@ The runtime creates a root obligation when the task begins and registers child o
 At a revision:
 
 1. Apply the authoritative change and make superseded source versions unavailable as current facts.
-2. Mark completion claims requiring reconsideration. The first implementation reopens all task completion claims. A later scoped variant retains closure only where trusted runtime information establishes that the objective and relevant domain are unchanged; otherwise it reopens the parent or root.
+2. Reopen the durable root completion claim and reassess which children are required by the current task. Retire children canceled by the revision; do not resurrect every historical task. The first implementation reopens all currently required completion claims. A later scoped variant retains closure only where trusted runtime information establishes that the objective and relevant domain are unchanged; otherwise it reopens the parent or root.
 3. Keep current source evidence and independently admissible artifacts. Archive obsolete decisions and completion receipts. Raw prior prose is not automatically certified by retaining a file. The simplest safe context construction uses current evidence, retained typed artifacts and the open task list; unrestricted prose retention is a separate experimental arm.
 4. Schedule current-world work for the open obligations. An agent chooses what to inspect and how to solve; the runtime does not supply the newly relevant option or the answer.
-5. Accept a new completion receipt only for the current objective/source view and required operational checks. A delayed old receipt cannot close a reopened task.
+5. Accept a new completion receipt only for the current objective/source view and required operational checks. The host binds the receipt to the immutable view actually used by the invocation; the model cannot create freshness by supplying a new version label. A delayed old receipt cannot close a reopened task.
 
 This requires a task-state table, a revision transition, a query/subtask receipt wrapper and a context renderer. The main method needs no inference-time dependency extractor, vector database, extra reviewer model, confidence score or cost optimizer.
 
@@ -63,6 +64,20 @@ A receipt can establish that a current query was issued, specified sources were 
 For a finite structured adapter, a provider can expose a complete domain listing and current query coverage. This is useful operational information. The agent still chooses valid queries, combines results and makes the decision. The hidden evaluator computes the exact answer independently. For open-ended research, completion remains a bounded claim about inspected scope; no exhaustive-search guarantee is appropriate.
 
 A receipt must distinguish **process completed** from **decision verified**. The runtime can reject an old completion with certainty; accepting a fresh completion is not proof of correctness.
+
+### Concrete first discharge rule
+
+In the finite-search adapter the task contract supplies a public list of required providers/partitions, not the relevant winner. To reclose a broad root obligation, each currently required provider must have a host-recorded post-revision query with agent-chosen parameters; the assigned peer must then consume its result in a scheduled recovery invocation. A new team answer must be assembled for the current objective. Queries may return an empty set, and may be badly chosen. This rule establishes **that reconsideration work occurred**, not adequate semantic coverage. Merely repeating an old restrictive query can satisfy the process check and still fail exact evaluation.
+
+Known current query receipts may exempt scopes only in the optional scoped policy under a documented runtime contract. Hidden semantic omissions remain possible even when metadata appears complete; the fallback can respond to detectable unknown/malformed scope, not magically detect every unrecorded omission.
+
+After updates stop, the protocol can progress if the finite required queries and scheduled invocations succeed. If queries fail or the call budget expires, return unresolved/incomplete rather than inventing completion. Continuous revisions carry no liveness guarantee. The mechanism handles no irreversible external effects in the first implementation.
+
+### Primary comparison after independent review
+
+The main causal control is a generic reconsideration planner with **the same current sources, typed artifacts, task records, context rendering, tools, feedback capability and model-call allowance**. Both see the same open questions. The proposed arm requires the operational discharge rule before accepting completion; the control can submit without fulfilling it. This estimates the effect of enforced reconsideration, including its induced acquisition work. A smaller matched-observation control tests whether any gain remains once refreshed information is equal.
+
+A control-aware recovery baseline receives the same explicit completion nodes and read information. It may implement the identical rule. That reduction must be demonstrated rather than obscured; equivalence rules out claiming a distinct recovery algorithm.
 
 ## How imperfect reasoning and metadata are handled
 
