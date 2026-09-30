@@ -22,6 +22,9 @@ import tempfile
 import types
 import zipfile
 
+# Keep CPU inspection from generating new bytecode caches in the audited tree.
+sys.dont_write_bytecode = True
+
 ROOT = Path(__file__).resolve().parents[2]
 REPO = ROOT / "acl26-silo-bench"
 EVIDENCE = Path(__file__).resolve().parent
