@@ -1,0 +1,137 @@
+{
+  "status": "planning arithmetic; not measured feasibility or power",
+  "main_schedules": [
+    {
+      "worlds": 48,
+      "schedule": "core",
+      "core_calls": 5856,
+      "additional_calls": 0,
+      "main_calls": 5856,
+      "main_24h_break_even_allocated_seconds_per_call": 14.754098360655737,
+      "illustrative_total_hours_with_6h_reserve": {
+        "10": 22.266666666666666,
+        "15": 30.4,
+        "20": 38.53333333333333
+      }
+    },
+    {
+      "worlds": 48,
+      "schedule": "focused_receipt",
+      "core_calls": 5856,
+      "additional_calls": 512,
+      "main_calls": 6368,
+      "main_24h_break_even_allocated_seconds_per_call": 13.5678391959799,
+      "illustrative_total_hours_with_6h_reserve": {
+        "10": 23.68888888888889,
+        "15": 32.53333333333333,
+        "20": 41.37777777777778
+      }
+    },
+    {
+      "worlds": 48,
+      "schedule": "all_six_receipt_rejected_default",
+      "core_calls": 5856,
+      "additional_calls": 1536,
+      "main_calls": 7392,
+      "main_24h_break_even_allocated_seconds_per_call": 11.688311688311689,
+      "illustrative_total_hours_with_6h_reserve": {
+        "10": 26.533333333333335,
+        "15": 36.8,
+        "20": 47.06666666666667
+      }
+    },
+    {
+      "worlds": 36,
+      "schedule": "core",
+      "core_calls": 4488,
+      "additional_calls": 0,
+      "main_calls": 4488,
+      "main_24h_break_even_allocated_seconds_per_call": 19.25133689839572,
+      "illustrative_total_hours_with_6h_reserve": {
+        "10": 18.46666666666667,
+        "15": 24.7,
+        "20": 30.933333333333334
+      }
+    },
+    {
+      "worlds": 36,
+      "schedule": "focused_receipt",
+      "core_calls": 4488,
+      "additional_calls": 384,
+      "main_calls": 4872,
+      "main_24h_break_even_allocated_seconds_per_call": 17.733990147783253,
+      "illustrative_total_hours_with_6h_reserve": {
+        "10": 19.53333333333333,
+        "15": 26.3,
+        "20": 33.06666666666666
+      }
+    },
+    {
+      "worlds": 36,
+      "schedule": "all_six_receipt_rejected_default",
+      "core_calls": 4488,
+      "additional_calls": 1152,
+      "main_calls": 5640,
+      "main_24h_break_even_allocated_seconds_per_call": 15.319148936170214,
+      "illustrative_total_hours_with_6h_reserve": {
+        "10": 21.666666666666664,
+        "15": 29.5,
+        "20": 37.33333333333333
+      }
+    }
+  ],
+  "pilot": {
+    "existing_pilot": 588,
+    "extra_two_focal_worlds": 64,
+    "pilot_total": 652,
+    "smoke_upper_calls": 24,
+    "combined_upper_calls": 676,
+    "three_hour_break_even_s_per_call_without_other_overhead": 15.976331360946746
+  },
+  "eta_rough_80pct_power_reference": {
+    "12": {
+      "0.35": 0.2829016319029166,
+      "0.6": 0.48497422611928565
+    },
+    "16": {
+      "0.35": 0.24499999999999997,
+      "0.6": 0.42
+    },
+    "24": {
+      "0.35": 0.20004166232729287,
+      "0.6": 0.34292856398964494
+    },
+    "36": {
+      "0.35": 0.1633333333333333,
+      "0.6": 0.27999999999999997
+    }
+  },
+  "se_ratio_36_vs_48_if_variance_equal": 1.1547005383792515,
+  "incremental_hours": {
+    "384": {
+      "10": 1.0666666666666667,
+      "15": 1.6,
+      "20": 2.1333333333333333
+    },
+    "512": {
+      "10": 1.4222222222222223,
+      "15": 2.1333333333333333,
+      "20": 2.8444444444444446
+    },
+    "768": {
+      "10": 2.1333333333333333,
+      "15": 3.2,
+      "20": 4.266666666666667
+    },
+    "1152": {
+      "10": 3.2,
+      "15": 4.8,
+      "20": 6.4
+    },
+    "1536": {
+      "10": 4.266666666666667,
+      "15": 6.4,
+      "20": 8.533333333333333
+    }
+  }
+}
