@@ -1,0 +1,25 @@
+# Root investigation search and source ledger
+
+Search date: 2026-10-04. These searches complement the [recent-agent ledger](search_log_recent.md) and [cross-field sources](CROSS_FIELD_SOURCES.md). They are targeted exploration, not an exhaustive novelty certificate. The prior workspace was completed on **2026-09-30**, slightly later than the user's approximate late-September description.
+
+## Searches actually issued
+
+| Pass | Queries | Consequence |
+|---|---|---|
+| Broad abstraction | `LLM agents correction recovery information sufficiency state reuse causal exposure influence 2026`; `distributed computation dynamic input change information complexity incremental view maintenance sufficient statistic repair`; `self adjusting computation change propagation trace distance stability adversarial lower bound`; `LLM multi agent beliefs hysteresis correction repeated evidence social influence information cascade 2026` | Located incremental-maintenance and trace-stability precedents, plus belief-cascade work. Runtime exposure versus semantic effect is already an established distinction. |
+| Transition information | `LLM agents correction "old and new" "memory"`; `language model reasoning "before and after" "correction" belief revision`; `"recovery" "transition" "Reclaim" agents`; `incremental view maintenance "self-maintainable" aggregates old value updates` | Before-images and maintainable summaries are classical. Need a controlled LLM-team question, not a data-format claim. |
+| Adversarial terminology | `site.arxiv.org LLM "correction" "old value"`; `site.arxiv.org agents "before-image" OR "change-data" OR "delta-aware"`; `site.aclanthology.org correction retraction repeating misinformation continued influence language models`; `site.arxiv.org "belief revision" "historical" agents` | Found RIAG lead, subsequently verified from primary text by both root and literature reviewer. Human misinformation work concerns a different truth/authority problem; not imported as evidence of LLM behavior. |
+| Alternative explanations | `LLM agent recovery common knowledge correction acknowledgement peers version coverage`; `LLM agent "recovery" "hysteresis"`; `LLM "before-image" "correction"`; `site.arxiv.org "recovery" "self-maintainability"` | No exact finalist experiment established by these searches. This is not evidence of absence. Hysteresis terminology also occurs in unrelated affective-state and training work and should not manufacture novelty. |
+
+## Primary readings by the root
+
+- [ICR](https://arxiv.org/html/2610.01042v1), §§3.1–3.3 and experimental scope: fixed independent trajectories; single-hop revision; answer-only/full-text and no-message controls. This directly weakens candidate-only content ablation as a standalone invention.
+- [CIR](https://arxiv.org/html/2610.00372v1), framework and intervention controls: identical-state branches and rescue/harm analysis. New metrics or a simple intervention router are insufficient novelty claims.
+- [RIAG](https://arxiv.org/html/2610.01249v1), temporal query semantics and episode construction: fixed-content tasks are routed through changing bindings. Relevant temporal-state predecessor; different from an edit inside a distributed calculation.
+- [Reclaim v5](https://arxiv.org/html/2606.25449v5), §§3.3 and correction robustness appendix: source loss, memory policies and correction specificity. Information availability is already central to recovery research. Its originally incorrect intermediate is different from this PS's formerly valid input.
+- [StateAuditor](https://arxiv.org/html/2608.01619v1), §§4.3–4.5 and matched controls: previous/current state transitions and temporal evidence are already used in agent repair. This is the closest direct receipt mechanism threat.
+- [Precomputed memory correction](https://arxiv.org/html/2608.30647v1), update-wording experiment: presentation and anchoring can change uptake. A receipt factorial measures an interface intervention, not automatically arithmetic delta reasoning.
+- [Debezium PostgreSQL connector](https://debezium.io/documentation/reference/stable/connectors/postgresql.html), `before`/`after` events and replica identity: before-image availability depends on upstream logging/configuration. A realistic runtime may not possess the old value; in this PS it is retained offline and can be supplied deliberately.
+- [PostgreSQL 18 publication documentation](https://www.postgresql.org/docs/18/logical-replication-publication.html), replica identity: row identification and full old rows are distinct operational choices. This does not imply a database requirement to expose every old value to agents.
+
+Web-reader outputs sometimes returned the first or last match rather than a whole paper. Detailed method/version claims rely on the focused source notes and reviewer reads, not a title alone. Code access limitations and inconsistent source dates are preserved in the recent-agent ledger. No external paper results were reproduced here; only the separately recorded repository/CPU checks were executed.
