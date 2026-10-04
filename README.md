@@ -11,8 +11,8 @@ The full SILO repository and revised specification are present. Selected stored 
 ## Start here
 
 - [Project specification](PROJECT_SPECIFICATION.md) is the current source of truth.
-- [SILO repository audit](SILO_REPOSITORY_AUDIT.md) records supporting inspection findings.
-- [The specification-update plan](FINAL_PROJECT_SPECIFICATION_PLAN.md), research directories, numbered blueprint, `codex_context`, and old configurations preserve the design history. The final specification supersedes their conflicting recommendations; historical support-algebra tests do not validate this experiment.
+- [SILO repository audit](research/07_repository_audit/SILO_REPOSITORY_AUDIT.md) records supporting inspection findings.
+- [Completed research archive](research/README.md) provides an agent reading order, phase structure, full file index and machine-readable manifest. Earlier plans, blueprint code and configurations are historical; the final specification supersedes their conflicting recommendations.
 
 ## Scope
 

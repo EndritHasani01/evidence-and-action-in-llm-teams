@@ -1,0 +1,1476 @@
+{
+  "organized_at": "2026-10-04",
+  "authority": "PROJECT_SPECIFICATION.md",
+  "research_status": "Completed research phase; historical proposals are not implementation requirements",
+  "path_base": "repository root",
+  "phases": [
+    {
+      "directory": "research/01_original_blueprint",
+      "purpose": "Original support/action blueprint and its executable reference assets",
+      "status": "Historical; superseded"
+    },
+    {
+      "directory": "research/02_agent_context",
+      "purpose": "Earlier agent handoff, background, source register and context",
+      "status": "Historical; superseded"
+    },
+    {
+      "directory": "research/03_innovation_review",
+      "purpose": "First innovation investigation, literature, risks and CPU audit",
+      "status": "Historical research and supporting evidence"
+    },
+    {
+      "directory": "research/04_design_extensions",
+      "purpose": "Second investigation, protocol probes, sources and design critiques",
+      "status": "Historical research and supporting evidence"
+    },
+    {
+      "directory": "research/05_practical_additions",
+      "purpose": "Practical experiment and analysis options considered for the final design",
+      "status": "Historical proposals; consult the final specification for adopted scope"
+    },
+    {
+      "directory": "research/06_final_design",
+      "purpose": "Final specification preparation plan",
+      "status": "Superseded by the root project specification"
+    },
+    {
+      "directory": "research/07_repository_audit",
+      "purpose": "SILO repository audit and source audit record",
+      "status": "Supporting checkout evidence"
+    }
+  ],
+  "files": [
+    {
+      "original_path": "00_START_HERE.md",
+      "path": "research/01_original_blueprint/00_START_HERE.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "What remains valid after a correction?",
+      "original_sha256": "960dceafbaa270b9aba94a110057fc6fd0c106d1c9a1b33fb2ec43b88c8a91e3",
+      "sha256": "fdfb9fb455d7fe8705a5ab1a2e506cb8f322df9b0575ef9dbedfc2a85c1cf5b3",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "01_working_plan.md",
+      "path": "research/01_original_blueprint/01_working_plan.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Working research plan",
+      "original_sha256": "c39ef869a2747a9d565816ff518df080918b6d3c446dfafc7724f8d39d28db5d",
+      "sha256": "c39ef869a2747a9d565816ff518df080918b6d3c446dfafc7724f8d39d28db5d",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "02_research_contract.md",
+      "path": "research/01_original_blueprint/02_research_contract.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Research contract",
+      "original_sha256": "aba1c808f323f50addcb267039db0eab24642491ce20ccda12ed6e3123d2f50e",
+      "sha256": "aba1c808f323f50addcb267039db0eab24642491ce20ccda12ed6e3123d2f50e",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "03_related_work.md",
+      "path": "research/01_original_blueprint/03_related_work.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Related work and novelty audit",
+      "original_sha256": "bd23651acc4e53780148bb76c49ec3f0f8d386918b76064ed96966a1402ed746",
+      "sha256": "bd23651acc4e53780148bb76c49ec3f0f8d386918b76064ed96966a1402ed746",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "04_formal_model.md",
+      "path": "research/01_original_blueprint/04_formal_model.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Formal model and evaluator semantics",
+      "original_sha256": "26e315188bb543a73db4f4dda7266851c394b6fa9cc336a9551ea70f71baa13f",
+      "sha256": "26e315188bb543a73db4f4dda7266851c394b6fa9cc336a9551ea70f71baa13f",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "05_requirements.md",
+      "path": "research/01_original_blueprint/05_requirements.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Research Requirements Specification (RRS)",
+      "original_sha256": "a1746baf7169c3430a46056764eddfcdd9cadccfb19533cd7ea890124eaa5c84",
+      "sha256": "a1746baf7169c3430a46056764eddfcdd9cadccfb19533cd7ea890124eaa5c84",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "06_architecture_and_framework.md",
+      "path": "research/01_original_blueprint/06_architecture_and_framework.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Architecture and framework decision",
+      "original_sha256": "c0822b88dc9077dfab877a73d47c26263322506d7de23edede4fc1e639ee752b",
+      "sha256": "c0822b88dc9077dfab877a73d47c26263322506d7de23edede4fc1e639ee752b",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "07_tasks_and_protocol.md",
+      "path": "research/01_original_blueprint/07_tasks_and_protocol.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Tasks, world generation, protocol, and graders",
+      "original_sha256": "5bf4fc5bf419e26fd2afaf66991a4c75a6e5ea7f0e6f37234b3181709ec09307",
+      "sha256": "5bf4fc5bf419e26fd2afaf66991a4c75a6e5ea7f0e6f37234b3181709ec09307",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "08_policies_and_controls.md",
+      "path": "research/01_original_blueprint/08_policies_and_controls.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Recovery policies, controls, and ablations",
+      "original_sha256": "938f916c8ca6641f5da4e9fa6300b06f665a601b40308dcaedf876c45da2df72",
+      "sha256": "938f916c8ca6641f5da4e9fa6300b06f665a601b40308dcaedf876c45da2df72",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "09_interfaces_and_storage.md",
+      "path": "research/01_original_blueprint/09_interfaces_and_storage.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Interfaces, schemas, checkpoints, and reproducibility",
+      "original_sha256": "72b8ea10018ae15dce45753bd1e85bdcaef8028fd1ad4cc79323b1a890e46391",
+      "sha256": "72b8ea10018ae15dce45753bd1e85bdcaef8028fd1ad4cc79323b1a890e46391",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "10_experiments_and_compute.md",
+      "path": "research/01_original_blueprint/10_experiments_and_compute.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Exact experiment matrix, inference, and compute",
+      "original_sha256": "21c249d245c9deb8b478375e208e1c30065fc05cae16de967c5db259a7abae88",
+      "sha256": "21c249d245c9deb8b478375e208e1c30065fc05cae16de967c5db259a7abae88",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "11_metrics_statistics_and_outputs.md",
+      "path": "research/01_original_blueprint/11_metrics_statistics_and_outputs.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Metrics, statistical analysis, and expected outputs",
+      "original_sha256": "f1dd5d3ec8513663b81ad38220693014b1f5199ee2ac0bdb620d3d8b0953659a",
+      "sha256": "f1dd5d3ec8513663b81ad38220693014b1f5199ee2ac0bdb620d3d8b0953659a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "12_pilot_and_decision_gates.md",
+      "path": "research/01_original_blueprint/12_pilot_and_decision_gates.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Pilot, capability gates, and decisions",
+      "original_sha256": "e40507cd052582c96f6216e923e7a5f7b4979156976bb0bee7a268aa5d0194c5",
+      "sha256": "e40507cd052582c96f6216e923e7a5f7b4979156976bb0bee7a268aa5d0194c5",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "13_validation_risks_and_diagnosis.md",
+      "path": "research/01_original_blueprint/13_validation_risks_and_diagnosis.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Validation, scientific risks, and failure diagnosis",
+      "original_sha256": "db87d11f176813406a372b134b0b1729c5c1556537156fae584406c002731274",
+      "sha256": "db87d11f176813406a372b134b0b1729c5c1556537156fae584406c002731274",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "14_implementation_sequence_and_thesis.md",
+      "path": "research/01_original_blueprint/14_implementation_sequence_and_thesis.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Implementation sequence, execution plan, and thesis artifacts",
+      "original_sha256": "4c39c0623f8e77c5eea4bd174c08fb5669e54fd0ee83c9a55c08f340c812a338",
+      "sha256": "4c39c0623f8e77c5eea4bd174c08fb5669e54fd0ee83c9a55c08f340c812a338",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "15_prompt_and_rendering_contract.md",
+      "path": "research/01_original_blueprint/15_prompt_and_rendering_contract.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Prompt and rendering contract",
+      "original_sha256": "32d749993eda49435ff085d117d26a9f6a2e7b0be22170f56f3408e08be51fc6",
+      "sha256": "32d749993eda49435ff085d117d26a9f6a2e7b0be22170f56f3408e08be51fc6",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "16_validation_report.md",
+      "path": "research/01_original_blueprint/16_validation_report.md",
+      "phase": "01_original_blueprint",
+      "kind": "md",
+      "title": "Deliverable validation report",
+      "original_sha256": "ba92c556ea490b03850c404ec9145d8c60c4289fb21ae1db20da8720049ac17f",
+      "sha256": "ba92c556ea490b03850c404ec9145d8c60c4289fb21ae1db20da8720049ac17f",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "reference/__init__.py",
+      "path": "research/01_original_blueprint/reference/__init__.py",
+      "phase": "01_original_blueprint",
+      "kind": "py",
+      "title": "__init__.py",
+      "original_sha256": "6f5b05bfc81a6259fb4c783e2b98dde17d12b5433174840cea9d72a76ab9d75e",
+      "sha256": "6f5b05bfc81a6259fb4c783e2b98dde17d12b5433174840cea9d72a76ab9d75e",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "reference/budget.py",
+      "path": "research/01_original_blueprint/reference/budget.py",
+      "phase": "01_original_blueprint",
+      "kind": "py",
+      "title": "budget.py",
+      "original_sha256": "19003182f829f36a79abf020e6dd1eef5abe932f2e6da9c033e2bff481557e3a",
+      "sha256": "19003182f829f36a79abf020e6dd1eef5abe932f2e6da9c033e2bff481557e3a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "reference/contracts.py",
+      "path": "research/01_original_blueprint/reference/contracts.py",
+      "phase": "01_original_blueprint",
+      "kind": "py",
+      "title": "contracts.py",
+      "original_sha256": "cfbd7838d64f37277b64894cb0c43682bd33f4b41a2eefc4ddbb633788004666",
+      "sha256": "cfbd7838d64f37277b64894cb0c43682bd33f4b41a2eefc4ddbb633788004666",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "reference/export_contracts.py",
+      "path": "research/01_original_blueprint/reference/export_contracts.py",
+      "phase": "01_original_blueprint",
+      "kind": "py",
+      "title": "export_contracts.py",
+      "original_sha256": "f49cae9225e5bbeea0c442a3da553036e416c07fa90c5bad447c8df7b874b394",
+      "sha256": "f49cae9225e5bbeea0c442a3da553036e416c07fa90c5bad447c8df7b874b394",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "reference/support.py",
+      "path": "research/01_original_blueprint/reference/support.py",
+      "phase": "01_original_blueprint",
+      "kind": "py",
+      "title": "support.py",
+      "original_sha256": "d8c3a19009c3de15f46c6dc883bfb1f61ef5aaee0eb5c54ebf31dd170dc46a0f",
+      "sha256": "d8c3a19009c3de15f46c6dc883bfb1f61ef5aaee0eb5c54ebf31dd170dc46a0f",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "tests/test_reference.py",
+      "path": "research/01_original_blueprint/tests/test_reference.py",
+      "phase": "01_original_blueprint",
+      "kind": "py",
+      "title": "test_reference.py",
+      "original_sha256": "d660e76c72fcc576d71b74ca3d9ad9a03e72c88be51a552635781a15bbf85d91",
+      "sha256": "d660e76c72fcc576d71b74ca3d9ad9a03e72c88be51a552635781a15bbf85d91",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "configs/experiment.json",
+      "path": "research/01_original_blueprint/configs/experiment.json",
+      "phase": "01_original_blueprint",
+      "kind": "json",
+      "title": "experiment.json",
+      "original_sha256": "5e51e61b745b2332cba15fe68483cf1463325ad2fbeb464fb23bda71d9048a64",
+      "sha256": "5e51e61b745b2332cba15fe68483cf1463325ad2fbeb464fb23bda71d9048a64",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "schemas/contracts.schema.json",
+      "path": "research/01_original_blueprint/schemas/contracts.schema.json",
+      "phase": "01_original_blueprint",
+      "kind": "json",
+      "title": "contracts.schema.json",
+      "original_sha256": "2570e12b971aa4a7c61695614832fe7c06ad5a58b9b835e2076e74aa61391e9c",
+      "sha256": "2570e12b971aa4a7c61695614832fe7c06ad5a58b9b835e2076e74aa61391e9c",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "examples/agent_reply.json",
+      "path": "research/01_original_blueprint/examples/agent_reply.json",
+      "phase": "01_original_blueprint",
+      "kind": "json",
+      "title": "agent_reply.json",
+      "original_sha256": "a97ffbedd8020657b7c024f27da010143bf991d02ef63cea3f26d29b09b5071a",
+      "sha256": "a97ffbedd8020657b7c024f27da010143bf991d02ef63cea3f26d29b09b5071a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "examples/event.json",
+      "path": "research/01_original_blueprint/examples/event.json",
+      "phase": "01_original_blueprint",
+      "kind": "json",
+      "title": "event.json",
+      "original_sha256": "886de315eca3f32bf110b72994fdc40ccf971ee339ec9b9a35c4a77b66a0b8d5",
+      "sha256": "886de315eca3f32bf110b72994fdc40ccf971ee339ec9b9a35c4a77b66a0b8d5",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "examples/extractor_reply.json",
+      "path": "research/01_original_blueprint/examples/extractor_reply.json",
+      "phase": "01_original_blueprint",
+      "kind": "json",
+      "title": "extractor_reply.json",
+      "original_sha256": "1f5690f6996380fbbd59cc3a1ace7dbf9ddcb4111e06425f01195253c10a9b19",
+      "sha256": "1f5690f6996380fbbd59cc3a1ace7dbf9ddcb4111e06425f01195253c10a9b19",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "examples/repair_plan.json",
+      "path": "research/01_original_blueprint/examples/repair_plan.json",
+      "phase": "01_original_blueprint",
+      "kind": "json",
+      "title": "repair_plan.json",
+      "original_sha256": "9cbb479831814b493aa3dcf4d43979247a7040c940990285f893f8e6fda723dc",
+      "sha256": "9cbb479831814b493aa3dcf4d43979247a7040c940990285f893f8e6fda723dc",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "examples/worked_support.json",
+      "path": "research/01_original_blueprint/examples/worked_support.json",
+      "phase": "01_original_blueprint",
+      "kind": "json",
+      "title": "worked_support.json",
+      "original_sha256": "47d98ff7011f54d5e5fc927149bebf4bd64825a221f8c727d514b2cd3e923a1e",
+      "sha256": "47d98ff7011f54d5e5fc927149bebf4bd64825a221f8c727d514b2cd3e923a1e",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "budget_forecast.json",
+      "path": "research/01_original_blueprint/budget_forecast.json",
+      "phase": "01_original_blueprint",
+      "kind": "json",
+      "title": "budget_forecast.json",
+      "original_sha256": "fce43eb71b2905049d8b6361df08f38f794154102d62acce273b8cce581508c5",
+      "sha256": "fce43eb71b2905049d8b6361df08f38f794154102d62acce273b8cce581508c5",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "requirements-reference.txt",
+      "path": "research/01_original_blueprint/requirements-reference.txt",
+      "phase": "01_original_blueprint",
+      "kind": "txt",
+      "title": "requirements-reference.txt",
+      "original_sha256": "3690b6094792bdd6ae8d659571822e914309f1df3e8577ad0419503755446f5a",
+      "sha256": "3690b6094792bdd6ae8d659571822e914309f1df3e8577ad0419503755446f5a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "requirements-inference.in",
+      "path": "research/01_original_blueprint/requirements-inference.in",
+      "phase": "01_original_blueprint",
+      "kind": "in",
+      "title": "requirements-inference.in",
+      "original_sha256": "058b9e432534188eec4a122d94e971524e70e8367d8ccd73194e9d177063c7c7",
+      "sha256": "058b9e432534188eec4a122d94e971524e70e8367d8ccd73194e9d177063c7c7",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/00_READ_ME.md",
+      "path": "research/02_agent_context/00_READ_ME.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Context companion for the recovery blueprint",
+      "original_sha256": "1459200457bdf9d1a94f78ba080756e8fb08303ec8cc4040f9370b7c469498e7",
+      "sha256": "5040c6b51fbbe7f821bf5412d027595809178dccdf7b76151335208327b48da3",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "codex_context/01_USER_CONTEXT_AND_PRIORITIES.md",
+      "path": "research/02_agent_context/01_USER_CONTEXT_AND_PRIORITIES.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "User context and priorities",
+      "original_sha256": "dfd86c055f9542b8ab67a387b019bea3cf53e7eb51ae5ed14817f196273a19ce",
+      "sha256": "dfd86c055f9542b8ab67a387b019bea3cf53e7eb51ae5ed14817f196273a19ce",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/02_BLUEPRINT_AUDIT_AND_CORRECTIONS.md",
+      "path": "research/02_agent_context/02_BLUEPRINT_AUDIT_AND_CORRECTIONS.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Blueprint audit and corrections",
+      "original_sha256": "96a11266401db223e4056262ca65fc5b450cceae52c5e3ffe83b2997e122baa9",
+      "sha256": "96a11266401db223e4056262ca65fc5b450cceae52c5e3ffe83b2997e122baa9",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/03_RESEARCH_AND_NOVELTY_UPDATE.md",
+      "path": "research/02_agent_context/03_RESEARCH_AND_NOVELTY_UPDATE.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Research and novelty update",
+      "original_sha256": "becb58862e9877ec7664095b5629dd1c00f797ab7df41e5600b22bc6b711a259",
+      "sha256": "becb58862e9877ec7664095b5629dd1c00f797ab7df41e5600b22bc6b711a259",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/04_FRAMEWORK_AND_TOOLING_EVIDENCE.md",
+      "path": "research/02_agent_context/04_FRAMEWORK_AND_TOOLING_EVIDENCE.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Framework and tooling evidence",
+      "original_sha256": "febc1bc820966a2ba65d668710ec0787868ca111d7e759b5a7c082dfd72debc8",
+      "sha256": "febc1bc820966a2ba65d668710ec0787868ca111d7e759b5a7c082dfd72debc8",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/05_COMPUTE_AND_PILOT_CONTEXT.md",
+      "path": "research/02_agent_context/05_COMPUTE_AND_PILOT_CONTEXT.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Compute and pilot context",
+      "original_sha256": "f450975e4da31e466eeda734b48b8dda89bc7cfc0d77f871e06243ea76e41961",
+      "sha256": "f450975e4da31e466eeda734b48b8dda89bc7cfc0d77f871e06243ea76e41961",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/06_SCIENTIFIC_DESIGN_REVIEW.md",
+      "path": "research/02_agent_context/06_SCIENTIFIC_DESIGN_REVIEW.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Scientific design review",
+      "original_sha256": "98187b50ff4b3c241bed184a21789a68807e5abe2198621033ce7f87a993ffa9",
+      "sha256": "98187b50ff4b3c241bed184a21789a68807e5abe2198621033ce7f87a993ffa9",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/07_OPEN_DECISIONS_AND_ACCEPTANCE_GATES.md",
+      "path": "research/02_agent_context/07_OPEN_DECISIONS_AND_ACCEPTANCE_GATES.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Open decisions and acceptance gates",
+      "original_sha256": "bac9074d154751141ea7f1f9c542aa7b4b4cea0eaa412f0ba1be3545f0cab630",
+      "sha256": "bac9074d154751141ea7f1f9c542aa7b4b4cea0eaa412f0ba1be3545f0cab630",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/08_CODEX_HANDOFF.md",
+      "path": "research/02_agent_context/08_CODEX_HANDOFF.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Handoff prompt for the specification-writing session",
+      "original_sha256": "24ecd282fafdc7f6a7cc4592a80406951e170ec296a4534d037837a28c7e9215",
+      "sha256": "24ecd282fafdc7f6a7cc4592a80406951e170ec296a4534d037837a28c7e9215",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/09_SOURCE_REGISTER.md",
+      "path": "research/02_agent_context/09_SOURCE_REGISTER.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Source register",
+      "original_sha256": "833a4d09d9bc3b13c4e433588c7aeffcbdc901c818681e334a0bb9fb4f8cdfb7",
+      "sha256": "833a4d09d9bc3b13c4e433588c7aeffcbdc901c818681e334a0bb9fb4f8cdfb7",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/background/classical_mas_vs_modern_llm_agents.md",
+      "path": "research/02_agent_context/background/classical_mas_vs_modern_llm_agents.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Classical Multi-Agent Systems vs Modern LLM Agents",
+      "original_sha256": "d0db93e4cb809312d5ef648f3a200701fbb8a008eed3238b0f5018c80a554431",
+      "sha256": "d0db93e4cb809312d5ef648f3a200701fbb8a008eed3238b0f5018c80a554431",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/background/failure_attribution_diagnosis_recovery.md",
+      "path": "research/02_agent_context/background/failure_attribution_diagnosis_recovery.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Failure Attribution, Diagnosis and Recovery in Multi-Agent LLM Systems",
+      "original_sha256": "04070e13f121e366219c0b3e76652ab17332442d76f1d2f39874cc1ad7dd55fc",
+      "sha256": "04070e13f121e366219c0b3e76652ab17332442d76f1d2f39874cc1ad7dd55fc",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/background/multi_agent_evaluation_science.md",
+      "path": "research/02_agent_context/background/multi_agent_evaluation_science.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Multi-Agent Evaluation Science",
+      "original_sha256": "831ea793f6ecd9b4c6dd38b894d86bce9ec830aba98fcce6f04cec3c4672c431",
+      "sha256": "831ea793f6ecd9b4c6dd38b894d86bce9ec830aba98fcce6f04cec3c4672c431",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/background/README.md",
+      "path": "research/02_agent_context/background/README.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Historical background reports",
+      "original_sha256": "cb8d20c81ccc2fa5f7605f8390e86683342dd258a40ba151129601dcb4dd7590",
+      "sha256": "cb8d20c81ccc2fa5f7605f8390e86683342dd258a40ba151129601dcb4dd7590",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/background/shared_memory_distributed_knowledge_and_provenance.md",
+      "path": "research/02_agent_context/background/shared_memory_distributed_knowledge_and_provenance.md",
+      "phase": "02_agent_context",
+      "kind": "md",
+      "title": "Shared Memory, Distributed Knowledge and Provenance",
+      "original_sha256": "8533524e0b1e60a54be950ab608fcb1f0f20ba8f3aea30d8e55c32a378c9a5bd",
+      "sha256": "8533524e0b1e60a54be950ab608fcb1f0f20ba8f3aea30d8e55c32a378c9a5bd",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/context_facts.json",
+      "path": "research/02_agent_context/context_facts.json",
+      "phase": "02_agent_context",
+      "kind": "json",
+      "title": "context_facts.json",
+      "original_sha256": "b872b7093892af7f668ff21f0aa872c01619b46303636f3ef13dbbf156cc02c1",
+      "sha256": "b872b7093892af7f668ff21f0aa872c01619b46303636f3ef13dbbf156cc02c1",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "codex_context/manifest.json",
+      "path": "research/02_agent_context/manifest.json",
+      "phase": "02_agent_context",
+      "kind": "json",
+      "title": "manifest.json",
+      "original_sha256": "7b381320443564b232122abfba65527952b66a59da4ebb022a64ef68517424c2",
+      "sha256": "7b381320443564b232122abfba65527952b66a59da4ebb022a64ef68517424c2",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/CANDIDATE_INNOVATIONS.md",
+      "path": "research/03_innovation_review/CANDIDATE_INNOVATIONS.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Candidate comparison",
+      "original_sha256": "1bf81d08ce33a2439ab0fff22022992db5d7da81f89afcc03d3e01e7eeec4447",
+      "sha256": "1bf81d08ce33a2439ab0fff22022992db5d7da81f89afcc03d3e01e7eeec4447",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/CURRENT_THINKING.md",
+      "path": "research/03_innovation_review/CURRENT_THINKING.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Current thinking",
+      "original_sha256": "9cc61f9495df319ba0d0908797d057ecfa7dc9314d59ae9fb672c1fef3da6748",
+      "sha256": "9cc61f9495df319ba0d0908797d057ecfa7dc9314d59ae9fb672c1fef3da6748",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/DECISION_LOG.md",
+      "path": "research/03_innovation_review/DECISION_LOG.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Decision log",
+      "original_sha256": "0365341e8cc320dec5a9f42e29ed34a17070c489711be2772c1add23ba06e8bf",
+      "sha256": "0365341e8cc320dec5a9f42e29ed34a17070c489711be2772c1add23ba06e8bf",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/decisions/REVIEW_RESOLUTIONS.md",
+      "path": "research/03_innovation_review/decisions/REVIEW_RESOLUTIONS.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Independent review resolutions",
+      "original_sha256": "3e76eb23d831ada7e38f13b1d3eb2a3326ae443e56de2c77ed84f7a12f955d76",
+      "sha256": "3e76eb23d831ada7e38f13b1d3eb2a3326ae443e56de2c77ed84f7a12f955d76",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/evidence/audit_repository.py",
+      "path": "research/03_innovation_review/evidence/audit_repository.py",
+      "phase": "03_innovation_review",
+      "kind": "py",
+      "title": "audit_repository.py",
+      "original_sha256": "50ae2ef71fe2a7dc61fcb6ddc648c860854628719f7f7330da87a6791377ea0d",
+      "sha256": "d15a02e80f12fcd5dcf1f3df18b826969f3302bef8c794ebaaaa27fffb09a94d",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation/evidence/audit_results.json",
+      "path": "research/03_innovation_review/evidence/audit_results.json",
+      "phase": "03_innovation_review",
+      "kind": "json",
+      "title": "audit_results.json",
+      "original_sha256": "6f7839b7efdc20401d95b5552be407012f34088e9c0d0a5a3463eedf286c9248",
+      "sha256": "6f7839b7efdc20401d95b5552be407012f34088e9c0d0a5a3463eedf286c9248",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/evidence/counterexample_results.json",
+      "path": "research/03_innovation_review/evidence/counterexample_results.json",
+      "phase": "03_innovation_review",
+      "kind": "json",
+      "title": "counterexample_results.json",
+      "original_sha256": "36d892f37d3a87d4a4b4e35cea98367363cf8bd00f34b00468b557a622fcf4a6",
+      "sha256": "36d892f37d3a87d4a4b4e35cea98367363cf8bd00f34b00468b557a622fcf4a6",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/evidence/CURRENT_VALIDITY_COUNTEREXAMPLES.md",
+      "path": "research/03_innovation_review/evidence/CURRENT_VALIDITY_COUNTEREXAMPLES.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Current validity, historical provenance, and search completeness",
+      "original_sha256": "09abb89d688aec70f5f8b43b77c3635ca00c283a020270738e12a5167c23bd50",
+      "sha256": "0844465c6a78cc60822368596652945ba23978b458aaa03cf5ebbd94ce805145",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation/evidence/ISOLATION_AND_CERTIFICATION_PREDECESSORS.md",
+      "path": "research/03_innovation_review/evidence/ISOLATION_AND_CERTIFICATION_PREDECESSORS.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Direct predecessors to isolation and validity-based reuse",
+      "original_sha256": "905d7a54fd9b38e7a4fc3c3b4703b4e07fd6ad0f974fd6146f4e144e46218718",
+      "sha256": "905d7a54fd9b38e7a4fc3c3b4703b4e07fd6ad0f974fd6146f4e144e46218718",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/evidence/recovery_counterexamples.py",
+      "path": "research/03_innovation_review/evidence/recovery_counterexamples.py",
+      "phase": "03_innovation_review",
+      "kind": "py",
+      "title": "recovery_counterexamples.py",
+      "original_sha256": "6dd533ec7aaf75c666692c1116db5d5db33813f895569517715d99d25db80709",
+      "sha256": "6dd533ec7aaf75c666692c1116db5d5db33813f895569517715d99d25db80709",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/evidence/REOPENING_EXCLUSIONS.md",
+      "path": "research/03_innovation_review/evidence/REOPENING_EXCLUSIONS.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Reopening discarded possibilities after change",
+      "original_sha256": "a1a049b218d75e3035feb6903b8b07cbe83aa0a747d2103870cf12134d97f05a",
+      "sha256": "a1a049b218d75e3035feb6903b8b07cbe83aa0a747d2103870cf12134d97f05a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/evidence/REPOSITORY_INSPECTION.md",
+      "path": "research/03_innovation_review/evidence/REPOSITORY_INSPECTION.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Fresh repository inspection",
+      "original_sha256": "060e587d26ac05f8574e6b1046b719bffd72d8e6671aad2b8a673be240d45fa4",
+      "sha256": "857ee5fddde0e7a365ece9f3b944d6235d2c58c2f3dffc9fd770d055387ead48",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation/evidence/SEARCH_AND_CLAIM_LEDGER.md",
+      "path": "research/03_innovation_review/evidence/SEARCH_AND_CLAIM_LEDGER.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Search and claim ledger",
+      "original_sha256": "8c9d50414fea482de1020e42cd6b731bbbe75acd8b4c4ed27cde61004e58aae3",
+      "sha256": "8c9d50414fea482de1020e42cd6b731bbbe75acd8b4c4ed27cde61004e58aae3",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/evidence/WORKSPACE_VALIDATION.md",
+      "path": "research/03_innovation_review/evidence/WORKSPACE_VALIDATION.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Final workspace validation",
+      "original_sha256": "214b05e5ac7e1613c14d3f1da96b13e29c8c29c45ed0526c2925c1f5d81f5595",
+      "sha256": "214b05e5ac7e1613c14d3f1da96b13e29c8c29c45ed0526c2925c1f5d81f5595",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/FALSIFICATION_AND_RISKS.md",
+      "path": "research/03_innovation_review/FALSIFICATION_AND_RISKS.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Falsification and risks",
+      "original_sha256": "2caf626b720278dc29a84559d4a1a72df22e0341dc729f4a352899dcf949de8a",
+      "sha256": "2caf626b720278dc29a84559d4a1a72df22e0341dc729f4a352899dcf949de8a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/ideas/CANDIDATE_GENERATION.md",
+      "path": "research/03_innovation_review/ideas/CANDIDATE_GENERATION.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Candidate generation before selection",
+      "original_sha256": "ac184cb98cf8a93521b133de01f2d28d1609d0714ed307fbfc13e3e02a21f569",
+      "sha256": "ac184cb98cf8a93521b133de01f2d28d1609d0714ed307fbfc13e3e02a21f569",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/ADJACENT_FIELDS.md",
+      "path": "research/03_innovation_review/landscape/ADJACENT_FIELDS.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Adjacent-field investigation: recovery as controlled reuse",
+      "original_sha256": "fbcd74126fe9d4e580ebd8f3909dc0387740bd0a7957145d3f79c83a7e750102",
+      "sha256": "fbcd74126fe9d4e580ebd8f3909dc0387740bd0a7957145d3f79c83a7e750102",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/BELIEF_SLICING_AND_SNAPSHOTS.md",
+      "path": "research/03_innovation_review/landscape/BELIEF_SLICING_AND_SNAPSHOTS.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Belief revision, slicing and consistent snapshots",
+      "original_sha256": "94a2fc473b310ca0f079d06a6eb1d9a9c999acb6282d848e82804fe9d306ba96",
+      "sha256": "94a2fc473b310ca0f079d06a6eb1d9a9c999acb6282d848e82804fe9d306ba96",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/COMPLETION_PROTOCOL_VERDICT.md",
+      "path": "research/03_innovation_review/landscape/COMPLETION_PROTOCOL_VERDICT.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Skeptical verdict on revision-sensitive completion",
+      "original_sha256": "8a7d27cbefb0b7c21df9687ec62a29e1bd6f41114f6a0aa902da539121c2ec39",
+      "sha256": "8a7d27cbefb0b7c21df9687ec62a29e1bd6f41114f6a0aa902da539121c2ec39",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/MEMORY_AND_PLAN_REUSE_2025.md",
+      "path": "research/03_innovation_review/landscape/MEMORY_AND_PLAN_REUSE_2025.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "2025 foundations: memory updating and procedural reuse",
+      "original_sha256": "fd5c3a100f648cf79fe532f982ccca8cd2ee372141e41c5bd6cd09187475579a",
+      "sha256": "fd5c3a100f648cf79fe532f982ccca8cd2ee372141e41c5bd6cd09187475579a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/PROTOCOL_RECOVERY.md",
+      "path": "research/03_innovation_review/landscape/PROTOCOL_RECOVERY.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Agent recovery protocols: closest prior art",
+      "original_sha256": "97d744925734cbcb6eca1b0b665b3ef17f580929c608cbb617c98e99671d2019",
+      "sha256": "97d744925734cbcb6eca1b0b665b3ef17f580929c608cbb617c98e99671d2019",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/RECENT_AGENT_WORK.md",
+      "path": "research/03_innovation_review/landscape/RECENT_AGENT_WORK.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Recent agent-recovery work: live research ledger",
+      "original_sha256": "fe3e58bec99b1473205b82541c73d7f7b187b658eb4d17c9414d18c8df506bed",
+      "sha256": "fe3e58bec99b1473205b82541c73d7f7b187b658eb4d17c9414d18c8df506bed",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/REOPENING_SEARCH_NOVELTY.md",
+      "path": "research/03_innovation_review/landscape/REOPENING_SEARCH_NOVELTY.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Reopening search after change: promising distinction, strong novelty caution",
+      "original_sha256": "9be68f77c971916742955c60b87f7222b155a1ab290dcd46a95f179242b0026a",
+      "sha256": "9be68f77c971916742955c60b87f7222b155a1ab290dcd46a95f179242b0026a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/RETENTION_AND_REVISABLE_EXECUTION.md",
+      "path": "research/03_innovation_review/landscape/RETENTION_AND_REVISABLE_EXECUTION.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Retention and revisable execution: additional close work",
+      "original_sha256": "c76664522938e3a0083b3e59fc3b33cc5899191c0c5f8f21195884aeeb5afc25",
+      "sha256": "c76664522938e3a0083b3e59fc3b33cc5899191c0c5f8f21195884aeeb5afc25",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/REUSE_AND_UNLEARNING.md",
+      "path": "research/03_innovation_review/landscape/REUSE_AND_UNLEARNING.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Additional close prior work: reuse and unlearning",
+      "original_sha256": "788d5fae810acefa3ce34fdfdd6247e05bf2489cb3c6d725c7aed36db1be18db",
+      "sha256": "788d5fae810acefa3ce34fdfdd6247e05bf2489cb3c6d725c7aed36db1be18db",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/SEMANTIC_REVISION.md",
+      "path": "research/03_innovation_review/landscape/SEMANTIC_REVISION.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Semantic revision without perfect dependencies",
+      "original_sha256": "e6f5f563eedf06b2b5c3dab46c94413a565b5b8e6d63d0f1d31837178c9def7a",
+      "sha256": "e6f5f563eedf06b2b5c3dab46c94413a565b5b8e6d63d0f1d31837178c9def7a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/landscape/UNCERTAIN_LOCALIZATION.md",
+      "path": "research/03_innovation_review/landscape/UNCERTAIN_LOCALIZATION.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Uncertainty-aware rollback is also prior art",
+      "original_sha256": "b1192e6c2e6f611610b62208fe5d64516b8f146785466963ec76a3b382d5637e",
+      "sha256": "b1192e6c2e6f611610b62208fe5d64516b8f146785466963ec76a3b382d5637e",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/LESSONS_LEARNED.md",
+      "path": "research/03_innovation_review/LESSONS_LEARNED.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Lessons learned",
+      "original_sha256": "b9eab96191a84ba43af9558574abed4836a9316eb7dd7037614f662d2f3c64fb",
+      "sha256": "b9eab96191a84ba43af9558574abed4836a9316eb7dd7037614f662d2f3c64fb",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/OPEN_RESEARCH_GAPS.md",
+      "path": "research/03_innovation_review/OPEN_RESEARCH_GAPS.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Open research gaps",
+      "original_sha256": "b93cd84f740a162b7c15a8ced25fe166ae0d71c4e53b920188ee646f529aaced",
+      "sha256": "b93cd84f740a162b7c15a8ced25fe166ae0d71c4e53b920188ee646f529aaced",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/README.md",
+      "path": "research/03_innovation_review/README.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Research innovation workspace",
+      "original_sha256": "63c33b42509bedc700832dfafb0ed83435d23cfd41110e9254a23b58ae911c0d",
+      "sha256": "c2e8e74f4fa21dd89451805fad7f58e4f5db23837cbdb800a0a5c954fee835b2",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation/REAL_WORLD_PROBLEM.md",
+      "path": "research/03_innovation_review/REAL_WORLD_PROBLEM.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "The real-world recovery problem",
+      "original_sha256": "ecabaa1ca54459bc1a8c400238617bf8dc8f7633a428a033a1613793c690afd5",
+      "sha256": "ecabaa1ca54459bc1a8c400238617bf8dc8f7633a428a033a1613793c690afd5",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/RECOMMENDED_INNOVATION.md",
+      "path": "research/03_innovation_review/RECOMMENDED_INNOVATION.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Recommended direction: recovery of completion decisions",
+      "original_sha256": "3b6ab94cefd0953a63ce9db6a529080cbddeea6b61843bc0d53bf23867c33067",
+      "sha256": "3b6ab94cefd0953a63ce9db6a529080cbddeea6b61843bc0d53bf23867c33067",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/RESEARCH_LANDSCAPE.md",
+      "path": "research/03_innovation_review/RESEARCH_LANDSCAPE.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Research landscape",
+      "original_sha256": "49636b2af958f32e4fd1fc4a4f97b6980f1eb2c3c0679ac7ae6943559238235d",
+      "sha256": "49636b2af958f32e4fd1fc4a4f97b6980f1eb2c3c0679ac7ae6943559238235d",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/RESEARCH_REDIRECTION.md",
+      "path": "research/03_innovation_review/RESEARCH_REDIRECTION.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Research redirection",
+      "original_sha256": "39f72051041dc087eb69bcb11be38029f45a2d73d5ba7eaed7d02ab4c8cbdbdf",
+      "sha256": "39f72051041dc087eb69bcb11be38029f45a2d73d5ba7eaed7d02ab4c8cbdbdf",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/risks/FEASIBILITY_REVIEW.md",
+      "path": "research/03_innovation_review/risks/FEASIBILITY_REVIEW.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Independent feasibility and causal-design review",
+      "original_sha256": "a1804a8b6d6a10217c687f0e71bbb83de7ed64e3e80ecca9ba92b5dcafa35f07",
+      "sha256": "4ecb3d1d83471d6ea8c506f42af63fff2eb068462149b40669f0ea38c7c03e38",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation/risks/LITERATURE_REVIEW.md",
+      "path": "research/03_innovation_review/risks/LITERATURE_REVIEW.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Independent adversarial literature/design review",
+      "original_sha256": "0ef84e11ca8f84a131c1cf8356e381b1f8dfd9562c62435492f4289f24517b80",
+      "sha256": "0ef84e11ca8f84a131c1cf8356e381b1f8dfd9562c62435492f4289f24517b80",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/risks/MECHANISM_REVIEW.md",
+      "path": "research/03_innovation_review/risks/MECHANISM_REVIEW.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Independent mechanism review",
+      "original_sha256": "dbffd5c85f6a9b3f0fc4ddf4af0f6431340172ed67c455df33512640b049128e",
+      "sha256": "dbffd5c85f6a9b3f0fc4ddf4af0f6431340172ed67c455df33512640b049128e",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation/VALIDATION_STRATEGY.md",
+      "path": "research/03_innovation_review/VALIDATION_STRATEGY.md",
+      "phase": "03_innovation_review",
+      "kind": "md",
+      "title": "Validation strategy",
+      "original_sha256": "aac16b8d57b5db19bca6ef87b3fa8e8c40cc7cc25fcfe6a66b0c04fa3efeb72b",
+      "sha256": "aac16b8d57b5db19bca6ef87b3fa8e8c40cc7cc25fcfe6a66b0c04fa3efeb72b",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/CANDIDATE_ADDITIONS.md",
+      "path": "research/04_design_extensions/CANDIDATE_ADDITIONS.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Candidate additions: comparison before recommendation",
+      "original_sha256": "91f5a1a734f8ea1d114dddbe64e97a2b12c12d46ddd1467fea253014598e3e26",
+      "sha256": "91f5a1a734f8ea1d114dddbe64e97a2b12c12d46ddd1467fea253014598e3e26",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/CROSS_FIELD_INVENTIONS.md",
+      "path": "research/04_design_extensions/CROSS_FIELD_INVENTIONS.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Cross-field inventions and failed translations",
+      "original_sha256": "254bda9256d5e62910c9eed65c6eed00747ed91514b01537f2d351d5fb23a950",
+      "sha256": "254bda9256d5e62910c9eed65c6eed00747ed91514b01537f2d351d5fb23a950",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/CURRENT_THINKING.md",
+      "path": "research/04_design_extensions/CURRENT_THINKING.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Current thinking — final research checkpoint",
+      "original_sha256": "b8436c50f34d1bce26fbf22d44fbec2bf28190ef9d802e04f079f93a9c78c5a6",
+      "sha256": "b8436c50f34d1bce26fbf22d44fbec2bf28190ef9d802e04f079f93a9c78c5a6",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/DECISION_LOG.md",
+      "path": "research/04_design_extensions/DECISION_LOG.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Decision log",
+      "original_sha256": "b6ce9f5ab2a0a185ffabfe50c27b0196259d693011b0f1e8453d8ec205028227",
+      "sha256": "b6ce9f5ab2a0a185ffabfe50c27b0196259d693011b0f1e8453d8ec205028227",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/evidence/budget_and_precision.py",
+      "path": "research/04_design_extensions/evidence/budget_and_precision.py",
+      "phase": "04_design_extensions",
+      "kind": "py",
+      "title": "budget_and_precision.py",
+      "original_sha256": "1786282c05c3fd128dbb02529b993e4924904dbef213f6db79946616acc6b1be",
+      "sha256": "1786282c05c3fd128dbb02529b993e4924904dbef213f6db79946616acc6b1be",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/evidence/budget_and_precision_results.json",
+      "path": "research/04_design_extensions/evidence/budget_and_precision_results.json",
+      "phase": "04_design_extensions",
+      "kind": "json",
+      "title": "budget_and_precision_results.json",
+      "original_sha256": "8c705aabfd4b27fb9c3e2b7eff4b34e646b64941797818c7609110b906400d6c",
+      "sha256": "8c705aabfd4b27fb9c3e2b7eff4b34e646b64941797818c7609110b906400d6c",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/evidence/PROTOCOL_AUDIT.md",
+      "path": "research/04_design_extensions/evidence/PROTOCOL_AUDIT.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Protocol, information, and source audit",
+      "original_sha256": "14436f5e0d7f4278628405275ce9d17e53c5f25d23ad8c5b8815c4dce76e5e95",
+      "sha256": "2ebd199891e82dd50fd7737e852959c8490ce2b7ae4ffcd3500d0dc7bca474f5",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/evidence/protocol_probe.py",
+      "path": "research/04_design_extensions/evidence/protocol_probe.py",
+      "phase": "04_design_extensions",
+      "kind": "py",
+      "title": "protocol_probe.py",
+      "original_sha256": "4e9b3e6315ae476d5b0c256761aebdeba381383cd73fdfd3ffda208808a47b10",
+      "sha256": "a572825649dc7bc44686a694ee39ca1906bec45f2243b740bc85f6e950ffa66e",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/evidence/protocol_probe_results.json",
+      "path": "research/04_design_extensions/evidence/protocol_probe_results.json",
+      "phase": "04_design_extensions",
+      "kind": "json",
+      "title": "protocol_probe_results.json",
+      "original_sha256": "304233ecfa61c52673537a047f83c7f46c85abb21ced1cb7957017fd42af6901",
+      "sha256": "304233ecfa61c52673537a047f83c7f46c85abb21ced1cb7957017fd42af6901",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/evidence/READ_COVERAGE.md",
+      "path": "research/04_design_extensions/evidence/READ_COVERAGE.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Previous-workspace read coverage",
+      "original_sha256": "cdd4421e12da236ea4924fdf7de425df6d11b24f366128e1940805404fb0211e",
+      "sha256": "f984cbf9add8b02e083cb16e1d0deb9ac9c07fa80fa0a9af87f6cb89ffbfbf1c",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/evidence/WORKSPACE_VALIDATION.md",
+      "path": "research/04_design_extensions/evidence/WORKSPACE_VALIDATION.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Workspace validation",
+      "original_sha256": "734930a3bad20d50c0662550106481782955e51eaf41f095bf72896ba03eb579",
+      "sha256": "734930a3bad20d50c0662550106481782955e51eaf41f095bf72896ba03eb579",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/FALSIFICATION_PLAN.md",
+      "path": "research/04_design_extensions/FALSIFICATION_PLAN.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Attempt to kill the recommendation",
+      "original_sha256": "5fbeec4f2ddb9e3c9eda0ffb1ad76986026219abfe4229855199cb8ac8d0c48e",
+      "sha256": "5fbeec4f2ddb9e3c9eda0ffb1ad76986026219abfe4229855199cb8ac8d0c48e",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/FEASIBILITY_AND_VALUE.md",
+      "path": "research/04_design_extensions/FEASIBILITY_AND_VALUE.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Feasibility and scientific value",
+      "original_sha256": "d98fdefc97649081f328ce60bbe8a2b7b905cc07d184e08e0ac92ab3a660204a",
+      "sha256": "d98fdefc97649081f328ce60bbe8a2b7b905cc07d184e08e0ac92ab3a660204a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/FINALIST_EXPERIMENTS.md",
+      "path": "research/04_design_extensions/FINALIST_EXPERIMENTS.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Minimum decisive experiments",
+      "original_sha256": "2cc3d2f0aa48f0949a45e2a3770a20c5185ab10763fcf19677238f6f28d504d0",
+      "sha256": "55c74413e82e5b1029156ce9d0e9f6f39da33cb851a168c136c21c926ab57266",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/FOUNDATION_ASSESSMENT.md",
+      "path": "research/04_design_extensions/FOUNDATION_ASSESSMENT.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Foundation assessment",
+      "original_sha256": "edf596d9d33c7d2cc6b2b95c2a9380cd36a075c72d2b2c0c312d3b061b33b206",
+      "sha256": "94dae8ea7f1774fc89c470674c498643518217c8dd72fe96664e2aa9cb8f7ba0",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/LESSONS_LEARNED.md",
+      "path": "research/04_design_extensions/LESSONS_LEARNED.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Lessons learned",
+      "original_sha256": "81dc97f0c91263ed68d2111f1c2796a06e1c0ca73069a8334a02de39b66d291c",
+      "sha256": "81dc97f0c91263ed68d2111f1c2796a06e1c0ca73069a8334a02de39b66d291c",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/NOVELTY_ADVERSARY.md",
+      "path": "research/04_design_extensions/NOVELTY_ADVERSARY.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Hostile review of the finalists",
+      "original_sha256": "4e745a8561b08b1d67929f73dee35b8b3e3d2583107e2965f551ca3d58c007b0",
+      "sha256": "4e745a8561b08b1d67929f73dee35b8b3e3d2583107e2965f551ca3d58c007b0",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/README.md",
+      "path": "research/04_design_extensions/README.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Strengthening recovery after distributed LLM work",
+      "original_sha256": "c29aefd8e2acfde33dbbfbef4ada04f590ee2dcc0eae5c9a9fe820e8a372281c",
+      "sha256": "5ba418e2113c786049ca982e4aed45f34de4b12be8d85e0e3f234bed8d487267",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/RECOMMENDED_EXTENSION.md",
+      "path": "research/04_design_extensions/RECOMMENDED_EXTENSION.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Recommendation: test what a correction must preserve to make prior work reusable",
+      "original_sha256": "abe89e96199b3711a23e06f0fb45905af7bea9e52c04008c24eecd10bbd0c189",
+      "sha256": "45a6acddf11887c8e58646f1d380ce176b7107207bda265267d8a9612e2243f9",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/reviews/COMPLETION_COMPETITOR.md",
+      "path": "research/04_design_extensions/reviews/COMPLETION_COMPETITOR.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Independent review of the completion-reopening competitor",
+      "original_sha256": "536911f838704a5c9c8fc1a07d4b557eb3d716a577a7108229f5e8c959133efc",
+      "sha256": "536911f838704a5c9c8fc1a07d4b557eb3d716a577a7108229f5e8c959133efc",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/reviews/CROSS_FIELD_CANDIDATES.md",
+      "path": "research/04_design_extensions/reviews/CROSS_FIELD_CANDIDATES.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Adversarial cross-field candidate review",
+      "original_sha256": "c20051b5f687a0962de057b7c94edfed200fc65fdee8722819237bdf69ec0c04",
+      "sha256": "c20051b5f687a0962de057b7c94edfed200fc65fdee8722819237bdf69ec0c04",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/reviews/FINAL_DESIGN_REVIEW.md",
+      "path": "research/04_design_extensions/reviews/FINAL_DESIGN_REVIEW.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Independent final scientific-design review",
+      "original_sha256": "44b0cfbe5ab395543a2f3fcc38ed0a5b34d95d54ce2dad512f2113ad4034cf28",
+      "sha256": "44b0cfbe5ab395543a2f3fcc38ed0a5b34d95d54ce2dad512f2113ad4034cf28",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/reviews/STRUCTURE_CANDIDATES.md",
+      "path": "research/04_design_extensions/reviews/STRUCTURE_CANDIDATES.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Independent candidate analysis from protocol structure",
+      "original_sha256": "edc6eb7c2ac2e4a4691e83c0846fac371f731c6e3f56ddcabb954352fd620ac7",
+      "sha256": "edc6eb7c2ac2e4a4691e83c0846fac371f731c6e3f56ddcabb954352fd620ac7",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/sources/CROSS_FIELD_SOURCES.md",
+      "path": "research/04_design_extensions/sources/CROSS_FIELD_SOURCES.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Cross-field source and search notes",
+      "original_sha256": "a707c5c27ad4fc2b747ff0f4b9bd3bc035274b5b709bf79166b0fc27809ceb3b",
+      "sha256": "a28a52259e20b86b8bfe11454b4fce7b5e6aab7c94d791c3d1cb88868d66683c",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/sources/RECENT_AGENT_LITERATURE.md",
+      "path": "research/04_design_extensions/sources/RECENT_AGENT_LITERATURE.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Recent agent literature: independent update",
+      "original_sha256": "1c191cb7921442160d5d517930e4798e027740474099d2f0b590d37a894b1114",
+      "sha256": "f6d771694be60d446b8a665647018478bd9a692ecf91da7b92beb8b004c7d990",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "research_innovation_v2/sources/ROOT_SEARCH_LEDGER.md",
+      "path": "research/04_design_extensions/sources/ROOT_SEARCH_LEDGER.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Root investigation search and source ledger",
+      "original_sha256": "5c10f4c0b98c16df31f918507b6475605a8188327601d54bf442d7d8a07f4535",
+      "sha256": "5c10f4c0b98c16df31f918507b6475605a8188327601d54bf442d7d8a07f4535",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/sources/search_log_recent.md",
+      "path": "research/04_design_extensions/sources/search_log_recent.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Recent-agent search and claim-access log",
+      "original_sha256": "f9d30ff7e9444a5ea3425aaa00f3b064bda22d0eb3ec61a0bcc7488b735ae5ac",
+      "sha256": "f9d30ff7e9444a5ea3425aaa00f3b064bda22d0eb3ec61a0bcc7488b735ae5ac",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/sources/TRANSITION_RECEIPT_NOVELTY.md",
+      "path": "research/04_design_extensions/sources/TRANSITION_RECEIPT_NOVELTY.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Novelty attack: historical before-values in a correction receipt",
+      "original_sha256": "8aa2e2ca9d7a9057b3da1ef3bf46124baed56fb2b7be2ba9a143eb87ed14c443",
+      "sha256": "8aa2e2ca9d7a9057b3da1ef3bf46124baed56fb2b7be2ba9a143eb87ed14c443",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/SPECIFICATION_CHANGE_PLAN.md",
+      "path": "research/04_design_extensions/SPECIFICATION_CHANGE_PLAN.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Eventual specification changes",
+      "original_sha256": "f7fb82d7b7e08101059c01f8e004c6ccb8edc5afc23f0392729967b7ee735114",
+      "sha256": "f7fb82d7b7e08101059c01f8e004c6ccb8edc5afc23f0392729967b7ee735114",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/UNTAPPED_STRUCTURE.md",
+      "path": "research/04_design_extensions/UNTAPPED_STRUCTURE.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Untapped scientific structure in the existing study",
+      "original_sha256": "2be9a0300b24c214f276a1fe04795676ac2e69b0500189105dab746c3109322a",
+      "sha256": "2be9a0300b24c214f276a1fe04795676ac2e69b0500189105dab746c3109322a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "research_innovation_v2/UPDATED_RESEARCH_LANDSCAPE.md",
+      "path": "research/04_design_extensions/UPDATED_RESEARCH_LANDSCAPE.md",
+      "phase": "04_design_extensions",
+      "kind": "md",
+      "title": "Updated research landscape",
+      "original_sha256": "feda4c0ae394098756ed850532ef3eb27056a4318c5e5f4b0edf4a6c17217bf8",
+      "sha256": "feda4c0ae394098756ed850532ef3eb27056a4318c5e5f4b0edf4a6c17217bf8",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/01_RECOVERY_TRAJECTORIES.md",
+      "path": "research/05_practical_additions/01_RECOVERY_TRAJECTORIES.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "Addition 01: show how recovery unfolds",
+      "original_sha256": "5dc415c43f457e6e69c394a7aab0863f8eb209b21c059ed7763a6d6cc4bf1bc5",
+      "sha256": "bfc6e044e568ccf6e714e3200fa9a9ee9dfc50fee4231612837b6dd00afafb90",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/02_FAILURE_TAXONOMY.md",
+      "path": "research/05_practical_additions/02_FAILURE_TAXONOMY.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "Addition 02: explain failures with observable labels and a small casebook",
+      "original_sha256": "7d7ab1d3645ffe742bf954d61851fdd07c09b746ae3dd25926b08e89db7efd3f",
+      "sha256": "734bed051ec59a406dff8d2e27f4748757a192171f147463cdbba08506e0289f",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/03_COMMUNICATION_AND_INFORMATION_FLOW.md",
+      "path": "research/05_practical_additions/03_COMMUNICATION_AND_INFORMATION_FLOW.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "Addition 03: connect correction delivery, available evidence, and recovery",
+      "original_sha256": "6829e7282deb1478279400b185f93075a33773a22dc3726ada4121ffa9f05aea",
+      "sha256": "d59584e95d6aea11b1c726712e9ec8db12eeae45aeb925d08f7aa9d57e240be6",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/04_QUALITY_REUSE_COST.md",
+      "path": "research/05_practical_additions/04_QUALITY_REUSE_COST.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "Addition 04: make the quality, retained-work, and cost tradeoff visible",
+      "original_sha256": "15409017218fc85707ac67ad5b1c0b362494ae1935db39035498ad415e2e9a46",
+      "sha256": "40d9c3fdcd499aee21e23418220350807e7ddbd9242f336f064d7ccadbfbfe7f",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/05_TASK_STRUCTURE_AND_RECOVERY.md",
+      "path": "research/05_practical_additions/05_TASK_STRUCTURE_AND_RECOVERY.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "05 — Explain recovery through task structure",
+      "original_sha256": "8cc471af6cc6fa30517e8b377b21905927efe765c75acddde224849fde40eff4",
+      "sha256": "fb0f22688837772b05e5019850382857a573b4d9072e13a866b590a57ddcfb49",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/06_RECOVERY_INFORMATION_ATLAS.md",
+      "path": "research/05_practical_additions/06_RECOVERY_INFORMATION_ATLAS.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "06 — A small atlas of what retained work contains",
+      "original_sha256": "69eebb7096bfb1dba828ad1d51d8d5015f12082498b3288af551f96ccde5467e",
+      "sha256": "6ac5d2537342ef0ba39186a3a04d19105c78be46b3e6e9bd32831276d1ff8d55",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/07_COMPACT_STATE.md",
+      "path": "research/05_practical_additions/07_COMPACT_STATE.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "07 — Keep the last answer, clear the conversation",
+      "original_sha256": "9edf90950e881fa3731335c1bec325f685547e0f5b473f75263c1f482f524386",
+      "sha256": "18939ce29095c6b91acc71b9ef6fcef202e5b930b263baca9fb9a46a3e05f937",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/08_PARTIAL_TEAM_RESETS.md",
+      "path": "research/05_practical_additions/08_PARTIAL_TEAM_RESETS.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "08 — Reset two peers and let two keep their history",
+      "original_sha256": "c37dc89cdb1e9e36a3fb417089a9bbedf2b769e33485fe0cf875dd2d98a9705a",
+      "sha256": "c37dc89cdb1e9e36a3fb417089a9bbedf2b769e33485fe0cf875dd2d98a9705a",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/09_FIRST_ROUND_COMMUNICATION_PAUSE.md",
+      "path": "research/05_practical_additions/09_FIRST_ROUND_COMMUNICATION_PAUSE.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "09 — Delay messages produced in the first recovery round",
+      "original_sha256": "22dfb62b2fedf186874850a6cda4f48f6271a6f2e46da09263f7887edd1e9de7",
+      "sha256": "22dfb62b2fedf186874850a6cda4f48f6271a6f2e46da09263f7887edd1e9de7",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/10_DELAYED_RESET.md",
+      "path": "research/05_practical_additions/10_DELAYED_RESET.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "10 — Give the team one round, then clear its reasoning",
+      "original_sha256": "4d6487b4d2d79bc0bdef479585b73e3ca594e1e57d45995cc5d6595498b46daa",
+      "sha256": "4d6487b4d2d79bc0bdef479585b73e3ca594e1e57d45995cc5d6595498b46daa",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/11_HISTORICAL_CHANGE_RECEIPTS.md",
+      "path": "research/05_practical_additions/11_HISTORICAL_CHANGE_RECEIPTS.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "11 — Tell the team what changed from the old value to the new one",
+      "original_sha256": "314812e83180f4bbe0d9963e618845671b49133c8f8807ad7f44d34d2a3500c9",
+      "sha256": "27f09fef1b7112c7a0140a37363edde8501d21e2af971f0168cf4afbe0c3f7a8",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/12_REVISION_TIMING.md",
+      "path": "research/05_practical_additions/12_REVISION_TIMING.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "12 — Earlier versus later corrections",
+      "original_sha256": "4ea30a682a513cc858f382a278d9b3a5696defc4b08f4134a5b9852acb2eca7e",
+      "sha256": "ba90ffe531735b10f9ebbeaa45775b79854ca682bf239b804599036d9353267f",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/13_CHANGE_DIRECTION_AND_SECOND_EDITS.md",
+      "path": "research/05_practical_additions/13_CHANGE_DIRECTION_AND_SECOND_EDITS.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "13 — Direction of change",
+      "original_sha256": "fc16080af64101c57293f797ffebc9041804f126684384fe8f400371c7f27611",
+      "sha256": "fc16080af64101c57293f797ffebc9041804f126684384fe8f400371c7f27611",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/14_DETERMINISTIC_RECOVERY_REFERENCES.md",
+      "path": "research/05_practical_additions/14_DETERMINISTIC_RECOVERY_REFERENCES.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "14 — CPU references that explain what the LLM had to do",
+      "original_sha256": "d8280cc4dc453468fd3cbb468d5d8d46a4aa51d52ad5361fac00a340f495799d",
+      "sha256": "07c5e749cb022e63dc93aca3853973c490477b9471d27e7c0090a3c358739a3f",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "project_additions/15_TEAM_SYNCHRONIZATION.md",
+      "path": "research/05_practical_additions/15_TEAM_SYNCHRONIZATION.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "15. Does the team recover together?",
+      "original_sha256": "df5977087ab02de3535310ff9942e191925758f6a29f8580e787efcd754b5eb8",
+      "sha256": "df5977087ab02de3535310ff9942e191925758f6a29f8580e787efcd754b5eb8",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/16_BOUNDARY_POLICY_REPLAY.md",
+      "path": "research/05_practical_additions/16_BOUNDARY_POLICY_REPLAY.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "16. Evaluate one practical reset rule without new model runs",
+      "original_sha256": "a20ea9f0be80c94abcc43914a752f16cd6416d2e9034d22b1985d65d0fcf43d6",
+      "sha256": "a20ea9f0be80c94abcc43914a752f16cd6416d2e9034d22b1985d65d0fcf43d6",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/17_CONTINUATION_REPEATABILITY.md",
+      "path": "research/05_practical_additions/17_CONTINUATION_REPEATABILITY.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "17. A small repeatability check",
+      "original_sha256": "7d131c815a4e37a081d746b5a78e521f083b78ad41467405b9564b58434aafec",
+      "sha256": "7d131c815a4e37a081d746b5a78e521f083b78ad41467405b9564b58434aafec",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/18_SECOND_REVISION.md",
+      "path": "research/05_practical_additions/18_SECOND_REVISION.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "18 — Can the team recover a second time?",
+      "original_sha256": "4c98cf79e833e1ca908c38e5a898f14c564a6ab9609876e6386eaa38aef538d1",
+      "sha256": "4c98cf79e833e1ca908c38e5a898f14c564a6ab9609876e6386eaa38aef538d1",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/README.md",
+      "path": "research/05_practical_additions/README.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "Practical additions to the recovery thesis",
+      "original_sha256": "1244a00578d3d614133b0173505101031fcde804f8c78f706a1c151a8061bf9b",
+      "sha256": "1244a00578d3d614133b0173505101031fcde804f8c78f706a1c151a8061bf9b",
+      "modified_for_relocation": false
+    },
+    {
+      "original_path": "project_additions/RECOMMENDED_ADDITIONS.md",
+      "path": "research/05_practical_additions/RECOMMENDED_ADDITIONS.md",
+      "phase": "05_practical_additions",
+      "kind": "md",
+      "title": "Recommended additions: more explanatory depth, one simple extra policy",
+      "original_sha256": "378c63ad7cc0d6845065b1a8a4940f80897ca948461a91c7bb5c2cd6654cada4",
+      "sha256": "e5c18ad9a3c4cc7a97dc60896a7e64766e92cdc1b3ab165b73031565f058dcf7",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "FINAL_PROJECT_SPECIFICATION_PLAN.md",
+      "path": "research/06_final_design/FINAL_PROJECT_SPECIFICATION_PLAN.md",
+      "phase": "06_final_design",
+      "kind": "md",
+      "title": "Final scientific plan: recovery and useful state reuse in distributed LLM teams",
+      "original_sha256": "c8b146d185fa758f9c5c1f50554ca83958700bd2656c601568dc1730fee0072f",
+      "sha256": "b9d2bf406ec2e52e97a0d0b1695229f8489fe29bedb9ffe68e7ce18e3eaeb418",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "SILO_REPOSITORY_AUDIT.md",
+      "path": "research/07_repository_audit/SILO_REPOSITORY_AUDIT.md",
+      "phase": "07_repository_audit",
+      "kind": "md",
+      "title": "SILO repository audit",
+      "original_sha256": "3ee755a2f69ec5abbd4506471b3e946e1ef9acf1873e7d24a0e42402ebf4819c",
+      "sha256": "87efcfea9128e4b55af2acdd37e53536433ff5c0ab9ef4ebcfe5c13061c2c8cd",
+      "modified_for_relocation": true
+    },
+    {
+      "original_path": "source_audit.json",
+      "path": "research/07_repository_audit/source_audit.json",
+      "phase": "07_repository_audit",
+      "kind": "json",
+      "title": "source_audit.json",
+      "original_sha256": "5d0c14eb5b0d41884d41f46a632b955a927bdc200abaf605b025b699b698d408",
+      "sha256": "5d0c14eb5b0d41884d41f46a632b955a927bdc200abaf605b025b699b698d408",
+      "modified_for_relocation": false
+    }
+  ],
+  "preexisting_missing_links": [
+    {
+      "file": "research/05_practical_additions/README.md",
+      "target": "READING_AND_CHECKS.md"
+    },
+    {
+      "file": "research/05_practical_additions/RECOMMENDED_ADDITIONS.md",
+      "target": "13_CHANGE_DIRECTION.md"
+    }
+  ],
+  "preservation_note": "Stored JSON evidence, source registers and historical manifests are preserved. Their original paths, hashes and timestamps describe their original snapshots. Current paths and hashes appear in this manifest."
+}
