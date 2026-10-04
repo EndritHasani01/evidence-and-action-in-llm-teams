@@ -1,6 +1,6 @@
 # M2-T05 — Exact mixed-group replay and prose-delay delivery
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M2-T04](../M2/M2-T04-events-retention-and-receipts.md). M1 must have passed before M2 work begins.
 
@@ -36,6 +36,14 @@ Mixed and Q branches consume exact parent first-round records and reconstruct th
 Include invalid parents, failed parents, mixed source-plus-prose sends, text-only sends, no prose, duplicate attempts, tombstones and deliberately mismatched requests/settings/seeds/views. Assert branch-local mixed assembly, round-two source/own-reply equality, no hidden held-text sentinel, chronological release, no duplicate history and unchanged parent/sibling states.
 
 **Evidence:** Not yet recorded. Add exact-parent comparisons, queue traces and executed results before marking done.
+
+**Start checkpoint (4 October 2026):** Clean prerequisite `fac764f` passes
+`python -m recovery validate`: 140 CPU checks on Windows / CPython 3.11.9.
+The current specification, plan, synthesis, replay investigation and M2-T04
+handoff have been inspected. Implementation will reuse the existing pre-delivery
+barrier, validated schedule IDs, source/text component queue and pure delivery
+functions. In-memory saved settings/seeds/replies will govern exact reuse;
+durability remains M3. No scientific or configuration change is required.
 
 **Prerequisite handoff (4 October 2026):** [M2-T04 completion](M2-T04-events-retention-and-receipts.md#completion-and-handoff)
 passes 140 source/installed CPU checks and all 18 native-tokenizer checks.
