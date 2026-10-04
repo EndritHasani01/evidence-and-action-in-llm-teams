@@ -136,6 +136,17 @@ class BranchState:
             raise ValueError("delivery IDs and pending/released states must be distinct")
 
     @property
+    def boundary_applied(self) -> bool:
+        """Persistent notices identify the cut, including sham, without a new ID.
+
+        M3 can inspect this in the serialized checkpoint before resuming. A raw
+        prefix fork has no notices; every event assigns one to all four peers.
+        This is an in-memory marker, not a claim of crash-safe persistence.
+        """
+
+        return self.phase == "recovery" and all(p.notice is not None for p in self.peers)
+
+    @property
     def next_slot(self) -> Slot | None:
         if self.last_slot is None or self.last_slot.phase != self.phase:
             return Slot(self.phase, 1)

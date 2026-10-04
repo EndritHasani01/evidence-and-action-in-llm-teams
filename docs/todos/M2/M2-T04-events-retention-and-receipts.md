@@ -45,6 +45,18 @@ world/branch identities and existing source/receipt layouts. Exact mixed/Q
 reply reuse, complete capacity and durable apply-once execution remain later
 tasks; this task supplies identifiable, serializable boundary results.
 
+**Implementation checkpoint:** [events.py](../../../recovery/events.py) starts
+each scheduled continuation from its original drained prefix and applies the
+literal event/retention rule. Seventeen focused CPU checks in
+[event_checks.py](../../../tests/event_checks.py) pass, including every
+scheduled non-Q boundary in both saved mathematical-size populations and
+development sets. All 61 existing view/protocol/round checks also pass.
+Persistent notices identify boundary application without another stored flag
+or ID. The numeric ordinary receipt layout also appears in L/F/masks, preserving
+delivery/reset contrasts; an ordinary pending receipt has no before-value or
+replacement payload. Disclosed before-values still require delivered v2.
+Native paired artifacts, final source/installed checks and handoff remain open.
+
 **Prerequisite handoff (4 October 2026):** [M2-T03 completion](M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff)
 passes 121 source/installed CPU checks and 14 native-tokenizer checks. Its
 immutable, fully drained original prefix retains all current sources, own/

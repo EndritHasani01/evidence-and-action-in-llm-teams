@@ -2,10 +2,10 @@
 
 Worlds enter only the initial-view projection. Rendering and source lookup take
 PeerView, which has no evaluator, branch, event, reset mask or delayed queue.
-Round delivery lives in rounds.py; event/retention transformations remain M2-T04.
+Round delivery lives in rounds.py; event/retention transformations in events.py.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from types import MappingProxyType
 
 from .tasks import (PEERS, PublicSource, Size, SourceRecord, Task, World,
@@ -285,8 +285,9 @@ class PeerView:
                     or type(receipt.new_version) is not int
                     or (receipt.previous_version, receipt.new_version)
                         != (self.notice.previous_version, self.notice.new_version)
-                    or type(current[receipt.source.record_id]) is not SourceRecord):
-                raise ValueError("receipt requires the matching delivered numeric revision")
+                    or (receipt.before_value is not None
+                        and type(current[receipt.source.record_id]) is not SourceRecord)):
+                raise ValueError("receipt requires the matching numeric revision; disclosure requires delivery")
             low, high = numeric_range(self.task)
             if receipt.before_value is not None and (type(receipt.before_value) is not int
                                                      or not low <= receipt.before_value <= high):
@@ -393,3 +394,37 @@ The later protocol validates permission before staging any delivery.
     return next((source for source in view.sources
                  if type(source) is SourceRecord and source.record_id == record_id
                  and source.version == version), None)
+
+
+def revise_source(view: PeerView, notice: RevisionNotice,
+                  replacement: SourceRecord | None) -> PeerView:
+    """Invalidate one current version, then deliver content or retain a pending ID.
+
+    This source-authority primitive never edits derived work. CPU v3 checks use
+    it directly; the live event entry point permits only a single v1 -> v2 cut.
+    The caller supplies the upcoming slot; no old receipt carries into a new
+    notice. Host delivery attempts are recorded by the branch transformation.
+    """
+
+    if type(view) is not PeerView or type(notice) is not RevisionNotice:
+        raise ValueError("revision requires a permitted view and public notice")
+    if view.peer is None or view.slot.phase != "recovery" or notice.source not in view.manifest:
+        raise ValueError("revision requires a recovery peer and matching public identity")
+    key = notice.source.record_id
+    current = {s.record_id: s for s in view.sources}
+    previous = current.get(key)
+    if previous is not None and previous.version != notice.previous_version:
+        raise ValueError("revision does not follow current source authority")
+    if replacement is not None:
+        if (type(replacement) is not SourceRecord
+                or PublicSource(replacement.record_id, replacement.owner, replacement.position) != notice.source
+                or replacement.version != notice.new_version):
+            raise ValueError("replacement must match the announced identity/version")
+        current[key] = replacement
+    else:
+        current[key] = PendingSource(key, notice.source.owner, notice.source.position, notice.new_version)
+    deliveries = tuple(d for d in view.source_deliveries if d.record_id != key)
+    if replacement is not None:
+        deliveries += (SourceDelivery(key, notice.new_version, "host", None, None, view.slot),)
+    return replace(view, sources=tuple(current.values()), notice=notice, receipt=None,
+                   source_deliveries=deliveries)
