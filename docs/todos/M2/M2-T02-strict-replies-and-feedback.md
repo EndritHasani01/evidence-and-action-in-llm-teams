@@ -38,8 +38,7 @@ Test duplicate keys at every nesting level, nonfinite/huge exponent tokens, coer
 The prerequisite source command `python -S -m recovery validate --manifest
 tests/fixtures/population_target.json --schedule tests/fixtures/schedules_target.json
 --authoritative tests/fixtures/population_target.json` passed all 79 checks on
-Windows / CPython 3.11.9. M1's gate and M2-T01's artifacts are present. Strict
-reply and native-tokenizer acceptance evidence will be added before marking done.
+Windows / CPython 3.11.9. M1's gate and M2-T01's artifacts are present.
 
 **Implementation checkpoint:** [protocol.py](../../../recovery/protocol.py)
 implements the complete decoder, strict nested Pydantic schemas, public candidate
@@ -51,6 +50,29 @@ final integration follows the additional missing-dependency CLI regression.
 `pip check` passes in `.venv`. Pydantic 2 is the required schema dependency;
 `validate --core-only` explicitly preserves the earlier standard-library subset.
 No accepted inference environment or scientific configuration is changed.
+
+**Native-tokenizer checkpoint:** [tokenizer_protocol.py](../../../tests/tokenizer_protocol.py)
+passes six checks against the 20 saved synthetic cases in
+[protocol_replies.json](../../../tests/fixtures/protocol_replies.json). Qwen3.5-9B
+revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a` uses Transformers 5.12.0,
+Tokenizers 0.22.2, Jinja2 3.1.6 and Hugging Face Hub 1.19.0 in the local CPU
+environment. All four metadata files (`config.json`, `tokenizer.json`,
+`tokenizer_config.json`, `chat_template.jinja`) match the pinned upstream bytes
+in a fresh comparison. No weights are loaded. Eight distinct references with
+nine actual delivery attempts pass; nine distinct references fail. Aggregate
+128/129 prose tokens produce valid/invalid replies at 180/181 generated tokens.
+A complete closing brace at token 384 is accepted with length termination;
+385 tokens and a truncated fragment at 384 are invalid. All fixed feedback fits
+32 actual tokens. The five M2-T01 native checks still pass with unchanged saved
+requests/token IDs. [Fixture documentation](../../../tests/fixtures/README.md#strict-replies-and-actual-tokenizer-limits)
+records reproduction and the remaining capacity/inference boundaries.
+
+Executed native commands:
+
+```powershell
+python -m tests.tokenizer_protocol --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+python -m tests.tokenizer_peer_views --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+```
 
 **Prerequisite handoff (4 October 2026):** [M2-T01 completion evidence](M2-T01-peer-views-and-rendering.md#completion-and-handoff)
 passes with 79 standard-library CPU checks and five native-tokenizer checks.

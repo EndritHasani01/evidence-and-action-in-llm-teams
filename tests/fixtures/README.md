@@ -44,7 +44,7 @@ Reproduce a **new** file (existing manifests cannot be overwritten):
 
 ```powershell
 python -S -m recovery prepare --seed 20261004 --output population.json
-python -S -m recovery validate --manifest population.json --authoritative tests/fixtures/population_target.json
+python -S -m recovery validate --core-only --manifest population.json --authoritative tests/fixtures/population_target.json
 ```
 
 For the uniform mathematical fallback, pass a TOML file containing exactly
@@ -71,7 +71,7 @@ Reproduce a **new** file and validate the saved opportunities/dependencies:
 
 ```powershell
 python -S -m recovery prepare --manifest tests/fixtures/population_target.json --output schedules.json
-python -S -m recovery validate --manifest tests/fixtures/population_target.json --schedule schedules.json --authoritative tests/fixtures/population_target.json
+python -S -m recovery validate --core-only --manifest tests/fixtures/population_target.json --schedule schedules.json --authoritative tests/fixtures/population_target.json
 ```
 
 For the mathematical fallback, use `population_fallback.json` and a configuration
@@ -100,8 +100,8 @@ invoked [native harness](../tokenizer_peer_views.py) recomputes every saved toke
 compares against direct native templating at both sizes/all tasks/peers/controls,
 checks exact decoding/archive preservation and verifies every fixed public
 feedback message fits 32 tokens. It also reproduces the Qwen assistant-turn
-rewrite of archived reasoning. No optional library is imported by the default
-CPU validation suite.
+rewrite of archived reasoning. No inference library is imported by the full
+CPU validation suite; its strict reply checks require Pydantic 2.
 
 Provenance: Qwen3.5-9B revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`,
 Transformers 5.12.0, Tokenizers 0.22.2, Jinja2 3.1.6 and Hugging Face Hub 1.19.0,
@@ -142,3 +142,57 @@ The harness loads only local metadata and makes no model/GPU call. To reproduce
 a **new** archive, append `--write-fixture <new_peer_requests.json>`; exclusive
 creation protects existing artifacts. The checked-in fixture uses canonical
 UTF-8/LF bytes, enforced by Git attributes.
+
+## Strict replies and actual tokenizer limits
+
+[protocol_replies.json](protocol_replies.json) saves 20 synthetic adversaries
+and outcomes from [tokenizer_protocol.py](../tokenizer_protocol.py). Each generated
+case retains literal text, every generated token ID, termination and the separate
+known-truncation flag. Results include reached JSON/schema/permission checks,
+literal prose counts, candidate validity/absence, immutable staged sources/text,
+and fixed public feedback with its actual token count. The failed-slot case has
+no invented raw reply or candidate. These are CPU fixtures, not sampled model
+outputs, pilot results, full context admission or an accepted freeze.
+
+The harness loads the same pinned Qwen3.5-9B metadata as the peer-request fixture.
+On 4 October 2026, all four local metadata files were independently compared byte
+for byte with revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`. Fixture packages:
+Pydantic 2.12.5, Transformers 5.12.0, Tokenizers 0.22.2, Jinja2 3.1.6 and Hugging
+Face Hub 1.19.0 on Windows / CPython 3.11.9. Pydantic 2.13.5 also passes the
+installed CPU protocol checks; these observed environments are not the M5 lock.
+
+| Native boundary case | Generated tokens | Result |
+|---|---:|---|
+| Eight distinct references | 142 | Valid |
+| Eight distinct references, nine attempts | 154 | Valid; every attempt retained |
+| Nine distinct references | 154 | Entire reply invalid; no candidate/messages |
+| Two texts totaling 128 prose tokens | 180 | Valid |
+| Two texts totaling 129 prose tokens | 181 | Entire reply invalid |
+| Complete JSON closing brace at output cap | 384 | Valid despite length termination |
+| Complete JSON exceeding output cap | 385 | Invalid |
+| Incomplete JSON at output cap | 384 | Invalid; truncation separate from termination |
+
+Other cases cover duplicate reply/reference keys, nonfinite exponents, boolean
+candidate values, stale references, escaped literal prose, unexpected special
+markers, malformed output below the cap, wrong but structurally valid integers,
+and failed slots. All fixed public feedback passes the actual 32-token cap.
+Blanket special-token removal is shown to change an invalid reply into valid JSON;
+the validator performs no stripping, cleanup or repair. The final inference
+boundary must separately audit any permitted terminal transport framing in M5.
+
+After the metadata-only download above, run:
+
+```powershell
+python -m unittest tests.protocol_checks -v
+python -m tests.tokenizer_protocol --tokenizer $peerTokenizerDir
+python -m tests.tokenizer_peer_views --tokenizer $peerTokenizerDir
+python -m recovery validate
+```
+
+The full CPU CLI runs both the dependency-free core and strict Pydantic checks;
+`--core-only` explicitly excludes strict replies. The native harness is separately
+invoked because tokenizer packages remain optional. It compares all saved cases
+exactly, checks candidate shapes for all tasks/both sizes/peers/controls, enforces
+aggregate literal prose counts, preserves repeated references, and measures all
+public feedback. Its `--write-fixture <new_protocol_replies.json>` exclusively
+creates a new UTF-8/LF archive; the existing fixture is protected from overwrite.
