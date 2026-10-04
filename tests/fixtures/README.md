@@ -320,3 +320,36 @@ also cover mismatches, missing versus failed parents, no-placeholder visibility,
 source/prose ordering, later acquisition divergence, inactive/empty text, nested
 isolation and four replayed plus twelve new opportunities per branch. See
 [M2-T05 evidence](../../docs/todos/M2/M2-T05-mixed-and-prose-delay-replay.md#validation-and-evidence).
+
+## Protocol attainability witness
+
+[attainability_traces.json.gz](attainability_traces.json.gz), reproduced by
+[tokenizer_attainability.py](../tokenizer_attainability.py), records all scheduled
+siblings/repeats of the first saved world per family at both declared sizes.
+The provider receives only the permitted local view. It forwards its own current
+shard to a different peer in rounds 1–3, returns legal placeholders while evidence
+is incomplete, and applies the existing mathematical functions to local records
+once complete. It ignores derived history and historical receipt operands.
+
+Ten cases retain 1,080 four-peer rounds plus 20 full-information controls,
+4,340 calls and 384 exact parent joins, with local inputs, source-delivery labels,
+physical output IDs, availability/placeholder labels, Q queues and received prose.
+Every final prefix/continuation is jointly correct, including L replacement
+forwarding, F reacquisition, preserving/sham siblings, receipts and mixed/Q replay.
+Four native checks reproduce the archive, verify actual output contracts,
+recompute answers from archived local inputs and audit unique parents/Q release.
+The actual witness uses 699–4,915 input tokens plus 384 reserved output and
+20–195 output tokens. Candidate/control/own-shard width fixtures use at most
+210 tokens at target and 162 at fallback. These establish protocol attainability;
+they establish neither complete capacity nor model capability.
+
+```powershell
+python -m unittest tests.attainability_checks -q
+python -m tests.tokenizer_attainability --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+```
+
+`--write-fixture <new.json.gz>` exclusively creates a new compressed archive.
+The gzip payload is canonical UTF-8/LF JSON with `mtime=0`; normal validation
+reads it without changing it. Compression reduces only the offline fixture
+(31 MB uncompressed, 714 KB compressed), never model-visible history. See
+[M2-T06 evidence](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#validation-and-evidence).

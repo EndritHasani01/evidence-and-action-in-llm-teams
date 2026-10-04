@@ -46,7 +46,22 @@ five families, both sizes, every scheduled sibling/repeat of the first saved
 world per family, full-information controls, L replacement timing, F reacquisition,
 and reversed invocation order. The full CPU entry point includes these checks.
 Native witness traces, actual output token tables and complete capacity admission
-are still open. No scripted evidence is a model-capability result.
+were still open at this checkpoint. No scripted evidence is a model-capability result.
+
+**Native witness checkpoint:** Four checks in
+[tokenizer_attainability.py](../../../tests/tokenizer_attainability.py) pass using
+the pinned Qwen3.5-9B tokenizer. The losslessly compressed
+[local-view archive](../../../tests/fixtures/attainability_traces.json.gz) retains
+10 family/size cases, 1,080 four-peer rounds plus 20 controls, 4,340 calls and
+384 exact parent joins. Sources, delivery labels, physical output IDs, solver
+availability, Q queues/release and actual reply serialization reproduce. Every
+prefix and continuation attains joint correctness by round four; controls are
+correct. Inputs use 699–4,915 tokens plus the full 384 output reserve; actual
+witness replies use 20–195 tokens. Correct-width candidate/control/one-shard
+fixtures use at most 210 tokens at target and 162 at fallback. Compression is
+only for the offline evidence file; peer rendering and retention are unchanged.
+Complete capacity admission remains open and adversarial investigation has
+identified a real overflow; this checkpoint does not close M2.
 
 **Prerequisite handoff (4 October 2026):** [M2-T05 completion](M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff)
 passes 158 source/installed CPU checks and all 22 native-tokenizer checks.
