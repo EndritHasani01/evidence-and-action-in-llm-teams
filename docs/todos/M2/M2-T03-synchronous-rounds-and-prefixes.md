@@ -1,6 +1,6 @@
 # M2-T03 — Synchronous rounds and immutable shared prefixes
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M2-T02](../M2/M2-T02-strict-replies-and-feedback.md). M1 must have passed before M2 work begins.
 
@@ -36,6 +36,13 @@ A deterministic in-memory round runner executes scripted replies through the rea
 Exercise source-plus-text, text-only, empty and wholly invalid replies; repeat source references; tombstone versus pending coverage; and all four scheduled opportunities after early success/failure. Mutate nested state in one deserialized sibling and assert original/other siblings unchanged. Verify full round-four drain and owner-v1 rendered exposure from actual requests.
 
 **Evidence:** Not yet recorded. Add scripted traces, order-reversal assertions and command/environment results before marking done.
+
+**Start checkpoint (4 October 2026):** The clean `405a171` checkout passes
+`python -m recovery validate`: 103 CPU checks on Windows / CPython 3.11.9,
+Pydantic 2.12.5. M1's recorded gate and M2-T02's staging handoff are confirmed
+against the current interfaces. Work is limited to the deterministic in-memory
+barrier, delivery records and drained prefix; durable execution, event policies,
+mixed/Q replay and complete capacity remain their subsequent tasks.
 
 **Prerequisite handoff (4 October 2026):** [M2-T02 completion](M2-T02-strict-replies-and-feedback.md#completion-and-handoff)
 passes 103 source/installed CPU checks, six native protocol checks and the five
