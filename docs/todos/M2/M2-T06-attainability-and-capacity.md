@@ -1,6 +1,6 @@
 # M2-T06 — Protocol attainability and complete tokenizer capacity
 
-**Status:** ready
+**Status:** in progress
 
 **Dependencies:** [M2-T05](../M2/M2-T05-mixed-and-prose-delay-replay.md). M1 must have passed before M2 work begins.
 
@@ -34,7 +34,19 @@ A locally informed scripted strategy proves the real protocol is usable within f
 
 Retain the local-view witness trace, per-shape token table, tokenizer/template identity, worst-case accounting and adversarial input/output fixtures. Recheck visibility, synchrony, retention and replay against the finalized renderer where it changed. Show requested versus admitted sizes and the command/environment for every capacity result.
 
-**Evidence:** Not yet recorded. No tokenizer-only or scripted evidence is a model-capability result.
+**CPU witness checkpoint (4 October 2026):** [witness.py](../../../recovery/witness.py)
+accepts only a permitted local view, forwards each current private shard to a
+different peer in rounds 1–3, and uses the existing mathematical functions only
+after all current records are locally held. Pending replacements prevent solving;
+known BFS tombstones are excluded from the local active graph. Legal placeholders
+fill earlier slots. Active prose exercises Q without contributing solver input.
+All five [attainability checks](../../../tests/attainability_checks.py) pass with
+the injected CPU counter (`python -m unittest tests.attainability_checks -q`):
+five families, both sizes, every scheduled sibling/repeat of the first saved
+world per family, full-information controls, L replacement timing, F reacquisition,
+and reversed invocation order. The full CPU entry point includes these checks.
+Native witness traces, actual output token tables and complete capacity admission
+are still open. No scripted evidence is a model-capability result.
 
 **Prerequisite handoff (4 October 2026):** [M2-T05 completion](M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff)
 passes 158 source/installed CPU checks and all 22 native-tokenizer checks.
