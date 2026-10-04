@@ -1,6 +1,6 @@
 # M2-T02 — Strict reply validation and public feedback
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M2-T01](../M2/M2-T01-peer-views-and-rendering.md). M1 must have passed before M2 work begins.
 
@@ -34,7 +34,12 @@ A complete reply receives one deterministic protocol-valid/invalid result, with 
 
 Test duplicate keys at every nesting level, nonfinite/huge exponent tokens, coercions, wrong lengths, BFS key "01", extra fields, self/unknown/duplicate recipients, stale/unheld refs, repeated lawful refs, per-recipient distinct-reference limits and aggregate prose limits. Include a valid candidate with one invalid send, wrong but valid integers, complete cap-ending JSON, malformed outputs below/at cap, failed slots, and feedback sentinel leaks. Preserve repeated delivery attempts for later accounting.
 
-**Evidence:** Not yet recorded. Add adversarial fixture results, tokenizer identity and executed commands before marking done.
+**Evidence:** Implementation started 4 October 2026 from clean commit `fd44e57`.
+The prerequisite source command `python -S -m recovery validate --manifest
+tests/fixtures/population_target.json --schedule tests/fixtures/schedules_target.json
+--authoritative tests/fixtures/population_target.json` passed all 79 checks on
+Windows / CPython 3.11.9. M1's gate and M2-T01's artifacts are present. Strict
+reply and native-tokenizer acceptance evidence will be added before marking done.
 
 **Prerequisite handoff (4 October 2026):** [M2-T01 completion evidence](M2-T01-peer-views-and-rendering.md#completion-and-handoff)
 passes with 79 standard-library CPU checks and five native-tokenizer checks.
