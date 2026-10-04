@@ -1,6 +1,6 @@
 # M1-T03 — Complete schedules and replay dependencies
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M1-T02](../M1/M1-T02-edits-and-populations.md).
 
@@ -67,4 +67,93 @@ protection, exact saved-authority comparison and fresh processes with two hash
 seeds and optional imports forbidden. An initial full run caught a misplaced
 test-only assertion; it was corrected and both affected checks and the full suite
 were rerun successfully. Final M1 gate tables and documentation audit follow.
+
+**Completion evidence (4 October 2026):** Windows x64 (build 26200), CPython
+3.11.9. All **59/59 CPU checks pass**, including every M1-T01/T02 check. The
+source run used site packages disabled; the installed run validated a saved
+fallback schedule outside the checkout. No inference dependency was imported
+by preparation/validation, no model/GPU call was made, and no scientific or
+accepted configuration was changed.
+
+Executed commands (the retained schedule preparation used a new output file):
+
+```powershell
+python -S -m unittest tests.test_schedules -v
+python -S -m unittest tests.test_schedule_manifests tests.test_cpu_entrypoint -v
+python -S -m recovery prepare --manifest tests/fixtures/population_target.json --output tests/fixtures/schedules_target.json
+python -S -m recovery validate --manifest tests/fixtures/population_target.json --schedule tests/fixtures/schedules_target.json --authoritative tests/fixtures/population_target.json
+.\.venv\Scripts\python.exe -m pip check
+git diff --check
+```
+
+A temporary-directory harness invoked the installed `prepare --manifest
+<population_size.json> --authoritative <population_size.json> --config
+<size.toml> --output <schedules_size.json>` for **both** mathematical sizes.
+Both outputs matched `schedule_bytes(prepare_schedules(saved_population))`
+byte for byte. Installed `validate` with the saved fallback population,
+configuration and schedule passed all 59 checks from that directory.
+`pip check` reported no broken requirements. These are CPU environment checks,
+not an accepted inference lock or capability result.
+
+### Independently calculated main components
+
+Each cell is **distinct generations / logical opportunities**. The table in
+[test_schedules.py](../../../tests/test_schedules.py) is literal specification
+arithmetic; a separate expected-cell enumeration checks actual subset/event/
+policy/replicate membership without using production matrix helpers.
+
+| Component | 60 worlds | 40 worlds |
+|---|---:|---:|
+| One four-round shared prefix per world | 960 / 960 | 640 / 640 |
+| Revised L/B/C/K/F | 4,800 / 4,800 | 3,200 / 3,200 |
+| Sham B/C/K | 2,880 / 2,880 | 1,920 / 1,920 |
+| Complementary masks, both events | 2,880 / 3,840 | 1,920 / 2,560 |
+| Before/after complete-world controls | 120 / 120 | 80 / 80 |
+| Preserving B/C/K, fixed sixteen worlds | 768 / 768 | 768 / 768 |
+| Revised BΔ/CΔ/KΔ, Prefix/Sort | 1,152 / 1,152 | 768 / 768 |
+| Q_B/Q_C, both events, Sort/BFS | 1,152 / 1,536 | 768 / 1,024 |
+| Extra B/C/K/mask replicate, both events, fixed ten worlds | 1,440 / 1,600 | 1,440 / 1,600 |
+| **Total** | **16,152 / 17,656** | **11,504 / 12,560** |
+
+### Independently calculated development components
+
+| Component | Distinct / logical |
+|---|---:|
+| Five prefixes, revised L/B/C/K/F, sham B/C/K, ten controls | 730 / 730 |
+| Masks, both events, Prefix/BFS only | 96 / 128 |
+| Revised receipts, Prefix/Sort | 96 / 96 |
+| Q, both events, Sort/BFS | 96 / 128 |
+| Preserving B/C/K, Top-K/BFS | 96 / 96 |
+| **Pilot total** | **1,114 / 1,178** |
+| **Separate smoke maximum / combined distinct maximum** | **24 / 1,138** |
+
+The first 90 logical slots are all distinct: **80 prefix + ten controls**.
+`Schedules.capability` selects precisely that block. Smoke slots are not
+silently borrowed from the pilot; their actual prompt selection/time gate is M5.
+
+### Acceptance and M1 gate
+
+| Acceptance area | Executed checks / artifacts | Result |
+|---|---|---|
+| Complete matrix and fixed populations | `ScheduleTests.test_independent_main_component_tables_and_exact_generation_join`, `test_exact_memberships_no_unprescribed_crossings_and_fixed_opportunities` | Both main counts and mathematical sizes pass; exactly the declared receipt/Q/preserving/repeat memberships, no additional crossings, one prefix per world, four rounds × four peers for every team branch. |
+| Exact development matrix and first capability block | `test_independent_pilot_components_capability_block_and_separate_smoke` | 730+96+96+96+96 distinct; masks only Prefix/BFS; no extra development replicate; 80+10 capability calls first; smoke separate. |
+| Prefix/response identity and repeats | Replay and repeat tests in [test_schedules.py](../../../tests/test_schedules.py) | Every continuation points to its original prefix. Masks select C for the cleared peer and B for the retained peer; Q selects its B/C parent, in the same world/event/replicate/peer. Only required first rounds share a generation. Equal seeds create no additional reuse. Repeat IDs/seeds are new; inputs/prefix/partition remain original. |
+| Dependency order and fixed opportunities | Dependency/cycle and poor-prefix tests | Both full schedules and development sort on CPU, including after branch reordering. Previous-round four-peer dependencies, prefix round-four dependencies and raw-reply parents precede their uses. Missing parents/cycles/duplicates fail. Correct, wrong, invalid and timeout prefix annotations do not select or alter opportunities. |
+| Complete-world controls | `test_controls_full_world_candidate_lengths_and_empty_send` | Two one-call original/revised controls per world, independent IDs/seeds, no prefix/replay parent; `peer=None` supplies full Prefix/Sort length 32/24. `Branch.empty_send` declares `send=[]` for M2's common outer schema. |
+| Saved schedules and mutations | [test_schedule_manifests.py](../../../tests/test_schedule_manifests.py), [target CPU fixture](../../../tests/fixtures/schedules_target.json) | Both sizes save/reload without rebuilding/resampling; exact bytes and 60/40/development orders match. Thirty mutations, malformed/duplicate/nonfinite fields, missing slots/parents, wrong world/event/replicate/peer/retention parent, extra reuse, changed seeds and early recovery fail. Existing files are protected; saved-authority comparison also rejects valid reordering. |
+| CPU handoff and isolation | [test_cpu_entrypoint.py](../../../tests/test_cpu_entrypoint.py), fresh-process schedule checks, installed temporary-directory harness | Prepare/validate works at both sizes and outside checkout; errors exit before checks or output creation. Two process hash seeds produce identical bytes without global RNG mutation or optional dependency imports. Fixture LF bytes are protected in Git. |
+| M1-T01 and M1-T02 prerequisites | [M1-T01 acceptance](M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 acceptance](M1-T02-edits-and-populations.md#validation-and-evidence), complete 59-check reruns | All prior mathematics, exact candidate/coordinate contracts, edits, conditioning, bounded rejection, nested/focal populations, source/owner partitions and saved-stream/authority checks still pass. Original population fixtures and specification are unchanged. |
+
+**M1 gate: passed on CPU.** M1-T01–T03 are done and the
+[plan progress](../../IMPLEMENTATION_PLAN.md#progress) links their evidence.
+[M2-T01](../M2/M2-T01-peer-views-and-rendering.md) is ready. Request/state/settings
+equality before replay, synchronous effects, rendered exposure, actual protocol/
+tokenizer capacity, durable execution and inference/resource admission remain
+M2–M5. Passing M1 establishes neither feasibility nor recovery results.
+
+The final documentation audit passed **402 local links/anchors in 39 documents**
+and all **29 task/index status comparisons** (three done, one ready, 25 blocked).
+`git diff --check` passes. Git comparison confirms the specification, size
+configuration and both prerequisite population fixtures are unchanged from the
+M1-T02 handoff; committed schedule bytes equal the tested canonical fixture.
 

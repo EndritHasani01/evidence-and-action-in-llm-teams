@@ -8,9 +8,11 @@ The design uses five SILO-derived task families to study retained evidence and c
 
 The five task generators, exact solvers, candidate contracts, coordinate maps,
 eligible edits and saved populations/streams are implemented and verified on CPU
-for both declared sizes. Schedule enumeration, the peer correction protocol,
+for both declared sizes. Complete main/development schedules and replay dependencies
+also pass independent CPU checks. M1's gate is passed; the peer correction protocol,
 workflow, Qwen3.5/T4 pilot and main experiments remain future work.
-See [M1-T02 evidence](docs/todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence),
+See [M1-T03 gate evidence](docs/todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate),
+[M1-T02 evidence](docs/todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence),
 [M1-T01 evidence](docs/todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence)
 and the [implementation plan](docs/IMPLEMENTATION_PLAN.md#10-living-handoff).
 
@@ -114,7 +116,7 @@ Q (Sort/BFS), preserving (first eight Top-K/BFS), and repeat (first two per fami
 subsets derive from this same authority. The extra replicate keeps the original
 prefix/partition and gets new continuation seeds. Event and policy do not enter
 the continuation seed key, so siblings share seeds; required exact response
-replay will be implemented in later milestones.
+parents are explicit in the schedule. Runtime equality and replay effects remain M2/M3.
 
 ```python
 from pathlib import Path
@@ -133,5 +135,54 @@ Full population manifests are host-owned and include hidden sources/future edits
 peer metadata uses only `source_manifest(world.world)`. Evaluator truth/footprints
 remain separate. The retained [CPU fixtures](tests/fixtures/README.md#prepared-host-populations)
 are prepared inputs, not an accepted M5 freeze, pilot or empirical results.
-[M1-T03](docs/todos/M1/M1-T03-complete-schedules.md) next enumerates logical calls
-and replay dependencies before the M1 gate can close.
+
+## Complete CPU schedules
+
+Enumerate and save every opportunity from an existing population without resampling:
+
+```powershell
+python -S -m recovery prepare --manifest population.json --output schedules.json
+python -S -m recovery validate --manifest population.json --schedule schedules.json --authoritative tests/fixtures/population_target.json
+```
+
+The saved schedule contains main 60 and the exact development matrix; the nested
+40 derives from its existing calls. Main distinct/logical counts are
+16,152/17,656 and 11,504/12,560. Development has 1,114 distinct/1,178 logical slots,
+with 80 prefix and ten complete-world control calls first. Smoke is separate,
+with at most 24 additional calls (1,138 distinct combined). The counts hold for
+both mathematical sizes; pass the fallback configuration and population to both
+commands when using `size = "fallback"`.
+
+```python
+from pathlib import Path
+from recovery.manifests import load_population, load_schedules
+from recovery.schedule import dependency_order
+
+population = load_population(Path("population.json"))
+schedules = load_schedules(Path("schedules.json"), population)
+main = schedules.main_for(population, 40)  # Same prefix, call IDs and seeds as main 60.
+ordered_calls = dependency_order(main)   # CPU order of (branch, call) pairs.
+capability = schedules.capability         # First 90 development calls; no recovery.
+```
+
+Each branch supplies world/task/event/policy/replicate/phase grouping. Each call
+has round/peer/seed identity and a `generation_id`: its own call ID for a distinct
+generation, or its exact B/C first-round `replay_parent`. Equal seeds alone never
+authorize reuse. Continuations explicitly name their original `prefix_parent`;
+extra repeats have new continuation IDs/seeds and retain that prefix/partition.
+Controls use `peer=None`, the full-world candidate contract and `send=[]`.
+`Branch.output_contract` and `Branch.empty_send` expose those requirements to M2.
+
+Validation checks the full matrix, seeds, parents and dependency orders without
+model calls. Replay order includes previous-round/prefix dependencies; actual
+request/state/settings equality, synchronous delivery and durable raw-reply reuse
+remain later gates. Saved files cannot be overwritten. The population is the raw
+input authority; schedules are derived records, with no copied sources/gold or
+accepted inference configuration. Optional saved-schedule comparison is available
+through `load_schedules(..., authoritative=saved_schedule)`. Schedule labels are
+host-only and must never enter peer views.
+
+The [retained CPU schedule and reproduction notes](tests/fixtures/README.md#prepared-host-schedules)
+provide M2's input handoff. The complete 59-check suite passes with site packages
+disabled and through the installed CPU package outside the checkout; this verifies
+M1, while protocol/model/resource feasibility and empirical recovery remain untested.

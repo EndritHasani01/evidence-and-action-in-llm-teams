@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1 in progress (M1-T01–T02 verified on CPU; schedules remain). The recovery package now supplies task truth and prepared populations. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
+**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
 
 ## 1. Execution roadmap
 
@@ -314,8 +314,8 @@ Update these sections only when a capability is verified, a consequential decisi
 
 | Milestone | Status | Evidence / next action |
 |---|---|---|
-| M1 | In progress (2/3 tasks done; gate open) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence) and [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence): task truth plus eligible edits, 60/40 nested populations, development worlds, partitions, saved streams and authority comparison verified in 42 CPU checks on Python 3.11.9. Both-size host fixtures are retained; installed preparation/validation works outside the checkout. Next: M1-T03 complete schedules/replay dependencies. |
-| M2 | Not started | Requires M1 |
+| M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
+| M2 | Not started (M2-T01 ready) | M1 prerequisite passed; next [permitted views and rendering](todos/M2/M2-T01-peer-views-and-rendering.md) |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
@@ -329,7 +329,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | M1 task core uses frozen standard-library records and caller-owned generation/ownership RNGs | No numerical, graph or inference dependency is needed for these exact computations. Public candidate contracts/source manifests are separate from offline truth; BFS IDs bind only after edge shuffling and tombstones retain endpoints. |
 | M1-T02 legal edit sets precede sampling; events take only original v1 worlds | Main selection uses record then replacement, preserving uses a single pair draw without owner matching. Top-K preserving originals are strictly below the cutoff; cutoff-equal replacements preserve the ten-value multiset. Deterministic checks cover both sizes, independent BFS deletion truth and the exact 1,000-attempt ceiling. |
 | Prepared populations use one canonical JSON record and fixed integer seed slots | Saved actual worlds/edits are authoritative; gold and footprints remain evaluator-side. Stable world slots/configuration give disjoint local stream seeds, with event/policy absent from continuation seeds. Nested 40-world/focal populations derive from the saved 60; loading never regenerates. Exact baseline comparison detects changed valid inputs; no checksum/identity registry is added. Both-size fixtures and CPU CLI are verified; the M5 accepted freeze remains future work. |
-| M1-T03 schedules use existing world/branch/call keys and explicit prefix/raw-reply parents | Nine focused CPU checks independently reconcile both complete main totals and the exact development matrix. Equal seeds create distinct generations unless a prescribed first-round B/C parent exists. The nested 40 is a view of the 60-world schedule; smoke is separate and the first 90 pilot slots are prefix/controls. CPU dependency ordering covers prior-round/prefix barriers and reply reuse; runtime equality/delivery remain M2/M3. Saved schedules and CLI evidence remain before M1 closes. |
+| M1-T03 schedules use existing world/branch/call keys and explicit prefix/raw-reply parents | Independent component/cell checks reconcile both complete main totals and the exact development matrix. Equal seeds create distinct generations unless a prescribed first-round B/C parent exists. The nested 40 is a view of the 60-world schedule; smoke is separate and the first 90 pilot slots are prefix/controls. Saved schedules are derived artifacts checked against the population, without copied raw worlds or another identity system. Save/reload, mutations, dependency orders and CPU prepare/validate pass in the 59-check suite; runtime equality/delivery remain M2/M3. |
 | LangGraph barriers plus local SQLite and explicit raw-call ledger | Meets §9's starting choice; replace with the permitted small loop only for a demonstrated unresolved semantic incompatibility in M3 |
 | Explicit narrow peer views and pure state/delivery transformations | Makes scientific visibility, replacement and replay inspectable and CPU-testable |
 | One serial process/replica/database per GPU; access to saved inputs | Keeps inference/RNG isolated while permitting sibling/device rotation |
@@ -347,6 +347,13 @@ would alter their bytes, so a narrow LF attribute protects these fixture files.
 No scientific deviation was needed. Older schedules/configurations remain superseded; these CPU checks
 are not protocol, hardware, pilot or empirical recovery evidence. Record future
 deviations with affected specification sections, artifacts and checks to repeat.
+
+M1-T03 closes the CPU mathematical/schedule gate with independently reconciled
+60/40 main and development populations, explicit response joins and fixed prefix
+sharing. The retained schedule stores main 60 and development; nested 40 derives
+from the same slots. Both mathematical sizes round-trip and prepare through the
+installed CLI outside the checkout. No science change or runtime dependency was
+needed; actual reply equality, delivery and peer-visible execution remain M2/M3.
 
 ### Unresolved issues
 

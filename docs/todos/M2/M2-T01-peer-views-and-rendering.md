@@ -1,6 +1,6 @@
 # M2-T01 — Permitted peer views and lossless rendering
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M1-T03](../M1/M1-T03-complete-schedules.md). M1 must have passed before M2 work begins.
 
@@ -35,4 +35,9 @@ One renderer accepts only a peer's permitted view and preserves the specified di
 Use paired worlds with hidden sentinel values and change hidden gold, future edits, condition fields, BFS endpoints and queue text independently. The unaffected peer render must remain identical. Test no duplicated raw tables/payloads, exact preservation of escaped/special-looking archived strings, explicit invalid-candidate absence, and value-independent ordering. Include notice, receipt, feedback and source-delivery metadata layouts in the audit.
 
 **Evidence:** Not yet recorded. Add renderer fixtures, exact-request comparisons and command/environment results before marking done.
+
+**Prerequisite handoff (4 October 2026):** [M1-T03 gate evidence](../M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate)
+passes with all 59 CPU checks, including M1-T01/T02, complete schedules/replay
+dependencies and the retained prepared schedule. M1's gate is passed; this task
+is ready. Renderer/protocol implementation and acceptance remain unstarted.
 
