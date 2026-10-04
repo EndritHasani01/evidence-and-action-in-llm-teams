@@ -1,6 +1,6 @@
 # M1-T03 — Complete schedules and replay dependencies
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M1-T02](../M1/M1-T02-edits-and-populations.md).
 
@@ -34,5 +34,12 @@ CPU preparation enumerates every main and development logical opportunity, disti
 
 Use an independently calculated component table, not a second invocation of the schedule builder. Assert subset membership/counts, output contracts for controls, parent existence/event/replicate scope, acyclicity, slot uniqueness, all four opportunities per peer/phase, and unchanged schedules after a simulated poor prefix. Check saved/reloaded schedules and manifest mutation rejection. Retain a prepared CPU fixture usable by M2; M1 passing does not establish protocol or resource feasibility.
 
-**Evidence:** Not yet recorded. Add schedule tables, command/environment records and M1 gate evidence before marking done.
+**Evidence (start, 4 October 2026):** The specification, plan M1, allocation
+investigation and M1-T01/T02 acceptance artifacts have been inspected. The
+existing `python -S -m recovery validate` suite passes all 42 checks on Windows /
+CPython 3.11.9. Implement explicit logical calls, prefix/reply parents and CPU
+dependency orders first; then saved schedule validation and the prepare handoff.
+Independent tests will enumerate the matrix and pilot components without calling
+the production builder a second time. No inference or accepted M5 freeze is part
+of this task.
 
