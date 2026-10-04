@@ -43,3 +43,13 @@ Independent tests will enumerate the matrix and pilot components without calling
 the production builder a second time. No inference or accepted M5 freeze is part
 of this task.
 
+**Schedule checkpoint:** `python -S -m unittest tests.test_schedules -v` passes
+nine focused checks on CPython 3.11.9. [schedule.py](../../../recovery/schedule.py)
+enumerates all main/development branches, original-prefix parents, distinct call
+IDs and exact B/C replay parents. [Independent tables and cell enumeration](../../../tests/test_schedules.py)
+reconcile 16,152/17,656 and 11,504/12,560 distinct/logical main slots at both
+mathematical sizes; development is 1,114 distinct/1,178 logical, with exactly
+80 prefix and ten control calls first. Reordered dependencies, missing parents,
+cycles, complete-world control shapes, repeats and poor-prefix nonselection pass.
+Saved-file mutation rejection, retained fixture and CLI handoff remain.
+
