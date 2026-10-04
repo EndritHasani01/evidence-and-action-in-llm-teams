@@ -10,11 +10,10 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from recovery.edits import Edit
 from recovery.manifests import assert_matches, load_population, manifest_bytes, save_population
-from recovery.populations import (FAMILIES, MAX_ATTEMPTS, PARTITIONS, PopulationExhausted,
+from recovery.populations import (MAX_ATTEMPTS, PARTITIONS, PopulationExhausted,
                                   draw_partition, owner_order, owner_seed, prepare_population,
-                                  prepare_world, streams_for, validate_population)
+                                  prepare_world, validate_population)
 from recovery.tasks import PEERS, Size, Task, source_manifest
 from tests.references import numeric_reference, relaxation_distances
 from tests.test_edits import BoundaryChoices
@@ -91,6 +90,11 @@ class PopulationTests(unittest.TestCase):
                     self.assertEqual(set(w.partition[0]) | set(w.partition[1]), set(PEERS))
                     with self.assertRaises(FrozenInstanceError):
                         w.edited_owner = 0
+            for task in (Task.TOP_K, Task.BFS):
+                preserving_worlds = [w for w in p.main if w.world.task is task]
+                self.assertTrue(any(next(r.owner for r in w.world.records
+                                         if r.record_id == w.preserving_edit.record_id) != w.edited_owner
+                                    for w in preserving_worlds))
             for invalid in (0, 8, 59, 61, True, 60.0):
                 with self.assertRaises(ValueError):
                     p.worlds(invalid)
@@ -205,6 +209,29 @@ class PopulationTests(unittest.TestCase):
                     self.assertEqual(manifest_bytes(regenerated), path.read_bytes())
                     with self.assertRaises(FileExistsError):
                         save_population(p, path)
+
+    def test_retained_host_fixtures_reload_and_regenerate_without_evaluator_fields(self):
+        for size, p in self.populations.items():
+            path = ROOT / "tests" / "fixtures" / f"population_{size.value}.json"
+            loaded = load_population(path, authoritative=p)
+            self.assertEqual(path.read_bytes(), manifest_bytes(loaded))
+            data = json.loads(path.read_bytes())
+            self.assertEqual(set(data), {"format_version", "master_seed", "size", "owner_seeds",
+                                         "development_owner_seeds", "main", "development"})
+            for w in loaded.main + loaded.development:
+                # Only the public source identity projection is suitable for peer metadata.
+                public = source_manifest(w.world)
+                self.assertEqual(set(asdict(public[0])), {"record_id", "owner", "position"})
+            def fields(value):
+                if isinstance(value, dict):
+                    for key, nested in value.items():
+                        yield key
+                        yield from fields(nested)
+                elif isinstance(value, (list, tuple)):
+                    for nested in value:
+                        yield from fields(nested)
+            self.assertTrue(set(fields(data)).isdisjoint({"gold", "truth", "footprints", "changed",
+                                                         "unchanged", "correctness", "candidate"}))
 
     def test_authoritative_comparison_detects_changed_but_mathematically_valid_inputs(self):
         for p in self.populations.values():

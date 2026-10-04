@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** not started. The repository contains the specification, SILO source/data, and research evidence, but no current recovery package, accepted inference environment, pilot, or main results. Historical CPU checks support selected mathematics and implementation choices; they do not satisfy the gates below.
+**Implementation status:** M1 in progress (M1-T01–T02 verified on CPU; schedules remain). The recovery package now supplies task truth and prepared populations. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
 
 ## 1. Execution roadmap
 
@@ -314,7 +314,7 @@ Update these sections only when a capability is verified, a consequential decisi
 
 | Milestone | Status | Evidence / next action |
 |---|---|---|
-| M1 | In progress (1/3 tasks done; gate open) | [M1-T01 complete evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence): five target/fallback generators, exact truth, public contracts and D/U maps verified by 23 CPU checks / 1,000 draws / ten native fixtures on Python 3.11.9, including a fresh dependency-free install. Next: M1-T02 eligible edits/populations/streams, then M1-T03 schedules. |
+| M1 | In progress (2/3 tasks done; gate open) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence) and [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence): task truth plus eligible edits, 60/40 nested populations, development worlds, partitions, saved streams and authority comparison verified in 42 CPU checks on Python 3.11.9. Both-size host fixtures are retained; installed preparation/validation works outside the checkout. Next: M1-T03 complete schedules/replay dependencies. |
 | M2 | Not started | Requires M1 |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
@@ -326,9 +326,9 @@ Update these sections only when a capability is verified, a consequential decisi
 | Decision | Reason / reconsideration evidence |
 |---|---|
 | New shallow package; vendor/archive remain references | Native execution/scoring conflict with the required protocol; do not inherit obsolete architecture |
-| M1 task core uses frozen standard-library records and caller-owned generation/ownership RNGs | No numerical, graph or inference dependency is needed for these exact computations. Public candidate contracts/source manifests are separate from offline truth; BFS IDs bind only after edge shuffling and tombstones retain endpoints. Eligibility and saved population streams remain M1-T02. |
-| M1-T02 legal edit sets precede sampling; events take only original v1 worlds | Main selection uses record then replacement, preserving uses a single pair draw. Top-K preserving originals are strictly below the cutoff; cutoff-equal replacements preserve the ten-value multiset. Five focused deterministic checks cover both sizes and independent BFS deletion truth. Population persistence remains in progress. |
-| Prepared populations use one canonical JSON record and fixed integer seed slots | Saved actual worlds/edits are authoritative; gold and footprints remain evaluator-side. World IDs/configuration determine disjoint local stream slots, with event/policy absent from continuation seeds. Nested 40-world/focal populations derive from the saved 60; loading never regenerates. Ten focused checks pass; CLI/retained evidence remain. |
+| M1 task core uses frozen standard-library records and caller-owned generation/ownership RNGs | No numerical, graph or inference dependency is needed for these exact computations. Public candidate contracts/source manifests are separate from offline truth; BFS IDs bind only after edge shuffling and tombstones retain endpoints. |
+| M1-T02 legal edit sets precede sampling; events take only original v1 worlds | Main selection uses record then replacement, preserving uses a single pair draw without owner matching. Top-K preserving originals are strictly below the cutoff; cutoff-equal replacements preserve the ten-value multiset. Deterministic checks cover both sizes, independent BFS deletion truth and the exact 1,000-attempt ceiling. |
+| Prepared populations use one canonical JSON record and fixed integer seed slots | Saved actual worlds/edits are authoritative; gold and footprints remain evaluator-side. Stable world slots/configuration give disjoint local stream seeds, with event/policy absent from continuation seeds. Nested 40-world/focal populations derive from the saved 60; loading never regenerates. Exact baseline comparison detects changed valid inputs; no checksum/identity registry is added. Both-size fixtures and CPU CLI are verified; the M5 accepted freeze remains future work. |
 | LangGraph barriers plus local SQLite and explicit raw-call ledger | Meets §9's starting choice; replace with the permitted small loop only for a demonstrated unresolved semantic incompatibility in M3 |
 | Explicit narrow peer views and pure state/delivery transformations | Makes scientific visibility, replacement and replay inspectable and CPU-testable |
 | One serial process/replica/database per GPU; access to saved inputs | Keeps inference/RNG isolated while permitting sibling/device rotation |
@@ -339,9 +339,11 @@ Update these sections only when a capability is verified, a consequential decisi
 
 M1-T01 verified that all five mathematical families and both sizes need no CPU
 runtime dependencies; the model stack remains optional and unimported. Its
-one-draw generator is deliberately unconditioned: the §2.2 population rejection,
-edit eligibility and persisted streams belong to M1-T02. No scientific deviation
-was needed. Older schedules/configurations remain superseded; these CPU checks
+one-draw generator remains deliberately unconditioned; M1-T02 now supplies §2.2
+population conditioning, exact edit selection, rejection accounting and persisted
+streams. Both canonical fixtures regenerate exactly. Git's Windows CRLF conversion
+would alter their bytes, so a narrow LF attribute protects these fixture files.
+No scientific deviation was needed. Older schedules/configurations remain superseded; these CPU checks
 are not protocol, hardware, pilot or empirical recovery evidence. Record future
 deviations with affected specification sections, artifacts and checks to repeat.
 

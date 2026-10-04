@@ -1,6 +1,6 @@
 # M1-T03 — Complete schedules and replay dependencies
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M1-T02](../M1/M1-T02-edits-and-populations.md).
 

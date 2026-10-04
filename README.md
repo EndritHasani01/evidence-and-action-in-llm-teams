@@ -6,10 +6,12 @@ The design uses five SILO-derived task families to study retained evidence and c
 
 ## Project status
 
-The five task generators, exact solvers, candidate contracts and coordinate maps
-are implemented and verified on CPU for both declared sizes. The correction
-protocol, population/schedule preparation, workflow, Qwen3.5/T4 pilot and main
-experiments remain future work. See [M1-T01 evidence](docs/todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence)
+The five task generators, exact solvers, candidate contracts, coordinate maps,
+eligible edits and saved populations/streams are implemented and verified on CPU
+for both declared sizes. Schedule enumeration, the peer correction protocol,
+workflow, Qwen3.5/T4 pilot and main experiments remain future work.
+See [M1-T02 evidence](docs/todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence),
+[M1-T01 evidence](docs/todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence)
 and the [implementation plan](docs/IMPLEMENTATION_PLAN.md#10-living-handoff).
 
 ## Start here
@@ -60,9 +62,9 @@ ownership, and Difference coordinate `j` occupies candidate list index `j−1`.
 
 Target uses m=8 and BFS 12 nodes/16 edges/four edges per peer. Fallback uses
 m=6 and BFS eight nodes/12 edges/three edges per peer. Both keep top ten and
-five added nonedges. `generate_world` makes one unconditioned draw; owner
-eligibility, edit selection, rejection accounting and saved population streams
-are the next task, [M1-T02](docs/todos/M1/M1-T02-edits-and-populations.md).
+five added nonedges. `generate_world` makes one unconditioned draw;
+[edits.py](recovery/edits.py) and [populations.py](recovery/populations.py) own
+mathematical eligibility, edit selection, bounded rejection and saved streams.
 
 ```python
 from random import Random
@@ -89,3 +91,47 @@ Strict whole-reply parsing, communication permissions and token caps belong to M
 
 The [independent references and attributed fixtures](tests/fixtures/README.md)
 validate task truth, not model capability, native SILO scores or recovery effects.
+
+## Prepared populations
+
+Prepare a new host manifest without a model call:
+
+```powershell
+python -S -m recovery prepare --seed 20261004 --output population.json
+python -S -m recovery validate --manifest population.json --authoritative tests/fixtures/population_target.json
+```
+
+The manifest contains 60 main worlds and five disjoint development worlds,
+actual original sources/edits, balanced edited owners, partitions, eligibility,
+rejection reasons and preassigned streams. Existing files are protected from
+overwrite. Loading uses the saved actual records; `--authoritative` additionally
+compares all inputs/configuration with a saved baseline. Mathematical validation
+alone cannot prove that a valid input has stayed unchanged.
+
+The 40-world fallback is a view of the first eight worlds per family; it is
+independent of the uniform mathematical `--config` size. Receipt (Prefix/Sort),
+Q (Sort/BFS), preserving (first eight Top-K/BFS), and repeat (first two per family)
+subsets derive from this same authority. The extra replicate keeps the original
+prefix/partition and gets new continuation seeds. Event and policy do not enter
+the continuation seed key, so siblings share seeds; required exact response
+replay will be implemented in later milestones.
+
+```python
+from pathlib import Path
+from recovery.manifests import load_population
+
+population = load_population(Path("population.json"))
+nested_worlds = population.worlds(40)
+subsets = population.subsets(40)  # main 40, receipt/Q 16, preserving 16, repeat 10
+world = nested_worlds[0]
+revision = world.event_world("revision")  # Each event starts from world.world.
+sham = world.event_world("sham")
+seed = world.streams.continuation_seed(replicate=0, round_number=1, peer=0)
+```
+
+Full population manifests are host-owned and include hidden sources/future edits;
+peer metadata uses only `source_manifest(world.world)`. Evaluator truth/footprints
+remain separate. The retained [CPU fixtures](tests/fixtures/README.md#prepared-host-populations)
+are prepared inputs, not an accepted M5 freeze, pilot or empirical results.
+[M1-T03](docs/todos/M1/M1-T03-complete-schedules.md) next enumerates logical calls
+and replay dependencies before the M1 gate can close.

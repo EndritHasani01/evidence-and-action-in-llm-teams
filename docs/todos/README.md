@@ -6,16 +6,17 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 1/29. Remaining: 28. Active: 1. Ready: 0. Blocked: 27.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 2/29. Remaining: 27. Active: 0. Ready: 1. Blocked: 26.** Counts measure verified task outcomes, not effort or runtime.
 
 - [M1-T01](M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence) is done: all five families at both sizes, exact truth/coordinates, ten attributed fixtures and 23 CPU checks pass.
-- Active task: [M1-T02](M1/M1-T02-edits-and-populations.md), eligible edits and reproducible populations.
+- [M1-T02](M1/M1-T02-edits-and-populations.md#validation-and-evidence) is done: eligible edits, 60/40 nested populations, five development worlds, partitions, saved streams and manifest equality pass in the 42-check CPU suite.
+- Next unblocked task: [M1-T03](M1/M1-T03-complete-schedules.md), complete schedules and replay dependencies.
 - Blocked tasks await their listed prerequisites. The M1 milestone gate remains open; dependency-blocked is distinct from a failed gate.
 - No GPU run, main experiment, scientific/frozen-configuration change or publication is authorized by creation of this task system.
 
 | Milestone | Done | Remaining | Current state | Milestone gate |
 |---|---:|---:|---|---|
-| M1 | 1/3 | 2 | Open; M1-T02 active | Exact worlds, coordinates, eligible populations, saved streams and both schedule totals pass; close in [M1-T03](M1/M1-T03-complete-schedules.md). |
+| M1 | 2/3 | 1 | Open; M1-T03 ready | Exact worlds, coordinates, eligible populations and saved streams pass. Both schedule totals remain; close in [M1-T03](M1/M1-T03-complete-schedules.md). |
 | M2 | 0/6 | 6 | Blocked by M1 | All visibility/intervention/replay checks, local-view witness and complete tokenizer bound pass; close in [M2-T06](M2/M2-T06-attainability-and-capacity.md). |
 | M3 | 0/5 | 5 | Blocked by M2 | Durable scripted lifecycle, real process-crash/restart, worker replay, accounting and safe-stop checks pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
 | M4 | 0/6 | 6 | Blocked by M1–M3 | All prescribed offline analysis and complete synthetic report reproduce; all M1–M4 CPU evidence passes in [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md). |
@@ -39,8 +40,8 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | Task | Status | Direct prerequisites | Source coverage |
 |---|---|---|---|
 | [M1-T01 — Exact task worlds and coordinate contracts](M1/M1-T01-task-worlds-and-truth.md) | done | None | Plan §§2–3; spec §§2.1, 5.1, 7.1, 8.1–8.2, 9–10 |
-| [M1-T02 — Eligible edits and reproducible populations](M1/M1-T02-edits-and-populations.md) | active | [M1-T01](M1/M1-T01-task-worlds-and-truth.md) | Plan §3; spec §§2.2–2.3, 4.2, 6, 8.2, 9 |
-| [M1-T03 — Complete schedules and replay dependencies](M1/M1-T03-complete-schedules.md) | blocked | [M1-T02](M1/M1-T02-edits-and-populations.md) | Plan §§1–3, 9; spec §§2.3, 4, 8.1–8.3, 9 |
+| [M1-T02 — Eligible edits and reproducible populations](M1/M1-T02-edits-and-populations.md) | done | [M1-T01](M1/M1-T01-task-worlds-and-truth.md) | Plan §3; spec §§2.2–2.3, 4.2, 6, 8.2, 9 |
+| [M1-T03 — Complete schedules and replay dependencies](M1/M1-T03-complete-schedules.md) | ready | [M1-T02](M1/M1-T02-edits-and-populations.md) | Plan §§1–3, 9; spec §§2.3, 4, 8.1–8.3, 9 |
 | [M2-T01 — Permitted peer views and lossless rendering](M2/M2-T01-peer-views-and-rendering.md) | blocked | [M1-T03](M1/M1-T03-complete-schedules.md) | Plan §§2, 4; spec §§3.1, 4.3–4.4, 9 |
 | [M2-T02 — Strict reply validation and public feedback](M2/M2-T02-strict-replies-and-feedback.md) | blocked | [M2-T01](M2/M2-T01-peer-views-and-rendering.md) | Plan §4; spec §§3.2, 5.1, 8.1, 9 |
 | [M2-T03 — Synchronous rounds and immutable shared prefixes](M2/M2-T03-synchronous-rounds-and-prefixes.md) | blocked | [M2-T02](M2/M2-T02-strict-replies-and-feedback.md) | Plan §§2, 4; spec §§2.2, 3.1–3.2, 9 |
@@ -80,5 +81,5 @@ A partial run leaves M6-T01 blocked with exact remaining work, original coverage
 
 ## Task-system review
 
-The pre-implementation review checked plan/specification coverage, coherent outcome boundaries, direct blockers, fallback/limited-report paths, authorization gates and local links. No task is marked implemented, verified, pilot-tested or empirically executed. Future milestone gate evidence belongs in the named task and existing plan, with detailed execution artifacts in the canonical run bundle.
+The pre-implementation review checked plan/specification coverage, coherent outcome boundaries, direct blockers, fallback/limited-report paths, authorization gates and local links. No task was marked implemented, verified, pilot-tested or empirically executed at creation. Current verified progress appears above. Future milestone gate evidence belongs in the named task and existing plan, with detailed execution artifacts in the canonical run bundle.
 

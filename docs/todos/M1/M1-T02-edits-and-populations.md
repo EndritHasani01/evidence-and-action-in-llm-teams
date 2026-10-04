@@ -1,6 +1,6 @@
 # M1-T02 — Eligible edits and reproducible populations
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M1-T01](../M1/M1-T01-task-worlds-and-truth.md).
 
@@ -61,4 +61,47 @@ checks three seed roots/both sizes, all subset counts/owner blocks, reordering,
 two process hash seeds, optional-import isolation, exact 1,000-attempt exhaustion
 and acceptance on attempt 1,000, rejection reasons, byte-stable regeneration,
 and malformed/modified manifests. CLI, retained fixture and final evidence remain.
+
+**Completion evidence (4 October 2026):** Windows x64 / CPython 3.11.9.
+The complete suite passed **42/42 checks**, including the prior M1-T01 checks,
+with site packages disabled and in the dependency-free editable CPU environment.
+No model stack was imported, no inference was run, and no accepted configuration
+was frozen. Executed commands:
+
+```powershell
+python -S -m unittest tests.test_edits -v
+python -S -m unittest tests.test_populations -v
+python -S -m recovery prepare --seed 20261004 --output tests/fixtures/population_target.json
+python -S -m recovery validate --manifest tests/fixtures/population_target.json --authoritative tests/fixtures/population_target.json
+python -S -m recovery validate
+.\.venv\Scripts\python.exe -m recovery validate
+.\.venv\Scripts\python.exe -m pip check
+git diff --check
+```
+
+The fallback fixture was prepared with `prepare_population(20261004, Size.FALLBACK)`
+and `save_population`. A temporary-directory harness additionally invoked the
+installed `prepare --config <fallback.toml> --seed 20261004 --output <prepared.json>`
+and `validate --config <fallback.toml> --manifest <prepared.json> --authoritative
+<population_fallback.json>` commands outside the checkout. Preparation matched
+the retained fallback fixture byte for byte; installed validation passed all 42
+checks. `pip check` reported no broken requirements. These are CPU environment
+checks, not the accepted inference environment.
+
+| Acceptance area | Checks / retained artifacts | Result |
+|---|---|---|
+| Exact legal sets and selection | `LegalEditTests` in [test_edits.py](../../../tests/test_edits.py) | Both sizes; every numeric owner/replacement boundary, unique/duplicate/zero Top-K cutoffs, preserving cutoff ties, and all BFS edges against independent relaxation pass. Main uses record then value; preserving uses a single uniform pair/edge selection. |
+| Eligibility conditioning and bounded rejection | `PopulationTests.test_rejection_reasons_owner_fixed_and_explicit_thousand_attempt_exhaustion`, `test_bfs_rejects_fixed_owner_without_changing_edge`; CLI exhaustion check | Owner is fixed before generation; only mathematical eligibility is rejected. Exactly 1,000 failures raise with every rejection recorded; acceptance on attempt 1,000 succeeds. CLI reports all failures and writes no accepted manifest. |
+| Populations, balance and fixed overlap | `test_all_populations_edit_truth_subsets_owner_balance_and_nesting` | 60/40 main worlds: 12/8 per family and 3/2 edits per owner. Five development worlds have disjoint IDs/streams. Receipt/Q are 24/16, preserving 16 at either count, repeats ten. The focal overlap is exactly Sort. Preserving edits can belong to other owners. |
+| Partitions and seeds | Partition/owner-order, stream and reordering checks in [test_populations.py](../../../tests/test_populations.py) | All three unordered partitions are selectable uniformly; G contains peer 0. Generation/ownership/edit/partition/prefix/continuation/control streams and owner streams are disjoint; event/policy do not enter continuation keys. Repeat seeds differ while original-world/prefix slots/partition remain fixed. Reordering and unrelated draws cannot shift worlds. |
+| Saved authority and reproducibility | [target fixture](../../../tests/fixtures/population_target.json), [fallback fixture](../../../tests/fixtures/population_fallback.json), [fixture notes](../../../tests/fixtures/README.md#prepared-host-populations) | Each fixture saves 60 + five actual worlds, edits, eligibility, rejections, partitions and seeds. Each has one recorded Top-K rejection. Three roots at both sizes round-trip and regenerate byte-stably; reload forbids generation. Both process hash seeds match. Existing files cannot be overwritten. |
+| Input mutation and evaluator separation | Authoritative-comparison, structural-mutation and retained-fixture checks | A mathematically valid altered Prefix input fails comparison with saved authority. Bad configuration/identity/seeds/partitions/edits/rejections, duplicate/extra fields and coercions fail. Gold/footprints/correctness/candidates are absent; public source projections remain ID/owner/position only. Full manifests are host-owned and never peer views. |
+| CPU CLI and portability | [test_cpu_entrypoint.py](../../../tests/test_cpu_entrypoint.py), installed temporary-directory harness, [.gitattributes](../../../.gitattributes) | Both sizes prepare through CLI; mismatch/overwrite/failure exits are explicit. Optional dependencies/global RNG remain untouched. Population fixtures have LF enforced because this checkout uses `core.autocrlf=true`; staged bytes equal the tested canonical files. |
+
+The documentation audit checked 380 relative links/anchors and all 29 task statuses
+against the index. Task/progress records now show M1-T02 done and M1-T03 ready.
+M1 remains open at 2/3: schedule enumeration/replay dependencies are M1-T03;
+rendered exposure, actual prefixes/peer views and protocol execution are M2;
+the accepted population/environment freeze and inference remain M5. No scientific
+deviation or new runtime dependency was required.
 
