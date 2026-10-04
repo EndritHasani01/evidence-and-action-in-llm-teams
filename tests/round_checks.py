@@ -7,7 +7,11 @@ separately by tokenizer_rounds with the pinned local Qwen metadata.
 
 from dataclasses import FrozenInstanceError, asdict, replace
 import json
+import os
+from pathlib import Path
 from random import Random
+import subprocess
+import sys
 import unittest
 from unittest.mock import patch
 
@@ -40,6 +44,7 @@ class RoundTokenizer(WordTokenizer):
 
 TOKENIZER = RoundTokenizer()
 PREFIX_ID = "scripted/prefix/original/none/rep0"
+ROOT = Path(__file__).resolve().parent.parent
 
 
 def world(task=Task.PREFIX, size=Size.TARGET):
@@ -209,6 +214,13 @@ class SynchronousRoundTests(unittest.TestCase):
         self.assertNotIn("queue", data)
         self.assertEqual(drain_deliveries(source_committed), commit_round(barrier).committed)
         self.assertEqual(deserialize_state(snapshot_bytes(staged)), staged)
+        later = run_round(source_committed, TOKENIZER, lambda v, *_: reply(TOKENIZER, v,
+            [{"to": (v.peer + 1) % 4, "text": "new second-round prose"}]))
+        received = [e for e in later.committed.peers[1].history if type(e) is ReceivedProse]
+        self.assertEqual([e.slot for e in received], [Slot("prefix", 1), Slot("prefix", 2)])
+        self.assertEqual(later.committed.peers[1].history[0], source_committed.peers[1].history[0])
+        self.assertEqual(prepare_round(later.committed, TOKENIZER).views[1].history,
+                         later.committed.peers[1].history)
 
     def test_invalid_and_recorded_failed_slots_never_backfill_candidates_and_feedback_is_next_call(self):
         first = run_round(self.state, TOKENIZER, lambda v, *_: reply(TOKENIZER, v))
@@ -301,12 +313,42 @@ class SynchronousRoundTests(unittest.TestCase):
 
 
 class SharedPrefixTests(unittest.TestCase):
+    def test_prefix_bytes_do_not_depend_on_process_hashing_optional_stack_or_global_rng(self):
+        script = '''
+import importlib.abc
+import random
+import sys
+blocked = {"torch", "transformers", "accelerate", "bitsandbytes", "langgraph", "langchain"}
+class BlockImports(importlib.abc.MetaPathFinder):
+    def find_spec(self, fullname, path=None, target=None):
+        if fullname.split(".")[0] in blocked:
+            raise AssertionError("unexpected inference/framework import: " + fullname)
+sys.meta_path.insert(0, BlockImports())
+before = random.getstate()
+from tests.round_checks import world, TOKENIZER, PREFIX_ID, mixed_provider
+from recovery.rounds import run_prefix
+from recovery.tasks import Task
+prefix = run_prefix(world(Task.BFS), PREFIX_ID, TOKENIZER, mixed_provider(TOKENIZER))
+assert random.getstate() == before
+assert not any(name.split(".")[0] in blocked for name in sys.modules)
+print(prefix.snapshot.decode("ascii"))
+'''
+        snapshots = []
+        for seed in ("0", "1", "12345"):
+            result = subprocess.run([sys.executable, "-c", script], cwd=ROOT, capture_output=True,
+                                    text=True, timeout=20, env=dict(os.environ, PYTHONHASHSEED=seed))
+            self.assertEqual(result.returncode, 0, result.stderr)
+            snapshots.append(result.stdout)
+        self.assertEqual(snapshots[0], snapshots[1])
+        self.assertEqual(snapshots[0], snapshots[2])
+
     def test_reversed_invocation_identical_requests_raw_replies_messages_states_and_snapshots_all_contracts(self):
         for task in Task:
             for size in Size:
                 with self.subTest(task=task, size=size):
                     original = world(task, size)
-                    normal = run_prefix(original, PREFIX_ID, TOKENIZER, mixed_provider(TOKENIZER))
+                    normal = run_prefix(original, PREFIX_ID, TOKENIZER, mixed_provider(TOKENIZER),
+                                        invocation_order=iter(PEERS))
                     reverse = run_prefix(original, PREFIX_ID, TOKENIZER, mixed_provider(TOKENIZER),
                                          invocation_order=(3, 2, 1, 0))
                     self.assertEqual(normal, reverse)

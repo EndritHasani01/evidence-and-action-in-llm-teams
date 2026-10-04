@@ -66,6 +66,16 @@ Observed scripted inputs are 699–3,912 tokens, with the full 384 output reserv
 generated outputs are 0–243 tokens. This is tokenizer-only protocol evidence,
 not the complete capacity argument, an event/replay control, or model execution.
 
+**Review checkpoint:** Prefix invocation order is materialized once so an
+iterable supplies the same four-peer order in every round. Eighteen focused
+checks now also verify delayed component release preserves already-seen history
+and generation/sender ordering, and fresh-process snapshots are identical under
+three Python hash seeds while inference/framework imports are blocked and the
+global RNG remains unchanged. The final full source and outside-checkout
+installed CLI suites each pass 121 checks; core-only passes 80; all 14 native
+checks (three round, six protocol, five renderer) pass with unchanged prior
+request/reply fixtures. Task closure awaits the status/link/documentation audit.
+
 **Prerequisite handoff (4 October 2026):** [M2-T02 completion](M2-T02-strict-replies-and-feedback.md#completion-and-handoff)
 passes 103 source/installed CPU checks, six native protocol checks and the five
 unchanged native renderer checks. `validate_reply` returns separate validity
