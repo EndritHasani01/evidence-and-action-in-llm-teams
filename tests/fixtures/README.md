@@ -239,3 +239,44 @@ python -m recovery validate
 ordinary validation only reads the retained fixture. UTF-8/LF bytes are enforced
 by Git attributes. [M2-T03](../../docs/todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#validation-and-evidence)
 records implementation, validation and the next-task handoff.
+
+## Event boundaries and receipt pairs
+
+[event_boundaries.json](event_boundaries.json), reproduced by
+[tokenizer_events.py](../tokenizer_events.py), retains four drained original
+prefixes and 15 complete boundary snapshots with 60 exact recovery-round-one
+requests/native token sequences. Prefix Sum target and Sort fallback include
+all three ordinary/disclosed receipt pairs; BFS target includes L/B and Top-K
+fallback includes an answer-preserving sibling. All other declared non-Q
+event/policy/subset/repeat starts are checked dynamically in the CPU suite;
+native differential checks cover all five families at both sizes.
+
+The fixture uses the same pinned Qwen3.5-9B tokenizer revision and CPU packages
+as the earlier native fixtures. Current sources and derived state are identical
+within each receipt pair; only `before_value` changes. The archive records
+serialized receipt tokens, actual complete-request input counts and their
+per-peer difference. In these saved pairs, disclosure uses four fewer input
+tokens for Prefix Sum and three fewer for Sort than the ordinary absence
+wording. No padding is added and these are interface-package costs, not a
+claim of a pure information effect or a general token bound.
+
+Native boundary requests across all families/sizes use 736–3,218 input tokens
+with 384 reserved output tokens; scripted prefix replies use 3–269 tokens.
+Four native checks verify exact fixture reproduction, disclosure differences,
+mixed-parent request equality, and ordinary four-round accumulation after the
+boundary. The focused 19-check CPU suite also covers every saved non-Q start,
+literal retention, source authority, hidden values, nested sibling mutation,
+and CPU-only v1→v2→v3 transitions. K's historical candidate or absence moves
+into labeled history exactly once when a new slot replaces the latest outcome;
+it persists alongside ordinary new history without fabricating a full reply.
+None establishes exact mixed/Q reply reuse,
+the complete worst-context bound, crash safety, model capability or a live run.
+
+```powershell
+python -m unittest tests.event_checks -q
+python -m tests.tokenizer_events --tokenizer $peerTokenizerDir
+```
+
+`--write-fixture <new_event_boundaries.json>` exclusively creates a new archive;
+normal validation only reads the saved UTF-8/LF fixture. See
+[M2-T04 evidence](../../docs/todos/M2/M2-T04-events-retention-and-receipts.md#validation-and-evidence).

@@ -57,6 +57,22 @@ delivery/reset contrasts; an ordinary pending receipt has no before-value or
 replacement payload. Disclosed before-values still require delivered v2.
 Native paired artifacts, final source/installed checks and handoff remain open.
 
+**Native checkpoint:** Four checks in
+[tokenizer_events.py](../../../tests/tokenizer_events.py) pass using pinned
+Qwen3.5-9B revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a` on Windows /
+CPython 3.11.9, Pydantic 2.12.5, Transformers 5.12.0, Tokenizers 0.22.2,
+Jinja2 3.1.6 and Hugging Face Hub 1.19.0. The retained
+[boundary archive](../../../tests/fixtures/event_boundaries.json) contains
+four original prefixes, 15 complete boundary snapshots and 60 exact first
+requests/native sequences, including all six receipt pairs across Prefix Sum
+and Sort. Actual complete-input disclosure differences are −4 tokens per peer
+for the saved Prefix Sum pairs and −3 for Sort; no padding is added. Dynamic
+native checks cover all five families/both sizes, exact mixed-parent requests,
+and full ordinary history accumulation in four representative continuations.
+Observed boundary inputs are 736–3,218 tokens plus the full 384 output reserve;
+prefix replies are 3–269 tokens. These are fixture measurements, not complete
+capacity, replay, model or empirical admission. Final regression checks remain.
+
 **Prerequisite handoff (4 October 2026):** [M2-T03 completion](M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff)
 passes 121 source/installed CPU checks and 14 native-tokenizer checks. Its
 immutable, fully drained original prefix retains all current sources, own/
