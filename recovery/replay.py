@@ -138,11 +138,12 @@ def held_prose_counts(state: BranchState) -> tuple[int, ...]:
 
     Derive from existing pending/released IDs so counts survive release and JSON
     round trips without another counter. Explicit empty text still traverses the
-    literal queue, but contributes no prose exposure. Ordinary branches yield 0.
+    literal queue, but contributes no prose exposure. Ordinary recovery branches
+    yield 0. An unexecuted recovery round has no held-prose observation yet.
     """
 
-    if not state.committed:
-        raise ValueError("count held prose only after the branch delivery rule commits")
+    if not state.committed or state.last_slot is None or state.last_slot.phase != "recovery":
+        raise ValueError("count held prose only after a recovery round's delivery rule commits")
     held = [d for d in state.pending + state.deliveries
             if d.generated == Slot("recovery", 1) and d.text
             and (d.first_usable is None or d.first_usable.order > Slot("recovery", 2).order)]

@@ -192,6 +192,9 @@ class ReplayTests(unittest.TestCase):
             obtain_continuation_round(q, saved.branch, TOKENIZER, settings=SETTINGS)
 
     def test_no_prose_and_explicit_empty_prose_remain_inactive_complete_branches(self):
+        # Missing round-one observations must not become inactive treatments.
+        with self.assertRaisesRegex(ValueError, "only after"):
+            held_prose_counts(start(self.world, self.prefix, "Q_C"))
         for mode in ("silent", "empty"):
             parents = parent_records(self.world, self.prefix, mode=mode)
             for policy in ("Q_B", "Q_C"):
