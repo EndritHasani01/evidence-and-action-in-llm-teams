@@ -1,6 +1,6 @@
 # M2-T02 — Strict reply validation and public feedback
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T01](../M2/M2-T01-peer-views-and-rendering.md). M1 must have passed before M2 work begins.
 
@@ -35,4 +35,11 @@ A complete reply receives one deterministic protocol-valid/invalid result, with 
 Test duplicate keys at every nesting level, nonfinite/huge exponent tokens, coercions, wrong lengths, BFS key "01", extra fields, self/unknown/duplicate recipients, stale/unheld refs, repeated lawful refs, per-recipient distinct-reference limits and aggregate prose limits. Include a valid candidate with one invalid send, wrong but valid integers, complete cap-ending JSON, malformed outputs below/at cap, failed slots, and feedback sentinel leaks. Preserve repeated delivery attempts for later accounting.
 
 **Evidence:** Not yet recorded. Add adversarial fixture results, tokenizer identity and executed commands before marking done.
+
+**Prerequisite handoff (4 October 2026):** [M2-T01 completion evidence](M2-T01-peer-views-and-rendering.md#completion-and-handoff)
+passes with 79 standard-library CPU checks and five native-tokenizer checks.
+Immutable permitted views, held-current-source lookup, literal request rendering,
+candidate absence/age guards and fixed public feedback layouts are available.
+This task is ready; its strict parser, whole-reply validation and tokenizer
+permissions remain unimplemented. M2's complete protocol/capacity gate is open.
 

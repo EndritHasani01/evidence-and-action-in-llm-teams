@@ -9,9 +9,12 @@ The design uses five SILO-derived task families to study retained evidence and c
 The five task generators, exact solvers, candidate contracts, coordinate maps,
 eligible edits and saved populations/streams are implemented and verified on CPU
 for both declared sizes. Complete main/development schedules and replay dependencies
-also pass independent CPU checks. M1's gate is passed; the peer correction protocol,
-workflow, Qwen3.5/T4 pilot and main experiments remain future work.
-See [M1-T03 gate evidence](docs/todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate),
+also pass independent CPU checks. M1's gate is passed. Permitted peer views and
+lossless request rendering now pass 79 CPU checks plus five native-tokenizer
+checks. Strict replies, synchronous correction/retention/replay, complete context
+capacity, the workflow, Qwen3.5/T4 pilot and main experiments remain future work.
+See [M2-T01 evidence](docs/todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff),
+[M1-T03 gate evidence](docs/todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate),
 [M1-T02 evidence](docs/todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence),
 [M1-T01 evidence](docs/todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence)
 and the [implementation plan](docs/IMPLEMENTATION_PLAN.md#10-living-handoff).
@@ -28,7 +31,7 @@ Four peers perform four rounds of collaborative work before an announced factual
 
 ## CPU installation and validation
 
-Use Python 3.11. The mathematical core and its tests need only the standard
+Use Python 3.11. The CPU core and its main test suite need only the standard
 library; inference dependencies are optional and are not imported by validation.
 From this source checkout, run:
 
@@ -186,3 +189,41 @@ The [retained CPU schedule and reproduction notes](tests/fixtures/README.md#prep
 provide M2's input handoff. The complete 59-check suite passes with site packages
 disabled and through the installed CPU package outside the checkout; this verifies
 M1, while protocol/model/resource feasibility and empirical recovery remain untested.
+
+## Permitted peer views and exact requests
+
+[state.py](recovery/state.py) owns immutable permitted views; [prompts.py](recovery/prompts.py)
+renders them as one user turn with labeled JSON data. The host projects an ordinary
+`World` into a private peer shard or a complete-world control. The renderer itself
+accepts only `PeerView`, with no evaluator, schedule, condition or delayed queue.
+
+```python
+from recovery.state import initial_view, held_source
+from recovery.prompts import render_request, tokenize_request
+
+view = initial_view(world, peer=1)  # world from the task-core example above
+request = render_request(view)
+chat_messages = request.messages()
+record = view.sources[0]
+assert held_source(view, record.record_id, record.version) == record
+# With an explicitly loaded local CPU tokenizer:
+# tokenized = tokenize_request(request, tokenizer)
+```
+
+Current sources render once, separately from literal own replies/received prose,
+public schema feedback and persistent notices/receipts. Pending replacements have
+no usable old value; known BFS tombstones retain deleted endpoints. Historical
+receipt before-values never enter current-source lookup. Invalid/failed slots have
+no candidate, wrong compact results remain literal, and a newer own reply/feedback
+slot cannot retain an older latest candidate. Actual event/retention and delivery
+transformations are subsequent M2 tasks.
+
+`tokenize_request` applies the injected native non-thinking template, preserves its
+exact text, token IDs and attention mask, and reserves all 384 output tokens inside
+8,192. Oversized requests fail without truncation. `dataclasses.asdict`/ordinary
+JSON can save the request and token record in the later call ledger.
+The [seven retained short request/token fixtures](tests/fixtures/README.md#permitted-peer-requests-and-tokenizer-inputs)
+and [native tokenizer harness](tests/tokenizer_peer_views.py) verify literal archive
+preservation and exact native inputs. The full 79-check CPU suite passes; five
+optional native-tokenizer checks also pass. Complete worst-context admission
+remains M2-T06, and M2-T02's strict reply validator is the next ready task.

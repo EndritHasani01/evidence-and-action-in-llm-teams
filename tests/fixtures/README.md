@@ -82,3 +82,63 @@ world generator or schedule builder. Structural validation detects scientific
 changes; optional `load_schedules(..., authoritative=saved_schedule)` also rejects
 otherwise-valid artifact reordering. Population input equality remains the job
 of `load_population(..., authoritative=saved_population)` / `--authoritative`.
+
+## Permitted peer requests and tokenizer inputs
+
+[peer_requests.json](peer_requests.json) holds seven short scripted peer cases:
+ordinary/disclosed historical receipts, a compact wrong result, compact candidate
+absence, an unknown replacement edge, a known tombstone, and a retained valid
+reply. [peer_view_cases.py](../peer_view_cases.py) constructs their permitted views
+from ordinary task worlds. These are synthetic archive strings/candidates, with
+no natural model inference or empirical outcomes. They exercise the M2-T01
+interface; they do not execute retention policies or prose queues.
+
+Each case saves exact rendered content, actual native template text, all input
+token IDs and the unpadded attention mask. Standard-library tests compare the
+renderer with the saved request and inspect its token archive. The separately
+invoked [native harness](../tokenizer_peer_views.py) recomputes every saved token,
+compares against direct native templating at both sizes/all tasks/peers/controls,
+checks exact decoding/archive preservation and verifies every fixed public
+feedback message fits 32 tokens. It also reproduces the Qwen assistant-turn
+rewrite of archived reasoning. No optional library is imported by the default
+CPU validation suite.
+
+Provenance: Qwen3.5-9B revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`,
+Transformers 5.12.0, Tokenizers 0.22.2, Jinja2 3.1.6 and Hugging Face Hub 1.19.0,
+on Windows / CPython 3.11.9. Local tokenizer JSON, tokenizer configuration and
+template were compared byte for byte with this immutable upstream revision.
+The package/revision information is offline fixture provenance, never peer data
+or an accepted M5 inference freeze.
+
+| Scripted case | Input tokens | Reserved output |
+|---|---:|---:|
+| Ordinary receipt | 1,830 | 384 |
+| Disclosed receipt | 1,826 | 384 |
+| Compact wrong result | 1,667 | 384 |
+| Compact absence | 1,604 | 384 |
+| Pending edge | 757 | 384 |
+| Known tombstone | 801 | 384 |
+| Retained valid reply | 1,578 | 384 |
+
+These measurements establish short-case behavior only. Complete worst retained
+contexts, legal reply/message capacity and attainability remain M2-T06. The
+renderer rejects overflow instead of shortening retained work.
+
+In a CPU Python environment with the recorded tokenizer packages, download only
+the pinned metadata to a local folder, then verify against the retained fixture:
+
+```powershell
+$peerTokenizerDir = Join-Path $env:TEMP "recovery-peer-tokenizer"
+New-Item -ItemType Directory -Force -Path $peerTokenizerDir | Out-Null
+$peerTokenizerRevision = "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+foreach ($metadataName in @("config.json", "tokenizer.json", "tokenizer_config.json", "chat_template.jinja")) {
+    Invoke-WebRequest -Uri "https://huggingface.co/Qwen/Qwen3.5-9B/resolve/$peerTokenizerRevision/$metadataName" -OutFile (Join-Path $peerTokenizerDir $metadataName)
+}
+python -m tests.tokenizer_peer_views --tokenizer $peerTokenizerDir
+python -S -m unittest tests.test_peer_views -v
+```
+
+The harness loads only local metadata and makes no model/GPU call. To reproduce
+a **new** archive, append `--write-fixture <new_peer_requests.json>`; exclusive
+creation protects existing artifacts. The checked-in fixture uses canonical
+UTF-8/LF bytes, enforced by Git attributes.
