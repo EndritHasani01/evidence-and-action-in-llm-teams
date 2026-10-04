@@ -314,7 +314,7 @@ Update these sections only when a capability is verified, a consequential decisi
 
 | Milestone | Status | Evidence / next action |
 |---|---|---|
-| M1 | In progress (M1-T01 active) | [Task-world checkpoint](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence): five generators/solvers and coordinate contracts pass initial CPU checks; revision adversaries and clean installation remain. Populations/schedules are not implemented. |
+| M1 | In progress (1/3 tasks done; gate open) | [M1-T01 complete evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence): five target/fallback generators, exact truth, public contracts and D/U maps verified by 23 CPU checks / 1,000 draws / ten native fixtures on Python 3.11.9, including a fresh dependency-free install. Next: M1-T02 eligible edits/populations/streams, then M1-T03 schedules. |
 | M2 | Not started | Requires M1 |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
@@ -335,7 +335,13 @@ Update these sections only when a capability is verified, a consequential decisi
 
 ### Discoveries or deviations
 
-None during implementation yet. Planning confirmed that older schedules/configurations are superseded and research probes are not final-run validation. Record future deviations with the affected specification section, evidence, impacted artifacts, disposition and checks to repeat.
+M1-T01 verified that all five mathematical families and both sizes need no CPU
+runtime dependencies; the model stack remains optional and unimported. Its
+one-draw generator is deliberately unconditioned: the §2.2 population rejection,
+edit eligibility and persisted streams belong to M1-T02. No scientific deviation
+was needed. Older schedules/configurations remain superseded; these CPU checks
+are not protocol, hardware, pilot or empirical recovery evidence. Record future
+deviations with affected specification sections, artifacts and checks to repeat.
 
 ### Unresolved issues
 

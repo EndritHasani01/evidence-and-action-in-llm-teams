@@ -193,5 +193,47 @@ class NativeFixtureTests(unittest.TestCase):
             self.assertEqual(fixture["expected"], source["expected_output"]["per_agent_values"])
 
 
+class WorldValidationTests(unittest.TestCase):
+    def test_invalid_numeric_records_cannot_silently_change_task_semantics(self):
+        for size, task in itertools.product(Size, (Task.TOP_K, Task.PREFIX, Task.DIFFERENCE, Task.SORT)):
+            world = generated(task, size)
+            first = world.records[0]
+            low, high = numeric_range(task)
+            invalid_records = [replace(first, value=value)
+                               for value in (low - 1, high + 1, True, 1.0, "1", None, (1, 2))]
+            invalid_records += [replace(first, owner=owner) for owner in (-1, 4, True, "0")]
+            invalid_records += [replace(first, version=version) for version in (0, -1, True, 1.0)]
+            invalid_records += [replace(first, position=pos) for pos in (-1, size.numeric_length, True, None)]
+            invalid_records += [replace(first, record_id="hidden_value_99"), replace(first, deleted=True),
+                                replace(first, deleted=1)]
+            for invalid in invalid_records:
+                with self.subTest(size=size, task=task, invalid=invalid):
+                    with self.assertRaises(ValueError):
+                        replace(world, records=(invalid,) + world.records[1:])
+            for records in (list(world.records), world.records[:-1],
+                            world.records + (first,), (first,) * len(world.records),
+                            (None,) + world.records[1:]):
+                with self.assertRaises(ValueError):
+                    replace(world, records=records)
+            with self.assertRaises(ValueError):
+                replace(world, records=(replace(first, owner=(first.owner + 1) % 4),) + world.records[1:])
+
+    def test_invalid_bfs_edges_ids_positions_and_tombstones_rejected(self):
+        for size in Size:
+            world = generated(Task.BFS, size)
+            first = world.records[0]
+            u, v = first.value
+            for edge in ((v, u), (u, u), (-1, v), (u, size.node_count), [u, v],
+                         (False, v), (float(u), v), None, 1, (u, v, v)):
+                with self.subTest(size=size, edge=edge):
+                    with self.assertRaises(ValueError):
+                        replace(world, records=(replace(first, value=edge),) + world.records[1:])
+            for record in (replace(first, value=world.records[1].value),
+                           replace(first, deleted=True), replace(first, position=0),
+                           replace(first, record_id=f"edge_{u}_{v}")):
+                with self.assertRaises(ValueError):
+                    replace(world, records=(record,) + world.records[1:])
+
+
 if __name__ == "__main__":
     unittest.main()

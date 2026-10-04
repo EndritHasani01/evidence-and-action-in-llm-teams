@@ -1,6 +1,6 @@
 # M1-T02 — Eligible edits and reproducible populations
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M1-T01](../M1/M1-T01-task-worlds-and-truth.md).
 
