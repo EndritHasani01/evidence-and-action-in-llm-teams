@@ -9,11 +9,13 @@ The design uses five SILO-derived task families to study retained evidence and c
 The five task generators, exact solvers, candidate contracts, coordinate maps,
 eligible edits and saved populations/streams are implemented and verified on CPU
 for both declared sizes. Complete main/development schedules and replay dependencies
-also pass independent CPU checks. M1's gate is passed. Permitted peer views and
-lossless request rendering now pass 79 CPU checks plus five native-tokenizer
-checks. Strict replies, synchronous correction/retention/replay, complete context
-capacity, the workflow, Qwen3.5/T4 pilot and main experiments remain future work.
-See [M2-T01 evidence](docs/todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff),
+also pass independent CPU checks. M1's gate is passed. Permitted peer views,
+lossless request rendering and strict whole-reply validation are implemented and
+have CPU/native-tokenizer checks. Synchronous correction/retention/replay,
+complete context capacity, the workflow, Qwen3.5/T4 pilot and main experiments
+remain future work. See
+[M2-T02 evidence](docs/todos/M2/M2-T02-strict-replies-and-feedback.md#validation-and-evidence),
+[M2-T01 evidence](docs/todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff),
 [M1-T03 gate evidence](docs/todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate),
 [M1-T02 evidence](docs/todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence),
 [M1-T01 evidence](docs/todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence)
@@ -31,20 +33,24 @@ Four peers perform four rounds of collaborative work before an announced factual
 
 ## CPU installation and validation
 
-Use Python 3.11. The CPU core and its main test suite need only the standard
-library; inference dependencies are optional and are not imported by validation.
-From this source checkout, run:
+Use Python 3.11. Strict reply validation requires Pydantic 2, declared as a CPU
+dependency. The mathematical core remains standard-library only. Inference
+dependencies are optional and are not imported by CPU validation. From this
+source checkout, run:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --no-deps -e .
+.\.venv\Scripts\python.exe -m pip install -e .
 .\.venv\Scripts\python.exe -m recovery validate
 ```
 
-Without installation, `python -S -m recovery validate` runs the same checks with
-site packages disabled. Validation requires this checkout's tests and attributed
-vendor JSON. It checks both sizes regardless of the configured size, exits
-nonzero on failure, and never loads a model or executes an experiment.
+Full validation includes the core and strict-reply checks. Without installation,
+`python -S -m recovery validate --core-only` runs only the dependency-free core
+subset with site packages disabled; it explicitly excludes strict replies and
+cannot establish their gate. Full validation fails if Pydantic is unavailable.
+Validation requires this checkout's tests and attributed vendor JSON. It checks
+both sizes regardless of the configured size, exits nonzero on failure, and
+never loads a model or executes an experiment.
 `--config path/to/study.toml` accepts exactly `size = "target"` or
 `size = "fallback"`; [the default configuration](configs/study.toml) is a
 mathematical default, not the accepted M5 model/environment freeze.
@@ -92,7 +98,16 @@ to peers map. Replicated answers add peer copies, not independent coordinates.
 Candidate shape errors contain no gold; a wrong integer answer of valid shape
 remains valid for the later protocol. `exact_candidate(..., protocol_valid=False)`
 scores an invalid recorded reply as false without reusing an earlier candidate.
-Strict whole-reply parsing, communication permissions and token caps belong to M2.
+Strict whole-reply parsing, communication permissions and token caps are supplied
+by [protocol.py](recovery/protocol.py). `validate_reply(view, generated, tokenizer)`
+takes only the immutable sender view, literal recorded text/generated token IDs,
+termination information and a tokenizer. It returns separate JSON/schema/permission
+checks, token counts, a candidate outcome and all-or-none staged messages. Wrong
+integers remain protocol-valid. Repeated lawful references retain each delivery
+attempt. Feedback uses fixed public descriptions checked against 32 actual tokens;
+invalid/failed slots supply no candidate. Raw replies stay literal own-history data,
+and generating-slot labels prevent feedback from entering that same call.
+Synchronous delivery/persistence are the later M2/M3 tasks.
 
 The [independent references and attributed fixtures](tests/fixtures/README.md)
 validate task truth, not model capability, native SILO scores or recovery effects.
@@ -103,7 +118,7 @@ Prepare a new host manifest without a model call:
 
 ```powershell
 python -S -m recovery prepare --seed 20261004 --output population.json
-python -S -m recovery validate --manifest population.json --authoritative tests/fixtures/population_target.json
+python -m recovery validate --manifest population.json --authoritative tests/fixtures/population_target.json
 ```
 
 The manifest contains 60 main worlds and five disjoint development worlds,
@@ -145,7 +160,7 @@ Enumerate and save every opportunity from an existing population without resampl
 
 ```powershell
 python -S -m recovery prepare --manifest population.json --output schedules.json
-python -S -m recovery validate --manifest population.json --schedule schedules.json --authoritative tests/fixtures/population_target.json
+python -m recovery validate --manifest population.json --schedule schedules.json --authoritative tests/fixtures/population_target.json
 ```
 
 The saved schedule contains main 60 and the exact development matrix; the nested

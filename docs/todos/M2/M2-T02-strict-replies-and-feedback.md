@@ -41,6 +41,17 @@ tests/fixtures/population_target.json --schedule tests/fixtures/schedules_target
 Windows / CPython 3.11.9. M1's gate and M2-T01's artifacts are present. Strict
 reply and native-tokenizer acceptance evidence will be added before marking done.
 
+**Implementation checkpoint:** [protocol.py](../../../recovery/protocol.py)
+implements the complete decoder, strict nested Pydantic schemas, public candidate
+contracts, sender-view permissions, physical output/prose/feedback caps and
+all-or-none immutable staging. [protocol_checks.py](../../../tests/protocol_checks.py)
+passes 23 focused CPU checks on both local Pydantic 2.12.5 and installed 2.13.5
+with CPython 3.11.9. The initial full source integration passed 102 checks;
+final integration follows the additional missing-dependency CLI regression.
+`pip check` passes in `.venv`. Pydantic 2 is the required schema dependency;
+`validate --core-only` explicitly preserves the earlier standard-library subset.
+No accepted inference environment or scientific configuration is changed.
+
 **Prerequisite handoff (4 October 2026):** [M2-T01 completion evidence](M2-T01-peer-views-and-rendering.md#completion-and-handoff)
 passes with 79 standard-library CPU checks and five native-tokenizer checks.
 Immutable permitted views, held-current-source lookup, literal request rendering,

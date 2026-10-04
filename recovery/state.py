@@ -61,6 +61,7 @@ PUBLIC_FEEDBACK = MappingProxyType({
     "candidate_shape": "Candidate must match the assigned integer shape.",
     "message_schema": "Use only the declared message and source-reference fields.",
     "recipient": "Send at most one message to each other peer.",
+    "control_send": "Full-information controls require an empty send list.",
     "source_reference": "Source references must name currently held IDs and versions.",
     "reference_limit": "Use at most eight distinct source references per recipient.",
     "prose_limit": "Combined message texts must fit the 128-token prose limit.",

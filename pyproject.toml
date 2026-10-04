@@ -5,9 +5,9 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "evidence-and-action-in-llm-teams"
 version = "0.1.0"
-description = "CPU task truth for the distributed LLM recovery study"
+description = "CPU task truth and peer protocol for the distributed LLM recovery study"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["pydantic>=2,<3"]
 
 [project.optional-dependencies]
 inference = ["torch", "transformers", "accelerate", "bitsandbytes"]
