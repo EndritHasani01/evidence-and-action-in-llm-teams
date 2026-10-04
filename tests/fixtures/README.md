@@ -284,11 +284,14 @@ normal validation only reads the saved UTF-8/LF fixture. See
 ## Exact parent replay and delayed prose
 
 [replay_traces.json](replay_traces.json), reproduced by
-[tokenizer_replay.py](../tokenizer_replay.py), retains two original prefixes
-(Sort target and BFS fallback), 50 scripted continuation rounds, 200 exact
+[tokenizer_replay.py](../tokenizer_replay.py), retains four original prefixes
+(Sort target and BFS fallback, worlds 1 and 2), 54 scripted continuation rounds, 216 exact
 permitted/rendered/native requests and 72 explicit parent comparisons. Both
 events include B/C first rounds, both complementary masks and complete Q_B/Q_C
-horizons. Two additional source-only Q cases record zero held prose.
+horizons. Two additional source-only Q cases record zero held prose and retain
+their own B/C parent records on distinct saved world IDs. The archive-wide join
+check rejects duplicate call IDs and requires every replay to resolve to one
+exact recorded parent, including inactive cases.
 
 Each round retains its saved call IDs/seeds, settings, literal raw replies and
 validation, branch-local committed snapshot, pending/released component IDs
@@ -299,7 +302,7 @@ held prose is absent from requests. At the round-three boundary its stable IDs
 release before new round-two prose without moving already-seen history.
 Invalid/failed outcomes, duplicate references and BFS tombstones remain literal.
 
-Three native checks reproduce the archive and exercise both masks across all
+Four native checks reproduce the archive and exercise both masks across all
 five families, both sizes, revision/sham and extra continuation replicates.
 The same pinned Qwen3.5-9B tokenizer revision and CPU packages as above produce
 921–3,350 input tokens plus the full 384 output reserve, and 6–134 output tokens

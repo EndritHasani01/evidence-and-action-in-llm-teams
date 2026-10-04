@@ -12,7 +12,7 @@ from recovery.replay import (commit_continuation_round, held_prose_counts,
 from recovery.rounds import deserialize_state, snapshot_bytes
 from recovery.state import Slot
 from recovery.tasks import PEERS, Size, Task
-from tests.event_checks import build_prefix, case_world
+from tests.event_checks import build_prefix, case_world, population
 from tests.replay_checks import SETTINGS, parent_records, replay_provider, replay_start
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures/replay_traces.json"
@@ -66,12 +66,17 @@ def replay_archive(tokenizer):
                             replay_provider(tokenizer), settings=SETTINGS)
                         rounds.append(round_record(current))
                         state = commit_continuation_round(current).committed
-        # An inactive branch is part of the archive, without selecting on prose.
-        parents = parent_records(world, prefix, tokenizer, "sham", mode="silent")
-        inactive = replay_start(world, prefix, parents, "Q_C", "sham", tokenizer=tokenizer)
         cases.append({"world_id": world.world_id, "task": task.value, "size": size.value,
-                      "prefix_snapshot": json.loads(prefix.snapshot), "rounds": rounds,
-                      "inactive_q": round_record(inactive, parents)})
+                      "traffic": "rich", "prefix_snapshot": json.loads(prefix.snapshot), "rounds": rounds})
+        # Use a different predeclared saved world, not another response for the
+        # same call ID. Retain its parents too so every archive join is auditable.
+        silent_world = next(w for w in population(size).main if w.world.task is task and w.index == 2)
+        silent_prefix = build_prefix(silent_world, tokenizer)
+        parents = parent_records(silent_world, silent_prefix, tokenizer, "sham", mode="silent")
+        inactive = replay_start(silent_world, silent_prefix, parents, "Q_C", "sham", tokenizer=tokenizer)
+        cases.append({"world_id": silent_world.world_id, "task": task.value, "size": size.value,
+                      "traffic": "source_only", "prefix_snapshot": json.loads(silent_prefix.snapshot),
+                      "rounds": [*(round_record(p) for p in parents), round_record(inactive, parents)]})
     return {"provenance": {
         "tokenizer": "Qwen/Qwen3.5-9B", "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
         "packages": {name: importlib.metadata.version(name) for name in
@@ -90,8 +95,9 @@ class TokenizerReplayTests(unittest.TestCase):
         for field in ("tokenizer", "revision"):
             self.assertEqual(self.current["provenance"][field], self.expected["provenance"][field])
         for case in self.current["cases"]:
-            self.assertEqual(case["inactive_q"]["held_prose_counts"], [0] * 4)
-            for row in case["rounds"] + [case["inactive_q"]]:
+            for row in case["rounds"]:
+                if case["traffic"] == "source_only":
+                    self.assertEqual(row["held_prose_counts"], [0] * 4)
                 for comparison in row["parent_comparisons"]:
                     self.assertTrue(all(comparison["equal"].values()))
                 state = deserialize_state(json.dumps(row["committed"]).encode())
@@ -107,6 +113,8 @@ class TokenizerReplayTests(unittest.TestCase):
 
     def test_native_q_round_two_source_metadata_and_own_reply_equality_then_round_three_release(self):
         for case in self.current["cases"]:
+            if case["traffic"] == "source_only":
+                continue  # Inactive first-round joins/counts are checked separately.
             rows = {(row["branch_id"], row["slot"]["round_number"]): row for row in case["rounds"]}
             for row in case["rounds"]:
                 if "/Q_" not in row["branch_id"] or row["slot"]["round_number"] != 1:
@@ -136,6 +144,25 @@ class TokenizerReplayTests(unittest.TestCase):
                 self.assertFalse(final["pending"])
                 self.assertIsNone(deserialize_state(json.dumps(final).encode()).next_slot)
                 self.assertEqual(len([d for d in final["deliveries"] if d["delivery_id"] in ids]), 4)
+
+    def test_every_archive_replay_joins_one_exact_record_with_no_duplicate_call_ids(self):
+        rows = [row for case in self.current["cases"] for row in case["rounds"]]
+        by_call = {}
+        for row in rows:
+            for p, call in enumerate(row["calls"]):
+                self.assertNotIn(call["call_id"], by_call)
+                by_call[call["call_id"]] = (row, p)
+        for row in rows:
+            for p, call in enumerate(row["calls"]):
+                if call["replay_parent"] is None:
+                    continue
+                self.assertIn(call["replay_parent"], by_call)
+                parent, i = by_call[call["replay_parent"]]
+                self.assertIsNone(parent["calls"][i]["replay_parent"])
+                self.assertEqual(call["seed"], parent["calls"][i]["seed"])
+                self.assertEqual(row["settings_json"], parent["settings_json"])
+                self.assertEqual(row["requests"][p], parent["requests"][i])
+                self.assertEqual(row["replies"][p], parent["replies"][i])
 
     def test_native_both_masks_all_families_sizes_events_and_repeat_scoping(self):
         for size in Size:
@@ -175,7 +202,7 @@ def main():
     TokenizerReplayTests.current = current
     TokenizerReplayTests.expected = json.loads((args.write_fixture or args.fixture).read_bytes())
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(TokenizerReplayTests))
-    rows = [row for case in current["cases"] for row in case["rounds"] + [case["inactive_q"]]]
+    rows = [row for case in current["cases"] for row in case["rounds"]]
     inputs = [len(request["tokenized"]["input_ids"]) for row in rows for request in row["requests"]]
     outputs = [len(reply["generated"]["token_ids"]) for row in rows for reply in row["replies"] if reply["generated"]]
     print(f"Replay archive: {len(rows)} rounds, {len(inputs)} requests, "
