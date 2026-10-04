@@ -44,6 +44,15 @@ against the current interfaces. Work is limited to the deterministic in-memory
 barrier, delivery records and drained prefix; durable execution, event policies,
 mixed/Q replay and complete capacity remain their subsequent tasks.
 
+**Implementation checkpoint:** [rounds.py](../../../recovery/rounds.py) supplies
+the pure prepare/validate/stage/drain/commit steps, an all-peer scripted caller,
+offline branch-scoped component deliveries and deep JSON prefix deserialization.
+[round_checks.py](../../../tests/round_checks.py) passes 17 focused checks;
+`python -m recovery validate` passes 120 checks. The installed Python 3.11.9 /
+Pydantic 2.13.5 environment also passes the 40 protocol/round checks. Prefixes
+and full continuation opportunities remain independent of validity/correctness.
+Native-tokenizer trace reproduction and final documentation audit are in progress.
+
 **Prerequisite handoff (4 October 2026):** [M2-T02 completion](M2-T02-strict-replies-and-feedback.md#completion-and-handoff)
 passes 103 source/installed CPU checks, six native protocol checks and the five
 unchanged native renderer checks. `validate_reply` returns separate validity

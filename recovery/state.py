@@ -2,7 +2,7 @@
 
 Worlds enter only the initial-view projection. Rendering and source lookup take
 PeerView, which has no evaluator, branch, event, reset mask or delayed queue.
-Full boundary transformations and round delivery belong to later M2 tasks.
+Round delivery lives in rounds.py; event/retention transformations remain M2-T04.
 """
 
 from dataclasses import dataclass, field
@@ -26,6 +26,27 @@ class Slot:
     @property
     def order(self) -> int:
         return self.round_number + (4 if self.phase == "recovery" else 0)
+
+
+@dataclass(frozen=True, slots=True)
+class DeliveryBoundary:
+    """Availability after the last recovery call, without a fifth opportunity.
+
+    Ordinary availability uses Slot. Final messages are still drained/audited,
+    but their next-round boundary is never rendered or scheduled as a call.
+    """
+
+    phase: str = "recovery"
+    round_number: int = 5
+
+    def __post_init__(self) -> None:
+        if (self.phase != "recovery" or type(self.phase) is not str
+                or type(self.round_number) is not int or self.round_number != 5):
+            raise ValueError("terminal delivery boundary is recovery round five")
+
+    @property
+    def order(self) -> int:
+        return 9
 
 
 @dataclass(frozen=True, slots=True)
@@ -162,7 +183,7 @@ class HistoricalReceipt:
 
 @dataclass(frozen=True, slots=True)
 class SourceDelivery:
-    """Latest usable delivery of a current record; full audit stays offline.
+    """First usable acquisition of a current record; full attempts stay offline.
 
 No message/branch IDs, payloads, prose flags or queue/release internals enter
 this layout. Source-bearing Q/parent siblings can share it exactly.
@@ -173,7 +194,7 @@ this layout. Source-bearing Q/parent siblings can share it exactly.
     origin: str
     sender: int | None
     generated: Slot | None
-    first_usable: Slot
+    first_usable: Slot | DeliveryBoundary
 
 
 @dataclass(frozen=True, slots=True)
