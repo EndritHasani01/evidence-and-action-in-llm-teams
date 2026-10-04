@@ -196,3 +196,46 @@ exactly, checks candidate shapes for all tasks/both sizes/peers/controls, enforc
 aggregate literal prose counts, preserves repeated references, and measures all
 public feedback. Its `--write-fixture <new_protocol_replies.json>` exclusively
 creates a new UTF-8/LF archive; the existing fixture is protected from overwrite.
+
+## Synchronous rounds and drained prefixes
+
+[round_traces.json](round_traces.json) retains an eight-round scripted Prefix Sum
+target-size trace produced by [tokenizer_rounds.py](../tokenizer_rounds.py)
+through the actual renderer, strict reply validator and synchronous delivery
+interface. All 32 opportunities have exact rendered/template requests, native
+input/generated IDs, literal raw replies or an explicit failed slot, validity
+stages, staged messages, committed permitted peer data and released delivery
+components. The trace records 24 protocol-valid, six invalid and two failed
+slots. Its continuation starts from a fresh deserialization without applying an
+event/retention policy; it is a protocol fixture, not an experimental branch.
+
+The saved prefix is committed with no pending round-four deliveries. Owner-v1
+exposure records come from all four actual rendered owner requests for each
+public source. Delivery components keep sender/recipient, original slot,
+first usable boundary, host/peer origin, message relationships and separate
+reference attempts/acquisition outcomes. Prefix-round-four messages are available
+at recovery round one; final recovery messages are drained at the unscheduled
+round-five boundary, which creates no fifth call. IDs, queues, full resolved
+payloads and acquisition flags remain offline; current-source delivery metadata
+in prompts records the first usable acquisition per version.
+
+The fixture uses the same pinned Qwen3.5-9B revision and CPU packages listed
+above. Three native checks reproduce the complete saved trace, verify both
+physical orders over all five families/both sizes/all eight rounds, and check
+actual rendered exposure and final prefix drain. These scripted requests use
+699–3,912 input tokens plus the full 384-token output reserve; generated outputs
+use 0–243 tokens. These are observed fixture ranges, not a bound on every legal
+retained context, a local-view attainability witness, model capability or M5
+admission. Event/retention, exact mixed/Q controls and complete capacity remain
+M2-T04–T06; durable calls and process-crash checks remain M3.
+
+```powershell
+python -m unittest tests.round_checks -v
+python -m tests.tokenizer_rounds --tokenizer $peerTokenizerDir
+python -m recovery validate
+```
+
+`--write-fixture <new_round_traces.json>` exclusively creates a new archive;
+ordinary validation only reads the retained fixture. UTF-8/LF bytes are enforced
+by Git attributes. [M2-T03](../../docs/todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#validation-and-evidence)
+records implementation, validation and the next-task handoff.

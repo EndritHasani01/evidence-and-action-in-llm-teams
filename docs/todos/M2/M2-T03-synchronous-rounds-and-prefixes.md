@@ -53,6 +53,19 @@ Pydantic 2.13.5 environment also passes the 40 protocol/round checks. Prefixes
 and full continuation opportunities remain independent of validity/correctness.
 Native-tokenizer trace reproduction and final documentation audit are in progress.
 
+**Native-tokenizer checkpoint:** [tokenizer_rounds.py](../../../tests/tokenizer_rounds.py)
+passes three checks using pinned Qwen3.5-9B revision
+`c202236235762e1c871ad0ccb60c8ee5ba337b9a`, Windows / CPython 3.11.9,
+Pydantic 2.12.5, Transformers 5.12.0, Tokenizers 0.22.2, Jinja2 3.1.6 and
+Hugging Face Hub 1.19.0. The retained
+[eight-round trace](../../../tests/fixtures/round_traces.json) reproduces every
+rendered/template request, native ID, literal output/failure, staged message,
+delivery component, committed peer state and drained prefix. All five families
+at both sizes and both invocation orders pass across prefix and continuation.
+Observed scripted inputs are 699–3,912 tokens, with the full 384 output reserve;
+generated outputs are 0–243 tokens. This is tokenizer-only protocol evidence,
+not the complete capacity argument, an event/replay control, or model execution.
+
 **Prerequisite handoff (4 October 2026):** [M2-T02 completion](M2-T02-strict-replies-and-feedback.md#completion-and-handoff)
 passes 103 source/installed CPU checks, six native protocol checks and the five
 unchanged native renderer checks. `validate_reply` returns separate validity

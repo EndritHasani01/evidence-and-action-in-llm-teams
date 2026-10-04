@@ -3,3 +3,4 @@ tests/fixtures/population_*.json text eol=lf
 tests/fixtures/schedules_*.json text eol=lf
 tests/fixtures/peer_requests.json text eol=lf
 tests/fixtures/protocol_replies.json text eol=lf
+tests/fixtures/round_traces.json text eol=lf
