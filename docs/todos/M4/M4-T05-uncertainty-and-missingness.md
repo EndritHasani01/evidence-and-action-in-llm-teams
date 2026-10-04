@@ -1,0 +1,39 @@
+# M4-T05 — Paired uncertainty and shared-response missingness
+
+**Status:** blocked
+
+**Dependencies:** [M4-T02](../M4/M4-T02-estimands-and-repeatability.md), [M4-T04](../M4/M4-T04-policy-costs-and-boundary-rule.md). M1–M3 must have passed.
+
+## References
+
+- [Repository contract](../../../AGENTS.md) and [plan uncertainty/incompletion](../../IMPLEMENTATION_PLAN.md#uncertainty-and-incomplete-execution).
+- Specification [§5](../../../PROJECT_SPECIFICATION.md#5-outcomes-and-prespecified-estimands), [§6](../../../PROJECT_SPECIFICATION.md#6-statistical-analysis-repetition-and-missingness), and [§7.3](../../../PROJECT_SPECIFICATION.md#73-quality-retained-work-and-cost).
+- Technical evidence: [statistical defaults and identity constraints](../../implementation-research/repository-and-validation.md#analysis-and-allocation-defaults-that-would-change-the-result).
+
+## Intended outcome
+
+Complete and incomplete runs yield the prescribed uncertainty, coverage and bounded sensitivity without treating peers, repeats or shared response copies as independent observations.
+
+## Scope and boundaries
+
+- Use 10,000 paired world-cluster bootstrap draws within each eligible family at its observed sample size. Carry all sibling events/policies/groups/peers/rounds/controls/repeats together.
+- Use equal eligible-family weighting, saved resampling seeds and quantile convention; 1.25/98.75 percentiles for both primaries and 2.5/97.5 for descriptive secondaries. Preserve fixed subset populations and shared world IDs in overlapping displays.
+- Show world contrasts and family means. When within-family contrasts are constant, add the §6 weighted Hoeffding companion with weights 1/(F*n_f), α=0.025 for primaries and the formula-appropriate range: θ [-2,2], φ/direct differences [-1,1], interactions as derived.
+- Report eligible-family completion counts and appropriate exact binomial bounds for all-success/all-failure cases. Keep 0.10 and the specified power/fallback sensitivity calculations as reporting references, never equivalence or achieved-power claims.
+- Publish scheduled/executed counts and paired coverage. Bound unknown correctness in [0,1] through each estimand.
+- Combine coefficients of a shared unknown response identity before assigning extrema for linear contrasts. Nonlinear joint/trajectory summaries retain shared variables and conservatively labeled bounds; small enumerated fixtures suffice, without a generic optimizer.
+- Incomplete trajectories remain separate; complete-case displays cannot replace the frozen population. Include paired uncertainty for policy quality/preservation/cost displays.
+
+## Completion criteria
+
+- Resampling units, family weights, interval settings and seeds are explicit and reproducible.
+- Degenerate bootstrap output has its bounded-mean companion, correct contrast range and stated limits.
+- Recorded failures remain zero and unexecuted slots remain unknown through all summaries.
+- Shared first-round logical uses cannot independently vary in sensitivity bounds; cancellations and feasible joint completions are respected.
+
+## Validation and evidence
+
+Test paired clustering/family stratification, repeats not increasing N, overlap identity, quantile endpoints, constant-within-family degeneracy, clipped Hoeffding ranges and exact completion bounds. Enumerate tiny shared-response linear/nonlinear fixtures independently, including missingness cancellation and fragmented/incomplete trajectories. Check empty eligible populations yield explicit N/A, not false certainty.
+
+**Evidence:** Not yet recorded. Add saved resampling settings, independent fixture expectations and executed results before marking done.
+
