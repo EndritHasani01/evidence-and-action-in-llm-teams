@@ -40,3 +40,13 @@ have been inspected. Implement legal edit sets first, then immutable population
 records and isolated saved streams, then reload/mutation and population checks.
 No inference, accepted M5 freeze or scientific-design change is part of this task.
 
+**Edit checkpoint:** `python -S -m unittest tests.test_edits -v` passed five
+focused checks on CPython 3.11.9. [edits.py](../../../recovery/edits.py) implements
+immutable single-source revisions/shams, exact legal sets and the two sampling
+rules; [test_edits.py](../../../tests/test_edits.py) enumerates selection boundaries,
+numeric endpoints, unique/duplicate Top-K values, zero cutoffs, and every BFS
+deletion against independent relaxation at both sizes. Preserving Top-K requires
+the original value strictly below the cutoff; a replacement equal to the cutoff
+is legal because it leaves the complete ten-value answer unchanged, including
+multiplicity. No record-identity tie-break is part of the answer contract.
+
