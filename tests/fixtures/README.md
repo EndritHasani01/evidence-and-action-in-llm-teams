@@ -353,3 +353,38 @@ The gzip payload is canonical UTF-8/LF JSON with `mtime=0`; normal validation
 reads it without changing it. Compression reduces only the offline fixture
 (31 MB uncompressed, 714 KB compressed), never model-visible history. See
 [M2-T06 evidence](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#validation-and-evidence).
+
+## Complete capacity failure evidence
+
+[capacity_report.json.gz](capacity_report.json.gz), reproduced by
+[tokenizer_capacity.py](../tokenizer_capacity.py), retains ten task/size accounting
+rows, 30 adversarial rendered views, two reachable round-two counterexamples,
+three ordinary lossless-layout probes, literal special-string delivery and an
+unpaired-surrogate tokenizer gap. Requests, local views, physical own IDs and
+actual input counts are retained; no model was loaded or sampled.
+
+All six native verification checks pass. **The capacity command then exits 1**
+because neither requested size is admitted. Exit 2 denotes a failed verification
+check; a regression check reproducing an overflow does not establish capacity.
+One permitted invalid 384-token reply plus lawful incoming prose gives 14,258
+target / 13,965 fallback input tokens before the full 384 output reserve. The
+production path rejects these without truncation. The report also identifies
+ASCII escaping, re-encoding expansion, NFC prose accounting, 200-digit valid
+mistakes, complete fixed fields/feedback and literal Q history counts. Its
+conservative bounds are deliberately loose, never used as a passing proof.
+
+```powershell
+python -m tests.tokenizer_capacity --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+$env:PYTHONHASHSEED = '37'
+python -m tests.tokenizer_capacity --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/4B"
+```
+
+Both commands reproduce the retained evidence and deliberately return 1. The
+4B metadata are byte-identical to the pinned 9B tokenizer/template; SHA-256 checks
+use the identities established in the prerequisite investigation. The actual
+loaded template, non-thinking setting, class and CPU package versions are recorded.
+`--write-fixture <new.json.gz>` exclusively creates new canonical UTF-8/LF JSON
+inside gzip (`mtime=0`); normal checks only read the archive. Compression is
+offline storage only. See the task's
+[accounting and failure argument](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#capacity-accounting-and-exact-failure)
+and [blocked handoff](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#blocked-handoff-and-required-decision).
