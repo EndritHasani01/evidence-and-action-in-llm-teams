@@ -43,6 +43,30 @@ records and one lossless renderer first, then audit hidden-field independence,
 source/receipt/history semantics and exact template/token inputs. Complete
 capacity admission remains M2-T06; this task makes no inference or freeze claim.
 
+**Renderer checkpoint:** [state.py](../../../recovery/state.py) now projects
+private shards/complete-world controls into immutable permitted records and
+resolves only held current versions. [prompts.py](../../../recovery/prompts.py)
+renders one user-data archive, separate current sources, notices/receipts,
+candidate status and public feedback, with source metadata free of payloads or
+queue labels. `python -S -m unittest tests.test_peer_views -v` passes **19/19**
+focused checks across both sizes/all families, hidden-field pairs, pending and
+deleted records, historical receipts, wrong/absent compact candidates,
+literal escaped text, release ordering, fresh processes and the context boundary.
+
+The optional [native tokenizer harness](../../../tests/tokenizer_peer_views.py)
+passes **5/5** CPU checks with Qwen3.5-9B revision
+`c202236235762e1c871ad0ccb60c8ee5ba337b9a`, Transformers 5.12.0,
+Tokenizers 0.22.2, Jinja2 3.1.6 and Hugging Face Hub 1.19.0. Local tokenizer JSON,
+configuration and template bytes were compared directly with that immutable
+upstream revision. [Seven saved short fixtures](../../../tests/fixtures/peer_requests.json)
+retain exact request content, native template text, token IDs and attention masks;
+input lengths are 757–1,830 tokens, plus the full 384-token output reserve.
+This is short-fixture evidence, not a complete capacity bound. The first harness
+invocation pointed at the parent containing `9B`/`4B` folders; it failed before
+writing a fixture. Using the actual `9B` metadata directory passed without a
+dependency or protocol change. Full-suite, installed-package and handoff checks
+remain before task completion.
+
 **Prerequisite handoff (4 October 2026):** [M1-T03 gate evidence](../M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate)
 passes with all 59 CPU checks, including M1-T01/T02, complete schedules/replay
 dependencies and the retained prepared schedule. M1's gate is passed; this task

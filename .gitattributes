@@ -1,3 +1,4 @@
 # Saved population fixtures have canonical UTF-8/LF bytes, including on Windows.
 tests/fixtures/population_*.json text eol=lf
 tests/fixtures/schedules_*.json text eol=lf
+tests/fixtures/peer_requests.json text eol=lf
