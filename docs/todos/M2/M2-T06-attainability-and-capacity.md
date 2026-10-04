@@ -1,6 +1,6 @@
 # M2-T06 — Protocol attainability and complete tokenizer capacity
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T05](../M2/M2-T05-mixed-and-prose-delay-replay.md). M1 must have passed before M2 work begins.
 
@@ -35,4 +35,17 @@ A locally informed scripted strategy proves the real protocol is usable within f
 Retain the local-view witness trace, per-shape token table, tokenizer/template identity, worst-case accounting and adversarial input/output fixtures. Recheck visibility, synchrony, retention and replay against the finalized renderer where it changed. Show requested versus admitted sizes and the command/environment for every capacity result.
 
 **Evidence:** Not yet recorded. No tokenizer-only or scripted evidence is a model-capability result.
+
+**Prerequisite handoff (4 October 2026):** [M2-T05 completion](M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff)
+passes 158 source/installed CPU checks and all 22 native-tokenizer checks.
+`start_continuation` now supplies Q's parent-equivalent boundary.
+`obtain_continuation_round` captures scheduled settings/seeds/replies in an
+in-memory `SavedRound`; mixed/Q round one requires exact matching B/C parent
+records, including invalid/failed outcomes. `commit_continuation_round` assembles
+branch-local effects and Q source/prose delivery, with chronological release
+before round three. Use this pair for the witness's scheduled continuations;
+the provider receives permitted view/render/native input plus keyword seed and
+settings. Held counts derive from committed queues/deliveries. The retained
+54-round native replay archive verifies controls and timing, not attainability
+or complete capacity. Durable save-before-effects integration remains M3.
 

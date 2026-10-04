@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2-T01–T03 verify permitted views/rendering, strict replies, synchronous scripted rounds and immutable drained prefixes; event/retention/replay/capacity and M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
+**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2-T01–T05 verify permitted views/rendering, strict replies, synchronous scripted rounds, immutable drained prefixes, literal event/retention/receipt boundaries and exact mixed/Q replay. Attainability/complete capacity and M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
 
 ## 1. Execution roadmap
 
@@ -315,7 +315,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | Milestone | Status | Evidence / next action |
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
-| M2 | Partially verified on CPU (4/6 tasks done) | [M2-T04 completion](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff): 140 source/installed CPU checks (80 core + 23 strict reply + 18 round/prefix + 19 event/retention), four native boundary/receipt checks and all 14 previous native checks. Every saved non-Q start, literal retention, persistent historical candidates, source authority, paired renders and actual receipt costs pass; four prefixes/15 boundary snapshots/60 exact requests are archived. [M2-T05](todos/M2/M2-T05-mixed-and-prose-delay-replay.md) is ready. Exact mixed/Q replay, local-view witness and capacity admission remain; M2's gate is open. |
+| M2 | Partially verified on CPU (5/6 tasks done) | [M2-T05 completion](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff): 158 source/installed CPU checks (80 core + 23 strict reply + 18 round/prefix + 19 event/retention + 18 replay) and all 22 native checks pass. Exact prescribed mixed/Q parents, invalid/failure reuse, branch-local effects, Q source/own-reply equality, no held-text leakage, chronological release and inactive counts are verified. Fifty-four scripted rounds/216 requests/72 parent comparisons are archived; prior native fixtures reproduce unchanged. [M2-T06](todos/M2/M2-T06-attainability-and-capacity.md) is ready for the local-view witness and complete capacity argument. M2's gate remains open. |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
@@ -338,7 +338,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | One serial process/replica/database per GPU; access to saved inputs | Keeps inference/RNG isolated while permitting sibling/device rotation |
 | M2-T04 uses explicit boundary cases, saved schedule identities and persistent notices | Every start deep-deserializes the original prefix and checks original sources/fourth-slot outcomes. The existing schedule enumeration governs subsets/repeats; no second eligibility configuration is added. A notice on all four recovery peers identifies the applied boundary, including sham, without another stored flag. Ordinary numeric receipt fields stay identical in L/F/masks and B/C/K; a pending ordinary field reveals no value, while historical disclosure requires delivered v2. K's exact historical result/absence moves into labeled history once when replaced by a new slot. Nineteen focused CPU checks, the 140-check source/installed suites and all 18 native checks pass; exact replay and durable apply-once execution remain T05/M3. |
 | Offline exact evaluation/analysis, ready before GPUs | Prevents correctness feedback and late discovery of unrecorded analysis inputs |
-| M2-T05 separates saved continuation replies from branch-local commit | `SavedRound` retains the existing scheduled calls, immutable settings JSON and pre-delivery barrier. The prescribed B/C parent must match event/replicate, view, exact rendered/native request, settings and seed; revalidation preserves its recorded outcome. Q uses the existing pending component IDs and derives held counts from committed records. Eighteen focused CPU checks pass; native artifacts and final regression evidence remain open. Durable records/checkpoints remain M3. |
+| M2-T05 separates saved continuation replies from branch-local commit | `SavedRound` retains the existing scheduled calls, immutable settings JSON and pre-delivery barrier. The prescribed B/C parent must match event/replicate, view, exact rendered/native request, settings and seed; revalidation preserves its recorded outcome. Q uses the existing pending component IDs and derives nonempty held counts from committed records, including zero for inactive branches. Eighteen focused CPU checks, all 158 source/installed checks and 22 native checks pass. No dependency or second delivery/counter store is added. Durable records/checkpoints remain M3. |
 | Keep incidental names/layout flexible | Freeze interfaces and scientific invariants; avoid abstractions unsupported by a current requirement |
 
 ### Discoveries or deviations
@@ -414,8 +414,29 @@ requests. Receipt disclosure changes only the archived before-value; the saved
 Prefix Sum/Sort pairs cost four/three fewer input tokens per peer than ordinary
 wording, without padding. Ordinary new history and K's retained result persist
 through all four recovery slots. No scientific deviation or dependency was
-needed. M2-T05 is ready; exact mixed/Q replay, the local-view witness, complete
-capacity and M3 durability remain open, with no model/pilot/main result implied.
+needed. This established the M2-T05 prerequisite, without a model/pilot/main
+result or complete capacity proof.
+
+M2-T05 now verifies exact scheduled B/C reply reuse for both masks and Q,
+including invalid/failure records, mismatched dependency rejection and
+event/replicate scoping. Each branch reconstructs its outgoing set from its
+own original start. Q's round-two sources, own reply and source metadata match
+its parent; only incoming prose waits until the round-three boundary. Release
+preserves stable IDs and already-seen history, with no extra call or permanent
+drop. Held counts derive from committed records and retain inactive branches.
+The new native archive reproduces 54 rounds, 216 requests and 72 exact parent
+comparisons; prior fixtures are unchanged. Source/installed validation passes
+158 checks, core-only passes 80, and all 22 native checks pass. M2-T06 is ready;
+the local-view witness, complete capacity bound and M3 durability remain open.
+No scientific deviation, dependency, inference run or accepted freeze was needed.
+
+The T05 artifact audit found that the initial inactive scenario reused IDs from
+a different scripted parent response. The corrected fixture uses distinct,
+predetermined saved worlds for source-only scenarios and archives their parents.
+An archive-wide native check now requires unique call IDs and exact joins for
+every replay. This changes the validation evidence, not the design. A final
+reporting guard rejects held-prose counts before a committed recovery round,
+preserving the distinction between unexecuted and observed inactive treatments.
 
 ### Unresolved issues
 
