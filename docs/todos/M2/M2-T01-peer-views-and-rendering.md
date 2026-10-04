@@ -67,6 +67,16 @@ writing a fixture. Using the actual `9B` metadata directory passed without a
 dependency or protocol change. Full-suite, installed-package and handoff checks
 remain before task completion.
 
+**Latest-slot review checkpoint:** A focused regression first reproduced a
+state-construction defect: an older candidate could remain marked valid after a
+newer own reply or feedback slot. The permitted-view guard now rejects that
+combination, including an unexecuted marker with recorded own work. Matching
+invalid/failed outcomes keep an explicit absent candidate. The regression and all
+**20/20 focused checks pass**; the full saved-population/schedule CPU run passes
+**79/79**, and the native tokenizer rerun still passes **5/5** with unchanged saved
+request/token bytes. This strengthens the existing no-inherited-answer invariant
+without implementing M2-T02's parser or altering scientific design.
+
 **Prerequisite handoff (4 October 2026):** [M1-T03 gate evidence](../M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate)
 passes with all 59 CPU checks, including M1-T01/T02, complete schedules/replay
 dependencies and the retained prepared schedule. M1's gate is passed; this task

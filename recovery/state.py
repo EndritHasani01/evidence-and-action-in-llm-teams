@@ -294,6 +294,10 @@ class PeerView:
             raise ValueError("invalid candidate state")
         if self.candidate.slot is not None:
             self._past_slot(self.candidate.slot)
+        latest_recorded = max(own_slots | feedback_slots, key=lambda s: s.order, default=None)
+        if latest_recorded is not None and (self.candidate.slot is None
+                                            or self.candidate.slot.order < latest_recorded.order):
+            raise ValueError("candidate must describe the latest recorded own slot")
         if self.candidate.status == "valid":
             value = self.candidate.value
             if bfs and (any(type(pair) is not tuple or len(pair) != 2 for pair in value)

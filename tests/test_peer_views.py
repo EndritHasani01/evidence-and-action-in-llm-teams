@@ -256,6 +256,21 @@ class PeerViewTests(unittest.TestCase):
         plausible = replace(view, candidate=CandidateState("invalid", Slot("prefix", 4)))
         self.assertIsNone(data(plausible)["latest_candidate"]["candidate"])
 
+    def test_latest_candidate_cannot_survive_a_newer_own_reply_or_feedback_slot(self):
+        retained = renderer_cases()["retained_valid_reply"]
+        recent = Slot("recovery", 1)
+        with self.assertRaisesRegex(ValueError, "latest"):
+            replace(retained, slot=Slot("recovery", 2),
+                    history=retained.history + (OwnReply(recent, "malformed recent reply"),))
+        with self.assertRaisesRegex(ValueError, "latest"):
+            replace(retained, slot=Slot("recovery", 2), feedback=(Feedback(recent, "json"),))
+        with self.assertRaisesRegex(ValueError, "latest"):
+            replace(retained, candidate=CandidateState())
+        recent_invalid = replace(retained, slot=Slot("recovery", 2),
+                                 history=retained.history + (OwnReply(recent, "malformed recent reply"),),
+                                 candidate=CandidateState("invalid", recent))
+        self.assertIsNone(data(recent_invalid)["latest_candidate"]["candidate"])
+
     def test_compact_actual_wrong_result_and_historical_absence_are_explicit(self):
         cases = renderer_cases()
         compact = cases["compact_wrong_result"]
@@ -293,7 +308,8 @@ class PeerViewTests(unittest.TestCase):
                    ReceivedProse(Slot("recovery", 1), 2, "released round one sender two"),
                    ReceivedProse(Slot("recovery", 1), 3, "released round one sender three"),
                    ReceivedProse(Slot("recovery", 2), 1, "ordinary round two"))
-        view = replace(base, slot=Slot("recovery", 3), history=entries)
+        view = replace(base, slot=Slot("recovery", 3), history=entries,
+                       candidate=CandidateState("invalid", Slot("recovery", 2)))
         shown = data(view)
         self.assertEqual([entry["text"] for entry in shown["history"]], [entry.text for entry in entries])
         ordinary = replace(view, history=entries[:1])
@@ -316,7 +332,8 @@ class PeerViewTests(unittest.TestCase):
         base = initial_view(self.world(), 0)
         for code, description in PUBLIC_FEEDBACK.items():
             feedback = Feedback(Slot("prefix", 1), code)
-            view = replace(base, slot=Slot("prefix", 2), feedback=(feedback,))
+            view = replace(base, slot=Slot("prefix", 2), feedback=(feedback,),
+                           candidate=CandidateState("invalid", Slot("prefix", 1)))
             self.assertEqual(data(view)["feedback"], [{"slot": {"phase": "prefix", "round": 1},
                                                        "text": description}])
         for hidden in (SPECIAL_TEXT, "gold", "HIDDEN_PAYLOAD", "wrong_answer"):
