@@ -57,6 +57,19 @@ existing view/protocol/round/event checks also pass. Both masks and Q execute
 four recovery rounds with four reused and twelve new calls. Native artifacts,
 final source/installed validation and completion handoff remain open.
 
+**Native checkpoint:** Three checks in
+[tokenizer_replay.py](../../../tests/tokenizer_replay.py) pass with the pinned
+Qwen3.5-9B tokenizer revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a`.
+[replay_traces.json](../../../tests/fixtures/replay_traces.json) retains two
+prefixes, 50 continuation rounds, 200 exact requests and 72 parent comparisons.
+It includes revised/sham B/C/masks, complete Q horizons, pending/released stable
+IDs, invalid/failed parents, repeated source attempts, tombstones and two
+source-only inactive Q cases. Native masks also pass all five families/both
+sizes/events/replicates. Observed archive inputs are 921–3,350 tokens with the
+full 384 output reserve; replies use 6–134 tokens. These fixtures do not establish
+the complete capacity bound or any model result. Final regression/reproduction
+and documentation audit remain open.
+
 **Prerequisite handoff (4 October 2026):** [M2-T04 completion](M2-T04-events-retention-and-receipts.md#completion-and-handoff)
 passes 140 source/installed CPU checks and all 18 native-tokenizer checks.
 `start_continuation(prefix_bytes, prepared_world, scheduled_branch)` supplies

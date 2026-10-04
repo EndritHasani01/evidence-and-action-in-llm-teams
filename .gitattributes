@@ -5,3 +5,4 @@ tests/fixtures/peer_requests.json text eol=lf
 tests/fixtures/protocol_replies.json text eol=lf
 tests/fixtures/round_traces.json text eol=lf
 tests/fixtures/event_boundaries.json text eol=lf
+tests/fixtures/replay_traces.json text eol=lf

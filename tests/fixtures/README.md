@@ -280,3 +280,40 @@ python -m tests.tokenizer_events --tokenizer $peerTokenizerDir
 `--write-fixture <new_event_boundaries.json>` exclusively creates a new archive;
 normal validation only reads the saved UTF-8/LF fixture. See
 [M2-T04 evidence](../../docs/todos/M2/M2-T04-events-retention-and-receipts.md#validation-and-evidence).
+
+## Exact parent replay and delayed prose
+
+[replay_traces.json](replay_traces.json), reproduced by
+[tokenizer_replay.py](../tokenizer_replay.py), retains two original prefixes
+(Sort target and BFS fallback), 50 scripted continuation rounds, 200 exact
+permitted/rendered/native requests and 72 explicit parent comparisons. Both
+events include B/C first rounds, both complementary masks and complete Q_B/Q_C
+horizons. Two additional source-only Q cases record zero held prose.
+
+Each round retains its saved call IDs/seeds, settings, literal raw replies and
+validation, branch-local committed snapshot, pending/released component IDs
+and derived per-recipient held counts. Required comparisons verify permitted
+view, rendered request, native input, settings, seed and recorded outcome.
+Round-two Q current sources, own reply and source metadata equal the parent;
+held prose is absent from requests. At the round-three boundary its stable IDs
+release before new round-two prose without moving already-seen history.
+Invalid/failed outcomes, duplicate references and BFS tombstones remain literal.
+
+Three native checks reproduce the archive and exercise both masks across all
+five families, both sizes, revision/sham and extra continuation replicates.
+The same pinned Qwen3.5-9B tokenizer revision and CPU packages as above produce
+921–3,350 input tokens plus the full 384 output reserve, and 6–134 output tokens
+in this archive. These are observed scripted ranges, not complete capacity,
+durability, model capability or empirical recovery evidence.
+
+```powershell
+python -m unittest tests.replay_checks -q
+python -m tests.tokenizer_replay --tokenizer $peerTokenizerDir
+```
+
+`--write-fixture <new_replay_traces.json>` exclusively creates a new archive;
+normal checks only read the retained UTF-8/LF file. The 18 CPU replay checks
+also cover mismatches, missing versus failed parents, no-placeholder visibility,
+source/prose ordering, later acquisition divergence, inactive/empty text, nested
+isolation and four replayed plus twelve new opportunities per branch. See
+[M2-T05 evidence](../../docs/todos/M2/M2-T05-mixed-and-prose-delay-replay.md#validation-and-evidence).
