@@ -30,6 +30,28 @@ def provenance():
             "scope": "Local-view scripted attainability and output contracts; no capacity or model-capability admission."}
 
 
+def correct_output_upper(text, tokenizer):
+    """Bound correct integer widths and every fixed-width live reference ID.
+
+    The fixtures use maximum integer character widths (including all negative
+    differences/distances). Pay one token per candidate/punctuation byte and
+    per digit in source IDs, versions and recipients. Other pre-tokenizer pieces
+    are fixed reply/message scaffolding. Native BPE cannot merge across those
+    boundaries; verify the exposed segmentation reproduces the exact encoder.
+    This is an output-serialization bound, not a new cap on wrong integers.
+    """
+
+    candidate = json.dumps(json.loads(text)["candidate"], separators=(",", ":"))
+    start, end = len('{"candidate":'), len('{"candidate":') + len(candidate)
+    backend = tokenizer._tokenizer
+    pieces = backend.pre_tokenizer.pre_tokenize_str(text)
+    encoded = [token.id for piece, _ in pieces for token in backend.model.tokenize(piece)]
+    if encoded != tokenizer.encode(text, add_special_tokens=False):
+        raise ValueError("output bound segmentation differs from the native encoder")
+    return sum(len(piece) if (a < end and b > start) or any(c.isdigit() for c in piece)
+               else len(backend.model.tokenize(piece)) for piece, (a, b) in pieces)
+
+
 def call_record(call, view, encoded, outcome):
     return {"call": asdict(call), "slot": asdict(view.slot),
             "local_sources": [asdict(s) for s in view.sources],
@@ -75,6 +97,7 @@ def output_shapes(tokenizer):
                                  "shape": "candidate_empty_send" if not send else "candidate_own_shard",
                                  "text": text, "token_ids": list(raw.token_ids),
                                  "output_tokens": outcome.output_tokens,
+                                 "correct_value_token_upper": correct_output_upper(text, tokenizer),
                                  "prose_tokens": outcome.prose_tokens, "protocol_valid": outcome.protocol_valid})
     return rows
 
@@ -146,6 +169,8 @@ class NativeAttainabilityTests(unittest.TestCase):
         for shape in self.current["output_shapes"]:
             self.assertTrue(shape["protocol_valid"], shape)
             self.assertLessEqual(shape["output_tokens"], 384)
+            self.assertLessEqual(shape["output_tokens"], shape["correct_value_token_upper"])
+            self.assertLessEqual(shape["correct_value_token_upper"], 384)
         for case in self.current["cases"]:
             for row in case["rounds"]:
                 for call in row["calls"]:

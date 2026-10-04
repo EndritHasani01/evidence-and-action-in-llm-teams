@@ -86,11 +86,18 @@ def accounting(view, tokenizer, vocabulary_byte_bound, nfd_scalar_bound):
             value = (view.size.node_count - 2, view.size.node_count - 1)
             sources.append(replace(s, value=value, version=2, deleted=True))
         else:
-            sources.append(replace(s, value=numeric_range(view.task)[1], version=2))
+            value = max(numeric_range(view.task), key=lambda n: len(str(n)))
+            sources.append(replace(s, value=value, version=2))
     deliveries = tuple(SourceDelivery(s.record_id, s.version, "peer", 0,
                                       Slot("recovery", 3), Slot("recovery", 4)) for s in sources)
     empty = replace(view, sources=tuple(sources), source_deliveries=deliveries,
                     history=tuple(replace(h, text="") for h in view.history))
+    # The edited ID/position can differ from the saved witness world. Use the
+    # widest public identity, and the longer ordinary receipt description.
+    identity = max(view.manifest, key=lambda s: len(json.dumps(asdict(s))))
+    empty = replace(empty, notice=replace(empty.notice, source=identity),
+                    receipt=(None if empty.receipt is None else
+                             replace(empty.receipt, source=identity, before_value=None)))
     valid = CandidateState.valid(view.task, view.size, view.peer, SLOTS[-1],
                                  ({str(j): 0 for j in range(view.size.node_count)} if view.task is Task.BFS
                                   else [0] * len(candidate_contract(view.task, view.size, view.peer).coordinates)))

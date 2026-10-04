@@ -343,6 +343,13 @@ The actual witness uses 699–4,915 input tokens plus 384 reserved output and
 210 tokens at target and 162 at fallback. These establish protocol attainability;
 they establish neither complete capacity nor model capability.
 
+Each output row also retains a correct-value serialization upper bound, at most
+245 target / 189 fallback tokens. Candidate bytes and all reference/version/
+recipient digits are overpaid at one token per byte; other fixed BPE pieces use
+the exact backend segmentation, checked against the complete native encoded IDs.
+This covers correct integer widths and any live reference ID digits without
+placing a numeric cap on model mistakes.
+
 ```powershell
 python -m unittest tests.attainability_checks -q
 python -m tests.tokenizer_attainability --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"

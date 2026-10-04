@@ -12,9 +12,12 @@ for both declared sizes. Complete main/development schedules and replay dependen
 also pass independent CPU checks. M1's gate is passed. Permitted peer views,
 lossless request rendering, strict whole-reply validation, synchronous
 scripted rounds/drained prefixes, literal event/retention/receipt boundaries and
-exact mixed/Q replay pass 158 CPU checks plus 22 native-tokenizer checks. Complete context
-capacity, the durable workflow, Qwen3.5/T4 pilot and main experiments
-remain future work. See
+exact mixed/Q replay and local-view attainability pass 163 CPU checks plus
+32 native verification checks. **M2 is blocked at capacity:** both declared sizes
+have reachable requests exceeding 8,192 tokens; literal surrogate prose also
+exposes a tokenizer gap. Neither size is admitted. The durable workflow,
+Qwen3.5/T4 pilot and main experiments remain future work. See
+[M2-T06 blocked evidence](docs/todos/M2/M2-T06-attainability-and-capacity.md#blocked-handoff-and-required-decision),
 [M2-T05 evidence](docs/todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff),
 [M2-T04 evidence](docs/todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff),
 [M2-T03 evidence](docs/todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff),
@@ -48,9 +51,12 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m recovery validate
 ```
 
-Full validation includes the core, strict-reply, scripted-round, event and replay checks. Without installation,
+Full validation includes the core, strict-reply, scripted-round, event, replay and
+local-view attainability checks. Native tokenizer/capacity admission is checked
+separately with local pinned metadata. Without installation,
 `python -S -m recovery validate --core-only` runs only the dependency-free core
-subset with site packages disabled; it explicitly excludes strict replies/rounds/events/replay
+subset with site packages disabled; it explicitly excludes strict replies, rounds,
+events, replay and attainability
 and cannot establish their gate. Full validation fails if Pydantic is unavailable.
 Validation requires this checkout's tests and attributed vendor JSON. It checks
 both sizes regardless of the configured size, exits nonzero on failure, and
@@ -150,8 +156,41 @@ and uncommitted rounds. No queue data enters a peer view.
 The [replay archive](tests/fixtures/README.md#exact-parent-replay-and-delayed-prose)
 records 72 exact parent comparisons and complete Q release traces. Use these
 scheduled obtain/commit steps for continuation execution; `rounds.py` provides
-the underlying pure operations. Complete capacity remains M2-T06 and durable
+the underlying pure operations. Complete capacity is blocked in M2-T06; durable
 reply persistence/checkpoints remain M3.
+
+## Protocol attainability and capacity
+
+[witness.py](recovery/witness.py) is a CPU validation strategy. Each peer forwards
+its current private shard to a different peer in rounds 1–3, then solves from
+locally acquired records. It uses legal placeholders earlier and receives no
+host gold or unseen records. The retained
+[witness trace](tests/fixtures/README.md#protocol-attainability-witness) covers
+all families/sizes and scheduled siblings/repeats/controls, including L forwarding,
+F reacquisition, receipts and mixed/Q replay. Candidate/control/own-shard outputs
+fit 384 tokens at both sizes. This establishes attainability, not LLM capability.
+
+Complete capacity fails. A permitted invalid 384-token reply retained after one
+actual scripted round makes the next request use 14,642 target / 14,349 fallback
+tokens including the output reserve, above 8,192. The
+[capacity report](tests/fixtures/README.md#complete-capacity-failure-evidence)
+retains the exact counterexamples, full-horizon accounting/adversarial views,
+failed simple lossless layouts and a separate unpaired-surrogate gap. The live
+renderer preserves literal history and rejects overflow. The specification and
+default configuration are unchanged; an explicit protocol resolution is needed
+before M2 closes.
+
+```powershell
+python -m unittest tests.attainability_checks -q
+python -m tests.tokenizer_attainability --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+python -m tests.tokenizer_capacity --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+```
+
+The native commands require the locally downloaded pinned tokenizer metadata
+described in [M2-T06](docs/todos/M2/M2-T06-attainability-and-capacity.md#reproduction-environment-and-commands).
+All six capacity verification checks pass, then that command deliberately exits
+**1** for failed admission; exit **2** means a verification check failed. CPU
+validation passing does not override this native gate. No GPU use is admitted.
 
 The [independent references and attributed fixtures](tests/fixtures/README.md)
 validate task truth, not model capability, native SILO scores or recovery effects.
@@ -286,6 +325,6 @@ JSON can save the request and token record in the later call ledger.
 The [seven retained short request/token fixtures](tests/fixtures/README.md#permitted-peer-requests-and-tokenizer-inputs)
 and [native tokenizer harness](tests/tokenizer_peer_views.py) verify literal archive
 preservation and exact native inputs. M2-T01's original 79-check CPU suite and
-five native-tokenizer checks passed; the current 158 CPU/22 native checks include
-the subsequent protocol, round, event and replay evidence. Complete worst-context
-admission remains M2-T06.
+five native-tokenizer checks passed; the current 163 CPU/32 native checks include
+the subsequent protocol, round, event, replay, witness and capacity-failure
+evidence. Complete worst-context admission is blocked in M2-T06.

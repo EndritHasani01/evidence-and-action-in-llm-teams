@@ -109,7 +109,16 @@ and includes the witness's short prose. Actual revised sends also exercise v2.
 | fallback | Sort | 24 | 111 | 78 |
 | fallback | BFS | 38 | 89 | 38 |
 
-All rows fit 384 output tokens. Arbitrarily wrong integers acquire no new numeric
+All rows fit 384 output tokens. A separate per-row upper bound pays one token
+per candidate/punctuation byte and per digit in fixed-width IDs/versions/
+recipients, with exact native BPE costs for the remaining fixed scaffolding.
+The exposed pre-tokenizer/model segmentation is checked against the complete
+native encoded IDs. Candidate extrema maximize correct integer character widths;
+all-negative differences/distances also cover the possible sign punctuation.
+Thus all correct-value widths and all live reference digits fit, with worst
+upper bounds **245 target / 189 fallback**, not just the ten sampled worlds'
+realized values. Both measured counts and these bounds are retained per row.
+Arbitrarily wrong integers acquire no new numeric
 cap: actual 200-digit signed mistakes are also validated and retained in the
 capacity fixtures. Simultaneous maximum references/prose is not required to fit.
 
@@ -135,7 +144,8 @@ The fixed-data envelope includes actual instructions/hints, public IDs/owners/
 positions and output assignments, all current records, pending/deleted spelling,
 v1/v2 notices and ordinary/disclosed receipts, all history/feedback labels, latest
 status/candidate metadata and one current first-acquisition entry per source.
-It uses maximum-width source values/endpoints and the longer peer-delivery labels;
+It uses maximum-width source values/endpoints, the widest edited ID/position,
+and the longer peer-delivery labels;
 these static envelopes deliberately overallow combinations that a generated
 world need not realize. Seven fixed public feedback descriptions are included;
 their actual 32-token guard remains in force. No past raw source-table renderings
@@ -159,8 +169,8 @@ byte. Consequently, with C denoting the complete fixed-data envelope:
 
 `input_tokens ≤ C + 85 + (7×384 + 384)×1536 + (21×128)×12288`.
 
-C ranges from 8,163 to 14,078 bytes across the ten task/size shapes. These deliberately
-loose input upper bounds are 37,756,968–37,762,883 tokens, before the 384 reserve.
+C ranges from 8,163 to 14,079 bytes across the ten task/size shapes. These deliberately
+loose input upper bounds are 37,756,968–37,762,884 tokens, before the 384 reserve.
 They are finite accounting bounds for encodable text, **not** a tight worst case,
 a passing admission argument, or an estimate of ordinary context length. The
 unpaired-surrogate gap below is separately exposed. No gate is certified from

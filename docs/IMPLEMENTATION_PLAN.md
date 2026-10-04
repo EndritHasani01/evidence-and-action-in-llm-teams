@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2-T01–T05 verify permitted views/rendering, strict replies, synchronous scripted rounds, immutable drained prefixes, literal event/retention/receipt boundaries and exact mixed/Q replay. Attainability/complete capacity and M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
+**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2-T01–T05 verify permitted views/rendering, strict replies, synchronous scripted rounds, immutable drained prefixes, literal event/retention/receipt boundaries and exact mixed/Q replay. M2-T06 verifies local-view attainability/output contracts but fails complete capacity for both sizes and exposes an unpaired-surrogate tokenizer gap. M2 remains blocked; M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
 
 ## 1. Execution roadmap
 
@@ -315,7 +315,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | Milestone | Status | Evidence / next action |
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
-| M2 | Partially verified on CPU (5/6 tasks done) | [M2-T05 completion](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff): 158 source/installed CPU checks (80 core + 23 strict reply + 18 round/prefix + 19 event/retention + 18 replay) and all 22 native checks pass. Exact prescribed mixed/Q parents, invalid/failure reuse, branch-local effects, Q source/own-reply equality, no held-text leakage, chronological release and inactive counts are verified. Fifty-four scripted rounds/216 requests/72 parent comparisons are archived; prior native fixtures reproduce unchanged. [M2-T06](todos/M2/M2-T06-attainability-and-capacity.md) is ready for the local-view witness and complete capacity argument. M2's gate remains open. |
+| M2 | Blocked at capacity (5/6 tasks done) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 blocked evidence](todos/M2/M2-T06-attainability-and-capacity.md#blocked-handoff-and-required-decision). Source/installed-outside-checkout suites pass 163 CPU checks; all 32 native verification checks pass. The local-view witness archives 4,340 calls/384 exact parent joins and reaches correct final answers across all required siblings at both sizes. Output widths fit 384. Complete capacity fails: reachable prefix-round-two inputs plus reserve are 14,642 target / 14,349 fallback against 8,192. Unpaired surrogate prose also lacks native tokenization. Neither size is admitted; the capacity command deliberately exits 1. Prior native fixtures reproduce unchanged. |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
@@ -339,7 +339,8 @@ Update these sections only when a capability is verified, a consequential decisi
 | M2-T04 uses explicit boundary cases, saved schedule identities and persistent notices | Every start deep-deserializes the original prefix and checks original sources/fourth-slot outcomes. The existing schedule enumeration governs subsets/repeats; no second eligibility configuration is added. A notice on all four recovery peers identifies the applied boundary, including sham, without another stored flag. Ordinary numeric receipt fields stay identical in L/F/masks and B/C/K; a pending ordinary field reveals no value, while historical disclosure requires delivered v2. K's exact historical result/absence moves into labeled history once when replaced by a new slot. Nineteen focused CPU checks, the 140-check source/installed suites and all 18 native checks pass; exact replay and durable apply-once execution remain T05/M3. |
 | Offline exact evaluation/analysis, ready before GPUs | Prevents correctness feedback and late discovery of unrecorded analysis inputs |
 | M2-T05 separates saved continuation replies from branch-local commit | `SavedRound` retains the existing scheduled calls, immutable settings JSON and pre-delivery barrier. The prescribed B/C parent must match event/replicate, view, exact rendered/native request, settings and seed; revalidation preserves its recorded outcome. Q uses the existing pending component IDs and derives nonempty held counts from committed records, including zero for inactive branches. Eighteen focused CPU checks, all 158 source/installed checks and 22 native checks pass. No dependency or second delivery/counter store is added. Durable records/checkpoints remain M3. |
-| M2-T06 witness uses only the permitted local view and existing mathematical functions | `witness.py` is a CPU validation strategy, never an inference tool or study policy. Own-shard forwarding in rounds 1–3 acquires every current record by round four, including L's replacement and F's discarded remote evidence. Five focused CPU checks pass across all families/sizes and scheduled siblings/repeats/controls. Native traces and complete capacity admission remain open. |
+| M2-T06 witness uses only the permitted local view and existing mathematical functions | `witness.py` is a CPU validation strategy, never an inference tool or study policy. Own-shard forwarding in rounds 1–3 acquires every current record by round four, including L's replacement and F's discarded remote evidence. Five focused CPU and four native witness checks pass across all families/sizes/siblings/repeats/controls. Offline gzip preserves the full evidence without changing peer history. |
+| M2-T06 capacity failure blocks further milestones without changing the protocol | Six native checks reproduce real 384-token invalid-slot overflows at both sizes, full-horizon adversarial fixtures, conservative accounting, failed simple lossless layouts and an unpaired-surrogate gap. The native capacity command returns 1 after those checks pass; no size/cap/Unicode rule or renderer is changed. Complete admission needs a passing literal representation and resolved Unicode boundary, or an explicitly authorized pre-main scientific decision. |
 | Keep incidental names/layout flexible | Freeze interfaces and scientific invariants; avoid abstractions unsupported by a current requirement |
 
 ### Discoveries or deviations
@@ -439,11 +440,44 @@ every replay. This changes the validation evidence, not the design. A final
 reporting guard rejects held-prose counts before a committed recovery round,
 preserving the distinction between unexecuted and observed inactive treatments.
 
+M2-T06 completes the authorized CPU preparation but cannot close M2. Its local
+strategy uses only acquired current records and public output assignments, with
+ordinary own-shard routing over three rounds. Ten saved family/size cases cover
+every scheduled sibling/repeat, 1,080 four-peer rounds and 20 controls, with 4,340
+calls/384 exact parent joins archived. All final answers are correct. Actual
+witness requests use 699–4,915 input tokens plus the full reserve; correct-width
+candidate/control/one-shard outputs use at most 210 target / 162 fallback tokens.
+These are constructive protocol checks, not model capability or recovery results.
+
+The complete capacity investigation rejects both sizes before inference. One
+permitted invalid 384-token reply (token 76374 repeated, decoding to long newline
+runs), nine-token public feedback and three lawful 128-token received texts make
+the next prefix request exceed the cap: 14,642 target / 14,349 fallback with the
+384 output reserve. Thirty full-horizon fixtures and complete fixed-field/byte
+accounting include labels, sources, first-acquisition metadata, receipts, wrong
+integers, Unicode/escaping and Q's single release. The bounds are deliberately
+loose and do not certify admission. Another token's re-encoding expansion defeats
+ordinary UTF-8 JSON and raw-text alternatives even for history alone. A separate
+JSON-escaped unpaired surrogate reaches the schema but raises at literal prose
+tokenization; it is surfaced without repair or an invented character restriction.
+
+Source and installed-outside-checkout validation pass 163 checks, core-only passes
+80 without site packages, and all 32 native verification checks pass. Fresh-process
+4B metadata reproduce the capacity report under `PYTHONHASHSEED=37`; tokenizer,
+configuration and actual template identities match the pinned 9B artifacts.
+Both capacity commands deliberately return 1 for the failed gate. See the
+[T06 accounting, commands and environment](todos/M2/M2-T06-attainability-and-capacity.md#capacity-accounting-and-exact-failure).
+No scientific/frozen-configuration change, history truncation, new cap, model
+generation or GPU allocation occurred. M3 remains dependency-blocked. The next
+decision must resolve the exact retained-text/capacity and Unicode incompatibilities
+and renew all affected M2 checks; passing the scripted witness alone is insufficient.
+
 ### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |
 |---|---|
-| Actual worst retained request fits 8,192 tokens | M2 complete renderer accounting plus adversarial tokenized fixtures; use only lossless layout or the allowed uniform size fallback, otherwise stop |
+| Complete retained request fits 8,192 tokens | M2-T06 disproves admission at both sizes with reachable 14,642/14,349-token totals; ordinary lossless layouts also fail. Keep M2 blocked until a passing literal representation or an authorized pre-main protocol revision resolves the incompatibility. |
+| Every schema-permitted prose string has a defined tokenizer count | M2-T06 records an unpaired-surrogate JSON escape causing native `TypeError`; resolve the Unicode contract explicitly before admission, without silently repairing text or inventing a restriction. |
 | Checkpoint/call/effect crash behavior in the real runner | M3 killed-process tests, then rerun against M5's accepted host lock; toy saver success is insufficient |
 | Passing model/runtime/timeout and device headroom | M5 maintained-loader diagnostics and bounded smoke/pilot; no forecast or package version substitutes |
 | 9B/4B, target/fallback size, 60/40 worlds | M5 capability and complete-schedule allocation evidence, following the specified precedence and shared development limit |
