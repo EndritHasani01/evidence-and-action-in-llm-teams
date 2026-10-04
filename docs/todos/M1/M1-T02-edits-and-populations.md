@@ -50,3 +50,15 @@ the original value strictly below the cutoff; a replacement equal to the cutoff
 is legal because it leaves the complete ten-value answer unchanged, including
 multiplicity. No record-identity tie-break is part of the answer contract.
 
+**Population checkpoint:** `python -S -m unittest tests.test_populations -v`
+passed ten checks on CPython 3.11.9. [populations.py](../../../recovery/populations.py)
+prepares 60 main/five development worlds for either mathematical size, nested
+40-world views, all fixed subsets, G/H partitions and disjoint integer seed slots.
+[manifests.py](../../../recovery/manifests.py) saves actual host inputs and loads
+them without resampling; equality with a saved authoritative population detects
+even mathematically valid changed inputs. [test_populations.py](../../../tests/test_populations.py)
+checks three seed roots/both sizes, all subset counts/owner blocks, reordering,
+two process hash seeds, optional-import isolation, exact 1,000-attempt exhaustion
+and acceptance on attempt 1,000, rejection reasons, byte-stable regeneration,
+and malformed/modified manifests. CLI, retained fixture and final evidence remain.
+
