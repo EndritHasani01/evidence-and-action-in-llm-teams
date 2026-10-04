@@ -1,6 +1,6 @@
 # M2-T04 — Literal events, retention boundaries and receipts
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M2-T03](../M2/M2-T03-synchronous-rounds-and-prefixes.md). M1 must have passed before M2 work begins.
 
@@ -36,6 +36,14 @@ Each event and retention policy creates exactly its prescribed starting state fr
 Run the plan's L/B, B/C/K/mask, C/F, sham and receipt differential fixtures, including wrong/invalid fourth-round candidates and richer earlier candidates that must not be backfilled. Test old values in retained prose, remote acquired evidence, unknown replacements, tombstones and nested mutations. Include CPU v1→v2→v3 authority tests without introducing a live second revision or new arms.
 
 **Evidence:** Not yet recorded. Add boundary snapshots, paired renders and executed results before marking done.
+
+**Start checkpoint (4 October 2026):** The clean `7f56c1b` checkout passes
+`python -m recovery validate`: 121 CPU checks on Windows / CPython 3.11.9.
+M1's gate and M2-T03's drained-prefix, replacement-state and delivery interfaces
+are confirmed. Implementation will use explicit event/policy cases, the saved
+world/branch identities and existing source/receipt layouts. Exact mixed/Q
+reply reuse, complete capacity and durable apply-once execution remain later
+tasks; this task supplies identifiable, serializable boundary results.
 
 **Prerequisite handoff (4 October 2026):** [M2-T03 completion](M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff)
 passes 121 source/installed CPU checks and 14 native-tokenizer checks. Its
