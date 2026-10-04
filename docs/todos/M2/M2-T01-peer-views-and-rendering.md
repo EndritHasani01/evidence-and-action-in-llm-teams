@@ -1,6 +1,6 @@
 # M2-T01 — Permitted peer views and lossless rendering
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M1-T03](../M1/M1-T03-complete-schedules.md). M1 must have passed before M2 work begins.
 
@@ -34,7 +34,14 @@ One renderer accepts only a peer's permitted view and preserves the specified di
 
 Use paired worlds with hidden sentinel values and change hidden gold, future edits, condition fields, BFS endpoints and queue text independently. The unaffected peer render must remain identical. Test no duplicated raw tables/payloads, exact preservation of escaped/special-looking archived strings, explicit invalid-candidate absence, and value-independent ordering. Include notice, receipt, feedback and source-delivery metadata layouts in the audit.
 
-**Evidence:** Not yet recorded. Add renderer fixtures, exact-request comparisons and command/environment results before marking done.
+**Start evidence (4 October 2026):** Inspected the task contract, specification
+§§2.1, 3–4 and 9, plan state boundaries/M2, research synthesis and the relevant
+state/template investigations. Re-ran `python -S -m recovery validate` on Windows /
+CPython 3.11.9: all **59/59 prerequisite CPU checks pass**, with site packages
+disabled. M1's gate remains passed. Implement immutable, explicitly permitted
+records and one lossless renderer first, then audit hidden-field independence,
+source/receipt/history semantics and exact template/token inputs. Complete
+capacity admission remains M2-T06; this task makes no inference or freeze claim.
 
 **Prerequisite handoff (4 October 2026):** [M1-T03 gate evidence](../M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate)
 passes with all 59 CPU checks, including M1-T01/T02, complete schedules/replay

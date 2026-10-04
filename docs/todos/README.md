@@ -6,19 +6,19 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 3/29. Remaining: 26. Active: 0. Ready: 1. Blocked: 25.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 3/29. Remaining: 26. Active: 1. Ready: 0. Blocked: 25.** Counts measure verified task outcomes, not effort or runtime.
 
 - [M1-T01](M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence) is done: all five families at both sizes, exact truth/coordinates, ten attributed fixtures and 23 CPU checks pass.
 - [M1-T02](M1/M1-T02-edits-and-populations.md#validation-and-evidence) is done: eligible edits, 60/40 nested populations, five development worlds, partitions, saved streams and manifest equality pass in the 42-check CPU suite.
 - [M1-T03](M1/M1-T03-complete-schedules.md#validation-and-evidence) is done: independent 60/40 main totals, exact development/capability populations, prefix/reply parents, saved schedules and CPU handoff pass in the 59-check suite. M1's CPU gate is passed.
-- Next unblocked task: [M2-T01](M2/M2-T01-peer-views-and-rendering.md), permitted peer views and lossless rendering.
+- Active task: [M2-T01](M2/M2-T01-peer-views-and-rendering.md), permitted peer views and lossless rendering; its prerequisite suite passes all 59 CPU checks.
 - Other blocked tasks await their listed prerequisites; dependency-blocked is distinct from a failed gate.
 - No GPU run, main experiment, scientific/frozen-configuration change or publication is authorized by creation of this task system.
 
 | Milestone | Done | Remaining | Current state | Milestone gate |
 |---|---:|---:|---|---|
 | M1 | 3/3 | 0 | Passed on CPU | Exact worlds, coordinates, eligible populations, saved streams and complete schedules pass; [M1-T03 gate evidence](M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate) closes M1. |
-| M2 | 0/6 | 6 | M2-T01 ready | Requires all visibility/intervention/replay checks, local-view witness and complete tokenizer bound; close in [M2-T06](M2/M2-T06-attainability-and-capacity.md). |
+| M2 | 0/6 | 6 | M2-T01 active | Requires all visibility/intervention/replay checks, local-view witness and complete tokenizer bound; close in [M2-T06](M2/M2-T06-attainability-and-capacity.md). |
 | M3 | 0/5 | 5 | Blocked by M2 | Durable scripted lifecycle, real process-crash/restart, worker replay, accounting and safe-stop checks pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
 | M4 | 0/6 | 6 | Blocked by M1–M3 | All prescribed offline analysis and complete synthetic report reproduce; all M1–M4 CPU evidence passes in [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md). |
 | M5 | 0/5 | 5 | Blocked by M1–M4 | Authorized smoke → 90-slot capability gate → full pilot → measured complete-schedule forecast and freeze; close in [M5-T05](M5/M5-T05-allocation-admission-and-freeze.md). |
@@ -43,7 +43,7 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | [M1-T01 — Exact task worlds and coordinate contracts](M1/M1-T01-task-worlds-and-truth.md) | done | None | Plan §§2–3; spec §§2.1, 5.1, 7.1, 8.1–8.2, 9–10 |
 | [M1-T02 — Eligible edits and reproducible populations](M1/M1-T02-edits-and-populations.md) | done | [M1-T01](M1/M1-T01-task-worlds-and-truth.md) | Plan §3; spec §§2.2–2.3, 4.2, 6, 8.2, 9 |
 | [M1-T03 — Complete schedules and replay dependencies](M1/M1-T03-complete-schedules.md) | done | [M1-T02](M1/M1-T02-edits-and-populations.md) | Plan §§1–3, 9; spec §§2.3, 4, 8.1–8.3, 9 |
-| [M2-T01 — Permitted peer views and lossless rendering](M2/M2-T01-peer-views-and-rendering.md) | ready | [M1-T03](M1/M1-T03-complete-schedules.md) | Plan §§2, 4; spec §§3.1, 4.3–4.4, 9 |
+| [M2-T01 — Permitted peer views and lossless rendering](M2/M2-T01-peer-views-and-rendering.md) | active | [M1-T03](M1/M1-T03-complete-schedules.md) | Plan §§2, 4; spec §§3.1, 4.3–4.4, 9 |
 | [M2-T02 — Strict reply validation and public feedback](M2/M2-T02-strict-replies-and-feedback.md) | blocked | [M2-T01](M2/M2-T01-peer-views-and-rendering.md) | Plan §4; spec §§3.2, 5.1, 8.1, 9 |
 | [M2-T03 — Synchronous rounds and immutable shared prefixes](M2/M2-T03-synchronous-rounds-and-prefixes.md) | blocked | [M2-T02](M2/M2-T02-strict-replies-and-feedback.md) | Plan §§2, 4; spec §§2.2, 3.1–3.2, 9 |
 | [M2-T04 — Literal events, retention boundaries and receipts](M2/M2-T04-events-retention-and-receipts.md) | blocked | [M2-T03](M2/M2-T03-synchronous-rounds-and-prefixes.md) | Plan §4; spec §§2.3, 4.1–4.3, 9 |
