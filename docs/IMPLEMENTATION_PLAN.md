@@ -396,6 +396,16 @@ M2-T04 is ready and M2's gate remains open.
 
 ### Unresolved issues
 
+M2-T04 review found that replacing the latest candidate after K's first
+recovery call would discard its retained historical result. The round commit
+now appends that exact fourth-slot candidate/absence once as a labeled history
+entry before installing the new slot outcome. It does not fabricate a full
+reply, recover an earlier answer, or recompact subsequent history. Serialization
+and rendering preserve this entry, including BFS tuples and invalid/failed
+absence, through all four recovery calls. Nineteen focused event checks and
+all 61 existing view/protocol/round checks pass. The original boundary renders
+and previous native fixtures remain unchanged; final regression is pending.
+
 | Issue | Smallest resolving step / decision evidence |
 |---|---|
 | Actual worst retained request fits 8,192 tokens | M2 complete renderer accounting plus adversarial tokenized fixtures; use only lossless layout or the allowed uniform size fallback, otherwise stop |

@@ -11,15 +11,16 @@ from pathlib import Path
 import subprocess
 import sys
 import unittest
+from unittest.mock import patch
 
 from recovery.events import start_continuation
 from recovery.manifests import load_population
 from recovery.prompts import render_request
 from recovery.protocol import validate_reply
-from recovery.rounds import (deserialize_state, fork_prefix, initial_branch, prepare_round,
+from recovery.rounds import (deserialize_state, fork_prefix, initial_branch,
                              run_prefix, run_round, snapshot_bytes)
 from recovery.schedule import _prepare_branches
-from recovery.state import (CandidateState, ContinueNotice, HistoricalReceipt, OwnReply,
+from recovery.state import (CandidateState, ContinueNotice, OwnReply,
                             PendingSource, RevisionNotice, Slot, held_source, revise_source)
 from recovery.tasks import PEERS, Size, SourceRecord, Task
 from tests.protocol_checks import placeholder, reference
@@ -330,6 +331,53 @@ class EventBoundaryTests(unittest.TestCase):
                      replace(original.peers[0], notice=ContinueNotice())):
             with self.assertRaises(ValueError):
                 start_continuation(snapshot_bytes(replace(original, peers=(peer,) + original.peers[1:])), world, branch)
+
+    def test_compact_historical_result_survives_new_valid_invalid_and_failed_slots_exactly_once(self):
+        for world, prefix in self.cases:
+            state = start(world, prefix, "K")
+            retained = tuple(p.candidate for p in state.peers)
+            for r in range(1, 5):
+                def provide(view, rendered, tokenized):
+                    if view.peer == 1:
+                        return raw_reply(TOKENIZER, "invalid current reply")
+                    if view.peer == 2:
+                        return None
+                    candidate = placeholder(view)
+                    if type(candidate) is list:
+                        candidate = [-555] * len(candidate)
+                    else:
+                        candidate = {k: -555 for k in candidate}
+                    return reply(TOKENIZER, view, candidate=candidate)
+                state = run_round(state, TOKENIZER, provide).committed
+                self.assertEqual(deserialize_state(snapshot_bytes(state)), state)
+                for p, peer in enumerate(state.peers):
+                    self.assertEqual([e for e in peer.history if type(e) is CandidateState], [retained[p]])
+                    self.assertEqual(peer.candidate.slot, Slot("recovery", r))
+                    self.assertFalse(peer.candidate.historical)
+                    self.assertEqual(peer.candidate.status, ("valid", "invalid", "failed", "valid")[p])
+                    if r < 4:
+                        shown = data(views(state)[p])
+                        history = [e for e in shown["history"] if e["kind"] == "historical_candidate"]
+                        self.assertEqual(len(history), 1)
+                        self.assertEqual(history[0]["candidate"], retained[p].payload(world.world.task))
+                        self.assertTrue(history[0]["historical"])
+                        if p in (1, 2):
+                            self.assertIsNone(shown["latest_candidate"]["candidate"])
+            # Reject a duplicated result or a host-invented nonhistorical entry.
+            view = replace(views(start(world, prefix, "K"))[0], slot=Slot("recovery", 2),
+                           candidate=CandidateState("failed", Slot("recovery", 1)))
+            for history in ((retained[0], retained[0]), (replace(retained[0], historical=False),),
+                            (retained[0], OwnReply(Slot("prefix", 4), "invented full reply"))):
+                with self.assertRaises(ValueError):
+                    replace(view, history=history)
+
+    def test_boundary_never_calls_gold_or_eligibility_evaluators(self):
+        world, prefix = self.cases[0]
+        with patch("recovery.truth.solve_world", side_effect=AssertionError("offline truth")), \
+                patch("recovery.edits.bfs_distances", side_effect=AssertionError("offline BFS")), \
+                patch("recovery.populations.legal_edits", side_effect=AssertionError("eligibility")):
+            state = start(world, prefix, "K")
+            self.assertTrue(state.boundary_applied)
 
     def test_invalid_schedule_parent_world_or_undeclared_arm_fails_without_mutation(self):
         world, prefix = self.cases[0]

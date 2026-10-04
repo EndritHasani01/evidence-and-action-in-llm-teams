@@ -205,7 +205,7 @@ class PeerView:
     slot: Slot
     manifest: tuple[PublicSource, ...]
     sources: tuple[SourceRecord | PendingSource, ...]
-    history: tuple[OwnReply | ReceivedProse, ...] = ()
+    history: tuple[OwnReply | ReceivedProse | CandidateState, ...] = ()
     candidate: CandidateState = field(default_factory=CandidateState)
     feedback: tuple[Feedback, ...] = ()
     notice: RevisionNotice | ContinueNotice | None = None
@@ -294,9 +294,17 @@ class PeerView:
                 raise ValueError("invalid historical receipt value")
         own_slots = set()
         prose_slots = set()
+        historical_slots = set()
         for entry in self.history:
+            if type(entry) is CandidateState:
+                if not entry.historical or entry.slot in historical_slots:
+                    raise ValueError("history keeps only one literal historical fourth-slot outcome")
+                self._past_slot(entry.slot)
+                self._candidate_shape(entry, contract)
+                historical_slots.add(entry.slot)
+                continue
             if type(entry) not in (OwnReply, ReceivedProse) or type(entry.text) is not str:
-                raise ValueError("history contains only literal replies/received prose")
+                raise ValueError("history contains only literal replies/prose or the retained result")
             self._past_slot(entry.slot)
             if type(entry) is OwnReply:
                 if entry.slot in own_slots:
@@ -307,6 +315,8 @@ class PeerView:
                         or entry.sender == self.peer or (entry.slot, entry.sender) in prose_slots):
                     raise ValueError("invalid/duplicate received prose")
                 prose_slots.add((entry.slot, entry.sender))
+        if historical_slots & own_slots:
+            raise ValueError("historical result must not duplicate its complete own reply")
         feedback_slots = set()
         for entry in self.feedback:
             if type(entry) is not Feedback or entry.slot in feedback_slots:
@@ -321,13 +331,9 @@ class PeerView:
         if latest_recorded is not None and (self.candidate.slot is None
                                             or self.candidate.slot.order < latest_recorded.order):
             raise ValueError("candidate must describe the latest recorded own slot")
-        if self.candidate.status == "valid":
-            value = self.candidate.value
-            if bfs and (any(type(pair) is not tuple or len(pair) != 2 for pair in value)
-                        or tuple(pair[0] for pair in value) != tuple(str(j) for j in contract.coordinates)):
-                raise ValueError("immutable BFS candidate must use canonical node keys")
-            if contract.error(self.candidate.payload(self.task)) is not None:
-                raise ValueError("candidate disagrees with public output shape")
+        if historical_slots and (self.candidate.slot is None or self.candidate.slot.order <= 4):
+            raise ValueError("archived compact result requires a separate new-slot outcome")
+        self._candidate_shape(self.candidate, contract)
         delivered = set()
         for delivery in self.source_deliveries:
             if (type(delivery) is not SourceDelivery or type(delivery.record_id) is not str
@@ -360,6 +366,16 @@ class PeerView:
         if (type(slot) is not Slot or slot.phase == "control"
                 or slot.order >= self.slot.order or self.slot.phase == "control"):
             raise ValueError("derived history/candidate must precede this call")
+
+    def _candidate_shape(self, candidate: CandidateState, contract) -> None:
+        if candidate.status == "valid":
+            value = candidate.value
+            if self.task is Task.BFS and (
+                    any(type(pair) is not tuple or len(pair) != 2 for pair in value)
+                    or tuple(pair[0] for pair in value) != tuple(str(j) for j in contract.coordinates)):
+                raise ValueError("immutable BFS candidate must use canonical node keys")
+            if contract.error(candidate.payload(self.task)) is not None:
+                raise ValueError("candidate disagrees with public output shape")
 
 
 def initial_view(world: World, peer: int | None) -> PeerView:

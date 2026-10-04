@@ -22,7 +22,7 @@ class PeerState:
     """Committed permitted data, including the final scheduled slot's outcome."""
 
     sources: tuple[SourceRecord | PendingSource, ...]
-    history: tuple[OwnReply | ReceivedProse, ...] = ()
+    history: tuple[OwnReply | ReceivedProse | CandidateState, ...] = ()
     candidate: CandidateState = field(default_factory=CandidateState)
     feedback: tuple[Feedback, ...] = ()
     notice: RevisionNotice | ContinueNotice | None = None
@@ -227,7 +227,11 @@ def stage_effects(barrier: RoundBarrier) -> BranchState:
 
     state = barrier.requests.before
     peers = tuple(replace(peer, candidate=reply.candidate,
-                          history=peer.history + (() if reply.own_reply is None else (reply.own_reply,)),
+                          # K's boundary result becomes ordinary labeled history
+                          # once a new slot replaces latest_candidate. Preserve
+                          # even absence, without fabricating a complete reply.
+                          history=peer.history + ((peer.candidate,) if peer.candidate.historical else ())
+                          + (() if reply.own_reply is None else (reply.own_reply,)),
                           feedback=peer.feedback + (() if reply.feedback is None else (reply.feedback,)))
                   for peer, reply in zip(state.peers, barrier.replies))
     pending = list(state.pending)
@@ -348,16 +352,21 @@ def _read_source(data) -> SourceRecord | PendingSource:
     return SourceRecord(**data)
 
 
-def _read_peer(data) -> PeerState:
-    data = dict(data)
-    data["sources"] = tuple(_read_source(s) for s in data["sources"])
-    data["history"] = tuple((ReceivedProse if "sender" in e else OwnReply)(
-        **dict(e, slot=_read_slot(e["slot"]))) for e in data["history"])
-    candidate = dict(data["candidate"])
+def _read_candidate(data) -> CandidateState:
+    candidate = dict(data)
     candidate["slot"] = _read_slot(candidate["slot"])
     if candidate["value"] is not None:
         candidate["value"] = tuple(tuple(v) if type(v) is list else v for v in candidate["value"])
-    data["candidate"] = CandidateState(**candidate)
+    return CandidateState(**candidate)
+
+
+def _read_peer(data) -> PeerState:
+    data = dict(data)
+    data["sources"] = tuple(_read_source(s) for s in data["sources"])
+    data["history"] = tuple(_read_candidate(e) if "status" in e else
+        (ReceivedProse if "sender" in e else OwnReply)(**dict(e, slot=_read_slot(e["slot"])))
+        for e in data["history"])
+    data["candidate"] = _read_candidate(data["candidate"])
     data["feedback"] = tuple(Feedback(**dict(e, slot=_read_slot(e["slot"]))) for e in data["feedback"])
     notice = data["notice"]
     data["notice"] = (None if notice is None else ContinueNotice() if not notice else

@@ -153,6 +153,9 @@ def render_request(view: PeerView) -> RenderedRequest:
                                      else view.receipt.before_value))
     history = []
     for entry in view.history:
+        if type(entry) is CandidateState:
+            history.append(dict(kind="historical_candidate", **_candidate(entry, view)))
+            continue
         item = {"kind": "own_reply" if type(entry) is OwnReply else "received_prose",
                 "slot": _slot(entry.slot), "text": entry.text}
         if type(entry) is ReceivedProse:
