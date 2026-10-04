@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2-T01–T02 verify permitted views/rendering and strict replies; the remaining M2 tasks and M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
+**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2-T01–T03 verify permitted views/rendering, strict replies, synchronous scripted rounds and immutable drained prefixes; event/retention/replay/capacity and M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
 
 ## 1. Execution roadmap
 
@@ -315,7 +315,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | Milestone | Status | Evidence / next action |
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
-| M2 | Partially verified on CPU (2/6 tasks done) | [M2-T02 completion](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff): 103 source/installed CPU checks (80 core + 23 strict reply), six native protocol checks with 20 saved replies, plus the unchanged five native renderer checks and seven exact request/token fixtures. [M2-T03](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md) is active; its current 103-check prerequisite suite passes. Complete synchronous protocol/interventions/replay, local-view witness and capacity admission remain; M2's gate is open. |
+| M2 | Partially verified on CPU (3/6 tasks done) | [M2-T03 completion](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff): 121 source/installed CPU checks (80 core + 23 strict reply + 18 round/prefix), three native round checks with an exact eight-round trace and all 11 previous native checks. Complete sibling isolation, round-four drain, actual owner-v1 exposure, order independence and attempt/acquisition metadata pass. [M2-T04](todos/M2/M2-T04-events-retention-and-receipts.md) is ready. Literal events/retention/receipts, exact mixed/Q replay, local-view witness and capacity admission remain; M2's gate is open. |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
@@ -334,7 +334,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | Explicit narrow peer views and pure state/delivery transformations | Makes scientific visibility, replacement and replay inspectable and CPU-testable |
 | M2-T01 uses immutable permitted records and a single user-data renderer | Initial projection/held-source lookup take no evaluator or schedule labels. Current/pending/deleted sources, receipt history, derived text, feedback and latest-slot absence are distinct; public identity alone orders sources. Candidate state cannot precede recorded own/feedback slots. Native non-thinking template text and untruncated token inputs are ordinary saveable records. Fixed public feedback prevents hidden library-error payloads; complete capacity and event/round transformations remain later M2 tasks. |
 | M2-T02 uses complete JSON decoding, strict Pydantic 2 and whole-reply staging | Pydantic 2 is now a declared CPU dependency. Full validation includes the strict-reply suite; explicit `--core-only` retains dependency-free checks without claiming protocol admission. Generated IDs govern the 384-token cap; literal message texts are tokenized separately and summed. Source staging resolves only immutable sender-held records and preserves repeated attempts. Fixed public feedback has an actual tokenizer guard; invalid/failed outcomes replace candidates with absence. No delivery, correctness check, response repair or extra call is introduced. |
-| M2-T03 separates pure request, validation, staging and delivery barriers | The in-memory procedure uses the existing views/renderer/validator and call-key spelling; M3 still owns LangGraph/SQLite integration. Source/text component IDs preserve repeated attempts and branch-local idempotence. First-acquisition metadata remains public; full attempts/IDs/queues remain offline. Plain JSON deep-deserialization supplies drained immutable prefixes without another store. Final recovery deliveries are audited at an unscheduled next-round boundary, without a fifth opportunity. The 17 focused checks and 120-check source suite pass; native trace and final integration evidence remain in the active task. |
+| M2-T03 separates pure request, validation, staging and delivery barriers | The in-memory procedure uses the existing views/renderer/validator and call-key spelling; M3 still owns LangGraph/SQLite integration. Source/text component IDs preserve repeated attempts and branch-local idempotence. First-acquisition metadata remains public; full attempts/IDs/queues remain offline. Plain JSON deep-deserialization supplies drained immutable prefixes without another store. Final recovery deliveries are audited at an unscheduled next-round boundary, without a fifth opportunity. Eighteen focused checks, the 121-check source/installed suites and three native round checks pass; the existing 11 native checks still pass. |
 | One serial process/replica/database per GPU; access to saved inputs | Keeps inference/RNG isolated while permitting sibling/device rotation |
 | Offline exact evaluation/analysis, ready before GPUs | Prevents correctness feedback and late discovery of unrecorded analysis inputs |
 | Keep incidental names/layout flexible | Freeze interfaces and scientific invariants; avoid abstractions unsupported by a current requirement |
@@ -379,6 +379,19 @@ feedback remains within 32 actual tokens and never echoes library payloads;
 invalid/failed slots remain absent. No scientific deviation, model call or accepted
 freeze is introduced. Round commits, exact replay and complete capacity remain
 later M2 tasks; ordinary dataclass records provide the next task's staging inputs.
+
+M2-T03 verifies the complete in-memory round barrier and original-prefix cut
+through the actual renderer, strict validator and exact source/text interface.
+Source/installed validation passes 121 checks, core-only remains 80 and all 14
+native checks pass. The saved eight-round scripted trace retains invalid/failed
+slots, current-source acquisitions, exact requests/IDs, committed peer data and
+actual owner-v1 exposures. Reversed physical order matches across all five
+families/both sizes; deliberate nested sibling mutation cannot affect parent or
+other siblings. Delivery attempts remain separate from first acquisitions, and
+final messages drain without an extra call. No dependency or scientific change
+was needed. This is protocol evidence, not an event-policy implementation,
+full capacity proof, durable lifecycle, model capability or experimental result;
+M2-T04 is ready and M2's gate remains open.
 
 ### Unresolved issues
 

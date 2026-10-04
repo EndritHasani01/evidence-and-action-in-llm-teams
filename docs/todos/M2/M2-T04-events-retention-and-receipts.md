@@ -1,6 +1,6 @@
 # M2-T04 — Literal events, retention boundaries and receipts
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T03](../M2/M2-T03-synchronous-rounds-and-prefixes.md). M1 must have passed before M2 work begins.
 
@@ -36,4 +36,16 @@ Each event and retention policy creates exactly its prescribed starting state fr
 Run the plan's L/B, B/C/K/mask, C/F, sham and receipt differential fixtures, including wrong/invalid fourth-round candidates and richer earlier candidates that must not be backfilled. Test old values in retained prose, remote acquired evidence, unknown replacements, tombstones and nested mutations. Include CPU v1→v2→v3 authority tests without introducing a live second revision or new arms.
 
 **Evidence:** Not yet recorded. Add boundary snapshots, paired renders and executed results before marking done.
+
+**Prerequisite handoff (4 October 2026):** [M2-T03 completion](M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff)
+passes 121 source/installed CPU checks and 14 native-tokenizer checks. Its
+immutable, fully drained original prefix retains all current sources, own/
+received history, actual fourth-slot candidate/absence, feedback and delivery
+audit. `fork_prefix` deep-deserializes each fresh continuation with its original
+parent ID; `PeerState` supports literal replacement while persistent notice/
+receipt fields remain separate. `RoundResult.barrier` preserves exact original
+requests/replies for the subsequent replay task. Use these interfaces without
+repairing candidates or treating an untransformed scripted continuation as an
+implemented event/policy. This task is ready; its transformations and paired
+renders remain unimplemented, and M2's gate is open.
 
