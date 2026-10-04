@@ -9,8 +9,9 @@ from unittest.mock import patch
 
 from recovery.__main__ import load_size, main
 from recovery.tasks import Size
-from recovery.manifests import load_population, manifest_bytes
+from recovery.manifests import load_population, load_schedules, manifest_bytes, schedule_bytes
 from recovery.populations import PopulationExhausted, Rejection, prepare_population
+from recovery.schedule import prepare_schedules
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -134,6 +135,56 @@ assert random.getstate() == unrelated_state
             self.assertEqual(len(evidence.getvalue().splitlines()), 1001)
             self.assertIn("exhausted 1000 generation attempts for owner 3", evidence.getvalue())
             self.assertIn("attempt 1000: no_owner_changing_edit", evidence.getvalue())
+
+    def test_cli_prepares_complete_schedules_from_each_saved_size_without_overwrite(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            config = directory / "study.toml"
+            for size in Size:
+                config.write_text(f'size = "{size.value}"\n')
+                population_path = ROOT / f"tests/fixtures/population_{size.value}.json"
+                population = load_population(population_path)
+                output = directory / f"schedules_{size.value}.json"
+                command = [sys.executable, "-S", "-m", "recovery", "prepare", "--config", str(config),
+                           "--manifest", str(population_path), "--authoritative", str(population_path),
+                           "--output", str(output)]
+                result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=20)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                for message in ("not an M5 freeze", "16,152 distinct / 17,656 logical", "11,504 distinct / 12,560 logical",
+                                "1,114 distinct / 1,178 logical", "first 90", "24 additional calls", "1,138 combined"):
+                    self.assertIn(message, result.stdout)
+                expected = prepare_schedules(population)
+                self.assertEqual(output.read_bytes(), schedule_bytes(expected))
+                self.assertEqual(load_schedules(output, population), expected)
+                original = output.read_bytes()
+                repeated = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=20)
+                self.assertEqual(repeated.returncode, 2)
+                self.assertEqual(output.read_bytes(), original)
+
+    def test_cli_schedule_errors_fail_before_checks_and_leave_no_prepared_file(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            malformed = directory / "bad.json"
+            malformed.write_text('{}')
+            output = directory / "output.json"
+            population = ROOT / "tests/fixtures/population_target.json"
+            fallback = ROOT / "tests/fixtures/population_fallback.json"
+            schedule = ROOT / "tests/fixtures/schedules_target.json"
+            for command, message in (
+                    (["validate", "--schedule", str(schedule)], "requires --manifest"),
+                    (["validate", "--manifest", str(population), "--schedule", str(malformed)], "invalid schedule"),
+                    (["prepare", "--manifest", str(fallback), "--output", str(output)], "size differs"),
+                    (["prepare", "--manifest", str(population), "--authoritative", str(fallback), "--output", str(output)],
+                     "authoritative manifest"),
+                    (["prepare", "--manifest", str(population), "--seed", "1", "--output", str(output)], "not allowed"),
+                    (["prepare", "--seed", "1", "--authoritative", str(population), "--output", str(output)], "requires --manifest")):
+                with self.subTest(command=command):
+                    result = subprocess.run([sys.executable, "-S", "-m", "recovery", *command], cwd=ROOT,
+                                            capture_output=True, text=True, timeout=20)
+                    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                    self.assertIn(message, result.stderr)
+                    self.assertNotIn("test_", result.stderr)
+                    self.assertFalse(output.exists())
 
 
 if __name__ == "__main__":

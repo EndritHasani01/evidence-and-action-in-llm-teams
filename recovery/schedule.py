@@ -105,7 +105,7 @@ class Schedules:
     @property
     def capability(self) -> tuple[tuple[Branch, CallSlot], ...]:
         """Select the first 80 prefix plus ten control opportunities, before recovery."""
-        return tuple((b, c) for b, c in iter_calls(self.development) if b.phase != "continuation")
+        return tuple((b, c) for b, c in iter_calls(self.development) if b.phase in ("prefix", "control"))
 
 
 def iter_calls(branches: tuple[Branch, ...]) -> Iterator[tuple[Branch, CallSlot]]:
@@ -185,10 +185,10 @@ def _prepare_branches(worlds: tuple[PreparedWorld, ...]) -> tuple[Branch, ...]:
     branches = []
     # All prefixes/controls come first. This makes the development capability
     # block exactly the first 90 slots, without adding an execution worker.
-    for phase_group in (("prefix",), ("control",), ("continuation",)):
+    for selected_phase in ("prefix", "control", "continuation"):
         for world in worlds:
             for phase, event, policy, replicate in _branch_keys(world):
-                if phase not in phase_group:
+                if phase != selected_phase:
                     continue
                 branch_id = _branch_id(world.world_id, phase, event, policy, replicate)
                 positions = ((1, None),) if phase == "control" else tuple(

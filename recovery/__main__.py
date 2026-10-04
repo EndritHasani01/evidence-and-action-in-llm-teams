@@ -1,4 +1,4 @@
-"""CPU validation and population preparation; no inference or accepted freeze."""
+"""CPU validation and population/schedule preparation; no inference or accepted freeze."""
 
 import argparse
 from pathlib import Path
@@ -7,8 +7,20 @@ import tomllib
 import unittest
 
 from .tasks import Size
-from .manifests import load_population, save_population
+from .manifests import load_population, load_schedules, save_population, save_schedules
 from .populations import PopulationExhausted, prepare_population
+from .schedule import SMOKE_MAX_CALLS, component_counts, prepare_schedules
+
+
+def _schedule_summary(schedules, population) -> None:
+    for count in (60, 40):
+        rows = component_counts(schedules.main_for(population, count)).values()
+        distinct, logical = (sum(row[i] for row in rows) for i in (0, 1))
+        print(f"Main {count}: {distinct:,} distinct / {logical:,} logical slots.")
+    rows = component_counts(schedules.development).values()
+    distinct, logical = (sum(row[i] for row in rows) for i in (0, 1))
+    print(f"Development: {distinct:,} distinct / {logical:,} logical; first {len(schedules.capability)} capability calls.")
+    print(f"Smoke is separate: at most {SMOKE_MAX_CALLS} additional calls ({distinct + SMOKE_MAX_CALLS:,} combined).")
 
 
 def load_size(path: Path) -> Size:
@@ -25,23 +37,36 @@ def main() -> int:
     root = Path(__file__).resolve().parent.parent
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="command", required=True)
-    validate = commands.add_parser("validate", help="validate CPU contracts and optional saved populations")
-    prepare = commands.add_parser("prepare", help="save 60 + five development worlds and nested subsets")
+    validate = commands.add_parser("validate", help="validate CPU contracts and optional saved populations/schedules")
+    prepare = commands.add_parser("prepare", help="prepare populations, or complete schedules from saved inputs")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
-    prepare.add_argument("--seed", required=True, type=int)
-    prepare.add_argument("--output", required=True, type=Path, help="new canonical population JSON path")
+        command.add_argument("--authoritative", type=Path, help="saved population authority for exact input/configuration equality")
+    source = prepare.add_mutually_exclusive_group(required=True)
+    source.add_argument("--seed", type=int, help="prepare a new population with this seed")
+    source.add_argument("--manifest", type=Path, help="prepare all schedules from this saved population, without resampling")
+    prepare.add_argument("--output", required=True, type=Path, help="new population or schedule JSON path")
     validate.add_argument("--manifest", type=Path, help="saved host population to validate without resampling")
-    validate.add_argument("--authoritative", type=Path, help="saved authority for exact input/configuration equality")
+    validate.add_argument("--schedule", type=Path, help="saved complete schedules to validate against --manifest")
     args = parser.parse_args()
     try:
         size = load_size(args.config)
     except (OSError, ValueError) as error:
         parser.error(str(error))
+    if args.authoritative and not args.manifest:
+        parser.error("--authoritative requires --manifest")
     if args.command == "prepare":
         try:
-            population = prepare_population(args.seed, size)
-            save_population(population, args.output)
+            if args.manifest:
+                authority = load_population(args.authoritative) if args.authoritative else None
+                population = load_population(args.manifest, authoritative=authority)
+                if population.size is not size:
+                    raise ValueError("manifest mathematical size differs from configuration")
+                schedules = prepare_schedules(population)
+                save_schedules(schedules, population, args.output)
+            else:
+                population = prepare_population(args.seed, size)
+                save_population(population, args.output)
         except PopulationExhausted as error:
             # Fail explicitly and emit every failed attempt; no accepted manifest
             # is written and the caller can retain stderr as rejection evidence.
@@ -51,10 +76,14 @@ def main() -> int:
             return 1
         except (OSError, ValueError) as error:
             parser.error(str(error))
-        print(f"Prepared {args.output}: size={size.value}, main=60 (nested 40), development=5; not an M5 freeze.")
+        if args.manifest:
+            print(f"Prepared schedules {args.output}: size={size.value}; not an M5 freeze.")
+            _schedule_summary(schedules, population)
+        else:
+            print(f"Prepared {args.output}: size={size.value}, main=60 (nested 40), development=5; not an M5 freeze.")
         return 0
-    if args.authoritative and not args.manifest:
-        parser.error("--authoritative requires --manifest")
+    if args.schedule and not args.manifest:
+        parser.error("--schedule requires --manifest")
     if args.manifest:
         try:
             authority = load_population(args.authoritative) if args.authoritative else None
@@ -64,6 +93,13 @@ def main() -> int:
         except (OSError, ValueError) as error:
             parser.error(str(error))
         print(f"Saved population verified without resampling: {args.manifest}.", flush=True)
+        if args.schedule:
+            try:
+                schedules = load_schedules(args.schedule, population)
+            except (OSError, ValueError) as error:
+                parser.error(str(error))
+            print(f"Saved schedules and CPU dependencies verified: {args.schedule}.", flush=True)
+            _schedule_summary(schedules, population)
     if not (root / "tests" / "test_tasks.py").is_file():
         parser.error("CPU validation requires the source checkout and its tests")
     print(f"CPU validation: configured size={size.value}; checks cover target and fallback.", flush=True)

@@ -50,3 +50,35 @@ python -S -m recovery validate --manifest population.json --authoritative tests/
 For the uniform mathematical fallback, pass a TOML file containing exactly
 `size = "fallback"` with `--config` to both commands and use the fallback
 authority. Selecting 40 rather than 60 worlds never regenerates inputs.
+
+## Prepared host schedules
+
+[schedules_target.json](schedules_target.json) is the canonical CPU schedule
+derived from [population_target.json](population_target.json). It saves main
+60 and development branches/calls, assigned seeds, original-prefix parents and
+required B/C first-round replay parents. The nested 40 is selected from those
+same branches; it keeps their IDs, seeds and shared prefix. Raw inputs/edits stay
+in the population authority and are not copied into the schedule.
+
+Main distinct/logical slots are 16,152/17,656 for 60 and 11,504/12,560 for 40.
+Development has 1,114 distinct/1,178 logical slots. Its first 90 are 80 prefix and
+ten complete-world controls; smoke is separate with at most 24 further calls.
+There are no model replies or outcomes in this fixture. Schedule labels are
+host-only and must never enter a peer view. These are CPU preparation records,
+not an accepted M5 freeze or evidence of protocol/hardware feasibility.
+
+Reproduce a **new** file and validate the saved opportunities/dependencies:
+
+```powershell
+python -S -m recovery prepare --manifest tests/fixtures/population_target.json --output schedules.json
+python -S -m recovery validate --manifest tests/fixtures/population_target.json --schedule schedules.json --authoritative tests/fixtures/population_target.json
+```
+
+For the mathematical fallback, use `population_fallback.json` and a configuration
+containing exactly `size = "fallback"` with `--config` on both commands. The
+fallback schedule is checked by byte-stable save/reload and installed preparation;
+a duplicate retained fixture is unnecessary. Loading schedules never invokes the
+world generator or schedule builder. Structural validation detects scientific
+changes; optional `load_schedules(..., authoritative=saved_schedule)` also rejects
+otherwise-valid artifact reordering. Population input equality remains the job
+of `load_population(..., authoritative=saved_population)` / `--authoritative`.

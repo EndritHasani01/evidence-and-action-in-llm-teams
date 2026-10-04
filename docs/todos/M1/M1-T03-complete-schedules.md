@@ -53,3 +53,18 @@ mathematical sizes; development is 1,114 distinct/1,178 logical, with exactly
 cycles, complete-world control shapes, repeats and poor-prefix nonselection pass.
 Saved-file mutation rejection, retained fixture and CLI handoff remain.
 
+**Saved-handoff checkpoint:** [manifests.py](../../../recovery/manifests.py)
+and the [CPU CLI](../../../recovery/__main__.py) now save/reload complete derived
+schedules against the existing population authority. The retained
+[target schedule](../../../tests/fixtures/schedules_target.json) includes main
+60 plus the exact development matrix; main 40 derives without another slot store.
+The full suite passes **59/59** with `python -S`, and **59/59** through the installed
+CPU package from a temporary directory using a prepared fallback schedule.
+Installed preparation for both sizes matches canonical bytes; `pip check` passes.
+[Saved-file adversaries](../../../tests/test_schedule_manifests.py) cover thirty
+scientific/structural mutations, duplicate/nonfinite/malformed JSON, overwrite
+protection, exact saved-authority comparison and fresh processes with two hash
+seeds and optional imports forbidden. An initial full run caught a misplaced
+test-only assertion; it was corrected and both affected checks and the full suite
+were rerun successfully. Final M1 gate tables and documentation audit follow.
+
