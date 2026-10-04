@@ -1,6 +1,6 @@
 # M1-T01 — Exact task worlds and coordinate contracts
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** None.
 
