@@ -472,6 +472,10 @@ generation or GPU allocation occurred. M3 remains dependency-blocked. The next
 decision must resolve the exact retained-text/capacity and Unicode incompatibilities
 and renew all affected M2 checks; passing the scripted witness alone is insufficient.
 
+The [M2-T06 lessons and ranked fixes](implementation-research/m2-t06-lessons-and-fixes.md)
+record conditional remedies and their required revalidation. They are proposals;
+no remedy is implemented, accepted or authorized, and M2 remains blocked.
+
 ### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |
