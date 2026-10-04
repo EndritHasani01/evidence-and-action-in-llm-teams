@@ -137,3 +137,10 @@ passes; Git comparison with the M1 handoff confirms the specification, size
 configuration, dependencies, M1 modules and saved population/schedule fixtures
 are unchanged. Canonical request-fixture bytes have an explicit LF attribute.
 
+**Subsequent handoff:** [M2-T02 completion](M2-T02-strict-replies-and-feedback.md#completion-and-handoff)
+now verifies strict replies and unblocks M2-T03. The older commands/counts above
+record this task's original checkpoint. Current full CPU validation requires
+Pydantic 2; `python -S -m recovery validate --core-only` explicitly runs the
+dependency-free subset (80 checks after the added CLI dependency regression).
+The five native renderer checks and all saved request/token fixtures still pass.
+

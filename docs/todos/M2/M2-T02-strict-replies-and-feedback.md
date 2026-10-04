@@ -1,6 +1,6 @@
 # M2-T02 — Strict reply validation and public feedback
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M2-T01](../M2/M2-T01-peer-views-and-rendering.md). M1 must have passed before M2 work begins.
 
@@ -45,8 +45,9 @@ implements the complete decoder, strict nested Pydantic schemas, public candidat
 contracts, sender-view permissions, physical output/prose/feedback caps and
 all-or-none immutable staging. [protocol_checks.py](../../../tests/protocol_checks.py)
 passes 23 focused CPU checks on both local Pydantic 2.12.5 and installed 2.13.5
-with CPython 3.11.9. The initial full source integration passed 102 checks;
-final integration follows the additional missing-dependency CLI regression.
+with CPython 3.11.9. At this checkpoint, full source integration passed 102
+checks before the additional missing-dependency CLI regression; final counts
+appear in the completion evidence below.
 `pip check` passes in `.venv`. Pydantic 2 is the required schema dependency;
 `validate --core-only` explicitly preserves the earlier standard-library subset.
 No accepted inference environment or scientific configuration is changed.
@@ -78,6 +79,71 @@ python -m tests.tokenizer_peer_views --tokenizer "$env:TEMP/recovery-capacity-wr
 passes with 79 standard-library CPU checks and five native-tokenizer checks.
 Immutable permitted views, held-current-source lookup, literal request rendering,
 candidate absence/age guards and fixed public feedback layouts are available.
-This task is ready; its strict parser, whole-reply validation and tokenizer
-permissions remain unimplemented. M2's complete protocol/capacity gate is open.
+At that prerequisite handoff, this task became ready and its strict parser,
+whole-reply validation and tokenizer permissions were unimplemented. The verified
+completion below supersedes that status; M2's complete protocol/capacity gate
+remains open.
+
+## Completion and handoff
+
+**Verified 4 October 2026:** Windows x64 / CPython 3.11.9. Full source validation
+passes **103/103** checks using Pydantic 2.12.5; the installed editable package
+passes **103/103** using Pydantic 2.13.5 while preparing/validating a fallback
+schedule outside the checkout. These comprise 80 dependency-free core checks
+(79 prerequisites plus a missing-dependency regression) and 23 protocol checks.
+Explicit site-disabled core validation passes **80/80**. The native protocol
+harness passes **6/6**, and the original renderer harness still passes **5/5**.
+`pip check` and `git diff --check` pass. No model weights, GPU/model calls,
+experiment outcomes, scientific-design changes or accepted freeze are involved.
+
+Executed final integration commands:
+
+```powershell
+python -m unittest tests.protocol_checks -v
+python -m recovery validate --manifest tests/fixtures/population_target.json --schedule tests/fixtures/schedules_target.json --authoritative tests/fixtures/population_target.json
+python -S -m recovery validate --core-only
+.\.venv\Scripts\python.exe -m pip install -e .
+.\.venv\Scripts\python.exe -m unittest tests.protocol_checks -v
+.\.venv\Scripts\python.exe -m pip check
+git diff --check
+```
+
+The outside-checkout harness used `.venv/Scripts/python.exe -m recovery prepare`
+with `--manifest <absolute population_fallback.json> --authoritative <same
+population> --config <temporary fallback.toml> --output <new schedules.json>`,
+then `validate` with the same inputs plus `--schedule <new schedules.json>`.
+The temporary configuration contained exactly `size = "fallback"`. Saved
+population/schedule inputs were validated without resampling. Both environments
+are CPU validation evidence, not an accepted M5 inference lock.
+
+| Acceptance area | Executed evidence | Result |
+|---|---|---|
+| Complete strict JSON | Decoder adversaries in [protocol_checks.py](../../../tests/protocol_checks.py) | Duplicate keys at every level, escaped-key collisions, constants/exponent overflow, excessive integer decoding, fences, fragments, trailing prose/markers and multiple objects fail. Whitespace is allowed; no repair or extraction occurs. |
+| Exact public schemas and candidate shapes | All-family/both-size/all-peer/control loops, nested-schema and BFS-key checks | Required candidate/send, exact integer types, nested extra-field rejection, lengths and canonical full BFS keys pass. Null optional values are rejected; omitted fields are lawful. Control sends must be empty and Prefix/Sort control candidates complete. Wrong, negative, unsorted and repeated integers remain protocol-valid and unchanged; offline exact scoring stays separate. |
+| Sender-view permissions | Recipient/source/revision/tombstone/reference-limit cases | Self/unknown/duplicate recipients, stale/unheld/pending refs and nine distinct refs fail. Three other recipients and eight distinct refs per recipient pass. Exact current payloads are staged from the sender only; known tombstones stay deleted. Repetitions remain separate delivery attempts. |
+| Whole-reply failure | Correct candidate plus invalid send, stage absence checks | Any invalid send discards every message and candidate. Public stage checks/counts remain distinct from correctness; no recipient view changes during validation. |
+| Literal raw audit/history | Purity/repeatability, special-text and native-ID fixtures | Exact text/IDs/termination survive validation; own replies remain literal labeled history. Numeric list order/multiplicity stay unchanged. BFS key order is semantically irrelevant while raw key spelling/order stays archived. Unexpected special markers are not stripped. |
+| Actual tokenizer caps | [20 native fixtures](../../../tests/fixtures/protocol_replies.json) and six native checks | Generated IDs govern 384; literal texts are separately tokenized and summed to 128. Complete JSON closes at token 384 and passes despite length termination. 385 tokens, malformed below/at cap and known truncation fail. Eight distinct references with nine attempts pass; nine distinct fail. |
+| Public feedback and timing | Sentinel/host-error cases, native feedback guard and next-view checks | Only fixed public descriptions render, all within 32 actual tokens. No supplied sentinel, hidden payload, library validation dump or correctness enters feedback. Generating-slot labels prevent same-call exposure; feedback can enter the next scheduled view. Incompatible feedback tokenization is a configuration error, never silent truncation. |
+| Invalid/failed/unexecuted distinction | Latest-slot/history/failure cases | Invalid and recorded failed slots have absent new candidates even with earlier valid history. Failure has no fabricated generation/feedback. Unexecuted remains distinct. Validation adds no calls or retries. |
+| Integration and dependencies | Source/installed 103-check suites, 80 core-only checks, original five native checks, `pip check` | M1 task/population/schedule evidence and exact saved request/token fixtures remain valid. Pydantic is a declared CPU dependency; full validation cannot silently omit protocol checks. No inference stack is imported by those CPU checks. |
+
+**M2-T02 is done; [M2-T03](M2-T03-synchronous-rounds-and-prefixes.md) is ready.**
+Use `GeneratedReply`, `validate_reply` / `failed_reply`, `ReplyValidation` and
+`StagedMessage` directly for the fixed barrier. Successful stages hold immutable
+sender payloads and every repeated reference attempt, plus optional literal
+text; invalid/failed stages are empty. Candidate/own-reply/feedback outcomes carry
+their generating slot. The next task owns message relationships, synchronous
+commits, source acquisition and immutable-prefix construction; this task applies
+no deliveries. Retention/events, exact mixed/Q reuse and complete attainable/worst
+context capacity remain M2-T04–T06; durable persistence/retry accounting remains
+M3. M2's milestone gate is open.
+
+Final documentation audit passes **437 local links/anchors in 39 documents**,
+balanced fences/text checks and all **29 task/index status comparisons**: five
+done, one ready, 23 blocked. M2 is 2/6 done with M2-T03 ready. Git comparison
+against `fd44e57` confirms the specification, size configuration, M1 code and
+input/schedule fixtures, renderer/request fixture, vendor and research remain
+unchanged. The new 20-case reply fixture has canonical UTF-8/LF bytes. The only
+new runtime dependency is the specification's Pydantic 2 schema layer.
 

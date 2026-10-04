@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
+**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2-T01–T02 verify permitted views/rendering and strict replies; the remaining M2 tasks and M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
 
 ## 1. Execution roadmap
 
@@ -315,7 +315,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | Milestone | Status | Evidence / next action |
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
-| M2 | Partially verified on CPU (1/6 tasks done) | [M2-T01 completion](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff): 79 standard-library checks pass in source/installed runs, plus five native-tokenizer checks and seven exact saved request/token fixtures. [M2-T02](todos/M2/M2-T02-strict-replies-and-feedback.md) is active from a passing 79-check prerequisite run. Complete synchronous protocol/interventions/replay, local-view witness and capacity admission remain; M2's gate is open. |
+| M2 | Partially verified on CPU (2/6 tasks done) | [M2-T02 completion](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff): 103 source/installed CPU checks (80 core + 23 strict reply), six native protocol checks with 20 saved replies, plus the unchanged five native renderer checks and seven exact request/token fixtures. [M2-T03](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md) is ready. Complete synchronous protocol/interventions/replay, local-view witness and capacity admission remain; M2's gate is open. |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
@@ -366,6 +366,18 @@ checks reproduce the assistant-turn archive rewrite while preserving labeled
 user-data history. No dependency or scientific change was needed. The saved
 short fixtures are not the complete worst-context bound; actual protocol/event/
 replay execution and capacity admission remain the subsequent M2 tasks.
+
+M2-T02 verifies complete strict replies and whole-reply permissions/staging with
+the specified Pydantic 2 dependency. Full source and installed runs pass 103
+checks on Python 3.11.9 with Pydantic 2.12.5 and 2.13.5 respectively; explicit
+core-only validation passes 80 without site packages. Six native Qwen checks
+save/reproduce 20 adversarial replies, accept complete JSON closing at token 384,
+reject aggregate 129-token prose and preserve repeated lawful forwarding attempts.
+The five existing native renderer checks and saved requests still pass. Fixed
+feedback remains within 32 actual tokens and never echoes library payloads;
+invalid/failed slots remain absent. No scientific deviation, model call or accepted
+freeze is introduced. Round commits, exact replay and complete capacity remain
+later M2 tasks; ordinary dataclass records provide the next task's staging inputs.
 
 ### Unresolved issues
 

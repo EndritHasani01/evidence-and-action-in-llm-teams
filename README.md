@@ -10,8 +10,8 @@ The five task generators, exact solvers, candidate contracts, coordinate maps,
 eligible edits and saved populations/streams are implemented and verified on CPU
 for both declared sizes. Complete main/development schedules and replay dependencies
 also pass independent CPU checks. M1's gate is passed. Permitted peer views,
-lossless request rendering and strict whole-reply validation are implemented and
-have CPU/native-tokenizer checks. Synchronous correction/retention/replay,
+lossless request rendering and strict whole-reply validation pass 103 CPU checks
+plus 11 native-tokenizer checks. Synchronous correction/retention/replay,
 complete context capacity, the workflow, Qwen3.5/T4 pilot and main experiments
 remain future work. See
 [M2-T02 evidence](docs/todos/M2/M2-T02-strict-replies-and-feedback.md#validation-and-evidence),

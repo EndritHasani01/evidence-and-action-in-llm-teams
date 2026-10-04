@@ -1,6 +1,6 @@
 # M2-T03 — Synchronous rounds and immutable shared prefixes
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T02](../M2/M2-T02-strict-replies-and-feedback.md). M1 must have passed before M2 work begins.
 
@@ -36,4 +36,14 @@ A deterministic in-memory round runner executes scripted replies through the rea
 Exercise source-plus-text, text-only, empty and wholly invalid replies; repeat source references; tombstone versus pending coverage; and all four scheduled opportunities after early success/failure. Mutate nested state in one deserialized sibling and assert original/other siblings unchanged. Verify full round-four drain and owner-v1 rendered exposure from actual requests.
 
 **Evidence:** Not yet recorded. Add scripted traces, order-reversal assertions and command/environment results before marking done.
+
+**Prerequisite handoff (4 October 2026):** [M2-T02 completion](M2-T02-strict-replies-and-feedback.md#completion-and-handoff)
+passes 103 source/installed CPU checks, six native protocol checks and the five
+unchanged native renderer checks. `validate_reply` returns separate validity
+stages, literal generated text/IDs, candidate absence/validity, public feedback
+and immutable staged messages resolved only from sender-held current sources.
+Repeated references preserve separate delivery attempts; no effects are applied.
+Use these records for the fixed four-view barrier and assign message/delivery
+relationships here. This task is ready; synchronous commits and drained immutable
+prefixes remain unimplemented. M2's complete protocol/capacity gate remains open.
 
