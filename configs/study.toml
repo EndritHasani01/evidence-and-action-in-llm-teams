@@ -1,0 +1,3 @@
+# M1 mathematical size only; this is not an accepted M5 inference configuration.
+# The only other permitted size is "fallback" (m=6; BFS 8 nodes/12 edges).
+size = "target"

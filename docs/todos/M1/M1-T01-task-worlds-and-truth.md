@@ -34,5 +34,15 @@ A CPU-usable mathematical core generates the five declared task families and ind
 
 Compare production solvers with independently implemented small references and selected native fixtures. Cover duplicate cutoffs/discarded reserves, numeric endpoints and shard boundaries, negative differences, Sort rank crossings, BFS alternatives/disconnection, and both size configurations. Include old/new examples with empty and nonempty D and assert every output length/key/coordinate assignment. Verify generators do not disturb unrelated random streams.
 
-**Evidence:** Not yet recorded. Add executed commands, environment, test/artifact paths and results before marking done.
+**Evidence (checkpoint, 4 October 2026):** On Windows / Python 3.11.9,
+`python -m recovery validate` passed 8 tests. These compare all five families
+at both sizes over 1,000 deterministic draws against independent references,
+verify ten attributed native fixtures, Prüfer bijection and five-nonedge sampling,
+ownership/identity separation, inclusive numeric domains and RNG isolation.
+Code: [tasks.py](../../../recovery/tasks.py), [truth.py](../../../recovery/truth.py).
+Checks: [test_tasks.py](../../../tests/test_tasks.py),
+[independent references](../../../tests/references.py),
+[fixture provenance](../../../tests/fixtures/README.md).
+Revision/coordinate adversaries, candidate rejection checks and clean CPU
+installation validation remain before completion.
 

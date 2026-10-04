@@ -314,7 +314,7 @@ Update these sections only when a capability is verified, a consequential decisi
 
 | Milestone | Status | Evidence / next action |
 |---|---|---|
-| M1 | Not started | Implement population/truth/schedule capability and its independent checks |
+| M1 | In progress (M1-T01 active) | [Task-world checkpoint](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence): five generators/solvers and coordinate contracts pass initial CPU checks; revision adversaries and clean installation remain. Populations/schedules are not implemented. |
 | M2 | Not started | Requires M1 |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
@@ -326,6 +326,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | Decision | Reason / reconsideration evidence |
 |---|---|
 | New shallow package; vendor/archive remain references | Native execution/scoring conflict with the required protocol; do not inherit obsolete architecture |
+| M1 task core uses frozen standard-library records and caller-owned generation/ownership RNGs | No numerical, graph or inference dependency is needed for these exact computations. Public candidate contracts/source manifests are separate from offline truth; BFS IDs bind only after edge shuffling and tombstones retain endpoints. Eligibility and saved population streams remain M1-T02. |
 | LangGraph barriers plus local SQLite and explicit raw-call ledger | Meets §9's starting choice; replace with the permitted small loop only for a demonstrated unresolved semantic incompatibility in M3 |
 | Explicit narrow peer views and pure state/delivery transformations | Makes scientific visibility, replacement and replay inspectable and CPU-testable |
 | One serial process/replica/database per GPU; access to saved inputs | Keeps inference/RNG isolated while permitting sibling/device rotation |
