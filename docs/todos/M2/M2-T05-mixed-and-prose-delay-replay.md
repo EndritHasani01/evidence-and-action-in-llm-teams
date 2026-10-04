@@ -45,6 +45,18 @@ barrier, validated schedule IDs, source/text component queue and pure delivery
 functions. In-memory saved settings/seeds/replies will govern exact reuse;
 durability remains M3. No scientific or configuration change is required.
 
+**Implementation checkpoint:** [replay.py](../../../recovery/replay.py) obtains
+scheduled replies into an immutable in-memory `SavedRound` before branch-local
+effects. Exact parent IDs, event/replicate scope, permitted views, rendered/native
+requests, settings, seeds and recorded validation must agree; missing parents
+fail without generation. Q inherits its parent's boundary and uses existing
+component IDs/queues for source-normal, prose-delayed delivery. Host-only held
+counts derive from committed queues/deliveries, including zero for inactive Q.
+All 18 focused [replay checks](../../../tests/replay_checks.py) pass; all 80
+existing view/protocol/round/event checks also pass. Both masks and Q execute
+four recovery rounds with four reused and twelve new calls. Native artifacts,
+final source/installed validation and completion handoff remain open.
+
 **Prerequisite handoff (4 October 2026):** [M2-T04 completion](M2-T04-events-retention-and-receipts.md#completion-and-handoff)
 passes 140 source/installed CPU checks and all 18 native-tokenizer checks.
 `start_continuation(prefix_bytes, prepared_world, scheduled_branch)` supplies

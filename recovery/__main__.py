@@ -110,14 +110,15 @@ def main() -> int:
             import recovery.protocol
         except ImportError:
             parser.error("full CPU validation requires Pydantic 2; install the package, or use --core-only for the core subset")
-    scope = ("core subset (strict replies, rounds and events excluded)" if args.core_only
-             else "core, strict replies, rounds and events")
+    scope = ("core subset (strict replies, rounds, events and replay excluded)" if args.core_only
+             else "core, strict replies, rounds, events and replay")
     print(f"CPU validation ({scope}): configured size={size.value}; checks cover target and fallback.", flush=True)
     suite = unittest.defaultTestLoader.discover(str(root / "tests"), top_level_dir=str(root))
     if not args.core_only:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.protocol_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.round_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.event_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.replay_checks"))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     return 0 if result.wasSuccessful() else 1
 

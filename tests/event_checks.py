@@ -94,14 +94,14 @@ class EventBoundaryTests(unittest.TestCase):
 
     def test_all_scheduled_events_subsets_and_repeats_start_from_original(self):
         # Includes both complete populations, development, late indices without
-        # preserving/repeat arms, and every selected owner/partition. Q is T05.
+        # preserving/repeat arms, every selected owner/partition and Q starts.
         for size in Size:
             pop = population(size)
             for world in pop.main + pop.development:
                 prefix = build_prefix(world)
                 original = deserialize_state(prefix.snapshot)
                 for branch in _prepare_branches((world,)):
-                    if branch.phase != "continuation" or branch.policy in ("Q_B", "Q_C"):
+                    if branch.phase != "continuation":
                         continue
                     state = start_continuation(prefix.snapshot, world, branch)
                     self.assertEqual(state.prefix_parent, original.branch_id)
@@ -394,8 +394,8 @@ class EventBoundaryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "original"):
             start_continuation(snapshot_bytes(wrong_id), other, scheduled(other, "revision", "B"))
         graph = case_world(Task.BFS)
-        with self.assertRaisesRegex(ValueError, "Q requires"):
-            start_continuation(build_prefix(graph).snapshot, graph, scheduled(graph, "revision", "Q_B"))
+        prefix = build_prefix(graph)
+        self.assertEqual(views(start(graph, prefix, "Q_B")), views(start(graph, prefix, "B")))
 
     def test_unexposed_hidden_before_values_endpoints_and_future_edit_cannot_change_local_requests(self):
         for task in (Task.PREFIX, Task.BFS):

@@ -20,15 +20,13 @@ def start_continuation(prefix: bytes, world: PreparedWorld, branch: Branch) -> B
 
     `world` and `branch` come from the validated population/schedule. Checking
     the small existing schedule enumeration avoids a second definition of
-    subset, replicate and complementary-mask eligibility. Q delivery/replay is
-    a later task and cannot be executed through this entry point yet.
+    subset, replicate and complementary-mask eligibility. Q starts exactly as
+    its B/C parent; replay.py owns its subsequent reply reuse and delivery rule.
     """
 
     if (type(world) is not PreparedWorld or type(branch) is not Branch
             or branch.phase != "continuation" or branch not in _prepare_branches((world,))):
         raise ValueError("boundary requires a scheduled continuation of this saved world")
-    if branch.policy in ("Q_B", "Q_C"):
-        raise ValueError("Q requires the subsequent exact replay/delivery implementation")
     state = fork_prefix(prefix, branch.branch_id)
     original = world.world
     if (state.prefix_parent != branch.prefix_parent or state.task is not original.task
@@ -54,7 +52,7 @@ def start_continuation(prefix: bytes, world: PreparedWorld, branch: Branch) -> B
                                                  if s.record_id == updated.record_id))
     notice = ContinueNotice() if updated is None else RevisionNotice(identity, 1, 2)
     policy = branch.policy
-    base = {"B_delta": "B", "C_delta": "C", "K_delta": "K"}.get(policy, policy)
+    base = {"B_delta": "B", "C_delta": "C", "K_delta": "K", "Q_B": "B", "Q_C": "C"}.get(policy, policy)
     reset_group = (world.partition[0] if base == "P_G" else
                    world.partition[1] if base == "P_H" else ())
     peers, deliveries = [], list(state.deliveries)
