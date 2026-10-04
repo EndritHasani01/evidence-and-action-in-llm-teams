@@ -1,6 +1,6 @@
 # M1-T02 — Eligible edits and reproducible populations
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M1-T01](../M1/M1-T01-task-worlds-and-truth.md).
 
@@ -34,5 +34,9 @@ Serializable populations contain actual worlds, edits, partitions, eligibility/r
 
 Test exact legal sets and deterministic selection boundaries rather than a flaky frequency threshold. Force exhausted rejection. Check development/main disjointness, target/fallback nesting, fixed subset sizes/overlap, all three partition possibilities, owner balance, distinct repeat seeds and sibling seed matching. Reordering preparation or consuming an unrelated stream must not shift other identities. Verify byte-stable regeneration from saved inputs and detection of a modified manifest.
 
-**Evidence:** Not yet recorded. Add commands, environment, fixtures and saved-manifest evidence before marking done.
+**Evidence (start, 4 October 2026):** M1-T01 is done and its implementation,
+23-check CPU evidence, specification sections and generation-risk investigation
+have been inspected. Implement legal edit sets first, then immutable population
+records and isolated saved streams, then reload/mutation and population checks.
+No inference, accepted M5 freeze or scientific-design change is part of this task.
 
