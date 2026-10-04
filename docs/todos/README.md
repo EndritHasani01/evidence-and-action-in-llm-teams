@@ -6,7 +6,7 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 6/29. Remaining: 23. Active: 1. Ready: 0. Blocked: 22.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 7/29. Remaining: 22. Active: 0. Ready: 1. Blocked: 21.** Counts measure verified task outcomes, not effort or runtime.
 
 - [M1-T01](M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence) is done: all five families at both sizes, exact truth/coordinates, ten attributed fixtures and 23 CPU checks pass.
 - [M1-T02](M1/M1-T02-edits-and-populations.md#validation-and-evidence) is done: eligible edits, 60/40 nested populations, five development worlds, partitions, saved streams and manifest equality pass in the 42-check CPU suite.
@@ -14,14 +14,15 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 - [M2-T01](M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff) is done: permitted immutable views, current/pending/deleted source authority, historical/derived work and exact request/token rendering pass in the 79-check CPU suite plus five native-tokenizer checks. Complete capacity admission remains M2-T06.
 - [M2-T02](M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff) is done: strict whole-reply schemas/permissions, actual token limits, public feedback and absent invalid/failed candidates pass in the 103-check source/installed CPU suites plus six native protocol checks. The original five native renderer checks still pass.
 - [M2-T03](M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff) is done: synchronous source/text barriers, branch-scoped attempts/acquisitions, all scheduled opportunities, immutable drained prefix forks and actual rendered owner-v1 exposure pass in the 121-check source/installed CPU suites plus three new native round checks. All 11 previous native checks still pass.
-- Active task: [M2-T04](M2/M2-T04-events-retention-and-receipts.md), literal events, retention boundaries and receipts; its 121-check prerequisite baseline passes.
+- [M2-T04](M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff) is done: literal event/retention/receipt boundaries, every saved non-Q start, retained historical results and actual receipt token costs pass in the 140-check source/installed CPU suites plus four new native checks. All 14 previous native checks still pass.
+- Next unblocked task: [M2-T05](M2/M2-T05-mixed-and-prose-delay-replay.md), exact mixed-group replay and prose-delay delivery.
 - Other blocked tasks await their listed prerequisites; dependency-blocked is distinct from a failed gate.
 - No GPU run, main experiment, scientific/frozen-configuration change or publication is authorized by creation of this task system.
 
 | Milestone | Done | Remaining | Current state | Milestone gate |
 |---|---:|---:|---|---|
 | M1 | 3/3 | 0 | Passed on CPU | Exact worlds, coordinates, eligible populations, saved streams and complete schedules pass; [M1-T03 gate evidence](M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate) closes M1. |
-| M2 | 3/6 | 3 | M2-T04 active | Peer views/rendering, strict replies and synchronous rounds/drained prefixes verified; still requires literal events/retention/receipts, exact mixed/Q replay, local-view witness and complete tokenizer bound; close in [M2-T06](M2/M2-T06-attainability-and-capacity.md). |
+| M2 | 4/6 | 2 | M2-T05 ready | Peer views/rendering, strict replies, synchronous rounds/drained prefixes and literal events/retention/receipts verified; still requires exact mixed/Q replay, local-view witness and complete tokenizer bound; close in [M2-T06](M2/M2-T06-attainability-and-capacity.md). |
 | M3 | 0/5 | 5 | Blocked by M2 | Durable scripted lifecycle, real process-crash/restart, worker replay, accounting and safe-stop checks pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
 | M4 | 0/6 | 6 | Blocked by M1–M3 | All prescribed offline analysis and complete synthetic report reproduce; all M1–M4 CPU evidence passes in [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md). |
 | M5 | 0/5 | 5 | Blocked by M1–M4 | Authorized smoke → 90-slot capability gate → full pilot → measured complete-schedule forecast and freeze; close in [M5-T05](M5/M5-T05-allocation-admission-and-freeze.md). |
@@ -49,8 +50,8 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | [M2-T01 — Permitted peer views and lossless rendering](M2/M2-T01-peer-views-and-rendering.md) | done | [M1-T03](M1/M1-T03-complete-schedules.md) | Plan §§2, 4; spec §§3.1, 4.3–4.4, 9 |
 | [M2-T02 — Strict reply validation and public feedback](M2/M2-T02-strict-replies-and-feedback.md) | done | [M2-T01](M2/M2-T01-peer-views-and-rendering.md) | Plan §4; spec §§3.2, 5.1, 8.1, 9 |
 | [M2-T03 — Synchronous rounds and immutable shared prefixes](M2/M2-T03-synchronous-rounds-and-prefixes.md) | done | [M2-T02](M2/M2-T02-strict-replies-and-feedback.md) | Plan §§2, 4; spec §§2.2, 3.1–3.2, 9 |
-| [M2-T04 — Literal events, retention boundaries and receipts](M2/M2-T04-events-retention-and-receipts.md) | active | [M2-T03](M2/M2-T03-synchronous-rounds-and-prefixes.md) | Plan §4; spec §§2.3, 4.1–4.3, 9 |
-| [M2-T05 — Exact mixed-group replay and prose-delay delivery](M2/M2-T05-mixed-and-prose-delay-replay.md) | blocked | [M2-T04](M2/M2-T04-events-retention-and-receipts.md) | Plan §§2, 4; spec §§4.2, 4.4, 9 |
+| [M2-T04 — Literal events, retention boundaries and receipts](M2/M2-T04-events-retention-and-receipts.md) | done | [M2-T03](M2/M2-T03-synchronous-rounds-and-prefixes.md) | Plan §4; spec §§2.3, 4.1–4.3, 9 |
+| [M2-T05 — Exact mixed-group replay and prose-delay delivery](M2/M2-T05-mixed-and-prose-delay-replay.md) | ready | [M2-T04](M2/M2-T04-events-retention-and-receipts.md) | Plan §§2, 4; spec §§4.2, 4.4, 9 |
 | [M2-T06 — Protocol attainability and complete tokenizer capacity](M2/M2-T06-attainability-and-capacity.md) | blocked | [M2-T05](M2/M2-T05-mixed-and-prose-delay-replay.md) | Plan §4 gate; spec §§3.2, 8.2, 9 |
 | [M3-T01 — Durable rounds and exact response reuse](M3/M3-T01-durable-round-runner.md) | blocked | [M2-T06](M2/M2-T06-attainability-and-capacity.md) | Plan §§2, 5; spec §§3–4, 9 |
 | [M3-T02 — Bounded attempts, timeouts and interruption semantics](M3/M3-T02-bounded-attempts-and-failures.md) | blocked | [M3-T01](M3/M3-T01-durable-round-runner.md) | Plan §5; spec §§3.2, 6, 9 |

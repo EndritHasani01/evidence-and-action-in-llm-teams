@@ -315,7 +315,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | Milestone | Status | Evidence / next action |
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
-| M2 | Partially verified on CPU (3/6 tasks done) | [M2-T03 completion](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff): 121 source/installed CPU checks (80 core + 23 strict reply + 18 round/prefix), three native round checks with an exact eight-round trace and all 11 previous native checks. Complete sibling isolation, round-four drain, actual owner-v1 exposure, order independence and attempt/acquisition metadata pass. [M2-T04](todos/M2/M2-T04-events-retention-and-receipts.md) is ready. Literal events/retention/receipts, exact mixed/Q replay, local-view witness and capacity admission remain; M2's gate is open. |
+| M2 | Partially verified on CPU (4/6 tasks done) | [M2-T04 completion](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff): 140 source/installed CPU checks (80 core + 23 strict reply + 18 round/prefix + 19 event/retention), four native boundary/receipt checks and all 14 previous native checks. Every saved non-Q start, literal retention, persistent historical candidates, source authority, paired renders and actual receipt costs pass; four prefixes/15 boundary snapshots/60 exact requests are archived. [M2-T05](todos/M2/M2-T05-mixed-and-prose-delay-replay.md) is ready. Exact mixed/Q replay, local-view witness and capacity admission remain; M2's gate is open. |
 | M3 | Not started | Requires M2 |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
@@ -336,7 +336,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | M2-T02 uses complete JSON decoding, strict Pydantic 2 and whole-reply staging | Pydantic 2 is now a declared CPU dependency. Full validation includes the strict-reply suite; explicit `--core-only` retains dependency-free checks without claiming protocol admission. Generated IDs govern the 384-token cap; literal message texts are tokenized separately and summed. Source staging resolves only immutable sender-held records and preserves repeated attempts. Fixed public feedback has an actual tokenizer guard; invalid/failed outcomes replace candidates with absence. No delivery, correctness check, response repair or extra call is introduced. |
 | M2-T03 separates pure request, validation, staging and delivery barriers | The in-memory procedure uses the existing views/renderer/validator and call-key spelling; M3 still owns LangGraph/SQLite integration. Source/text component IDs preserve repeated attempts and branch-local idempotence. First-acquisition metadata remains public; full attempts/IDs/queues remain offline. Plain JSON deep-deserialization supplies drained immutable prefixes without another store. Final recovery deliveries are audited at an unscheduled next-round boundary, without a fifth opportunity. Eighteen focused checks, the 121-check source/installed suites and three native round checks pass; the existing 11 native checks still pass. |
 | One serial process/replica/database per GPU; access to saved inputs | Keeps inference/RNG isolated while permitting sibling/device rotation |
-| M2-T04 uses explicit boundary cases, saved schedule identities and persistent notices | Every start deep-deserializes the original prefix and checks original sources/fourth-slot outcomes. The existing schedule enumeration governs subsets/repeats; no second eligibility configuration is added. A notice on all four recovery peers identifies the applied boundary, including sham, without another stored flag. Ordinary numeric receipt fields stay identical in L/F/masks and B/C/K; a pending ordinary field reveals no value, while historical disclosure requires delivered v2. Seventeen focused CPU checks and the 61 existing view/protocol/round checks pass; native artifacts and final acceptance remain open. |
+| M2-T04 uses explicit boundary cases, saved schedule identities and persistent notices | Every start deep-deserializes the original prefix and checks original sources/fourth-slot outcomes. The existing schedule enumeration governs subsets/repeats; no second eligibility configuration is added. A notice on all four recovery peers identifies the applied boundary, including sham, without another stored flag. Ordinary numeric receipt fields stay identical in L/F/masks and B/C/K; a pending ordinary field reveals no value, while historical disclosure requires delivered v2. K's exact historical result/absence moves into labeled history once when replaced by a new slot. Nineteen focused CPU checks, the 140-check source/installed suites and all 18 native checks pass; exact replay and durable apply-once execution remain T05/M3. |
 | Offline exact evaluation/analysis, ready before GPUs | Prevents correctness feedback and late discovery of unrecorded analysis inputs |
 | Keep incidental names/layout flexible | Freeze interfaces and scientific invariants; avoid abstractions unsupported by a current requirement |
 
@@ -392,9 +392,7 @@ other siblings. Delivery attempts remain separate from first acquisitions, and
 final messages drain without an extra call. No dependency or scientific change
 was needed. This is protocol evidence, not an event-policy implementation,
 full capacity proof, durable lifecycle, model capability or experimental result;
-M2-T04 is ready and M2's gate remains open.
-
-### Unresolved issues
+this established the M2-T04 prerequisite and left M2's gate open.
 
 M2-T04 review found that replacing the latest candidate after K's first
 recovery call would discard its retained historical result. The round commit
@@ -403,8 +401,22 @@ entry before installing the new slot outcome. It does not fabricate a full
 reply, recover an earlier answer, or recompact subsequent history. Serialization
 and rendering preserve this entry, including BFS tuples and invalid/failed
 absence, through all four recovery calls. Nineteen focused event checks and
-all 61 existing view/protocol/round checks pass. The original boundary renders
-and previous native fixtures remain unchanged; final regression is pending.
+all 61 existing view/protocol/round checks pass. Final source/installed suites
+pass 140 checks and all 18 native checks pass. The original boundary renders
+and previous native fixtures remain unchanged.
+
+M2-T04 now verifies every saved non-Q boundary, source/pending/tombstone
+authority, sham and preserving siblings, literal B/C/K/F/mask retention,
+historical receipts, nested isolation and identifiable boundary application.
+The native archive retains four prefixes, 15 boundary snapshots and 60 first
+requests. Receipt disclosure changes only the archived before-value; the saved
+Prefix Sum/Sort pairs cost four/three fewer input tokens per peer than ordinary
+wording, without padding. Ordinary new history and K's retained result persist
+through all four recovery slots. No scientific deviation or dependency was
+needed. M2-T05 is ready; exact mixed/Q replay, the local-view witness, complete
+capacity and M3 durability remain open, with no model/pilot/main result implied.
+
+### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |
 |---|---|

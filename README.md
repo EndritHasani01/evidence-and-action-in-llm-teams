@@ -10,11 +10,12 @@ The five task generators, exact solvers, candidate contracts, coordinate maps,
 eligible edits and saved populations/streams are implemented and verified on CPU
 for both declared sizes. Complete main/development schedules and replay dependencies
 also pass independent CPU checks. M1's gate is passed. Permitted peer views,
-lossless request rendering, strict whole-reply validation and synchronous
-scripted rounds/drained prefixes pass 121 CPU checks plus 14 native-tokenizer
-checks. Event/retention transformations, exact mixed/Q replay, complete context
+lossless request rendering, strict whole-reply validation, synchronous
+scripted rounds/drained prefixes and literal event/retention/receipt boundaries
+pass 140 CPU checks plus 18 native-tokenizer checks. Exact mixed/Q replay, complete context
 capacity, the durable workflow, Qwen3.5/T4 pilot and main experiments
 remain future work. See
+[M2-T04 evidence](docs/todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff),
 [M2-T03 evidence](docs/todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff),
 [M2-T02 evidence](docs/todos/M2/M2-T02-strict-replies-and-feedback.md#validation-and-evidence),
 [M2-T01 evidence](docs/todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff),
@@ -46,9 +47,9 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m recovery validate
 ```
 
-Full validation includes the core, strict-reply and scripted-round checks. Without installation,
+Full validation includes the core, strict-reply, scripted-round and event checks. Without installation,
 `python -S -m recovery validate --core-only` runs only the dependency-free core
-subset with site packages disabled; it explicitly excludes strict replies/rounds
+subset with site packages disabled; it explicitly excludes strict replies/rounds/events
 and cannot establish their gate. Full validation fails if Pydantic is unavailable.
 Validation requires this checkout's tests and attributed vendor JSON. It checks
 both sizes regardless of the configured size, exits nonzero on failure, and
@@ -115,8 +116,21 @@ deliveries for the next round. Component IDs retain every reference attempt
 separately from unique acquisitions. `run_prefix` archives four complete rounds
 and produces a drained immutable JSON snapshot; `fork_prefix` deep-deserializes
 each continuation independently. `RoundResult.barrier` preserves the exact
-pre-delivery views/requests/replies for later reuse. Event policies, exact mixed/Q
-controls, complete capacity and durable persistence remain the later M2/M3 tasks.
+pre-delivery views/requests/replies for later reuse.
+
+[events.py](recovery/events.py) supplies
+`start_continuation(prefix_bytes, prepared_world, scheduled_branch)`. It checks
+the saved schedule and original prefix, then applies the single event and literal
+L/B/C/K/F/mask/receipt boundary. All siblings, preserving edits and repeats start
+from that original snapshot. Public notices invalidate stale sources; unknown
+replacement content stays pending. K keeps the actual fourth-slot result or
+absence and preserves it as labeled history when a new outcome replaces the
+latest candidate. `BranchState.boundary_applied` derives from persistent notices
+and survives serialization; durable apply-once execution remains M3.
+The [boundary archive](tests/fixtures/README.md#event-boundaries-and-receipt-pairs)
+records paired renders and actual receipt token costs. Mixed initial requests
+match their B/C parents; exact mixed/Q reply reuse, complete capacity and durable
+persistence remain the later M2/M3 tasks.
 
 The [independent references and attributed fixtures](tests/fixtures/README.md)
 validate task truth, not model capability, native SILO scores or recovery effects.
