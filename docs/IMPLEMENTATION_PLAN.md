@@ -316,7 +316,7 @@ Update these sections only when a capability is verified, a consequential decisi
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
 | M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
-| M3 | In progress | M3-T01 done: 18 durable checks, 185 source/installed checks and CPU/native archives pass; M3-T02 ready. Full M3 gate remains open |
+| M3 | In progress (2/5 tasks done) | M3-T01/T02 done: 18 durable and 22 attempt checks, 207 source/installed checks, exact CPU/native durable archives and 12-case failure reproduction pass; M3-T03 ready. Full M3 gate remains open |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
 | M6 | Not started | Requires accepted M5 freeze |
@@ -332,6 +332,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | M1-T03 schedules use existing world/branch/call keys and explicit prefix/raw-reply parents | Independent component/cell checks reconcile both complete main totals and the exact development matrix. Equal seeds create distinct generations unless a prescribed first-round B/C parent exists. The nested 40 is a view of the 60-world schedule; smoke is separate and the first 90 pilot slots are prefix/controls. Saved schedules are derived artifacts checked against the population, without copied raw worlds or another identity system. Save/reload, mutations, dependency orders and CPU prepare/validate pass in the 59-check suite; runtime equality/delivery remain M2/M3. |
 | LangGraph barriers plus local SQLite and explicit raw-call ledger | Meets §9's starting choice; replace with the permitted small loop only for a demonstrated unresolved semantic incompatibility in M3 |
 | M3-T01 uses replacement byte snapshots and an application-owned raw-call ledger | `prepare → obtain → commit` uses synchronous durability. Existing IDs join pre-delivery inputs, physical outcomes, attempts and logical replays; committed checkpoints exclusively own effects. Explicit round arguments make lost acknowledgements idempotent. Public saved checkpoint configurations exclude durable pending writes from delivery exports; normal graph resume consumes those writes. Active attempts without raw output stop for M3-T02 recovery. Tested CPU dependency pins are not an M5 freeze. [T01 evidence](todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence): 18 focused checks, 185 source/installed checks, 81 core checks and both 240-round CPU/native archives pass. No small-loop fallback or second effect store. |
+| M3-T02 uses one resident inference subprocess and the existing attempt keys | A spawn-compatible model loader is required for termination/reload while preserving resident weights. The parent owns SQLite; pipe I/O and an owner-sentinel watcher keep hangs and orphaned generation bounded. Known timeout is durable before kill; only an absent durable outcome after infrastructure interruption permits one identical retry. Existing `(call_id, number)` keys own bounds/observed work/uncertainty and loading/idle/stop intervals; this process table is necessary for later charging work omitted by attempt durations. Default bounds are 120 seconds plus one-second terminate/kill graces. Direct providers require explicit deterministic `scripted=True`. [T02 evidence](todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence): 22 focused and 207 source/installed CPU checks, exact archives and real kills pass. No delivery store, new identity, scheduler or dependency is added. |
 | Explicit narrow peer views and pure state/delivery transformations | Makes scientific visibility, replacement and replay inspectable and CPU-testable |
 | M2-T01 uses immutable permitted records and a single user-data renderer | Initial projection/held-source lookup take no evaluator or schedule labels. Current/pending/deleted sources, receipt history, derived text, feedback and latest-slot absence are distinct; public identity alone orders sources. Candidate state cannot precede recorded own/feedback slots. Native non-thinking template text and untruncated token inputs are ordinary saveable records. Fixed public feedback prevents hidden library-error payloads; complete capacity and event/round transformations remain later M2 tasks. |
 | M2-T02 uses complete JSON decoding, strict Pydantic 2 and whole-reply staging | Pydantic 2 is now a declared CPU dependency. Full validation includes the strict-reply suite; explicit `--core-only` retains dependency-free checks without claiming protocol admission. Generated IDs govern the 384-token cap; literal message texts are tokenized separately and summed. Source staging resolves only immutable sender-held records and preserves repeated attempts. Fixed public feedback has an actual tokenizer guard; invalid/failed outcomes replace candidates with absence. No delivery, correctness check, response repair or extra call is introduced. |
@@ -501,16 +502,42 @@ processes: 60 branches, 240 rounds, 960 logical calls, 864 physical attempts and
 96 exact parent joins, with two Q transitions reconstructed from saved replies
 and all backup states preserved. These are scripted CPU checks and native
 tokenizer-only checks; no weights/model/GPU or experimental outcomes were used.
-[M3-T02](todos/M3/M3-T02-bounded-attempts-and-failures.md) is ready. Active attempts
-without raw outcomes currently stop for its uncertain-completion, termination
-and bounded-retry handling. Scheduling/controls, cross-worker parents, accounting
-and the M3-T05 killed-process gate remain open.
+At T01 completion, active attempts without raw outcomes stopped for T02's
+uncertain-completion, termination and bounded-retry handling. T02 completes
+that boundary below; scheduling/controls, cross-worker parents, accounting
+and the combined M3-T05 gate remain open.
+
+M3-T02 completes on 5 October 2026. A resident spawned inference process uses
+the existing exact inputs and application ledger; the parent remains responsive
+and terminates a hung attempt under its default 120-second bound. Timeout is
+durable before termination. Restart after the preceding owner stops preserves
+unknown completion/duration and observed work, permits one identical retry and
+exhausts a second interruption without a third attempt. Invalid/truncated/wrong
+and known failure records remain final; ordinary failures continue the fixed
+opportunities and never inherit an earlier candidate. Overflows stop before
+generation. Loading/resident idle/termination intervals remain available for
+M3-T04 attribution, including uncertain stop times after owner death.
+
+Twenty-two focused checks include real controller kills before/after raw reply,
+during loading and timeout termination; inference children die with their owners.
+Source/installed-library suites each pass 207, and core-only passes 81. Both
+240-round CPU/native durable archives remain exact. The 12-case failure archive
+reproduces exact call/attempt/state records with a fresh hash seed and retains
+78 attempts, 28 process intervals, nine uncertain completions and four unknown
+attempt ends. Five confirmed CPU hung timeouts exceeded their deadlines by
+0.015–0.031 seconds; this is not a GPU timing forecast or timeout admission.
+See [T02 verification](todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence).
+[M3-T03](todos/M3/M3-T03-local-worker-scheduling.md) is ready. Worker placement,
+controls/cross-worker parents, resource accounting/status, the combined M3 gate
+and execution-host/model adequacy remain open. Specification/configuration and
+prior archives are preserved; no weights, GPU/model inference or main outcomes
+were used.
 
 ### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |
 |---|---|
-| Killed-process attempt/delivery recovery, worker replay and accounting | T01's actual saver/save/reopen/exception checks pass; M3-T02–T05 must complete process termination/retry, scheduling/accounting and killed-process acceptance, then rerun against M5's accepted host lock |
+| Combined killed-process lifecycle, worker replay and accounting | T01 saver/replacement and T02 actual termination/retry/controller-kill checks pass. M3-T03–T05 must integrate cross-worker scheduling, accounting and the combined lifecycle gate, then rerun in M5's accepted host lock |
 | Passing model/runtime/timeout and device headroom at the revised context | M5 maintained-loader diagnostics and bounded smoke/pilot, including the complete admitted input envelope. Static full-attention FP16 KV alone is 8 GiB at 262,144; weights/activations/workspace and 1.5 GiB headroom are additional. CPU admission is not T4 feasibility. |
 | 9B/4B, target/fallback size, 60/40 worlds | M5 capability and complete-schedule allocation evidence, following the specified precedence and shared development limit |
 | Compute provider availability, persistence and allocation rules | Before GPU reservation, record actual devices, durable storage/backup location, allocation start/stop and billing rules; provider choice cannot alter experimental semantics |

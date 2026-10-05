@@ -19,9 +19,12 @@ including output reserve, under the uniform 262,144 limit. Unpaired message
 surrogates are bounded whole-reply schema failures. Both sizes are CPU-admitted;
 GPU memory/capability/timing remain untested. Durable rounds now run through real
 LangGraph/SQLite checkpoints with exact raw reply/failure reuse and branch-local
-effects; 18 focused CPU checks pass. Bounded process termination/retry recovery,
-worker scheduling/accounting, the complete M3 gate, Qwen3.5/T4 pilot and main
+effects. Bounded process execution and controller-death recovery enforce durable
+timeouts, one identical infrastructure retry and observed/uncertain work;
+22 attempt checks and the 207-check source/installed CPU suites pass.
+Worker scheduling/accounting, the complete M3 gate, Qwen3.5/T4 pilot and main
 experiments remain future work. See
+[M3-T02 evidence](docs/todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence),
 [M3-T01 evidence](docs/todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence),
 [M2-T06 completion evidence](docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate),
 [M2-T05 evidence](docs/todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff),
@@ -60,11 +63,11 @@ python -m venv .venv
 ```
 
 Full validation includes the core, strict-reply, scripted-round, event, replay and
-local-view attainability and durable runner checks. Native tokenizer/capacity admission is checked
+local-view attainability, durable runner and bounded CPU subprocess checks. Native tokenizer/capacity admission is checked
 separately with local pinned metadata. Without installation,
 `python -S -m recovery validate --core-only` runs only the dependency-free core
 subset with site packages disabled; it explicitly excludes strict replies, rounds,
-events, replay, attainability and durability
+events, replay, attainability, durability and attempts
 and cannot establish their gate. Full validation fails if Pydantic is unavailable.
 Full validation also requires LangGraph and its SQLite saver.
 Validation requires this checkout's tests and attributed vendor JSON. It checks
@@ -168,7 +171,10 @@ scheduled obtain/commit steps through [runner.py](recovery/runner.py) for durabl
 execution; `rounds.py` provides the underlying pure operations. Complete CPU
 capacity passes in M2-T06.
 
-`DurableRunner(path, tokenizer, reply_provider)` serially owns one worker file.
+`DurableRunner(path, tokenizer, ProcessProvider(factory))` serially owns one worker
+file. The importable factory loads a resident inference provider in a spawned
+child, receiving only permitted inputs for each independent call. Use
+`scripted=True` with direct providers only for deterministic CPU fixtures.
 `start(prepared_world, scheduled_branch, settings=...)` durably initializes a
 prefix or deep-forked event boundary. `run_round(branch_id, round_number)` obtains
 the four exact calls, then commits branch-local delivery with synchronous
@@ -176,11 +182,17 @@ checkpoints. Repeating that explicit round returns its committed result. The
 provider receives only the permitted view, literal rendered/native request,
 saved seed and fresh settings. Exact raw replies/final failures live in
 [storage.py](recovery/storage.py); logical replay points to its physical parent
-without duplicating raw outcomes. An active attempt without a durable outcome
-stops for M3-T02's interruption recovery. `state`, `result` and `deliveries` read
+without duplicating raw outcomes. The default 120-second attempt bound includes
+loading and communication; terminate/kill each have a one-second grace. Known
+timeouts are saved before termination and never retried. Restart after a stopped
+owner records uncertain completion and allows at most one identical-request
+infrastructure retry; completed outcomes always win. Durable heartbeats and
+process loading/idle intervals retain work for later accounting. `state`, `result` and `deliveries` read
 committed checkpoints, and `backup` uses SQLite's backup API, including live WAL.
 The [durable archives](tests/fixtures/README.md#durable-round-runner-traces)
 reproduce CPU-counter and native-tokenizer execution without model inference.
+The [failure archive](tests/fixtures/README.md#bounded-attempt-and-process-failure-traces)
+adds measured CPU hangs, timeout/termination and actual controller-kill recovery.
 
 ## Protocol attainability and capacity
 

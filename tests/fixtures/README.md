@@ -469,5 +469,37 @@ the tested `.venv` LangGraph/Pydantic packages; source imports take precedence.
 Tokenizer/config/template files match the existing M2 identities. The metadata
 path is local and may need replacement on another host; install the tokenizer
 dependencies there before reproduction. [M3-T01](../../docs/todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence)
-records environment and focused/full verification. Actual killed-process,
-termination/retry, worker and accounting acceptance remains M3-T02–T05.
+records environment and focused/full verification. M3-T02 now verifies bounded
+process attempts and killed-controller recovery below; scheduling/accounting and
+combined lifecycle acceptance remain M3-T03–T05.
+
+## Bounded attempt and process failure traces
+
+[attempt_failure_traces.json.gz](attempt_failure_traces.json.gz) records 12 CPU
+failure cases derived from the actual attempt ledger and replacement checkpoints:
+78 attempts, 28 resident-process intervals, nine uncertain completions and four
+unknown attempt end times. It retains exact calls/raw outputs/validation,
+physical request instrumentation, committed states and real UTC/elapsed timing
+measurements. Five confirmed hung timeouts exceeded their deadlines by
+0.015–0.031 seconds on the retained Windows CPU run. This is protocol evidence,
+not a model result, allocation ledger or GPU-timeout admission.
+
+[attempt_archive.py](../attempt_archive.py) executes all 22
+[attempt checks](../attempt_checks.py), including real
+[controller kills](../attempt_worker.py), and compares exact call outcomes,
+attempt statuses and committed states with the saved archive. Measured clocks,
+PIDs and local module paths remain in evidence and can differ on reproduction.
+Known timeout decisions survive kills during termination; ambiguous completion
+and measured work survive restart without a third physical attempt.
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.attempt_checks -v
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.attempt_archive
+```
+
+To retain another measured run, append `--write-fixture <new_archive.json.gz>`;
+exclusive creation protects prior evidence. JSON is UTF-8/LF with gzip `mtime=0`.
+Reproduction never loads weights or performs model/GPU inference. See
+[M3-T02 evidence](../../docs/todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence)
+for the tested environment, bounds and remaining M3/M5 gates.

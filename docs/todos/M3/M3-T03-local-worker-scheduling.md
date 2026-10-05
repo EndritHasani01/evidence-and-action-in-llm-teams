@@ -1,8 +1,11 @@
 # M3-T03 — Local worker scheduling and cross-worker replay
 
-**Status:** blocked
+**Status:** ready
 
-**Dependencies:** [M3-T02](../M3/M3-T02-bounded-attempts-and-failures.md). The M2 gate must have passed.
+**Dependencies:** [M3-T02](../M3/M3-T02-bounded-attempts-and-failures.md#completion-and-handoff).
+M2 passed and M3-T02 completed on 5 October 2026. Use its bounded
+`ProcessProvider` and exclusive worker-local ledger/checkpoints; preserve known
+timeouts, the single identical retry and observed/uncertain process work.
 
 ## References
 
