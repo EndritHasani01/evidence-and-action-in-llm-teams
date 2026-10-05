@@ -1,10 +1,10 @@
 # Implementation plan
 
-**Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), final version dated 4 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
+**Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1 verified on CPU (M1-T01–T03 done; gate passed). The recovery package supplies task truth, prepared populations, complete schedules and replay dependencies. M2–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
+**Implementation status:** M1 and M2 are verified on CPU (nine tasks done; both gates passed). The recovery package supplies task truth, prepared populations/schedules, permitted peer views, strict replies, synchronous scripted rounds, literal event/retention/receipt boundaries and exact mixed/Q replay. M2-T06 verifies local-view attainability and complete native capacity for both sizes under the authorized literal layout, scalar-message contract and uniform 262,144 context limit. M3-T01 is ready; durable execution and M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
 
 ## 1. Execution roadmap
 
@@ -138,7 +138,7 @@ After the boundary, every policy accumulates ordinary new history; K is not cont
 
 Build the actual attainability witness: each peer forwards its own currently held shard to a different peer in each of the first three rounds and computes only from its acquired local view once sufficient records are available. Use legal placeholder candidates earlier. Exercise all families, event deliveries, reset policies, and prose delay through the real interface. The scripted solver must not receive host gold or unseen records. Prove revised correctness is attainable within the four recovery rounds, including local replacement forwarding and F's reacquisition.
 
-Run tokenizer-only validation on the actual request template and reply serialization. Verify every candidate/control shape and useful one-shard messages fit; reserve the full 384 output tokens inside the 8,192 total. Bound retained history across the full prefix and recovery horizon, including invalid own replies, maximum received prose, feedback, labels, current tables, notices/receipts, source-delivery metadata, unusual escaping, and wrong integers. Use an accounting bound plus adversarial rendered fixtures, not only ordinary/correct outputs or the research's illustrative context. Q release must not duplicate history. Stress template special-looking strings and lossless archive preservation.
+Run tokenizer-only validation on the actual request template and reply serialization. Verify every candidate/control shape and useful one-shard messages fit; reserve the full 384 output tokens inside the authorized 262,144 total (pre-main revision of 5 October 2026). Bound retained history across the full prefix and recovery horizon, including invalid own replies, maximum received prose, feedback, labels, current tables, notices/receipts, source-delivery metadata, unusual escaping, and wrong integers. Use an accounting bound plus adversarial rendered fixtures, not only ordinary/correct outputs or the research's illustrative context. Q release must not duplicate history. Stress template special-looking strings and lossless archive preservation.
 
 **Acceptance evidence.** All differential checks above pass; reversed physical peer order yields identical scripted states; a valid candidate plus one invalid message yields no effects; stale/unheld references reveal nothing. The locally informed witness succeeds with legal tokenized traffic. The complete renderer capacity argument and fixtures fit both accepted contracts and all relevant policies. A gap in the worst-context argument remains a failed gate. Compact lossless representation and the specified uniform size fallback may resolve it; if neither does, stop and document the incompatibility for an explicit specification-level decision. Never silently truncate or invent another fallback.
 
@@ -315,8 +315,8 @@ Update these sections only when a capability is verified, a consequential decisi
 | Milestone | Status | Evidence / next action |
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
-| M2 | Not started (M2-T01 ready) | M1 prerequisite passed; next [permitted views and rendering](todos/M2/M2-T01-peer-views-and-rendering.md) |
-| M3 | Not started | Requires M2 |
+| M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
+| M3 | Ready to start | M3-T01 prerequisites pass; durable workflow remains unimplemented |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
 | M6 | Not started | Requires accepted M5 freeze |
@@ -332,8 +332,16 @@ Update these sections only when a capability is verified, a consequential decisi
 | M1-T03 schedules use existing world/branch/call keys and explicit prefix/raw-reply parents | Independent component/cell checks reconcile both complete main totals and the exact development matrix. Equal seeds create distinct generations unless a prescribed first-round B/C parent exists. The nested 40 is a view of the 60-world schedule; smoke is separate and the first 90 pilot slots are prefix/controls. Saved schedules are derived artifacts checked against the population, without copied raw worlds or another identity system. Save/reload, mutations, dependency orders and CPU prepare/validate pass in the 59-check suite; runtime equality/delivery remain M2/M3. |
 | LangGraph barriers plus local SQLite and explicit raw-call ledger | Meets §9's starting choice; replace with the permitted small loop only for a demonstrated unresolved semantic incompatibility in M3 |
 | Explicit narrow peer views and pure state/delivery transformations | Makes scientific visibility, replacement and replay inspectable and CPU-testable |
+| M2-T01 uses immutable permitted records and a single user-data renderer | Initial projection/held-source lookup take no evaluator or schedule labels. Current/pending/deleted sources, receipt history, derived text, feedback and latest-slot absence are distinct; public identity alone orders sources. Candidate state cannot precede recorded own/feedback slots. Native non-thinking template text and untruncated token inputs are ordinary saveable records. Fixed public feedback prevents hidden library-error payloads; complete capacity and event/round transformations remain later M2 tasks. |
+| M2-T02 uses complete JSON decoding, strict Pydantic 2 and whole-reply staging | Pydantic 2 is now a declared CPU dependency. Full validation includes the strict-reply suite; explicit `--core-only` retains dependency-free checks without claiming protocol admission. Generated IDs govern the 384-token cap; literal message texts are tokenized separately and summed. Source staging resolves only immutable sender-held records and preserves repeated attempts. Fixed public feedback has an actual tokenizer guard; invalid/failed outcomes replace candidates with absence. No delivery, correctness check, response repair or extra call is introduced. |
+| M2-T03 separates pure request, validation, staging and delivery barriers | The in-memory procedure uses the existing views/renderer/validator and call-key spelling; M3 still owns LangGraph/SQLite integration. Source/text component IDs preserve repeated attempts and branch-local idempotence. First-acquisition metadata remains public; full attempts/IDs/queues remain offline. Plain JSON deep-deserialization supplies drained immutable prefixes without another store. Final recovery deliveries are audited at an unscheduled next-round boundary, without a fifth opportunity. Eighteen focused checks, the 121-check source/installed suites and three native round checks pass; the existing 11 native checks still pass. |
 | One serial process/replica/database per GPU; access to saved inputs | Keeps inference/RNG isolated while permitting sibling/device rotation |
+| M2-T04 uses explicit boundary cases, saved schedule identities and persistent notices | Every start deep-deserializes the original prefix and checks original sources/fourth-slot outcomes. The existing schedule enumeration governs subsets/repeats; no second eligibility configuration is added. A notice on all four recovery peers identifies the applied boundary, including sham, without another stored flag. Ordinary numeric receipt fields stay identical in L/F/masks and B/C/K; a pending ordinary field reveals no value, while historical disclosure requires delivered v2. K's exact historical result/absence moves into labeled history once when replaced by a new slot. Nineteen focused CPU checks, the 140-check source/installed suites and all 18 native checks pass; exact replay and durable apply-once execution remain T05/M3. |
 | Offline exact evaluation/analysis, ready before GPUs | Prevents correctness feedback and late discovery of unrecorded analysis inputs |
+| M2-T05 separates saved continuation replies from branch-local commit | `SavedRound` retains the existing scheduled calls, immutable settings JSON and pre-delivery barrier. The prescribed B/C parent must match event/replicate, view, exact rendered/native request, settings and seed; revalidation preserves its recorded outcome. Q uses the existing pending component IDs and derives nonempty held counts from committed records, including zero for inactive branches. Eighteen focused CPU checks, all 158 source/installed checks and 22 native checks pass. No dependency or second delivery/counter store is added. Durable records/checkpoints remain M3. |
+| M2-T06 witness uses only the permitted local view and existing mathematical functions | `witness.py` is a CPU validation strategy, never an inference tool or study policy. Own-shard forwarding in rounds 1–3 acquires every current record by round four, including L's replacement and F's discarded remote evidence. Five focused CPU and four native witness checks pass across all families/sizes/siblings/repeats/controls. Offline gzip preserves the full evidence without changing peer history. |
+| Original M2-T06 capacity failure (before the authorized revision) | Six native checks reproduce real 384-token invalid-slot overflows at both sizes, full-horizon adversarial fixtures, conservative accounting, failed simple lossless layouts and an unpaired-surrogate gap. The native capacity command returns 1 after those checks pass; no size/cap/Unicode rule or renderer is changed. Complete admission needs a passing literal representation and resolved Unicode boundary, or an explicitly authorized pre-main scientific decision. |
+| Authorized M2-T06 remedy uses literal blocks and a uniform native window | After the user selected option 1 and authorized implementation, structural column tables remove repeated labels while length-delimited blocks preserve every own reply/prose string. A footer defeats native outer-whitespace stripping; rendered text and native NFC IDs remain distinct. Scalar message validation rejects unpaired surrogates before counting/effects. The full loaded-vocabulary/Unicode/horizon proof fits 261,388 including reserve under 262,144 for both sizes without positional extension. No histories, output caps, populations or comparisons are removed. Static full-attention FP16 KV alone is 8 GiB at the cap; complete T4 headroom/timing/capability must pass M5. |
 | Keep incidental names/layout flexible | Freeze interfaces and scientific invariants; avoid abstractions unsupported by a current requirement |
 
 ### Discoveries or deviations
@@ -355,13 +363,138 @@ from the same slots. Both mathematical sizes round-trip and prepare through the
 installed CLI outside the checkout. No science change or runtime dependency was
 needed; actual reply equality, delivery and peer-visible execution remain M2/M3.
 
+M2-T01 verifies the permitted-view boundary and actual lossless request/template
+archive on CPU. Known tombstones and unknown replacements remain distinct;
+historical receipts never become forwardable current records. Review reproduced
+and fixed a stale latest-candidate state after a newer reply/feedback slot.
+The full source/installed suite passes 79 checks, and five native Qwen tokenizer
+checks reproduce the assistant-turn archive rewrite while preserving labeled
+user-data history. No dependency or scientific change was needed. The saved
+short fixtures are not the complete worst-context bound; actual protocol/event/
+replay execution and capacity admission remain the subsequent M2 tasks.
+
+M2-T02 verifies complete strict replies and whole-reply permissions/staging with
+the specified Pydantic 2 dependency. Full source and installed runs pass 103
+checks on Python 3.11.9 with Pydantic 2.12.5 and 2.13.5 respectively; explicit
+core-only validation passes 80 without site packages. Six native Qwen checks
+save/reproduce 20 adversarial replies, accept complete JSON closing at token 384,
+reject aggregate 129-token prose and preserve repeated lawful forwarding attempts.
+The five existing native renderer checks and saved requests still pass. Fixed
+feedback remains within 32 actual tokens and never echoes library payloads;
+invalid/failed slots remain absent. No scientific deviation, model call or accepted
+freeze is introduced. Round commits, exact replay and complete capacity remain
+later M2 tasks; ordinary dataclass records provide the next task's staging inputs.
+
+M2-T03 verifies the complete in-memory round barrier and original-prefix cut
+through the actual renderer, strict validator and exact source/text interface.
+Source/installed validation passes 121 checks, core-only remains 80 and all 14
+native checks pass. The saved eight-round scripted trace retains invalid/failed
+slots, current-source acquisitions, exact requests/IDs, committed peer data and
+actual owner-v1 exposures. Reversed physical order matches across all five
+families/both sizes; deliberate nested sibling mutation cannot affect parent or
+other siblings. Delivery attempts remain separate from first acquisitions, and
+final messages drain without an extra call. No dependency or scientific change
+was needed. This is protocol evidence, not an event-policy implementation,
+full capacity proof, durable lifecycle, model capability or experimental result;
+this established the M2-T04 prerequisite and left M2's gate open.
+
+M2-T04 review found that replacing the latest candidate after K's first
+recovery call would discard its retained historical result. The round commit
+now appends that exact fourth-slot candidate/absence once as a labeled history
+entry before installing the new slot outcome. It does not fabricate a full
+reply, recover an earlier answer, or recompact subsequent history. Serialization
+and rendering preserve this entry, including BFS tuples and invalid/failed
+absence, through all four recovery calls. Nineteen focused event checks and
+all 61 existing view/protocol/round checks pass. Final source/installed suites
+pass 140 checks and all 18 native checks pass. The original boundary renders
+and previous native fixtures remain unchanged.
+
+M2-T04 now verifies every saved non-Q boundary, source/pending/tombstone
+authority, sham and preserving siblings, literal B/C/K/F/mask retention,
+historical receipts, nested isolation and identifiable boundary application.
+The native archive retains four prefixes, 15 boundary snapshots and 60 first
+requests. Receipt disclosure changes only the archived before-value; the saved
+Prefix Sum/Sort pairs cost four/three fewer input tokens per peer than ordinary
+wording, without padding. Ordinary new history and K's retained result persist
+through all four recovery slots. No scientific deviation or dependency was
+needed. This established the M2-T05 prerequisite, without a model/pilot/main
+result or complete capacity proof.
+
+M2-T05 now verifies exact scheduled B/C reply reuse for both masks and Q,
+including invalid/failure records, mismatched dependency rejection and
+event/replicate scoping. Each branch reconstructs its outgoing set from its
+own original start. Q's round-two sources, own reply and source metadata match
+its parent; only incoming prose waits until the round-three boundary. Release
+preserves stable IDs and already-seen history, with no extra call or permanent
+drop. Held counts derive from committed records and retain inactive branches.
+The new native archive reproduces 54 rounds, 216 requests and 72 exact parent
+comparisons; prior fixtures are unchanged. Source/installed validation passes
+158 checks, core-only passes 80, and all 22 native checks pass. M2-T06 is ready;
+the local-view witness, complete capacity bound and M3 durability remain open.
+No scientific deviation, dependency, inference run or accepted freeze was needed.
+
+The T05 artifact audit found that the initial inactive scenario reused IDs from
+a different scripted parent response. The corrected fixture uses distinct,
+predetermined saved worlds for source-only scenarios and archives their parents.
+An archive-wide native check now requires unique call IDs and exact joins for
+every replay. This changes the validation evidence, not the design. A final
+reporting guard rejects held-prose counts before a committed recovery round,
+preserving the distinction between unexecuted and observed inactive treatments.
+
+M2-T06 completes the authorized CPU preparation but cannot close M2. Its local
+strategy uses only acquired current records and public output assignments, with
+ordinary own-shard routing over three rounds. Ten saved family/size cases cover
+every scheduled sibling/repeat, 1,080 four-peer rounds and 20 controls, with 4,340
+calls/384 exact parent joins archived. All final answers are correct. Actual
+witness requests use 699–4,915 input tokens plus the full reserve; correct-width
+candidate/control/one-shard outputs use at most 210 target / 162 fallback tokens.
+These are constructive protocol checks, not model capability or recovery results.
+
+The complete capacity investigation rejects both sizes before inference. One
+permitted invalid 384-token reply (token 76374 repeated, decoding to long newline
+runs), nine-token public feedback and three lawful 128-token received texts make
+the next prefix request exceed the cap: 14,642 target / 14,349 fallback with the
+384 output reserve. Thirty full-horizon fixtures and complete fixed-field/byte
+accounting include labels, sources, first-acquisition metadata, receipts, wrong
+integers, Unicode/escaping and Q's single release. The bounds are deliberately
+loose and do not certify admission. Another token's re-encoding expansion defeats
+ordinary UTF-8 JSON and raw-text alternatives even for history alone. A separate
+JSON-escaped unpaired surrogate reaches the schema but raises at literal prose
+tokenization; it is surfaced without repair or an invented character restriction.
+
+Source and installed-outside-checkout validation pass 163 checks, core-only passes
+80 without site packages, and all 32 native verification checks pass. Fresh-process
+4B metadata reproduce the capacity report under `PYTHONHASHSEED=37`; tokenizer,
+configuration and actual template identities match the pinned 9B artifacts.
+Both capacity commands deliberately return 1 for the failed gate. See the
+[T06 accounting, commands and environment](todos/M2/M2-T06-attainability-and-capacity.md#capacity-accounting-and-exact-failure).
+No scientific/frozen-configuration change, history truncation, new cap, model
+generation or GPU allocation occurred. M3 remains dependency-blocked. The next
+decision must resolve the exact retained-text/capacity and Unicode incompatibilities
+and renew all affected M2 checks; passing the scripted witness alone is insufficient.
+
+The [M2-T06 lessons and ranked fixes](implementation-research/m2-t06-lessons-and-fixes.md)
+record conditional remedies and their required revalidation. On 5 October 2026,
+the user selected option 1: a readable lossless layout with a larger uniform
+context, preserving all retained work, then authorized implementation. Scalar
+message validation now rejects unpaired surrogates before native prose counting;
+valid escaped pairs and other scalar text remain literal. Raw replies/IDs,
+candidate absence and whole-reply no-effects semantics are preserved. The 25
+focused CPU checks and seven native protocol checks pass. The literal layout,
+column tables and template-safe footer are now verified under the uniform native
+262,144 limit. The [complete proof](implementation-research/m2-t06-capacity-proof.md)
+bounds input plus reserve by 261,388; both sizes are CPU-admitted. All 167 source
+and installed-library checks, 81 core checks, 37 native checks and independent 4B
+capacity reproduction pass. Native archives are renewed, including Unicode-invalid
+parent replay. M2 closes and M3-T01 becomes ready. M5 still owns GPU memory,
+headroom, capability, timing and final configuration/size admission; none is claimed.
+
 ### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |
 |---|---|
-| Actual worst retained request fits 8,192 tokens | M2 complete renderer accounting plus adversarial tokenized fixtures; use only lossless layout or the allowed uniform size fallback, otherwise stop |
 | Checkpoint/call/effect crash behavior in the real runner | M3 killed-process tests, then rerun against M5's accepted host lock; toy saver success is insufficient |
-| Passing model/runtime/timeout and device headroom | M5 maintained-loader diagnostics and bounded smoke/pilot; no forecast or package version substitutes |
+| Passing model/runtime/timeout and device headroom at the revised context | M5 maintained-loader diagnostics and bounded smoke/pilot, including the complete admitted input envelope. Static full-attention FP16 KV alone is 8 GiB at 262,144; weights/activations/workspace and 1.5 GiB headroom are additional. CPU admission is not T4 feasibility. |
 | 9B/4B, target/fallback size, 60/40 worlds | M5 capability and complete-schedule allocation evidence, following the specified precedence and shared development limit |
 | Compute provider availability, persistence and allocation rules | Before GPU reservation, record actual devices, durable storage/backup location, allocation start/stop and billing rules; provider choice cannot alter experimental semantics |
 

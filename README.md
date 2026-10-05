@@ -9,9 +9,23 @@ The design uses five SILO-derived task families to study retained evidence and c
 The five task generators, exact solvers, candidate contracts, coordinate maps,
 eligible edits and saved populations/streams are implemented and verified on CPU
 for both declared sizes. Complete main/development schedules and replay dependencies
-also pass independent CPU checks. M1's gate is passed; the peer correction protocol,
-workflow, Qwen3.5/T4 pilot and main experiments remain future work.
-See [M1-T03 gate evidence](docs/todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate),
+also pass independent CPU checks. M1's gate is passed. Permitted peer views,
+lossless request rendering, strict whole-reply validation, synchronous
+scripted rounds/drained prefixes, literal event/retention/receipt boundaries and
+exact mixed/Q replay and local-view attainability pass 167 CPU checks plus
+37 native verification checks. **M2's CPU gate passes:** the authorized literal
+layout preserves retained work within a complete 261,388-token upper bound,
+including output reserve, under the uniform 262,144 limit. Unpaired message
+surrogates are bounded whole-reply schema failures. Both sizes are CPU-admitted;
+GPU memory/capability/timing remain untested. The durable workflow,
+Qwen3.5/T4 pilot and main experiments remain future work. See
+[M2-T06 completion evidence](docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate),
+[M2-T05 evidence](docs/todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff),
+[M2-T04 evidence](docs/todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff),
+[M2-T03 evidence](docs/todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff),
+[M2-T02 evidence](docs/todos/M2/M2-T02-strict-replies-and-feedback.md#validation-and-evidence),
+[M2-T01 evidence](docs/todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff),
+[M1-T03 gate evidence](docs/todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate),
 [M1-T02 evidence](docs/todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence),
 [M1-T01 evidence](docs/todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence)
 and the [implementation plan](docs/IMPLEMENTATION_PLAN.md#10-living-handoff).
@@ -28,20 +42,27 @@ Four peers perform four rounds of collaborative work before an announced factual
 
 ## CPU installation and validation
 
-Use Python 3.11. The mathematical core and its tests need only the standard
-library; inference dependencies are optional and are not imported by validation.
-From this source checkout, run:
+Use Python 3.11. Strict reply validation requires Pydantic 2, declared as a CPU
+dependency. The mathematical core remains standard-library only. Inference
+dependencies are optional and are not imported by CPU validation. From this
+source checkout, run:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install --no-deps -e .
+.\.venv\Scripts\python.exe -m pip install -e .
 .\.venv\Scripts\python.exe -m recovery validate
 ```
 
-Without installation, `python -S -m recovery validate` runs the same checks with
-site packages disabled. Validation requires this checkout's tests and attributed
-vendor JSON. It checks both sizes regardless of the configured size, exits
-nonzero on failure, and never loads a model or executes an experiment.
+Full validation includes the core, strict-reply, scripted-round, event, replay and
+local-view attainability checks. Native tokenizer/capacity admission is checked
+separately with local pinned metadata. Without installation,
+`python -S -m recovery validate --core-only` runs only the dependency-free core
+subset with site packages disabled; it explicitly excludes strict replies, rounds,
+events, replay and attainability
+and cannot establish their gate. Full validation fails if Pydantic is unavailable.
+Validation requires this checkout's tests and attributed vendor JSON. It checks
+both sizes regardless of the configured size, exits nonzero on failure, and
+never loads a model or executes an experiment.
 `--config path/to/study.toml` accepts exactly `size = "target"` or
 `size = "fallback"`; [the default configuration](configs/study.toml) is a
 mathematical default, not the accepted M5 model/environment freeze.
@@ -89,7 +110,92 @@ to peers map. Replicated answers add peer copies, not independent coordinates.
 Candidate shape errors contain no gold; a wrong integer answer of valid shape
 remains valid for the later protocol. `exact_candidate(..., protocol_valid=False)`
 scores an invalid recorded reply as false without reusing an earlier candidate.
-Strict whole-reply parsing, communication permissions and token caps belong to M2.
+Strict whole-reply parsing, communication permissions and token caps are supplied
+by [protocol.py](recovery/protocol.py). `validate_reply(view, generated, tokenizer)`
+takes only the immutable sender view, literal recorded text/generated token IDs,
+termination information and a tokenizer. It returns separate JSON/schema/permission
+checks, token counts, a candidate outcome and all-or-none staged messages. Wrong
+integers remain protocol-valid. Repeated lawful references retain each delivery
+attempt. Feedback uses fixed public descriptions checked against 32 actual tokens;
+invalid/failed slots supply no candidate. Raw replies stay literal own-history data,
+and generating-slot labels prevent feedback from entering that same call.
+[rounds.py](recovery/rounds.py) prepares all four immutable requests before any
+reply, validates all replies before effects, and commits exact source/text
+deliveries for the next round. Component IDs retain every reference attempt
+separately from unique acquisitions. `run_prefix` archives four complete rounds
+and produces a drained immutable JSON snapshot; `fork_prefix` deep-deserializes
+each continuation independently. `RoundResult.barrier` preserves the exact
+pre-delivery views/requests/replies for later reuse.
+
+[events.py](recovery/events.py) supplies
+`start_continuation(prefix_bytes, prepared_world, scheduled_branch)`. It checks
+the saved schedule and original prefix, then applies the single event and literal
+L/B/C/K/F/mask/receipt boundary. All siblings, preserving edits and repeats start
+from that original snapshot. Public notices invalidate stale sources; unknown
+replacement content stays pending. K keeps the actual fourth-slot result or
+absence and preserves it as labeled history when a new outcome replaces the
+latest candidate. `BranchState.boundary_applied` derives from persistent notices
+and survives serialization; durable apply-once execution remains M3.
+The [boundary archive](tests/fixtures/README.md#event-boundaries-and-receipt-pairs)
+records paired renders and actual receipt token costs. Mixed and Q initial
+requests match their prescribed B/C parents.
+
+[replay.py](recovery/replay.py) supplies `obtain_continuation_round` followed by
+`commit_continuation_round` for scheduled continuations. Obtain returns an
+in-memory `SavedRound` containing the schedule, captured settings and original
+pre-delivery barrier. Mixed/Q round one requires the exact saved B/C records;
+missing records or different event/replicate, view, rendered/native request,
+settings, seed or recorded validation stop as protocol defects. No provider is
+called for replay, including invalid/failed parents. New calls receive their
+saved seed and settings alongside the permitted view/request.
+
+Commit reconstructs branch-local effects. Q delivers sources normally, retains
+own replies, holds only incoming first-round prose, and releases it before
+round-two prose at the round-three boundary. Existing history order is preserved.
+`held_prose_counts` derives per-recipient nonempty held-text counts from committed
+queues/deliveries, including zero for inactive Q; it rejects unexecuted recovery
+and uncommitted rounds. No queue data enters a peer view.
+The [replay archive](tests/fixtures/README.md#exact-parent-replay-and-delayed-prose)
+records 104 exact parent comparisons and complete Q release traces. Use these
+scheduled obtain/commit steps for continuation execution; `rounds.py` provides
+the underlying pure operations. Complete CPU capacity passes in M2-T06; durable
+reply persistence/checkpoints remain M3.
+
+## Protocol attainability and capacity
+
+[witness.py](recovery/witness.py) is a CPU validation strategy. Each peer forwards
+its current private shard to a different peer in rounds 1–3, then solves from
+locally acquired records. It uses legal placeholders earlier and receives no
+host gold or unseen records. The retained
+[witness trace](tests/fixtures/README.md#protocol-attainability-witness) covers
+all families/sizes and scheduled siblings/repeats/controls, including L forwarding,
+F reacquisition, receipts and mixed/Q replay. Candidate/control/own-shard outputs
+fit 384 tokens at both sizes. This establishes attainability, not LLM capability.
+
+The original 8,192-token regime failed with reachable 14,642 target / 14,349
+fallback totals. Its [negative archive](tests/fixtures/capacity_report_8192_original.json.gz)
+is preserved. The user-authorized remedy renders literal history blocks with
+column labels and a footer protecting trailing whitespace. The
+[complete proof](docs/implementation-research/m2-t06-capacity-proof.md) audits the
+loaded vocabulary, Unicode normalization and full horizon: at most 261,388 tokens
+including all 384 output tokens, within 262,144 uniformly. The renewed
+[capacity report](tests/fixtures/README.md#complete-capacity-admission)
+admits both sizes with 80 adversarial envelopes; observed maxima alone are not
+the proof. The scalar-message guard preserves raw invalid replies without effects.
+No truncation, answer repair or retention/population change is introduced.
+
+```powershell
+python -m unittest tests.attainability_checks -q
+python -m tests.tokenizer_attainability --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+python -m tests.tokenizer_capacity --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+```
+
+The native commands require the locally downloaded pinned tokenizer metadata
+described in [M2-T06](docs/todos/M2/M2-T06-attainability-and-capacity.md#reproduction-environment-and-commands).
+All eight capacity checks pass and the command exits **0** for CPU admission;
+exit **1** means failed admission and **2** means failed verification. M5 still
+must establish worst-context memory/headroom, capability and timing after M3–M4.
+No GPU use or accepted freeze is admitted by these CPU results.
 
 The [independent references and attributed fixtures](tests/fixtures/README.md)
 validate task truth, not model capability, native SILO scores or recovery effects.
@@ -100,7 +206,7 @@ Prepare a new host manifest without a model call:
 
 ```powershell
 python -S -m recovery prepare --seed 20261004 --output population.json
-python -S -m recovery validate --manifest population.json --authoritative tests/fixtures/population_target.json
+python -m recovery validate --manifest population.json --authoritative tests/fixtures/population_target.json
 ```
 
 The manifest contains 60 main worlds and five disjoint development worlds,
@@ -116,7 +222,8 @@ Q (Sort/BFS), preserving (first eight Top-K/BFS), and repeat (first two per fami
 subsets derive from this same authority. The extra replicate keeps the original
 prefix/partition and gets new continuation seeds. Event and policy do not enter
 the continuation seed key, so siblings share seeds; required exact response
-parents are explicit in the schedule. Runtime equality and replay effects remain M2/M3.
+parents are explicit in the schedule. Runtime equality and replay effects are
+verified in memory; durable integration remains M3.
 
 ```python
 from pathlib import Path
@@ -142,7 +249,7 @@ Enumerate and save every opportunity from an existing population without resampl
 
 ```powershell
 python -S -m recovery prepare --manifest population.json --output schedules.json
-python -S -m recovery validate --manifest population.json --schedule schedules.json --authoritative tests/fixtures/population_target.json
+python -m recovery validate --manifest population.json --schedule schedules.json --authoritative tests/fixtures/population_target.json
 ```
 
 The saved schedule contains main 60 and the exact development matrix; the nested
@@ -174,15 +281,57 @@ Controls use `peer=None`, the full-world candidate contract and `send=[]`.
 `Branch.output_contract` and `Branch.empty_send` expose those requirements to M2.
 
 Validation checks the full matrix, seeds, parents and dependency orders without
-model calls. Replay order includes previous-round/prefix dependencies; actual
-request/state/settings equality, synchronous delivery and durable raw-reply reuse
-remain later gates. Saved files cannot be overwritten. The population is the raw
+model calls. Replay order includes previous-round/prefix dependencies. In-memory
+request/state/settings equality and synchronous delivery are verified in M2;
+durable raw-reply reuse remains M3. Saved files cannot be overwritten. The population is the raw
 input authority; schedules are derived records, with no copied sources/gold or
 accepted inference configuration. Optional saved-schedule comparison is available
 through `load_schedules(..., authoritative=saved_schedule)`. Schedule labels are
 host-only and must never enter peer views.
 
 The [retained CPU schedule and reproduction notes](tests/fixtures/README.md#prepared-host-schedules)
-provide M2's input handoff. The complete 59-check suite passes with site packages
-disabled and through the installed CPU package outside the checkout; this verifies
-M1, while protocol/model/resource feasibility and empirical recovery remain untested.
+provided M2's input handoff. M1's original 59-check suite passed with site packages
+disabled and through the installed CPU package outside the checkout; current
+protocol evidence is linked above. Model/resource feasibility and empirical
+recovery remain untested.
+
+## Permitted peer views and exact requests
+
+[state.py](recovery/state.py) owns immutable permitted views; [prompts.py](recovery/prompts.py)
+renders them as one user turn with structural JSON and labeled literal history.
+The host projects an ordinary
+`World` into a private peer shard or a complete-world control. The renderer itself
+accepts only `PeerView`, with no evaluator, schedule, condition or delayed queue.
+
+```python
+from recovery.state import initial_view, held_source
+from recovery.prompts import render_request, tokenize_request
+
+view = initial_view(world, peer=1)  # world from the task-core example above
+request = render_request(view)
+chat_messages = request.messages()
+record = view.sources[0]
+assert held_source(view, record.record_id, record.version) == record
+# With an explicitly loaded local CPU tokenizer:
+# tokenized = tokenize_request(request, tokenizer)
+```
+
+Current sources render once, separately from literal own replies/received prose,
+public schema feedback and persistent notices/receipts. Pending replacements have
+no usable old value; known BFS tombstones retain deleted endpoints. Historical
+receipt before-values never enter current-source lookup. Invalid/failed slots have
+no candidate, wrong compact results remain literal, and a newer own reply/feedback
+slot cannot retain an older latest candidate. Event/retention, delivery and
+replay transformations are implemented by the interfaces above.
+
+`tokenize_request` applies the injected native non-thinking template, preserves its
+exact text, token IDs and attention mask, and reserves all 384 output tokens inside
+262,144. Oversized requests fail without truncation. `dataclasses.asdict`/ordinary
+JSON can save the request and token record in the later call ledger.
+The [seven retained short request/token fixtures](tests/fixtures/README.md#permitted-peer-requests-and-tokenizer-inputs)
+and [native tokenizer harness](tests/tokenizer_peer_views.py) verify literal archive
+preservation and exact native inputs. M2-T01's original 79-check CPU suite and
+five native-tokenizer checks passed; the current 167 CPU/37 native checks include
+renewed protocol, round, event, replay, witness and complete CPU capacity evidence.
+Native NFC is recorded separately from exact rendered text; the host preserves
+archived strings. Hardware admission remains M5.

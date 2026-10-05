@@ -17,6 +17,14 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class CPUEntryPointTests(unittest.TestCase):
+    def test_full_validation_cannot_silently_skip_missing_protocol_dependency(self):
+        result = subprocess.run([sys.executable, "-S", "-m", "recovery", "validate"], cwd=ROOT,
+                                capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertIn("full CPU validation requires Pydantic 2", result.stderr)
+        self.assertIn("--core-only", result.stderr)
+        self.assertNotIn("Ran ", result.stdout + result.stderr)
+
     def test_declared_configuration_and_only_uniform_size_choices(self):
         self.assertIs(load_size(ROOT / "configs/study.toml"), Size.TARGET)
         with tempfile.TemporaryDirectory() as temporary:
@@ -126,7 +134,8 @@ assert random.getstate() == unrelated_state
                                            for i in range(1, 1001)))
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "exhausted.json"
-            arguments = ["recovery", "prepare", "--seed", "1", "--output", str(path)]
+            arguments = ["recovery", "prepare", "--config", str(ROOT / "configs/study.toml"),
+                         "--seed", "1", "--output", str(path)]
             evidence = io.StringIO()
             with patch.object(sys, "argv", arguments), redirect_stderr(evidence), \
                     patch("recovery.__main__.prepare_population", side_effect=failure):

@@ -48,6 +48,8 @@ def main() -> int:
     prepare.add_argument("--output", required=True, type=Path, help="new population or schedule JSON path")
     validate.add_argument("--manifest", type=Path, help="saved host population to validate without resampling")
     validate.add_argument("--schedule", type=Path, help="saved complete schedules to validate against --manifest")
+    validate.add_argument("--core-only", action="store_true",
+                          help="run dependency-free core checks only; excludes strict reply validation")
     args = parser.parse_args()
     try:
         size = load_size(args.config)
@@ -102,8 +104,22 @@ def main() -> int:
             _schedule_summary(schedules, population)
     if not (root / "tests" / "test_tasks.py").is_file():
         parser.error("CPU validation requires the source checkout and its tests")
-    print(f"CPU validation: configured size={size.value}; checks cover target and fallback.", flush=True)
+    if not args.core_only:
+        try:
+            # A declared CPU dependency, never the optional inference stack.
+            import recovery.protocol
+        except ImportError:
+            parser.error("full CPU validation requires Pydantic 2; install the package, or use --core-only for the core subset")
+    scope = ("core subset (strict replies, rounds, events, replay and attainability excluded)" if args.core_only
+             else "core, strict replies, rounds, events, replay and attainability")
+    print(f"CPU validation ({scope}): configured size={size.value}; checks cover target and fallback.", flush=True)
     suite = unittest.defaultTestLoader.discover(str(root / "tests"), top_level_dir=str(root))
+    if not args.core_only:
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.protocol_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.round_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.event_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.replay_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.attainability_checks"))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     return 0 if result.wasSuccessful() else 1
 

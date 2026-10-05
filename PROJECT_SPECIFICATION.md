@@ -2,11 +2,15 @@
 
 **State reuse, historical evidence, and communication effects**
 
-Final authoritative specification · 4 October 2026
+Final authoritative specification · 5 October 2026
 
 This document governs implementation, execution, evaluation, and reporting. It supersedes conflicting instructions in [FINAL_PROJECT_SPECIFICATION_PLAN.md](research/06_final_design/FINAL_PROJECT_SPECIFICATION_PLAN.md), the numbered blueprint, research/addition directories, old configurations, and dependency lists. Those artifacts preserve the design history and supporting evidence; they are not additional requirements.
 
-**Status:** the repository contains SILO source/data audits and deterministic information/update probes. The recovery runner, new state transformations, hardware/capability pilot, main inference, and empirical results remain unexecuted. Existing reference tests do not validate this experiment.
+**Status:** M1–M2 are implemented and verified on CPU: exact worlds/schedules,
+permitted views, scripted state/retention/delivery/replay, attainability and native
+token capacity. Durable runner integration, the hardware/capability pilot, main
+inference and empirical results remain unexecuted. Scripted/reference outcomes
+are protocol evidence, not model-capability or experimental recovery results.
 
 ## 1. Research purpose and design
 
@@ -115,7 +119,7 @@ Each reply is one complete JSON object with `candidate` and `send`. Messages con
 
 | Resource | Limit |
 |---|---|
-| Total context, including reserved output | 8,192 tokenizer tokens |
+| Total context, including reserved output | 262,144 tokenizer tokens |
 | Generated output | 384 tokens per scheduled call |
 | Recipients | At most one message per other peer; three total |
 | Source references | At most eight distinct references per recipient |
@@ -125,9 +129,27 @@ Numeric candidates are JSON integer lists of the task's required length. BFS can
 
 Parse strict JSON, permitting whitespace but not code fences, extra prose, duplicate object keys, nonfinite numbers, or truncated fragments. Enforce candidate integer types, lengths, and coordinate keys; reject booleans as integers. Enforce recipient/reference permissions and payload caps. Numeric answer errors are scored, not repaired. A protocol-invalid reply produces no messages and no valid candidate, even if a candidate field looks plausible. Supply only schema/permission feedback at the next scheduled call, without an extra opportunity. A complete valid reply that finishes exactly at the generation cap is accepted; record its termination reason separately from actual truncation.
 
+Message text must contain Unicode scalar values after JSON decoding. Valid escaped surrogate pairs are accepted; unpaired surrogates make the entire reply schema-invalid before native prose counting or effects. Preserve the exact raw reply and generated IDs, use bounded message-schema feedback, and never replace, normalize or repair the sender's text. This pre-main clarification resolves the tokenizer incompatibility documented in M2-T06; it was authorized with the selected capacity remedy on 5 October 2026.
+
 An invalid or failed slot never inherits the previous candidate as a new answer. No separate chain-of-thought or support proof is requested. Short peer explanations are allowed inside the prose budget.
 
 The simultaneous maximum prose/reference payload need not fit within 384 tokens. Before GPU use, verify that every candidate shape, useful legal messages, and worst permitted retained contexts fit the declared caps. Do not silently truncate history. The only predefined input-size fallback is in Section 8; further cap changes require a documented pre-main protocol revision and renewed checks for all conditions.
+
+**Authorized pre-main capacity revision, 5 October 2026:** M2-T06 disproved the
+original 8,192-token input budget. The selected remedy preserves every retained
+own reply and received text in labeled literal blocks, with structural metadata
+and delivery/history column tables in one user message. A fixed footer prevents
+the native template from stripping final archived whitespace. The uniform limit
+is now 262,144 including the unchanged 384 output reserve, within both pinned
+checkpoints' native windows; no positional extension is used. The
+[complete CPU proof](docs/implementation-research/m2-t06-capacity-proof.md)
+bounds the full retained horizon, including invalid outputs and Unicode.
+Exact rendered text remains archived separately from native token IDs: the
+checkpoint's existing NFC normalizer operates during tokenization, with no host
+normalization or answer repair. This changes the input-budget and representation
+regime uniformly; populations, interventions and output/prose limits remain fixed.
+M5 must establish memory, headroom, capability and timing for this limit before
+accepting a configuration. CPU admission does not establish GPU feasibility.
 
 ## 4. Recovery interventions and their controls
 

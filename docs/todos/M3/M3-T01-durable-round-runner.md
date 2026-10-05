@@ -1,8 +1,8 @@
 # M3-T01 — Durable rounds and exact response reuse
 
-**Status:** blocked
+**Status:** ready
 
-**Dependencies:** [M2-T06](../M2/M2-T06-attainability-and-capacity.md). The M2 gate must have passed.
+**Dependencies:** [M2-T06](../M2/M2-T06-attainability-and-capacity.md). The M2 CPU gate passed on 5 October 2026; use its finalized literal renderer, scalar-message contract and 262,144 input limit.
 
 ## References
 
