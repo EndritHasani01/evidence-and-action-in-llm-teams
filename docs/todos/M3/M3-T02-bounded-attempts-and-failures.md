@@ -1,8 +1,11 @@
 # M3-T02 — Bounded attempts, timeouts and interruption semantics
 
-**Status:** blocked
+**Status:** ready
 
-**Dependencies:** [M3-T01](../M3/M3-T01-durable-round-runner.md). The M2 gate must have passed.
+**Dependencies:** [M3-T01](../M3/M3-T01-durable-round-runner.md#completion-and-handoff).
+The M2 gate passed and M3-T01 completed on 5 October 2026. Use its exact
+application ledger and replacement checkpoints; active attempts without a
+durable response currently stop with `UnresolvedAttempt` for this task to resolve.
 
 ## References
 
