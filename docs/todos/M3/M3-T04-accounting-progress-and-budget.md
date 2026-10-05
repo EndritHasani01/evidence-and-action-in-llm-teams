@@ -1,8 +1,12 @@
 # M3-T04 — Resource accounting, progress and safe budget stops
 
-**Status:** blocked
+**Status:** ready
 
-**Dependencies:** [M3-T03](../M3/M3-T03-local-worker-scheduling.md). The M2 gate must have passed.
+**Dependencies:** [M3-T03](M3-T03-local-worker-scheduling.md#completion-and-handoff).
+M2 passed and M3-T03 completed on 5 October 2026. Use its original physical
+parent references, exclusive worker files, durable controls, process visibility
+and manifest/checkpoint-derived scheduling status; preserve T02's measured and
+uncertain work when adding resource attribution and budget admission.
 
 ## References
 

@@ -40,7 +40,8 @@ recovery/
   state.py                    peer views, boundary transformations, synchronous deliveries
   prompts.py                  one renderer, task hints, notice/receipt layouts
   schedule.py                 saved seeds, populations, call dependencies, allocation/progress
-  runner.py                   round graph and local worker coordination
+  runner.py                   fixed round graph, controls and original parent access
+  workers.py                  balanced local process scheduling and restart ownership
   storage.py                  durable calls/attempts, snapshots, checkpoints, safe exports
   inference.py                text-only model loading and one independent generation call
   evaluate.py                 exact outcomes, coordinate/trajectory/information diagnostics
@@ -316,7 +317,7 @@ Update these sections only when a capability is verified, a consequential decisi
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
 | M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
-| M3 | In progress (2/5 tasks done) | M3-T01/T02 done: 18 durable and 22 attempt checks, 207 source/installed checks, exact CPU/native durable archives and 12-case failure reproduction pass; M3-T03 active. Full M3 gate remains open |
+| M3 | In progress (3/5 tasks done) | M3-T01/T02/T03 done: 18 durable, 22 attempt and 14 worker checks, 221 source/installed checks, unchanged CPU/native durable archives and exact eight-case worker reproduction pass; M3-T04 ready. Full M3 gate remains open |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
 | M6 | Not started | Requires accepted M5 freeze |
@@ -325,7 +326,7 @@ Update these sections only when a capability is verified, a consequential decisi
 
 | Decision | Reason / reconsideration evidence |
 |---|---|
-| M3-T03 accesses original worker records through SQLite read-only connections | The pinned saver public read path works with `mode=ro` and `query_only=ON`; writes are rejected. Committed channel values exclude pending node effects. Physical parent rows and attempts stay in their original file, while logical replay rows and independent queues stay in the assigned worker. Durable controls use the same raw-call/attempt ledger, with no delivery thread. Existing 18 durable checks and four focused parent/control checks pass; scheduler lifecycle validation remains in progress. |
+| M3-T03 accesses original worker records through SQLite read-only connections | The pinned saver public read path works with `mode=ro` and `query_only=ON`; writes are rejected. Committed channel values exclude pending node effects. Physical parent rows and attempts stay in their original file, while logical replay rows and independent queues stay in the assigned worker. Durable controls use the same raw-call/attempt ledger, with no delivery thread. Fourteen focused worker checks and 221 source/installed checks pass; parent access adds no physical charge. |
 | M3-T03 enforces exclusive file ownership before recovery | A provider PID cannot identify an idle worker that has not loaded inference. A one-byte OS-lock sidecar rejects a second controller before any writer/recovery is opened; it stores no scientific or progress data and is released by the OS on owner death. Restart also confirms the preceding inference process exited before admitting replacement work. The idle-owner rejection and Q interruption/resume checks pass. |
 | New shallow package; vendor/archive remain references | Native execution/scoring conflict with the required protocol; do not inherit obsolete architecture |
 | M1 task core uses frozen standard-library records and caller-owned generation/ownership RNGs | No numerical, graph or inference dependency is needed for these exact computations. Public candidate contracts/source manifests are separate from offline truth; BFS IDs bind only after edge shuffling and tombstones retain endpoints. |
@@ -535,11 +536,36 @@ and execution-host/model adequacy remain open. Specification/configuration and
 prior archives are preserved; no weights, GPU/model inference or main outcomes
 were used.
 
+M3-T03 completes on 5 October 2026. Balanced saved world-index blocks and
+rotated eligible siblings execute through serial worker controllers and one
+bounded resident generation process per worker. Device visibility is inherited
+before child imports/factories. Original prefixes and B/C pre-delivery parents
+are accessed read-only, preserving physical IDs/raw failures and branch-local
+queues/effects. Full-information controls now persist in the same attempt ledger.
+Literal input/settings/bounds bindings reject drift before admission; OS file
+locks reject live/idle duplicate owners, and restart confirms provider exit.
+Status reconstructs runnable/dependency-waiting work without correctness input
+or another progress store.
+
+Fourteen focused checks include actual uneven-delay workers, order/placement
+reversal, immutable cross-worker parents, missing/mis-scoped dependency rejection,
+Q termination with held prose, lost acknowledgements and exclusive idle ownership.
+Source/installed suites each pass 221; core-only passes 81. Eight archived CPU
+scenarios reproduce 666 logical calls, 618 distinct generations, 619 attempts,
+48 exact replays, 17 process intervals and one uncertain interrupted attempt.
+The export comparator now normalizes in-memory tuples to retained JSON arrays;
+no scientific fields were relaxed. Both earlier CPU/native durable archives
+reproduce unchanged. See [T03 evidence](todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence).
+[M3-T04](todos/M3/M3-T04-accounting-progress-and-budget.md) is ready; resource
+attribution/terminal progress/budget stops and the combined T05 gate remain open.
+Specification/configuration and prior archives are unchanged. No weights,
+GPU/model inference, pilot or main outcomes were used.
+
 ### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |
 |---|---|
-| Combined killed-process lifecycle, worker replay and accounting | T01 saver/replacement and T02 actual termination/retry/controller-kill checks pass. M3-T03–T05 must integrate cross-worker scheduling, accounting and the combined lifecycle gate, then rerun in M5's accepted host lock |
+| Resource accounting and combined killed-process lifecycle | T01 saver/replacement, T02 termination/retry/controller kills and T03 cross-worker replay/assigned-work recovery pass. M3-T04/T05 must integrate physical/policy attribution, safe budget stops and the combined gate, then rerun in M5's accepted host lock |
 | Passing model/runtime/timeout and device headroom at the revised context | M5 maintained-loader diagnostics and bounded smoke/pilot, including the complete admitted input envelope. Static full-attention FP16 KV alone is 8 GiB at 262,144; weights/activations/workspace and 1.5 GiB headroom are additional. CPU admission is not T4 feasibility. |
 | 9B/4B, target/fallback size, 60/40 worlds | M5 capability and complete-schedule allocation evidence, following the specified precedence and shared development limit |
 | Compute provider availability, persistence and allocation rules | Before GPU reservation, record actual devices, durable storage/backup location, allocation start/stop and billing rules; provider choice cannot alter experimental semantics |

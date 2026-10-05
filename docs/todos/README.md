@@ -6,7 +6,7 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 11/29. Remaining: 18. Active: 0. Ready: 1. Blocked: 17.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 12/29. Remaining: 17. Active: 0. Ready: 1. Blocked: 16.** Counts measure verified task outcomes, not effort or runtime.
 
 M2-T01–T05 counts below describe their original completion checks. M2-T06 renews all
 affected archives/checks under the finalized renderer and supersedes earlier
@@ -22,7 +22,8 @@ capacity status; each prerequisite task links that renewal.
 - [M2-T05](M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff) is done: exact mixed/Q parents, branch-local delivery, source/own-reply equality, hidden prose and chronological release pass in the 158-check source/installed CPU suites plus four new native checks. All 18 prior native checks pass; 54 scripted rounds/72 exact parent comparisons are archived.
 - [M2-T06](M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate) is done: the authorized literal layout, uniform 262,144 input limit and scalar-message clarification pass 167 source/installed-library checks, 81 core checks and 37 native checks. The complete upper is 261,388 including reserve; both sizes are CPU-admitted. Original failures remain archived; M5 owns GPU feasibility. M2 passes.
 - [M3-T01](M3/M3-T01-durable-round-runner.md#completion-and-handoff) is done: real LangGraph/SQLite raw reply/failure persistence, exact replay, replacement checkpoints, queue/delivery resume and backup pass 18 focused checks and 185 source/installed-library checks. Both 240-round CPU/native archives reproduce with 96 exact parent joins; M3-T02 renews these regressions.
-- [M3-T02](M3/M3-T02-bounded-attempts-and-failures.md#completion-and-handoff) is done: a resident inference subprocess verified with CPU fixtures, 120-second default bounds, durable timeout-before-termination, single identical infrastructure retry, uncertain work and real controller kills pass 22 focused checks and 207 source/installed checks. The 12-case failure archive reproduces; both durable archives remain exact. M3-T03 is ready; M3's worker/accounting/combined lifecycle gate remains open.
+- [M3-T02](M3/M3-T02-bounded-attempts-and-failures.md#completion-and-handoff) is done: a resident inference subprocess verified with CPU fixtures, 120-second default bounds, durable timeout-before-termination, single identical infrastructure retry, uncertain work and real controller kills pass 22 focused checks and the T03-renewed 221 source/installed checks. Its bounded failure semantics remain covered; both durable archives remain exact.
+- [M3-T03](M3/M3-T03-local-worker-scheduling.md#completion-and-handoff) is done: balanced local workers, original read-only prefix/mixed/Q parents, durable controls, exclusive ownership and assigned-work resume pass 14 focused checks and 221 source/installed checks. Eight retained scenarios reproduce 666 logical calls/48 exact replay uses with one uncertain retry; M3-T04 is ready. M3's accounting/combined lifecycle gate remains open.
 - Other blocked tasks await their listed prerequisites; dependency-blocked is distinct from a failed gate.
 - No GPU run, main experiment, scientific/frozen-configuration change or publication is authorized by creation of this task system.
 
@@ -30,7 +31,7 @@ capacity status; each prerequisite task links that renewal.
 |---|---:|---:|---|---|
 | M1 | 3/3 | 0 | Passed on CPU | Exact worlds, coordinates, eligible populations, saved streams and complete schedules pass; [M1-T03 gate evidence](M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate) closes M1. |
 | M2 | 6/6 | 0 | Passed on CPU | All peer protocol, retention, replay, local-view attainability and complete native capacity checks pass; [M2-T06 completion](M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate) closes M2. GPU memory/capability/timing remain M5. |
-| M3 | 2/5 | 3 | M3-T01/T02 done; M3-T03 ready | Durable lifecycle, process-crash/restart, worker replay, accounting and safe-stop checks must pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
+| M3 | 3/5 | 2 | M3-T01/T02/T03 done; M3-T04 ready | Durable lifecycle, process-crash/restart, worker replay, accounting and safe-stop checks must pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
 | M4 | 0/6 | 6 | Blocked by M1–M3 | All prescribed offline analysis and complete synthetic report reproduce; all M1–M4 CPU evidence passes in [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md). |
 | M5 | 0/5 | 5 | Blocked by M1–M4 | Authorized smoke → 90-slot capability gate → full pilot → measured complete-schedule forecast and freeze; close in [M5-T05](M5/M5-T05-allocation-admission-and-freeze.md). |
 | M6 | 0/4 | 4 | Blocked by M5 / evidence | Full frozen schedule, independent audit, clean offline reproduction and authorized release pass; completion requires [M6-T01](M6/M6-T01-frozen-execution-and-resume.md) and [M6-T04](M6/M6-T04-reproducible-release.md). |
@@ -62,8 +63,8 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | [M2-T06 — Protocol attainability and complete tokenizer capacity](M2/M2-T06-attainability-and-capacity.md) | done | [M2-T05](M2/M2-T05-mixed-and-prose-delay-replay.md) | Plan §4 gate; spec §§3.2, 8.2, 9 |
 | [M3-T01 — Durable rounds and exact response reuse](M3/M3-T01-durable-round-runner.md) | done | [M2-T06](M2/M2-T06-attainability-and-capacity.md) | Plan §§2, 5; spec §§3–4, 9 |
 | [M3-T02 — Bounded attempts, timeouts and interruption semantics](M3/M3-T02-bounded-attempts-and-failures.md) | done | [M3-T01](M3/M3-T01-durable-round-runner.md) | Plan §5; spec §§3.2, 6, 9 |
-| [M3-T03 — Local worker scheduling and cross-worker replay](M3/M3-T03-local-worker-scheduling.md) | active | [M3-T02](M3/M3-T02-bounded-attempts-and-failures.md) | Plan §§2, 5, 8; spec §§8.1, 8.4, 9 |
-| [M3-T04 — Resource accounting, progress and safe budget stops](M3/M3-T04-accounting-progress-and-budget.md) | blocked | [M3-T03](M3/M3-T03-local-worker-scheduling.md) | Plan §5; spec §§6, 7.3, 8.3–8.4, 9 |
+| [M3-T03 — Local worker scheduling and cross-worker replay](M3/M3-T03-local-worker-scheduling.md) | done | [M3-T02](M3/M3-T02-bounded-attempts-and-failures.md) | Plan §§2, 5, 8; spec §§8.1, 8.4, 9 |
+| [M3-T04 — Resource accounting, progress and safe budget stops](M3/M3-T04-accounting-progress-and-budget.md) | ready | [M3-T03](M3/M3-T03-local-worker-scheduling.md) | Plan §5; spec §§6, 7.3, 8.3–8.4, 9 |
 | [M3-T05 — Crash-safe scripted lifecycle acceptance](M3/M3-T05-crash-safe-scripted-lifecycle.md) | blocked | [M3-T04](M3/M3-T04-accounting-progress-and-budget.md) | Plan §5 gate; spec §§4.2, 4.4, 6, 8.3–8.4, 9 |
 | [M4-T01 — Exact outcomes, preservation and trajectories](M4/M4-T01-exact-outcomes-and-trajectories.md) | blocked | [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md) | Plan §6 outcomes/diagnostics; spec §§5.1, 6, 7.1, 9 |
 | [M4-T02 — All prespecified contrasts and repeatability](M4/M4-T02-estimands-and-repeatability.md) | blocked | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 contrasts; spec §§1, 5.2–5.4, 6 |

@@ -21,9 +21,12 @@ GPU memory/capability/timing remain untested. Durable rounds now run through rea
 LangGraph/SQLite checkpoints with exact raw reply/failure reuse and branch-local
 effects. Bounded process execution and controller-death recovery enforce durable
 timeouts, one identical infrastructure retry and observed/uncertain work;
-22 attempt checks and the 207-check source/installed CPU suites pass.
-Worker scheduling/accounting, the complete M3 gate, Qwen3.5/T4 pilot and main
+22 attempt and 14 worker checks pass in the 221-check source/installed CPU suites.
+Balanced local workers now access original prefix/replay parents read-only,
+execute durable controls and resume assigned checkpoints after interruption.
+Resource accounting, the complete M3 gate, Qwen3.5/T4 pilot and main
 experiments remain future work. See
+[M3-T03 evidence](docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence),
 [M3-T02 evidence](docs/todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence),
 [M3-T01 evidence](docs/todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence),
 [M2-T06 completion evidence](docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate),
@@ -63,11 +66,11 @@ python -m venv .venv
 ```
 
 Full validation includes the core, strict-reply, scripted-round, event, replay and
-local-view attainability, durable runner and bounded CPU subprocess checks. Native tokenizer/capacity admission is checked
+local-view attainability, durable runner, bounded CPU subprocess and local worker checks. Native tokenizer/capacity admission is checked
 separately with local pinned metadata. Without installation,
 `python -S -m recovery validate --core-only` runs only the dependency-free core
 subset with site packages disabled; it explicitly excludes strict replies, rounds,
-events, replay, attainability, durability and attempts
+events, replay, attainability, durability, attempts and workers
 and cannot establish their gate. Full validation fails if Pydantic is unavailable.
 Full validation also requires LangGraph and its SQLite saver.
 Validation requires this checkout's tests and attributed vendor JSON. It checks
