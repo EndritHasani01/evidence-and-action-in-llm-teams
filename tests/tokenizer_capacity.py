@@ -13,7 +13,8 @@ from pathlib import Path
 import unittest
 
 from recovery.events import start_continuation
-from recovery.prompts import MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, render_request, tokenize_request
+from recovery.prompts import (MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, RenderedRequest,
+                              render_request, rendered_data, tokenize_request)
 from recovery.protocol import GeneratedReply, validate_reply
 from recovery.rounds import initial_branch, run_prefix, run_round
 from recovery.schedule import _prepare_branches
@@ -24,6 +25,7 @@ from recovery.witness import witness_provider
 from tests.event_checks import case_world, scheduled
 from tests.round_checks import TOKENIZER
 from tests.tokenizer_attainability import provenance
+from tests.capacity_bound import audit_tokenizer, byte_alphabet, piece_upper
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures/capacity_report.json.gz"
 # Actual model-vocabulary IDs, not text re-encoded to impersonate physical cost.
@@ -67,15 +69,13 @@ def retained_view(world, own_text, prose_text, *, valid_candidate=None):
                    feedback=tuple(Feedback(s, code) for s in SLOTS) if valid_candidate is None else ())
 
 
-def accounting(view, tokenizer, vocabulary_byte_bound, nfd_scalar_bound):
-    """Byte upper bound covering every horizon, policy, and payload spelling.
+def accounting(view, tokenizer, audit):
+    """Full-horizon weighted byte proof, including the compact K alternative.
 
-    This deliberately loose bound is NOT admission. See the task's accounting
-    argument: byte-level BPE needs at most one token per ASCII byte; JSON ASCII
-    escaping needs at most six bytes per decoded input byte. Prose token counts
-    follow NFC normalization: pay 12 bytes per original scalar and the exhaustively
-    audited maximum NFD expansion per normalized scalar. Include a full
-    compact-result allowance in addition to all seven B slots as an overbound.
+    Seven own replies and 21 received texts dominate every policy. K's one
+    candidate plus three replies uses four of those seven own allowances; its
+    nine received texts use nine of 21. Never add K's payload to all seven B
+    replies. Literal blocks isolate native normalization from ASCII metadata.
     """
 
     sources = []
@@ -104,25 +104,33 @@ def accounting(view, tokenizer, vocabulary_byte_bound, nfd_scalar_bound):
     nontext = max(len(render_request(v).content.encode("utf-8")) for v in (empty, replace(empty, candidate=valid)))
     old = replace(valid, slot=Slot("prefix", 4), historical=True)
     compact_view = replace(empty, history=(), feedback=(), candidate=old)
-    compact = json.loads(render_request(compact_view).content.split("\nPeer data (JSON):\n", 1)[1])["latest_candidate"]
+    compact = rendered_data(render_request(compact_view))["latest_candidate"]
     compact["kind"] = "historical_candidate"
     # Pay both possible metadata layouts, although K keeps this only once.
     nontext += 2 * len(json.dumps(compact, ensure_ascii=True, separators=(",", ":")))
+    # Empty fixtures have one-digit text lengths in each row. Pay
+    # the maximum original-text length: own <=384*128 scalars; prose <=128*128*4
+    # scalars, including non-NFC spellings. Both have at most five digits.
+    max_length = max(384 * audit["payload_bytes_per_token_upper"],
+                     128 * audit["payload_bytes_per_token_upper"] * audit["max_nfd_scalars"])
+    nontext += 28 * (len(str(max_length)) - 1)
+    # Generated/usable recovery labels are widest; rows already pay them. A
+    # null sender costs three more bytes than a peer ID, and event vs peer
+    # origin costs one more. Overpay independently for every source row.
+    nontext += len(sources) * 4
     control = initial_view(case_world(view.task, view.size).world, None)
     nontext = max(nontext, len(render_request(control).content.encode("utf-8")))
     wrapper = native_measure(empty, tokenizer)["template_wrapper_bytes"]
-    expanded_bytes_per_token = {"own_replies": 6 * vocabulary_byte_bound,
-                               "received_prose": 12 * nfd_scalar_bound * vocabulary_byte_bound,
-                               "compact_candidate_overallowance": 6 * vocabulary_byte_bound}
-    allowances = {"own_replies": 7 * 384, "received_prose": 7 * 3 * 128,
-                  "compact_candidate_overallowance": 384}
+    expanded_bytes_per_token = {"own_replies": audit["own_tokens_per_physical_token_upper"],
+                               "received_prose": audit["prose_tokens_per_counted_token_upper"]}
+    allowances = {"own_replies": 7 * 384, "received_prose": 7 * 3 * 128}
     upper = nontext + wrapper + sum(allowances[k] * expanded_bytes_per_token[k] for k in allowances)
     return {"task": view.task.value, "size": view.size.value,
             "nontext_bytes": nontext, "template_wrapper_bytes": wrapper,
             "payload_token_allowances": allowances,
-            "json_bytes_per_payload_token_upper": expanded_bytes_per_token,
+            "input_tokens_per_payload_token_upper": expanded_bytes_per_token,
             "input_tokens_upper": upper, "with_output_reserve_upper": upper + 384,
-            "bound_fits": upper + 384 <= 8192}
+            "bound_fits": upper + 384 <= MAX_CONTEXT_TOKENS}
 
 
 def counterexample(size, tokenizer):
@@ -161,30 +169,30 @@ def capacity_archive(tokenizer, metadata):
             or metadata["decoder"]["type"] != "ByteLevel"
             or any(t["lstrip"] or t["rstrip"] or t["normalized"] for t in metadata["added_tokens"])):
         raise ValueError("capacity accounting requires the audited NFC byte-level BPE")
-    vocab = tokenizer.get_vocab()
-    from tokenizers.pre_tokenizers import ByteLevel
-    if not set(ByteLevel.alphabet()) <= vocab.keys():
-        raise ValueError("byte upper bound requires all 256 byte tokens")
-    from tokenizers.normalizers import NFD
-    nfd = NFD()
-    # Use the installed native Unicode implementation, not Python's possibly
-    # older Unicode database. Canonical normalization never deletes a scalar.
-    nfd_scalar_bound = max(len(nfd.normalize_str(chr(i))) for i in range(0x110000)
-                           if not 0xD800 <= i <= 0xDFFF)
-    maximum = max(len(symbol.encode("utf-8")) for symbol in vocab)
+    audit = audit_tokenizer(metadata, tokenizer)
     rows, bounds = [], []
     own_ids = (NEWLINES,) * 384
     own = tokenizer.decode(list(own_ids), skip_special_tokens=False, clean_up_tokenization_spaces=False)
     other_ids = (CYRILLIC,) * 384
     other = tokenizer.decode(list(other_ids), skip_special_tokens=False, clean_up_tokenization_spaces=False)
+    forward = {value: glyph for glyph, value in byte_alphabet().items()}
+    byte_ids = {value: metadata["model"]["vocab"][glyph] for value, glyph in forward.items()}
+    adversaries = [("cyrillic_reencoding", other_ids), ("thai_reencoding", (241302,) * 384),
+                   ("split_unicode_scalars", tuple(byte_ids[b] for b in "\u1f82".encode()) * 128),
+                   ("invalid_utf8_bytes", (byte_ids[0xE2],) * 384),
+                   ("special_token_history", (tokenizer.convert_tokens_to_ids("<|im_start|>"),) * 384)]
     for size in Size:
         for task in Task:
             world = case_world(task, size)
             view = retained_view(world, own, " x" * 128)
-            bounds.append(accounting(view, tokenizer, maximum, nfd_scalar_bound))
-            for shape, raw, ids in (("max_newline_history", own, own_ids),
-                                    ("max_ascii_history", " x" * 384,
-                                     tuple(tokenizer.encode(" x" * 384, add_special_tokens=False)))):
+            bounds.append(accounting(view, tokenizer, audit))
+            texts = [("max_newline_history", own, own_ids),
+                     ("max_ascii_history", " x" * 384,
+                      tuple(tokenizer.encode(" x" * 384, add_special_tokens=False)))]
+            texts += [(shape, tokenizer.decode(list(ids), skip_special_tokens=False,
+                                               clean_up_tokenization_spaces=False), ids)
+                      for shape, ids in adversaries]
+            for shape, raw, ids in texts:
                 current = replace(view, history=tuple(replace(h, text=raw) if type(h) is OwnReply else h
                                                       for h in view.history))
                 rows.append({"task": task.value, "size": size.value, "shape": shape,
@@ -206,8 +214,8 @@ def capacity_archive(tokenizer, metadata):
             rows.append({"task": task.value, "size": size.value, "shape": "large_wrong_integer",
                          "view": asdict(large), "own_physical_ids": raw.token_ids,
                          "protocol_valid": checked.protocol_valid, **native_measure(large, tokenizer)})
-    # Test the straightforward lossless alternatives without mutating the real
-    # renderer or regenerating its accepted prerequisite artifacts.
+    # Preserve these illustrative historical probes. They refute 8,192 only;
+    # admission now depends on the complete bound and finalized renderer.
     alternatives = []
     for ascii_mode in (True, False):
         text = json.dumps([{"phase": s.phase, "round": s.round_number, "text": other} for s in SLOTS],
@@ -218,9 +226,8 @@ def capacity_archive(tokenizer, metadata):
     alternatives.append({"layout": "literal raw text with labels", "text": text,
                          "input_tokens": len(tokenizer.encode(text, add_special_tokens=False))})
     report = {"provenance": dict(provenance(), scope="CPU capacity counterexamples and conservative accounting; no model inference."),
-              "limits": {"context": 8192, "reserved_output": 384, "own_reply": 384, "prose": 128, "feedback": 32},
-              "vocabulary_symbol_utf8_byte_upper": maximum,
-              "normalizer": "NFC", "max_nfd_scalars_per_unicode_scalar": nfd_scalar_bound,
+              "limits": {"context": MAX_CONTEXT_TOKENS, "reserved_output": 384, "own_reply": 384, "prose": 128, "feedback": 32},
+              "tokenizer_bound_audit": audit, "normalizer": "NFC",
               "accounting": bounds, "rendered_fixtures": rows,
               "reachable_counterexamples": [counterexample(size, tokenizer) for size in Size],
               "lossless_layout_probes": alternatives,
@@ -266,39 +273,38 @@ class NativeCapacityTests(unittest.TestCase):
         for key in self.current["provenance"].keys() - {"packages"}:
             self.assertEqual(self.current["provenance"][key], self.expected["provenance"][key], key)
 
-    def test_actual_384_token_invalid_slot_legally_causes_overflow_in_both_sizes(self):
+    def test_original_reachable_overflow_is_now_lossless_and_fits_in_both_sizes(self):
         for row in self.current["reachable_counterexamples"]:
             self.assertEqual(len(row["generated"]["token_ids"]), 384)
             self.assertEqual(row["recorded_status"], "invalid")
             self.assertEqual(row["valid_incoming_senders"], [True]*3)
             self.assertEqual(row["incoming_prose_tokens"], [128]*3)
-            self.assertFalse(row["fits"])
+            self.assertTrue(row["fits"])
             self.assertLessEqual(row["feedback_tokens"], 32)
 
-    def test_production_tokenization_refuses_overflow_without_changing_any_literal_data(self):
-        from recovery.prompts import RenderedRequest
+    def test_production_tokenization_preserves_literal_data_and_never_truncates(self):
         for row in self.current["reachable_counterexamples"]:
             request = RenderedRequest(**row["request"])
             before = request.content
-            with self.assertRaisesRegex(ValueError, "no truncation permitted"):
-                tokenize_request(request, self.tokenizer)
+            tokenized = tokenize_request(request, self.tokenizer)
+            self.assertEqual(tokenized.input_tokens, row["input_tokens"])
             self.assertEqual(request.content, before)
-            data = json.loads(before.split("\nPeer data (JSON):\n", 1)[1])
+            data = rendered_data(request)
             self.assertEqual(data["history"][0]["text"], row["generated"]["text"])
 
-    def test_complete_byte_bound_covers_adversarial_views_but_cannot_admit(self):
+    def test_complete_bound_covers_adversarial_views_and_admits_both_sizes(self):
         for row in self.current["rendered_fixtures"]:
             bound = next(b for b in self.current["accounting"] if (b["task"], b["size"]) == (row["task"], row["size"]))
             self.assertLessEqual(row["input_tokens"], bound["input_tokens_upper"])
-            self.assertFalse(bound["bound_fits"])
+            self.assertTrue(bound["bound_fits"])
             self.assertLessEqual(len(row["own_physical_ids"]), 384)
             if row["shape"] == "large_wrong_integer":
                 self.assertTrue(row["protocol_valid"])
-                data = json.loads(row["request"]["content"].split("\nPeer data (JSON):\n", 1)[1])
+                data = rendered_data(RenderedRequest(**row["request"]))
                 self.assertTrue(data["latest_candidate"]["in_own_reply"])
                 self.assertNotIn("candidate", data["latest_candidate"])
 
-    def test_simple_lossless_layouts_still_fail_and_special_strings_remain_literal(self):
+    def test_historical_layout_probes_refute_old_cap_and_special_strings_remain_literal(self):
         for row in self.current["lossless_layout_probes"]:
             # These contain only history. Sources/instructions can only consume
             # further space; no passing complete-renderer proof is claimed.
@@ -306,7 +312,7 @@ class NativeCapacityTests(unittest.TestCase):
         for row in self.current["special_strings"]:
             self.assertTrue(row["protocol_valid"])
             self.assertLessEqual(row["prose_tokens"], 128)
-            data = json.loads(row["received_fixture"]["request"]["content"].split("\nPeer data (JSON):\n", 1)[1])
+            data = rendered_data(RenderedRequest(**row["received_fixture"]["request"]))
             self.assertEqual(data["history"][0]["text"], row["literal_prose"])
 
     def test_unpaired_surrogate_is_bounded_schema_failure_without_repair_or_delivery(self):
@@ -325,6 +331,30 @@ class NativeCapacityTests(unittest.TestCase):
         self.assertEqual(checked.generated, raw)
         self.assertEqual(checked.own_reply.text, raw.text)
         self.assertEqual(asdict(view), before)
+
+    def test_native_run_edges_and_canonical_spelling_stay_within_audited_weights(self):
+        from tokenizers.normalizers import NFD
+        audit = self.current["tokenizer_bound_audit"]
+        self.assertEqual(audit["audited_entries"], len(self.tokenizer.get_vocab()))
+        self.assertEqual(audit["own_tokens_per_physical_token_upper"], 48)
+        self.assertEqual(audit["prose_tokens_per_counted_token_upper"], 45)
+        nfd = NFD()
+        for char in audit["ascii_doubling_ladders"]:
+            for size in (7, 8, 15, 16, 31, 32, 63, 64, 127, 128, 129, 513, 4097):
+                for before, after in (("", ""), ("a", "z"), ("?", "'t"),
+                                      (" ", "\n"), ("\n", "é"), ("", "\u0325")):
+                    text = before + char * size + after
+                    upper = (piece_upper(char * size, audit["ascii_doubling_ladders"], nfd=nfd)
+                             + len(nfd.normalize_str(before + after).encode()))
+                    with self.subTest(char=ascii(char), size=size, context=(before, after)):
+                        self.assertLessEqual(len(self.tokenizer.encode(text, add_special_tokens=False)), upper)
+
+    def test_native_overflow_guard_reserves_all_output_without_truncation(self):
+        request = RenderedRequest(" x" * MAX_CONTEXT_TOKENS)
+        before = request.content
+        with self.assertRaisesRegex(ValueError, "no truncation permitted"):
+            tokenize_request(request, self.tokenizer)
+        self.assertEqual(request.content, before)
 
 
 def main():
@@ -345,6 +375,22 @@ def main():
     actual = {name: hashlib.sha256((args.tokenizer / name).read_bytes()).hexdigest() for name in expected}
     if actual != expected or hashlib.sha256(tokenizer.chat_template.encode()).hexdigest() != expected["chat_template.jinja"]:
         raise ValueError("tokenizer/template identity differs from the audited artifacts")
+    config = json.loads((args.tokenizer / "config.json").read_bytes())
+    config = config.get("text_config", config)
+    if MAX_CONTEXT_TOKENS > config["max_position_embeddings"]:
+        raise ValueError("uniform context exceeds the pinned checkpoint's native positions")
+    full_layers = config["num_hidden_layers"] // config["full_attention_interval"]
+    unassigned = sorted(set(range(config["vocab_size"])) - set(tokenizer.get_vocab().values()))
+    if any(tokenizer.decode([i], skip_special_tokens=False, clean_up_tokenization_spaces=False)
+           for i in unassigned):
+        raise ValueError("unassigned output IDs require a renewed decoded-payload bound")
+    current["checkpoint_support"] = {
+        "native_positions": config["max_position_embeddings"],
+        "full_attention_layers": full_layers, "kv_heads": config["num_key_value_heads"],
+        "head_dim": config["head_dim"], "fp16_full_attention_kv_bytes_at_cap": (
+            MAX_CONTEXT_TOKENS * full_layers * config["num_key_value_heads"] * config["head_dim"] * 2 * 2),
+        "unassigned_output_ids_decoding_empty": unassigned,
+        "scope": "Static support and KV lower bound only; GPU memory/capability/timing remain M5."}
     current["provenance"].update(metadata_sha256=actual, tokenizer_class=type(tokenizer).__name__,
                                  enable_thinking=False, add_generation_prompt=True)
     fixture = args.write_fixture or args.fixture
@@ -358,7 +404,9 @@ def main():
     NativeCapacityTests.tokenizer = tokenizer
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(NativeCapacityTests))
     for row in current["reachable_counterexamples"]:
-        print(f"{row['size']}: reachable prefix round 2 uses {row['input_tokens']} input + 384 output = {row['with_output_reserve']} / 8192")
+        print(f"{row['size']}: former overflow uses {row['input_tokens']} input + 384 output = {row['with_output_reserve']} / {MAX_CONTEXT_TOKENS}")
+    for row in current["accounting"]:
+        print(f"{row['size']} {row['task']}: complete input + reserve upper {row['with_output_reserve_upper']} / {MAX_CONTEXT_TOKENS}")
     if not result.wasSuccessful():
         return 2
     if not current["admitted_sizes"]:

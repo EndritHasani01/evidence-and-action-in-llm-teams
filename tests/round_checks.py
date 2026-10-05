@@ -15,7 +15,7 @@ import sys
 import unittest
 from unittest.mock import patch
 
-from recovery.prompts import render_request
+from recovery.prompts import MAX_CONTEXT_TOKENS, render_request, rendered_data
 from recovery.protocol import GeneratedReply
 import recovery.rounds as rounds
 from recovery.rounds import (Delivery, commit_round, deserialize_state, drain_deliveries,
@@ -207,9 +207,10 @@ class SynchronousRoundTests(unittest.TestCase):
         self.assertTrue(source_committed.committed)
         self.assertEqual(len(source_committed.pending), 2)
         next_requests = prepare_round(source_committed, TOKENIZER)
-        self.assertNotIn("literal", next_requests.rendered[1].content)
+        self.assertTrue(all("literal" not in h.get("text", "")
+                            for h in rendered_data(next_requests.rendered[1])["history"]))
         self.assertNotIn("text only", next_requests.rendered[2].content)
-        data = json.loads(next_requests.rendered[1].content.split("\nPeer data (JSON):\n", 1)[1])
+        data = rendered_data(next_requests.rendered[1])
         self.assertNotIn("pending", data)
         self.assertNotIn("queue", data)
         self.assertEqual(drain_deliveries(source_committed), commit_round(barrier).committed)
@@ -246,7 +247,8 @@ class SynchronousRoundTests(unittest.TestCase):
             validate_round(prepare_round(self.state, TOKENIZER), (None,) * 3, TOKENIZER)
         class Oversized(RoundTokenizer):
             def __call__(self, *args, **kwargs):
-                return {"input_ids": [1] * 8192, "attention_mask": [1] * 8192}
+                return {"input_ids": [1] * MAX_CONTEXT_TOKENS,
+                        "attention_mask": [1] * MAX_CONTEXT_TOKENS}
         with self.assertRaisesRegex(ValueError, "no truncation"):
             run_round(self.state, Oversized(), lambda *_: self.fail("must not call"))
         calls = []
@@ -281,7 +283,7 @@ class SynchronousRoundTests(unittest.TestCase):
         self.assertEqual(deserialize_state(snapshot_bytes(state)), state)
         before = prepare_round(state, TOKENIZER)
         recipient = (old.owner + 1) % 4
-        data = json.loads(before.rendered[recipient].content.split("\nPeer data (JSON):\n")[1])
+        data = rendered_data(before.rendered[recipient])
         changed = next(s for s in data["current_sources"] if s["record_id"] == old.record_id)
         self.assertEqual(changed["status"], "update_pending")
         self.assertNotIn("endpoints", changed)

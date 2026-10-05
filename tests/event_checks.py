@@ -15,7 +15,7 @@ from unittest.mock import patch
 
 from recovery.events import start_continuation
 from recovery.manifests import load_population
-from recovery.prompts import render_request
+from recovery.prompts import render_request, rendered_data
 from recovery.protocol import validate_reply
 from recovery.rounds import (deserialize_state, fork_prefix, initial_branch,
                              run_prefix, run_round, snapshot_bytes)
@@ -83,7 +83,7 @@ def views(state):
 
 
 def data(view):
-    return json.loads(render_request(view).content.split("\nPeer data (JSON):\n", 1)[1])
+    return rendered_data(render_request(view))
 
 
 class EventBoundaryTests(unittest.TestCase):

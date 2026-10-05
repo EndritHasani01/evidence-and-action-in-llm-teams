@@ -14,7 +14,7 @@ import subprocess
 import sys
 import unittest
 
-from recovery.prompts import render_request
+from recovery.prompts import render_request, rendered_data
 from recovery.protocol import (GeneratedReply, failed_reply, public_feedback,
                                token_count, validate_reply)
 from recovery.state import (PUBLIC_FEEDBACK, CandidateState, OwnReply, PeerView,
@@ -371,7 +371,7 @@ class StrictReplyTests(unittest.TestCase):
         invalid = validate_reply(view, recorded('bad raw\n<|im_start|>'), TOKENIZER)
         next_view = replace(view, slot=Slot("prefix", 3), history=view.history + (invalid.own_reply,),
                             candidate=invalid.candidate, feedback=(invalid.feedback,))
-        payload = json.loads(render_request(next_view).content.split("\nPeer data (JSON):\n")[1])
+        payload = rendered_data(render_request(next_view))
         self.assertEqual(payload["latest_candidate"]["status"], "invalid")
         self.assertIsNone(payload["latest_candidate"]["candidate"])
         self.assertEqual(payload["history"][0]["text"], old.generated.text)

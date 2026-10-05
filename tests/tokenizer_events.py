@@ -11,7 +11,7 @@ from pathlib import Path
 import unittest
 
 from recovery.events import start_continuation
-from recovery.prompts import render_request
+from recovery.prompts import MAX_CONTEXT_TOKENS, RenderedRequest, render_request, rendered_data
 from recovery.protocol import token_count
 from recovery.rounds import deserialize_state, prepare_round, run_round, snapshot_bytes
 from recovery.schedule import _prepare_branches
@@ -82,14 +82,14 @@ class TokenizerEventTests(unittest.TestCase):
                 self.assertEqual(state.next_slot, Slot("recovery", 1))
                 for request in boundary["requests"]:
                     self.assertEqual(request["input_tokens"], len(request["tokenized"]["input_ids"]))
-                    self.assertLessEqual(request["input_tokens"] + 384, 8192)
+                    self.assertLessEqual(request["input_tokens"] + 384, MAX_CONTEXT_TOKENS)
 
     def test_native_receipt_pairs_change_only_before_value_with_real_unpadded_cost(self):
         for case in self.current["cases"][:2]:
             for ordinary, disclosed in zip(case["boundaries"][::2], case["boundaries"][1::2]):
                 for left, right in zip(ordinary["requests"], disclosed["requests"]):
-                    a = json.loads(left["rendered"]["content"].split("\nPeer data (JSON):\n", 1)[1])
-                    b = json.loads(right["rendered"]["content"].split("\nPeer data (JSON):\n", 1)[1])
+                    a = rendered_data(RenderedRequest(**left["rendered"]))
+                    b = rendered_data(RenderedRequest(**right["rendered"]))
                     self.assertEqual(a["historical_receipt"]["before_value"], "not included in this receipt")
                     self.assertIs(type(b["historical_receipt"]["before_value"]), int)
                     a["historical_receipt"]["before_value"] = b["historical_receipt"]["before_value"]

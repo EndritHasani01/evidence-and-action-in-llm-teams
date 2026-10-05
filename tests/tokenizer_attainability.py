@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import unittest
 
-from recovery.prompts import render_request, tokenize_request
+from recovery.prompts import MAX_CONTEXT_TOKENS, render_request, tokenize_request
 from recovery.protocol import GeneratedReply, validate_reply
 from recovery.replay import commit_continuation_round, held_prose_counts
 from recovery.schedule import _prepare_branches
@@ -176,7 +176,7 @@ class NativeAttainabilityTests(unittest.TestCase):
                 for call in row["calls"]:
                     self.assertTrue(call["protocol_valid"])
                     self.assertLessEqual(len(call["generated"]["token_ids"]), 384)
-                    self.assertLessEqual(call["request_tokens"] + 384, 8192)
+                    self.assertLessEqual(call["request_tokens"] + 384, MAX_CONTEXT_TOKENS)
 
     def test_final_answers_match_independent_host_evaluation_and_local_inputs(self):
         for case in self.current["cases"]:

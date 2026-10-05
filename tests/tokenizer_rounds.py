@@ -11,6 +11,8 @@ import json
 from pathlib import Path
 import unittest
 
+from recovery.prompts import MAX_CONTEXT_TOKENS
+
 from recovery.rounds import deserialize_state, fork_prefix, run_prefix, run_round, snapshot_bytes
 from recovery.state import Slot
 from recovery.tasks import PEERS, Size, Task
@@ -89,7 +91,7 @@ class TokenizerRoundTests(unittest.TestCase):
                     barrier = trace.barrier
                     for request, validation in zip(barrier.requests.tokenized, barrier.replies):
                         inputs.append(request.input_tokens)
-                        self.assertLessEqual(request.input_tokens + 384, 8192)
+                        self.assertLessEqual(request.input_tokens + 384, MAX_CONTEXT_TOKENS)
                         if validation.generated is not None:
                             generated = validation.generated
                             outputs.append(len(generated.token_ids))

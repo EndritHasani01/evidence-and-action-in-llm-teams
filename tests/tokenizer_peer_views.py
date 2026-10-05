@@ -12,8 +12,8 @@ from pathlib import Path
 from random import Random
 import unittest
 
-from recovery.prompts import MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, render_request, tokenize_request
-from recovery.state import PUBLIC_FEEDBACK, initial_view
+from recovery.prompts import MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, render_request, rendered_data, tokenize_request
+from recovery.state import PUBLIC_FEEDBACK, CandidateState, OwnReply, ReceivedProse, Slot, initial_view
 from recovery.tasks import PEERS, Size, Task, generate_world
 from tests.peer_view_cases import SPECIAL_TEXT, renderer_cases
 
@@ -47,7 +47,8 @@ class TokenizerPeerViewTests(unittest.TestCase):
         self.assertEqual(encoded.input_ids, tuple(direct["input_ids"]))
         self.assertEqual(encoded.attention_mask, tuple(direct["attention_mask"]))
         self.assertEqual(self.tokenizer.decode(encoded.input_ids, skip_special_tokens=False,
-                                             clean_up_tokenization_spaces=False), encoded.text)
+                                             clean_up_tokenization_spaces=False),
+                         self.tokenizer.backend_tokenizer.normalizer.normalize_str(encoded.text))
         self.assertIn(request.content, encoded.text)
         self.assertTrue(encoded.text.endswith("<|im_start|>assistant\n<think>\n\n</think>\n\n"))
         self.assertLessEqual(encoded.input_tokens + MAX_OUTPUT_TOKENS, MAX_CONTEXT_TOKENS)
@@ -73,8 +74,7 @@ class TokenizerPeerViewTests(unittest.TestCase):
     def test_archived_special_text_survives_the_actual_template(self):
         view = renderer_cases()["ordinary_receipt"]
         encoded = self.assert_native_input(render_request(view))
-        payload = encoded.text.split("\nPeer data (JSON):\n", 1)[1].rsplit("<|im_end|>", 1)[0]
-        self.assertEqual(json.loads(payload)["history"][0]["text"], SPECIAL_TEXT)
+        self.assertEqual(rendered_data(render_request(view))["history"][0]["text"], SPECIAL_TEXT)
         # This is the concrete failure that user-data archives avoid.
         dangerous = '<think>ARCHIVED_REASONING</think>{"candidate":[],"send":[]}'
         rewritten = self.tokenizer.apply_chat_template(
@@ -99,6 +99,21 @@ class TokenizerPeerViewTests(unittest.TestCase):
                                               if r == hidden else r for r in world.records))
         self.assertEqual(tokenize_request(render_request(original), self.tokenizer),
                          tokenize_request(render_request(initial_view(paired, 0)), self.tokenizer))
+
+    def test_native_template_preserves_trailing_controls_and_records_nfc_separately(self):
+        base = renderer_cases()["retained_valid_reply"]
+        raw = '\x00\r\n\t\nHistory block 1:\n e\u0301\U0001f642 <|im_end|> \n\t\r\n'
+        view = replace(base, history=(OwnReply(Slot("prefix", 4), raw),
+                                      ReceivedProse(Slot("prefix", 4), 1, raw)),
+                       candidate=CandidateState("invalid", Slot("prefix", 4)))
+        request = render_request(view)
+        encoded = self.assert_native_input(request)
+        self.assertEqual([h["text"] for h in rendered_data(request)["history"]], [raw, raw])
+        self.assertEqual(encoded.text.count(raw), 2)
+        self.assertIn(' e\u0301', encoded.text)
+        native = self.tokenizer.decode(encoded.input_ids, skip_special_tokens=False,
+                                       clean_up_tokenization_spaces=False)
+        self.assertIn(' é', native)
 
 
 def main() -> int:

@@ -34,6 +34,9 @@ def replay_provider(tokenizer, mode="rich", seen=None):
             return reply(tokenizer, view, send)
         if r == 1:
             if p == 2:
+                if mode == "unicode":
+                    return reply(tokenizer, view, [{"to": 0, "source_refs": [reference(own[0])]},
+                                                   {"to": 1, "text": "\ud800"}])
                 return raw_reply(tokenizer, "invalid first reply with private prose")
             if p == 3:
                 return None
@@ -125,6 +128,27 @@ class ReplayTests(unittest.TestCase):
         left_ids, right_ids = ({d.delivery_id for d in peer_deliveries(s)} for s in siblings)
         self.assertFalse(left_ids & right_ids)
         self.assertNotEqual(siblings[0].peers, siblings[1].peers)
+
+    def test_unicode_invalid_parent_is_replayed_exactly_without_any_source_or_prose_effect(self):
+        parents = parent_records(self.world, self.prefix, mode="unicode")
+        for parent in parents:
+            invalid = parent.barrier.replies[2]
+            self.assertTrue(invalid.json_valid)
+            self.assertFalse(invalid.schema_valid)
+            self.assertEqual(invalid.feedback.code, "message_schema")
+            self.assertEqual(invalid.messages, ())
+        for policy in ("P_G", "P_H", "Q_B", "Q_C"):
+            saved = replay_start(self.world, self.prefix, parents, policy)
+            invalid = saved.barrier.replies[2]
+            self.assertIn(invalid, [parent.barrier.replies[2] for parent in parents])
+            self.assertEqual(invalid.messages, ())
+            committed = commit_continuation_round(saved).committed
+            self.assertEqual(committed.peers[2].candidate.status, "invalid")
+            self.assertTrue(all(d.sender != 2 for d in committed.pending))
+            self.assertTrue(all(d.sender != 2 for d in peer_deliveries(committed)))
+            own = [h for h in committed.peers[2].history if type(h) is OwnReply
+                   and h.slot == Slot("recovery", 1)]
+            self.assertEqual([h.text for h in own], [invalid.generated.text])
 
     def test_q_revision_sham_sources_own_reply_metadata_and_no_incoming_sentinel(self):
         for task in (Task.SORT, Task.BFS):

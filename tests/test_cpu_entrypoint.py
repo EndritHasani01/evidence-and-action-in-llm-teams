@@ -134,7 +134,8 @@ assert random.getstate() == unrelated_state
                                            for i in range(1, 1001)))
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "exhausted.json"
-            arguments = ["recovery", "prepare", "--seed", "1", "--output", str(path)]
+            arguments = ["recovery", "prepare", "--config", str(ROOT / "configs/study.toml"),
+                         "--seed", "1", "--output", str(path)]
             evidence = io.StringIO()
             with patch.object(sys, "argv", arguments), redirect_stderr(evidence), \
                     patch("recovery.__main__.prepare_population", side_effect=failure):

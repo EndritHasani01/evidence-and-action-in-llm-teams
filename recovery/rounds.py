@@ -9,7 +9,7 @@ No inference, evaluator, event policy or persistence framework is imported.
 from dataclasses import asdict, dataclass, field, replace
 import json
 
-from .prompts import RenderedRequest, TokenizedRequest, render_request, tokenize_request
+from .prompts import RenderedRequest, TokenizedRequest, render_request, rendered_data, tokenize_request
 from .protocol import GeneratedReply, ReplyValidation, StagedMessage, failed_reply, validate_reply
 from .state import (CandidateState, ContinueNotice, DeliveryBoundary, Feedback,
                     HistoricalReceipt, OwnReply, PeerView, PendingSource,
@@ -436,7 +436,7 @@ class ScriptedPrefix:
         for result in self.rounds:
             requests = result.barrier.requests
             rendered = requests.rendered[source.owner]
-            data = json.loads(rendered.content.split("\nPeer data (JSON):\n", 1)[1])
+            data = rendered_data(rendered)
             if any(s["record_id"] == source.record_id and s["owner"] == source.owner
                    and s["version"] == 1 and s["status"] == "known"
                    for s in data["current_sources"]):

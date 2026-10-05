@@ -7,6 +7,8 @@ import json
 from pathlib import Path
 import unittest
 
+from recovery.prompts import MAX_CONTEXT_TOKENS
+
 from recovery.replay import (commit_continuation_round, held_prose_counts,
                              obtain_continuation_round)
 from recovery.rounds import deserialize_state, snapshot_bytes
@@ -48,12 +50,15 @@ def round_record(saved, parents=()):
 
 def replay_archive(tokenizer):
     cases = []
-    for task, size in ((Task.SORT, Size.TARGET), (Task.BFS, Size.FALLBACK)):
-        world = case_world(task, size)
+    for task, size, traffic in ((Task.SORT, Size.TARGET, "rich"),
+                                (Task.BFS, Size.FALLBACK, "rich"),
+                                (Task.SORT, Size.TARGET, "unicode")):
+        world = (case_world(task, size) if traffic == "rich" else
+                 next(w for w in population(size).main if w.world.task is task and w.index == 3))
         prefix = build_prefix(world, tokenizer)
         rounds = []
         for event in ("revision", "sham"):
-            parents = parent_records(world, prefix, tokenizer, event)
+            parents = parent_records(world, prefix, tokenizer, event, mode=traffic)
             rounds.extend(round_record(p) for p in parents)
             for policy in ("P_G", "P_H", "Q_B", "Q_C"):
                 saved = replay_start(world, prefix, parents, policy, event, tokenizer=tokenizer)
@@ -67,7 +72,9 @@ def replay_archive(tokenizer):
                         rounds.append(round_record(current))
                         state = commit_continuation_round(current).committed
         cases.append({"world_id": world.world_id, "task": task.value, "size": size.value,
-                      "traffic": "rich", "prefix_snapshot": json.loads(prefix.snapshot), "rounds": rounds})
+                      "traffic": traffic, "prefix_snapshot": json.loads(prefix.snapshot), "rounds": rounds})
+        if traffic != "rich":
+            continue
         # Use a different predeclared saved world, not another response for the
         # same call ID. Retain its parents too so every archive join is auditable.
         silent_world = next(w for w in population(size).main if w.world.task is task and w.index == 2)
@@ -90,6 +97,24 @@ class TokenizerReplayTests(unittest.TestCase):
     current = None
     expected = None
 
+    def test_saved_unicode_invalid_parents_are_literal_schema_failures_with_no_effects(self):
+        cases = [case for case in self.current["cases"] if case["traffic"] == "unicode"]
+        self.assertEqual(len(cases), 1)
+        for row in cases[0]["rounds"]:
+            if row["slot"]["round_number"] != 1:
+                continue
+            invalid = row["replies"][2]
+            self.assertTrue(invalid["json_valid"])
+            self.assertFalse(invalid["schema_valid"])
+            self.assertIsNone(invalid["prose_tokens"])
+            self.assertEqual(invalid["feedback"]["code"], "message_schema")
+            self.assertEqual(invalid["candidate"]["status"], "invalid")
+            self.assertEqual(invalid["messages"], [])
+            self.assertIn('\\ud800', invalid["generated"]["text"])
+            self.assertTrue(all(d["sender"] != 2 for d in row["committed"]["pending"]))
+            self.assertTrue(all(d["sender"] != 2 for d in row["committed"]["deliveries"]
+                                if d["generated"] == {"phase": "recovery", "round_number": 1}))
+
     def test_archive_reproduces_exact_requests_tokens_replies_committed_queues_and_counts(self):
         self.assertEqual(self.current["cases"], self.expected["cases"])
         for field in ("tokenizer", "revision"):
@@ -104,7 +129,7 @@ class TokenizerReplayTests(unittest.TestCase):
                 self.assertEqual(json.loads(snapshot_bytes(state)), row["committed"])
                 self.assertEqual(list(held_prose_counts(state)), row["held_prose_counts"])
                 for request, outcome in zip(row["requests"], row["replies"]):
-                    self.assertLessEqual(len(request["tokenized"]["input_ids"]) + 384, 8192)
+                    self.assertLessEqual(len(request["tokenized"]["input_ids"]) + 384, MAX_CONTEXT_TOKENS)
                     if outcome["generated"] is not None:
                         generated = outcome["generated"]
                         self.assertLessEqual(len(generated["token_ids"]), 384)
