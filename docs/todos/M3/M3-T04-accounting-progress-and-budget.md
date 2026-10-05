@@ -1,6 +1,6 @@
 # M3-T04 — Resource accounting, progress and safe budget stops
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M3-T03](M3-T03-local-worker-scheduling.md#completion-and-handoff).
 M2 passed and M3-T03 completed on 5 October 2026. Use its original physical
@@ -39,4 +39,22 @@ Manifest-derived progress and reconciled physical/policy accounting show remaini
 Use hand-calculated schedules with shared prefixes, mixed/Q replay, F, timeouts, ambiguous attempts, idle devices and setup. Verify no double overhead or physical replay charge. Test cost-range unavailability before measurements, later slower-device forecasts, heartbeat behavior, backup/restart reconstruction and budget exhaustion at an adverse timeout boundary.
 
 **Evidence:** Not yet recorded. Add reconciliation tables, status captures and safe-stop results before marking done.
+
+### Implementation approach
+
+Use existing call/attempt keys, saved barriers and committed checkpoints as
+the accounting and progress authority. Add allocation start/confirmed-release
+intervals in worker files and optional measured peak memory on attempts;
+do not persist derived counters. Count invalid durable replies as finished,
+and retain unexecuted and ambiguous work separately. Policy costs include the
+original prefix and all continuation uses, resolving physical parents across
+workers. Loading within an attempt is already part of its measured cost;
+allocation overhead is partitioned separately without adding it twice.
+
+Read-only status and terminal transition/heartbeat reports must work with live
+workers and reopened backups. Budget admission uses the complete remaining
+forecast when available, active allocation, reserves and bounded termination;
+an allocation deadline also protects long calls. CPU fixtures will use explicit
+synthetic allocation/release acknowledgements. Actual provider release and GPU
+measurements remain M5 integration, with unconfirmed release left chargeable.
 
