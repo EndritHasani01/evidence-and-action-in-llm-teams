@@ -33,6 +33,8 @@ class WorkerSpec:
     provider_factory: object
     cuda_visible_devices: str | None = None
     allocated_device: str | None = None
+    allocated_at: str | None = None
+    provider_billing: dict | None = None
 
 
 @dataclass(frozen=True)
@@ -350,6 +352,7 @@ class LocalScheduler:
                     store.allocation_stop_requested(number, reason)
                     released = self.release_device(index, self.specs[index].allocated_device)
                     if released is not True and not isinstance(released, str):
+                        store.allocation_stop_requested(number, reason + "; provider_release_unconfirmed")
                         raise WorkerInterrupted("provider release is unconfirmed; allocation remains open and chargeable")
                     store.allocation_stopped(number, reason, released_at=released if isinstance(released, str) else None)
                     del self.allocations[index]
@@ -384,7 +387,7 @@ class LocalScheduler:
             gate=self.stop_reason or "M3 CPU verification; M5 inference gate open")
 
     def _allocate(self):
-        from .accounting import BudgetStop
+        from .accounting import BudgetStop, timestamp
         from .storage import WorkerStore
         snapshot = self.progress()
         resources = snapshot["resources"]
@@ -392,20 +395,29 @@ class LocalScheduler:
             raise BudgetStop("preceding allocations require confirmed provider release")
         available = (resources["remaining_ceiling_gpu_hours"]
                      - sum(resources["remaining_reserves_gpu_hours"].values())) * 3600 - self.budget.overhead_seconds
+        now = datetime.now(timezone.utc)
+        previous_idle = sum(now.timestamp() - timestamp(spec.allocated_at) for spec in self.specs if spec.allocated_at)
+        if any(spec.allocated_at and timestamp(spec.allocated_at) > now.timestamp() for spec in self.specs):
+            raise ValueError("provider allocation cannot start in the future")
+        available -= previous_idle
         duration = available / len(self.specs) - self.budget.shutdown_seconds
         if duration <= 0:
             self.stop_reason = "budget_exhausted_before_allocation"
-            raise BudgetStop(self.stop_reason)
-        self.deadline = monotonic() + duration
-        deadline_at = (datetime.now(timezone.utc) + timedelta(seconds=duration)).isoformat()
+        self.deadline = monotonic() + max(0, duration)
+        deadline_at = (now + timedelta(seconds=duration)).isoformat() if duration > 0 else None
         for index, spec in enumerate(self.specs):
+            if duration <= 0 and spec.allocated_at is None:
+                continue  # No new allocation, but retain already allocated time.
             with _own_file(self.paths[index]):
                 store = WorkerStore(self.paths[index])
                 try:
                     self.allocations[index] = store.allocation_started(spec.allocated_device, self.allocation_stage,
-                        budget=self.budget, deadline_at=deadline_at)
+                        budget=self.budget, deadline_at=deadline_at, started_at=spec.allocated_at,
+                        billing=spec.provider_billing)
                 finally:
                     store.close()
+        if duration <= 0:
+            raise BudgetStop(self.stop_reason)
 
     def _check_deadline(self):
         if self.deadline is not None and monotonic() >= self.deadline:
@@ -446,17 +458,13 @@ class LocalScheduler:
         if self.report is None:
             return
         clock = monotonic()
+        signature = tuple((reader.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0],
+            reader.store.connection.execute("SELECT count(*) FROM calls WHERE status IN ('completed','timeout','infrastructure_failure','replay')").fetchone()[0])
+            for reader in self.readers)
         if not force and self._last_reported is not None and clock - self._last_reported < self.bounds["heartbeat_seconds"]:
             # Cheap ledger counters expose call transitions immediately.
-            signature = tuple((reader.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0],
-                reader.store.connection.execute("SELECT count(*) FROM calls WHERE status IN ('completed','timeout','infrastructure_failure','replay')").fetchone()[0])
-                for reader in self.readers)
             if signature == self._reported_signature:
                 return
-        else:
-            signature = tuple((reader.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0],
-                reader.store.connection.execute("SELECT count(*) FROM calls WHERE status IN ('completed','timeout','infrastructure_failure','replay')").fetchone()[0])
-                for reader in self.readers)
         self.report(self.progress())
         self._reported_signature, self._last_reported = signature, clock
 

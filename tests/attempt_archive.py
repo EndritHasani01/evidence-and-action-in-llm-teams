@@ -25,7 +25,8 @@ def stable_cases(archive):
             "started_at", "finished_at", "elapsed_seconds", "observed_seconds", "recovered_at", "worker_pid")
                     and not (k == "peak_memory_bytes" and v is None)}
             for attempt in case["attempts"]]
-        result.append({"case": case["case"], "calls": case["calls"], "attempts": attempts,
+        calls = [{k: v for k, v in row.items() if k != "request_tokens"} for row in case["calls"]]
+        result.append({"case": case["case"], "calls": calls, "attempts": attempts,
                        "state": case["state"]})
     return result
 

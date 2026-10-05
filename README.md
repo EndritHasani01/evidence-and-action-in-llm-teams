@@ -197,6 +197,58 @@ reproduce CPU-counter and native-tokenizer execution without model inference.
 The [failure archive](tests/fixtures/README.md#bounded-attempt-and-process-failure-traces)
 adds measured CPU hangs, timeout/termination and actual controller-kill recovery.
 
+## Resource accounting and read-only status
+
+[accounting.py](recovery/accounting.py) derives logical/generation/attempt joins,
+policy costs, allocation, forecasts, matched coverage and resumable work from
+saved schedules and worker files. It uses no evaluator correctness or progress
+database. Invalid replies and recorded failures count as finished work;
+unexecuted slots remain unknown. Each continuation's cost includes its original
+16-call prefix and all 16 continuation uses, including measured replay-parent
+attempts and F's abandoned prefix. Unknown durations/output tokens and absent
+memory measurements stay explicit.
+
+```powershell
+.venv/Scripts/python.exe -m recovery status --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite
+.venv/Scripts/python.exe -m recovery status --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 40 --json
+```
+
+These commands only read; missing worker files are unknown work and are never
+created. JSON includes every scheduled slot/parent and resumable branch. Add
+`--prior-worker <path>` for every worker file from earlier measured development
+or failed configurations. Historical allocation remains charged once; only
+matching saved generation settings supply timing samples. Physical IDs are
+scoped by the existing saved settings when configurations differ. Repeated
+copies of the same physical records are rejected.
+
+`LocalScheduler(..., report=terminal_progress)` reports call/round transitions
+and bounded heartbeats while `run`/`advance` operates. Import `terminal_progress`
+and `Budget` from `recovery.accounting`. For budgeted execution each `WorkerSpec`
+must identify its `allocated_device`; `allocated_at` can supply the provider's
+actual reservation start before worker/model setup, and `provider_billing`
+records its separate billing rule. The scheduler requires a bounded
+`release_device(worker_index, device)` callback acknowledging actual release
+with `True` or its zoned timestamp. A local process exit alone leaves allocation
+open. `MeasuredReply(exact_response, peak_memory_bytes)` optionally records an
+adapter measurement without changing the scientific raw reply.
+
+Budget binding preserves the ceiling/reserves/overhead/shutdown allowance on
+restart. Admission requires conservative measured phase/condition/device
+ranges for main work and reserves every possible timeout/termination in the
+next round. The forecast pools measured families within each phase/condition,
+shows the observed prompt envelope, uses the slower device with a 25% margin,
+and charges idle devices in its serialized upper bound. Missing measurements
+are unavailable. An independent allocation deadline also stops hung work;
+confirmed worker/provider exit preserves uncertain attempts before release.
+`BudgetStop` retains all scheduled slots and exact resumable state. Loading
+inside measured attempts is already charged; the allocation partition is never
+added to those attempt costs. Outside idle/setup remains experiment overhead.
+
+[M3-T04 evidence](docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence)
+records CPU checks with explicitly synthetic allocations. Actual GPU timing,
+memory, provider release integration, timeout adequacy and the accepted freeze
+remain M5 gates; the integrated lifecycle gate remains M3-T05.
+
 ## Protocol attainability and capacity
 
 [witness.py](recovery/witness.py) is a CPU validation strategy. Each peer forwards

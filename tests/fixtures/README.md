@@ -538,3 +538,41 @@ gzip `mtime=0` archive. Ordinary reproduction reads existing evidence. No model
 weights or GPU inference are used. [M3-T03 evidence](../../docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence)
 records the environment and checks; M3-T04 owns allocation/policy costs and
 terminal progress, M3-T05 the combined gate, and M5 hardware admission.
+
+## Resource accounting and progress traces
+
+[accounting_progress_traces.json.gz](accounting_progress_traces.json.gz) retains
+nine CPU evidence cases: hand reconciliation, bounded ambiguous work, slower
+device forecasts, failed-configuration costs, historical measurement admission,
+timeout admission stops, a hard deadline and its resume, and terminal heartbeat
+captures. Allocations explicitly say `synthetic`; these are protocol checks,
+not GPU spending, model capability, pilot or main outcomes.
+
+The hand schedule has 112 logical slots, 100 generations, 12 exact replays and
+101 attempts including one infrastructure retry. It reconciles 203 measured
+attempt seconds against 400 allocated seconds on two synthetic devices. B,
+P_G and Q_B each cost 67 policy seconds; C, F and Q_C each cost 64, always
+including the prefix and all 16 continuation uses. Ambiguous work changes the
+physical attempt range to [201, 203] without inventing an end time.
+
+[accounting_archive.py](../accounting_archive.py) runs the focused
+[accounting checks](../accounting_checks.py) and reproduces exact joins, counts,
+hand costs, delivery records and stop/resume outcomes. Actual clocks, checkpoint
+IDs and CPU durations remain retained measurements, with bounds checked by the
+tests rather than asserted byte-identical. Backup/restart, concurrent saver
+initialization, cross-worker read races, token-count migration, live CLI reads
+and provider reservation starts are additionally verified by these checks.
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.accounting_checks -v
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.accounting_archive
+```
+
+`--write-fixture <new_archive.json.gz>` exclusively creates a new UTF-8/LF,
+gzip `mtime=0` export. Ordinary reproduction is read-only. Earlier attempt/worker
+comparators omit the newly derived `request_tokens` scalar (the original
+requests remain their authority) and absent peak-memory metadata; all original
+scientific fields still compare exactly. Token-count/measurement checks verify
+the added resource fields separately. Every prior fixture remains unchanged.
+See [M3-T04](../../docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence).

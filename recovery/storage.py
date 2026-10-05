@@ -139,6 +139,16 @@ class WorkerStore:
         # Reopen T01 worker files without replacing their calls/checkpoints.
         columns = {r[1] for r in self.connection.execute("PRAGMA table_info(attempts)")}
         with self.connection:
+            call_columns = {r[1] for r in self.connection.execute("PRAGMA table_info(calls)")}
+            if "request_tokens" not in call_columns:
+                self.connection.execute("ALTER TABLE calls ADD COLUMN request_tokens INTEGER")
+                # One exclusive-owner migration of existing resource metadata.
+                # Status never migrates or reads complete archived token arrays.
+                self.connection.execute("""UPDATE calls SET request_tokens=(
+                    SELECT json_array_length(requests_json, CASE WHEN calls.peer=-1
+                        THEN '$.tokenized.input_ids'
+                        ELSE '$.tokenized[' || calls.peer || '].input_ids' END)
+                    FROM round_inputs WHERE branch_id=calls.branch_id AND round_number=calls.round_number)""")
             for name, definition in (
                 ("timeout_seconds", "REAL"), ("termination_seconds", "REAL"),
                 ("observed_seconds", "REAL NOT NULL DEFAULT 0"),
@@ -180,14 +190,19 @@ class WorkerStore:
         Only the exclusive owner may write. A process exit is not a provider
         release; leave the interval open until release is acknowledged.
         """
-        if not device or stage not in ("development", "main", "validation"):
+        if type(device) is not str or not device or stage not in ("development", "main", "validation"):
             raise ValueError("record an identified device and allocation stage")
+        started_at = started_at or utc_now()
+        start = datetime.fromisoformat(started_at)
+        deadline = datetime.fromisoformat(deadline_at) if deadline_at else None
+        if start.tzinfo is None or deadline and (deadline.tzinfo is None or deadline <= start):
+            raise ValueError("allocation requires zoned, increasing clocks")
         with self.connection:
             if self.connection.execute("SELECT 1 FROM allocations WHERE stopped_at IS NULL").fetchone():
                 raise ValueError("preceding allocation has no confirmed release")
             cursor = self.connection.execute("""INSERT INTO allocations
                 (device,stage,started_at,deadline_at,budget_json,billing_json)
-                VALUES (?,?,?,?,?,?)""", (device, stage, started_at or utc_now(), deadline_at,
+                VALUES (?,?,?,?,?,?)""", (device, stage, started_at, deadline_at,
                 record_json(asdict(budget)) if budget is not None else None,
                 record_json(billing) if billing is not None else None))
             return cursor.lastrowid
@@ -198,8 +213,12 @@ class WorkerStore:
             if row is None:
                 raise ValueError("missing allocation")
             if row["stopped_at"] is None:
+                released_at = released_at or utc_now()
+                release = datetime.fromisoformat(released_at)
+                if release.tzinfo is None or release < datetime.fromisoformat(row["started_at"]):
+                    raise ValueError("release requires a zoned clock after allocation start")
                 self.connection.execute("UPDATE allocations SET stopped_at=?,stop_reason=? WHERE number=?",
-                    (released_at or utc_now(), reason, number))
+                    (released_at, reason, number))
 
     def allocation_stop_requested(self, number, reason):
         with self.connection:
@@ -243,15 +262,17 @@ class WorkerStore:
                     if tuple(row[k] for k in ("branch_id", "round_number", "peer", "seed",
                                               "generation_id", "replay_parent")) != expected:
                         raise ValueError("saved call identity differs from scheduled slot")
+                    if row["request_tokens"] != len(requests.tokenized[call.peer].input_ids):
+                        raise ValueError("saved request token count differs from exact inputs")
                 return
             self.connection.execute("INSERT INTO round_inputs VALUES (?,?,?,?,?)",
                                     (branch.branch_id, r, identity, settings, payload))
             for call in calls:
                 self.connection.execute("""INSERT INTO calls
-                    (call_id,branch_id,round_number,peer,seed,generation_id,replay_parent,status)
-                    VALUES (?,?,?,?,?,?,?,'pending')""",
+                    (call_id,branch_id,round_number,peer,seed,generation_id,replay_parent,status,request_tokens)
+                    VALUES (?,?,?,?,?,?,?,'pending',?)""",
                     (call.call_id, branch.branch_id, r, call.peer, call.seed,
-                     call.generation_id, call.replay_parent))
+                     call.generation_id, call.replay_parent, len(requests.tokenized[call.peer].input_ids)))
 
     def call(self, call_id: str) -> dict:
         return self._record("calls", "call_id=?", (call_id,))[1]
@@ -290,12 +311,14 @@ class WorkerStore:
                 if tuple(saved[k] for k in ("branch_id", "round_number", "peer", "seed", "generation_id", "replay_parent")) != (
                         branch.branch_id, 1, -1, call.seed, call.generation_id, None):
                     raise ValueError("saved control slot identity differs")
+                if saved["request_tokens"] != len(tokenized.input_ids):
+                    raise ValueError("saved control request token count differs")
                 return
             self.connection.execute("INSERT INTO round_inputs VALUES (?,1,?,?,?)",
                                     (branch.branch_id, identity, settings, payload))
             self.connection.execute("""INSERT INTO calls
-                (call_id,branch_id,round_number,peer,seed,generation_id,status)
-                VALUES (?, ?,1,-1,?,?,'pending')""", (call.call_id, branch.branch_id, call.seed, call.generation_id))
+                (call_id,branch_id,round_number,peer,seed,generation_id,status,request_tokens)
+                VALUES (?, ?,1,-1,?,?,'pending',?)""", (call.call_id, branch.branch_id, call.seed, call.generation_id, len(tokenized.input_ids)))
 
     def save_control_validation(self, call_id, reply):
         raw = self.response(call_id)
@@ -473,6 +496,9 @@ class WorkerStore:
             tuple(RenderedRequest(**v) for v in data["rendered"]),
             tuple(TokenizedRequest(v["text"], tuple(v["input_ids"]), tuple(v["attention_mask"]))
                   for v in data["tokenized"]))
+        for call in calls:
+            if self.call(call.call_id)["request_tokens"] != len(requests.tokenized[call.peer].input_ids):
+                raise ValueError("saved request token count differs from exact inputs")
         return branch, row["settings_json"], requests
 
     def save_validation(self, branch, barrier):

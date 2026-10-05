@@ -6,7 +6,7 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 12/29. Remaining: 17. Active: 0. Ready: 1. Blocked: 16.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 12/29. Remaining: 17. Active: 1. Ready: 0. Blocked: 16.** Counts measure verified task outcomes, not effort or runtime.
 
 M2-T01–T05 counts below describe their original completion checks. M2-T06 renews all
 affected archives/checks under the finalized renderer and supersedes earlier
@@ -31,7 +31,7 @@ capacity status; each prerequisite task links that renewal.
 |---|---:|---:|---|---|
 | M1 | 3/3 | 0 | Passed on CPU | Exact worlds, coordinates, eligible populations, saved streams and complete schedules pass; [M1-T03 gate evidence](M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate) closes M1. |
 | M2 | 6/6 | 0 | Passed on CPU | All peer protocol, retention, replay, local-view attainability and complete native capacity checks pass; [M2-T06 completion](M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate) closes M2. GPU memory/capability/timing remain M5. |
-| M3 | 3/5 | 2 | M3-T01/T02/T03 done; M3-T04 ready | Durable lifecycle, process-crash/restart, worker replay, accounting and safe-stop checks must pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
+| M3 | 3/5 | 2 | M3-T01/T02/T03 done; M3-T04 active | Durable lifecycle, process-crash/restart, worker replay, accounting and safe-stop checks must pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
 | M4 | 0/6 | 6 | Blocked by M1–M3 | All prescribed offline analysis and complete synthetic report reproduce; all M1–M4 CPU evidence passes in [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md). |
 | M5 | 0/5 | 5 | Blocked by M1–M4 | Authorized smoke → 90-slot capability gate → full pilot → measured complete-schedule forecast and freeze; close in [M5-T05](M5/M5-T05-allocation-admission-and-freeze.md). |
 | M6 | 0/4 | 4 | Blocked by M5 / evidence | Full frozen schedule, independent audit, clean offline reproduction and authorized release pass; completion requires [M6-T01](M6/M6-T01-frozen-execution-and-resume.md) and [M6-T04](M6/M6-T04-reproducible-release.md). |

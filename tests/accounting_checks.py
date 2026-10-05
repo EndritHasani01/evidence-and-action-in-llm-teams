@@ -11,11 +11,12 @@ import sys
 import tempfile
 from time import monotonic, sleep
 import unittest
+from unittest.mock import patch
 
 from recovery.accounting import Budget, BudgetStop, format_status, progress_snapshot
 from recovery.attempts import MeasuredReply, ProcessProvider
 from recovery.manifests import load_population, load_schedules
-from recovery.runner import DurableRunner
+from recovery.runner import DurableRunner, WorkerReader
 from recovery.schedule import _prepare_branches
 from recovery.storage import RecordedFailure, WorkerStore, record_json
 from recovery.tasks import Task
@@ -24,6 +25,7 @@ from tests.durable_checks import prefix, provider
 from tests.event_checks import case_world
 from tests.replay_checks import SETTINGS, replay_provider, scheduled
 from tests.round_checks import TOKENIZER, reply
+from recovery.rounds import prepare_round
 from tests.worker_fixture import tokenizer_factory
 
 
@@ -200,7 +202,7 @@ class AccountingTests(unittest.TestCase):
                 calls[cid] = {"status": "completed"}
         forecast = _forecast(branches, calls, generations, ["synthetic:0", "synthetic:1"], None)
         self.assertTrue(forecast["available"])
-        self.assertEqual(forecast["remaining_gpu_hours"], [2 / 3600, 10 / 3600])
+        self.assertEqual(forecast["remaining_gpu_hours"], [2 / 3600, 20 / 3600])
         self.assertEqual(forecast["elapsed_seconds"], [1, 10])
         self.assertFalse(_forecast(branches, calls, generations, ["synthetic:0", "synthetic:1", "new-device"], None)["available"])
         self.evidence["slower_device_forecast"] = forecast
@@ -264,6 +266,197 @@ class AccountingTests(unittest.TestCase):
         data = json.loads(result.stdout)
         self.assertEqual((data["counts"]["scheduled_logical"], data["counts"]["scheduled_generations"]), (1178, 1114))
         self.assertFalse(self.paths[0].exists())
+
+    def test_invalid_allocation_clocks_and_missing_raw_outcomes_do_not_report_finished_work(self):
+        self.make_schedule()
+        store = WorkerStore(self.paths[0])
+        try:
+            with self.assertRaisesRegex(ValueError, "clocks"):
+                store.allocation_started("synthetic:0", "validation", started_at="2026-10-05T00:00:00")
+            n = store.allocation_started("synthetic:0", "validation", started_at=clock(201))
+            with self.assertRaisesRegex(ValueError, "release"):
+                store.allocation_stopped(n, "bad_clock", released_at=clock(200))
+            store.allocation_stopped(n, "complete", released_at=clock(202))
+            with store.connection:
+                store.connection.execute("UPDATE calls SET raw_json=NULL WHERE call_id=?", (self.retried,))
+        finally:
+            store.close()
+        with self.assertRaisesRegex(ValueError, "exact raw"):
+            self.snapshot()
+
+    def test_resource_token_counts_match_exact_barriers_and_status_avoids_archived_token_arrays(self):
+        self.make_schedule()
+        queries = []
+        def observed(path):
+            reader = WorkerReader(path)
+            reader.store.connection.set_trace_callback(queries.append)
+            return reader
+        with patch("recovery.accounting.WorkerReader", observed):
+            before = self.snapshot()
+        self.assertFalse(any("requests_json" in sql for sql in queries))
+        for path in self.paths:
+            store = WorkerStore(path)
+            expected = 0
+            for row in store.connection.execute("SELECT * FROM calls WHERE replay_parent IS NULL"):
+                inputs = json.loads(store.connection.execute("SELECT requests_json FROM round_inputs WHERE branch_id=? AND round_number=?",
+                    (row["branch_id"], row["round_number"])).fetchone()[0])
+                count = len(inputs["tokenized"][row["peer"]]["input_ids"])
+                self.assertEqual(row["request_tokens"], count)
+                expected += count * len(store.attempts(row["call_id"]))
+            physical = sum(g["physical_request_tokens"] for g in before["generations"]
+                           if g["device"] == f"synthetic:{self.paths.index(path)}")
+            self.assertEqual(physical, expected)
+            with store.connection:
+                store.connection.execute("ALTER TABLE calls DROP COLUMN request_tokens")
+            store.close()
+        # Old backups remain readable without writes; exclusive migration is
+        # separate and repopulates the count from the exact original requests.
+        self.assertEqual(before, self.snapshot())
+        for path in self.paths:
+            store = WorkerStore(path)
+            self.assertTrue(all(row[0] is not None for row in store.connection.execute("SELECT request_tokens FROM calls")))
+            store.close()
+        self.assertEqual(before, self.snapshot())
+
+    def test_first_saver_setup_does_not_commit_status_snapshot_across_concurrent_raw_completion(self):
+        with DurableRunner(self.paths[0], TOKENIZER, provider, scripted=True) as runner:
+            runner.start(self.world, self.prefix, settings=SETTINGS)
+            runner.run_round(self.prefix.branch_id, 1)
+            requests = prepare_round(runner.state(self.prefix.branch_id), TOKENIZER)
+            runner.store.prepare(self.prefix, record_json(SETTINGS), requests)
+            call = self.prefix.calls[4]
+            runner.store.begin_attempt(call.call_id)
+            from langgraph.checkpoint.sqlite import SqliteSaver
+            original = SqliteSaver.get_tuple
+            completed = []
+            def concurrent(saver, config):
+                if config["configurable"]["thread_id"] == self.prefix.branch_id and not completed:
+                    runner.store.finish_attempt(call.call_id, reply(TOKENIZER, requests.views[0]), 0.01)
+                    completed.append(True)
+                return original(saver, config)
+            with patch.object(SqliteSaver, "get_tuple", concurrent):
+                s = progress_snapshot((self.world,), (self.prefix,), (self.paths[0],))
+            self.assertTrue(completed)
+            self.assertEqual(len(s["current"]), 1)
+            self.assertEqual(s["work"][0]["status"], "active")
+            self.assertEqual(s["counts"]["finished_logical"], 4)
+            next_status = progress_snapshot((self.world,), (self.prefix,), (self.paths[0],))
+            self.assertEqual(next_status["current"], [])
+            self.assertEqual(next_status["counts"]["finished_logical"], 5)
+    def test_live_cli_status_and_partial_worker_files_preserve_balanced_dependencies(self):
+        root = Path(__file__).resolve().parent / "fixtures"
+        population = load_population(root / "population_target.json")
+        schedules = load_schedules(root / "schedules_target.json", population)
+        branches = schedules.development
+        spec = WorkerSpec(self.paths[0], partial(slow_factory, delay=0.6))
+        with LocalScheduler((spec,), population.development, branches, tokenizer_factory, settings=SETTINGS,
+                            timeout_seconds=10, heartbeat_seconds=0.05) as scheduler:
+            scheduler.dispatch()
+            end = monotonic() + 10
+            while not scheduler.progress()["current"]:
+                self.assertLess(monotonic(), end)
+                sleep(0.01)
+            result = subprocess.run([sys.executable, "-m", "recovery", "status", "--manifest", str(root / "population_target.json"),
+                "--schedule", str(root / "schedules_target.json"), "--worker", str(self.paths[0]), "--json"],
+                capture_output=True, text=True, timeout=10)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            data = json.loads(result.stdout)
+            self.assertEqual(data["counts"]["scheduled_logical"], 1178)
+            self.assertGreater(data["counts"]["unknown_logical"], 0)
+            self.assertTrue(data["current"])
+            # File zero is missing; real ownership remains worker one, and the
+            # same balanced-block/prelude rules still apply in a partial view.
+            partial_status = progress_snapshot(population.development, branches, (self.paths[1], self.paths[0]))
+            self.assertTrue(all(c["worker"] == 1 for c in partial_status["checkpoints"]))
+            self.assertTrue(any(w["status"] == "dependency_waiting" for w in partial_status["work"]))
+
+    def test_cross_worker_replay_commit_between_snapshots_retries_only_the_read(self):
+        parent_branch, child_branch = self.branches[1], self.branches[5]
+        branches = (self.prefix, parent_branch, child_branch)
+        with DurableRunner(self.paths[0], TOKENIZER, provider, scripted=True) as parent:
+            prefix(parent, self.world)
+            parent.reply_provider = replay_provider(TOKENIZER, "unicode")
+            parent.start(self.world, parent_branch, settings=SETTINGS)
+            with DurableRunner(self.paths[1], TOKENIZER, None, scripted=True, dependencies=(self.paths[0],)) as child:
+                child.start(self.world, child_branch, settings=SETTINGS)
+                transitions, opened = [], []
+                def racing_reader(path):
+                    opened.append(path)
+                    if path == self.paths[1].resolve() and not transitions:
+                        # The parent's old snapshot has already been captured.
+                        # Real synchronous commits then precede the child read.
+                        parent.run_round(parent_branch.branch_id, 1)
+                        child.run_round(child_branch.branch_id, 1)
+                        transitions.append(True)
+                    return WorkerReader(path)
+                with patch("recovery.accounting.WorkerReader", racing_reader):
+                    s = progress_snapshot((self.world,), branches, self.paths)
+                self.assertEqual(opened.count(self.paths[0].resolve()), 2)
+                self.assertEqual(s["counts"]["finished_logical"], 24)
+                self.assertEqual(s["counts"]["replay_uses"], 4)
+                self.assertEqual(s["counts"]["attempts"], 20)
+                self.assertEqual(s["counts"]["retries"], 0)
+
+    def test_previous_measurements_charge_prior_allocation_once_and_admit_main_on_slower_device(self):
+        worlds = tuple(replace(self.world, world_id=f"measured-{i}", development=True) for i in range(2))
+        controls = tuple(next(b for b in _prepare_branches((w,)) if b.phase == "control" and b.event == "original") for w in worlds)
+        for i, path in enumerate(self.paths):
+            with DurableRunner(path, TOKENIZER, partial(slow_reply, 0, False, False), scripted=True) as runner:
+                runner.store.bind_run(worlds, controls, SETTINGS, {"timeout_seconds": 3, "termination_seconds": 0.5, "heartbeat_seconds": 0.05})
+                runner.run_control(worlds[i], controls[i], settings=SETTINGS)
+                duration = (2, 8)[i]
+                with runner.store.connection:
+                    runner.store.connection.execute("UPDATE attempts SET started_at=?,finished_at=?,elapsed_seconds=?,observed_seconds=?",
+                        (clock(0), clock(duration), duration, duration))
+                n = runner.store.allocation_started(f"synthetic:{i}", "development", started_at=clock(0))
+                runner.store.allocation_stopped(n, "measured_cpu_fixture", released_at=clock(10))
+        main_world = replace(self.world, world_id="future-main-control")
+        main_branch = next(b for b in _prepare_branches((main_world,)) if b.phase == "control" and b.event == "original")
+        main_paths = tuple(Path(self.temp.name) / f"main-{i}.sqlite" for i in range(2))
+        budget = replace(synthetic_budget(100), shutdown_seconds=6)
+        release = lambda *_: True
+        specs = tuple(WorkerSpec(p, partial(slow_factory, delay=0.01), allocated_device=f"synthetic:{i}")
+                      for i, p in enumerate(main_paths))
+        with LocalScheduler(specs, (main_world,), (main_branch,), tokenizer_factory, settings=SETTINGS,
+                            timeout_seconds=3, termination_seconds=0.5, heartbeat_seconds=0.05,
+                            budget=budget, release_device=release, allocation_stage="main", prior_paths=self.paths) as scheduler:
+            before = scheduler.progress()
+            self.assertTrue(before["forecast"]["available"])
+            self.assertEqual(before["forecast"]["remaining_gpu_hours"], [2 / 3600, 20 / 3600])
+            self.assertGreaterEqual(before["resources"]["allocated_gpu_hours"], 20 / 3600)
+            self.assertEqual(len(before["resources"]["active_devices"]), 2)
+            scheduler.run()
+        after = progress_snapshot((main_world,), (main_branch,), main_paths, prior_paths=self.paths)
+        self.assertEqual(after["counts"]["attempts"], 1)
+        self.assertEqual(sum(h["counts"]["attempts"] for h in after["prior_runs"]), 2)
+        self.assertLess(after["resources"]["allocated_gpu_hours"], 100 / 3600)
+        self.assertEqual(after["resources"]["active_devices"], [])
+        self.evidence["historical_admission"] = {"before": before, "after": after}
+        with self.assertRaisesRegex(ValueError, "once"):
+            progress_snapshot((main_world,), (main_branch,), main_paths, prior_paths=self.paths + self.paths)
+
+    def test_failed_configuration_allocation_is_charged_without_contaminating_accepted_forecast(self):
+        measured_world = replace(self.world, world_id="same-development-slot", development=True)
+        measured_branch = next(b for b in _prepare_branches((measured_world,)) if b.phase == "control" and b.event == "original")
+        for i, path in enumerate(self.paths):
+            setting = SETTINGS if i == 0 else dict(SETTINGS, model="failed-configuration")
+            start, duration, end = (0, 2, 20) if i == 0 else (20, 90, 120)
+            with DurableRunner(path, TOKENIZER, partial(slow_reply, 0, False, False), scripted=True) as runner:
+                runner.store.bind_run((measured_world,), (measured_branch,), setting, {})
+                runner.run_control(measured_world, measured_branch, settings=setting)
+                with runner.store.connection:
+                    runner.store.connection.execute("UPDATE attempts SET started_at=?,finished_at=?,elapsed_seconds=?,observed_seconds=?",
+                        (clock(start), clock(start + duration), duration, duration))
+                n = runner.store.allocation_started("synthetic:0", "development", started_at=clock(start))
+                runner.store.allocation_stopped(n, "configuration_finished", released_at=clock(end))
+        future = replace(self.world, world_id="accepted-main-slot")
+        branch = next(b for b in _prepare_branches((future,)) if b.phase == "control" and b.event == "original")
+        future_path = Path(self.temp.name) / "future.sqlite"
+        s = progress_snapshot((future,), (branch,), (future_path,), prior_paths=self.paths, settings=SETTINGS, now=clock(120))
+        self.assertEqual(s["resources"]["allocated_gpu_hours"], 120 / 3600)
+        self.assertEqual(s["forecast"]["remaining_gpu_hours"], [2 / 3600, 2.5 / 3600])
+        self.assertEqual(sum(h["physical"]["attempt_seconds"][0] for h in s["prior_runs"]), 92)
+        self.evidence["failed_configuration"] = {"resources": s["resources"], "forecast": s["forecast"]}
 
 
 class BudgetTests(unittest.TestCase):
@@ -358,6 +551,7 @@ class BudgetTests(unittest.TestCase):
                             budget=synthetic_budget(80)) as scheduler:
             scheduler.dispatch()
             con = sqlite3.connect(self.path)
+            self.addCleanup(con.close)
             con.execute("PRAGMA query_only=ON")
             before = con.total_changes
             while scheduler.inflight:
@@ -398,6 +592,20 @@ class BudgetTests(unittest.TestCase):
             with self.scheduler(budget=synthetic_budget(40)):
                 pass
         self.assertEqual(self.snapshot()["counts"]["attempts"], 0)
+
+    def test_provider_reservation_start_precedes_worker_setup_and_billing_is_separate(self):
+        scheduler = self.scheduler(budget=synthetic_budget(80))
+        earlier = (datetime.now(timezone.utc) - timedelta(seconds=5)).isoformat()
+        scheduler.specs = (replace(scheduler.specs[0], allocated_at=earlier,
+                                  provider_billing={"reservation_hours": 2, "rule": "provider rounds up"}),)
+        with scheduler:
+            s = scheduler.progress()
+            self.assertGreaterEqual(s["resources"]["allocated_gpu_hours"], 5 / 3600)
+            self.assertLess(scheduler.deadline - monotonic(), 72)
+        s = self.snapshot()
+        self.assertGreaterEqual(s["resources"]["allocated_gpu_hours"], 5 / 3600)
+        self.assertEqual(s["resources"]["provider_billing"][0]["record"]["reservation_hours"], 2)
+        self.assertEqual(s["counts"]["attempts"], 0)
 
 
 if __name__ == "__main__":

@@ -21,7 +21,8 @@ def stable_cases(archive):
     cases = []
     clocks = {"started_at", "finished_at", "elapsed_seconds", "observed_seconds", "recovered_at", "worker_pid"}
     for case in archive["cases"]:
-        calls = sorted((row for w in case["workers"] for row in w["calls"]), key=lambda r: r["call_id"])
+        calls = sorted(({k: v for k, v in row.items() if k != "request_tokens"}
+                        for w in case["workers"] for row in w["calls"]), key=lambda r: r["call_id"])
         inputs = sorted((row for w in case["workers"] for row in w["round_inputs"]),
                         key=lambda r: (r["branch_id"], r["round_number"]))
         attempts = sorted(({k: v for k, v in row.items() if k not in clocks

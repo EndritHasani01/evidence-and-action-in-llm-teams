@@ -59,6 +59,10 @@ class BudgetStop(RuntimeError):
     """Admission/allocation stopped; every remaining scheduled slot is resumable."""
 
 
+class _SnapshotChanged(ValueError):
+    """A dependent worker committed after its parent's read snapshot opened."""
+
+
 def _attempt_range(attempt, now):
     measured = attempt["elapsed_seconds"]
     low = measured if measured is not None else attempt.get("observed_seconds", 0)
@@ -163,7 +167,10 @@ def _forecast(branches, calls, generations, devices, budget, history=()):
             if generation["unknown_duration_attempts"]:
                 continue
             key = (branch.task.value, branch.phase, branch.policy or "none")
-            samples[key].append((generation["seconds"][0], generation["device"], generation["request_tokens"]))
+            for device in generation.get("by_device_seconds", {generation["device"]: generation["seconds"]}):
+                # A retry spanning devices supplies its full workflow cost to
+                # each participating device, conservatively preserving lost work.
+                samples[key].append((generation["seconds"][0], device, generation["request_tokens"]))
     for snapshot in history:
         for cell in snapshot["forecast"]["cells"]:
             key = (cell["family"], cell["phase"], cell["condition"])
@@ -177,7 +184,10 @@ def _forecast(branches, calls, generations, devices, budget, history=()):
                 remaining[(branch.task.value, branch.phase, branch.policy or "none")] += 1
     rows, unavailable, low, high = [], [], 0.0, 0.0
     for key in sorted(set(samples) | set(remaining)):
-        data = samples[key]
+        # The declared pilot does not contain masks in every main family.
+        # Use the measured phase/condition across families, keeping the observed
+        # prompt envelope and every device; no extra pilot calls are introduced.
+        data = [sample for cell, values in samples.items() if cell[1:] == key[1:] for sample in values]
         measured_devices = {v[1] for v in data}
         missing_devices = sorted(set(devices) - measured_devices)
         available = bool(data) and not missing_devices
@@ -191,6 +201,7 @@ def _forecast(branches, calls, generations, devices, budget, history=()):
             high += count * bounds[1]
         rows.append({"family": key[0], "phase": key[1], "condition": key[2], "remaining_generations": count,
                      "measured_calls": len(data), "measured_devices": sorted(measured_devices),
+                     "measurement_scope": "phase/condition pooled across measured families",
                      "seconds_per_generation": bounds,
                      "observed_prompt_tokens": [min(v[2] for v in data), max(v[2] for v in data)] if data else None,
                      "by_device": {device: [min(v[0] for v in data if v[1] == device),
@@ -200,10 +211,11 @@ def _forecast(branches, calls, generations, devices, budget, history=()):
         return {"available": False, "reason": "unmeasured phase/condition/device cells", "cells": rows,
                 "unavailable_cells": unavailable, "remaining_gpu_hours": None, "elapsed_seconds": None}
     overhead = budget.overhead_seconds if budget else 0
+    device_count = max(1, len(devices))
     return {"available": bool(samples) or not remaining, "reason": None, "cells": rows, "unavailable_cells": [],
-            "remaining_gpu_hours": [low / 3600, (high + overhead) / 3600],
-            "elapsed_seconds": [low / max(1, len(devices)), high + overhead],
-            "rule": "observed minimum to slower-device maximum plus 25%; overhead separate; elapsed upper allows serial dependencies"}
+            "remaining_gpu_hours": [low / 3600, (device_count * high + overhead) / 3600],
+            "elapsed_seconds": [low / device_count, high + overhead],
+            "rule": "observed minimum to slower-device maximum plus 25%; upper charges idle devices during serial dependencies; external overhead once"}
 
 
 def _comparisons(worlds, branches, completed):
@@ -247,12 +259,13 @@ def _comparisons(worlds, branches, completed):
 
 
 def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M3 CPU verification; M5 inference gate open",
-                      inflight=None, settings=None, prior_paths=()):
+                      inflight=None, settings=None, prior_paths=(), _read_retries=2):
     """Read only, including for nonexistent files; never recover or create them.
 
     Each file is read in one SQLite snapshot. Cross-worker parent/raw commits
     precede dependent replay commits; no writer lock is held or requested.
     """
+    supplied_now = now
     now = now or utc_now()
     timestamp(now)
     worlds, branches, paths = tuple(worlds), tuple(branches), tuple(Path(p).resolve() for p in paths)
@@ -289,6 +302,10 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 continue
             reader = WorkerReader(path)
             readers.append((index, reader))
+            # The pinned saver's first public read performs setup via
+            # executescript, which commits an existing SQLite transaction even
+            # when all tables already exist. Prime it BEFORE the read snapshot.
+            reader.saver.get_tuple(DurableRunner._config(""))
             con = reader.store.connection
             con.execute("BEGIN")
             for row in con.execute("SELECT * FROM calls"):
@@ -296,11 +313,11 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 if data["call_id"] in records:
                     raise ValueError("duplicate logical/physical call across worker files")
                 records[data["call_id"]] = data
-            for row in con.execute("SELECT * FROM round_inputs"):
+            for row in con.execute("SELECT branch_id,round_number FROM round_inputs"):
                 key = row["branch_id"], row["round_number"]
                 if key in inputs:
                     raise ValueError("duplicate branch barrier")
-                inputs[key] = json.loads(row["requests_json"])
+                inputs[key] = True
             attempts.extend(dict(r, worker=index) for r in con.execute("SELECT * FROM attempts"))
             processes.extend(dict(r, worker=index) for r in con.execute("SELECT * FROM provider_processes"))
             tables = {r[0] for r in con.execute("SELECT name FROM sqlite_master WHERE type='table'")}
@@ -341,6 +358,9 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 budget = Budget(**json.loads(configurations.pop()))
         by_attempt = defaultdict(list)
         for attempt in attempts:
+            attempt["device"] = next((a["device"] for a in reversed(allocations)
+                if a["worker"] == attempt["worker"] and timestamp(a["started_at"]) <= timestamp(attempt["started_at"])
+                <= timestamp(a["stopped_at"] or now)), f"worker:{attempt['worker']}")
             by_attempt[attempt["call_id"]].append(attempt)
         generation_costs = {}
         for call_id, (branch, call) in scheduled.items():
@@ -355,14 +375,18 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 if by_attempt[call_id]:
                     raise ValueError("replay has physical attempts")
                 continue
-            requested = inputs.get((branch.branch_id, call.round_number))
-            tokenized = None if requested is None else requested["tokenized"] if branch.phase == "control" else requested["tokenized"][call.peer]
-            request_tokens = None if tokenized is None else len(tokenized["input_ids"])
+            request_tokens = row.get("request_tokens") if row else None
+            if row is not None and request_tokens is None:
+                # Read-only compatibility with a pre-T04 backup. The normal
+                # migrated path uses the existing call ledger's scalar count.
+                reader = dict(readers)[row["worker"]]
+                request_tokens = reader.store.connection.execute("""SELECT json_array_length(requests_json,?)
+                    FROM round_inputs WHERE branch_id=? AND round_number=?""",
+                    ("$.tokenized.input_ids" if call.peer is None else f"$.tokenized[{call.peer}].input_ids",
+                     branch.branch_id, call.round_number)).fetchone()[0]
             measured = by_attempt[call_id]
             ranges = [_attempt_range(a, now) for a in measured]
-            device = next((a["device"] for a in reversed(allocations) if row and a["worker"] == row["worker"]
-                           and timestamp(a["started_at"]) <= timestamp(measured[0]["started_at"]) <=
-                           timestamp(a["stopped_at"] or now)), f"worker:{row['worker']}" if row else "unassigned") if measured else "unassigned"
+            device = measured[-1]["device"] if measured else "unassigned"
             raw = json.loads(row["raw_json"]) if row and row["raw_json"] else None
             memory = [a.get("peak_memory_bytes") for a in measured if a.get("peak_memory_bytes") is not None]
             generation_costs[call_id] = {"generation_id": call_id, "device": device, "attempts": len(measured),
@@ -373,13 +397,16 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 "output_tokens": len(raw["token_ids"]) if raw else None,
                 "unknown_output_attempts": len(measured) - int(raw is not None),
                 "peak_memory_bytes": max(memory) if memory else None}
+            generation_costs[call_id]["by_device_seconds"] = {
+                d: [sum(_attempt_range(a, now)[i] for a in measured if a["device"] == d) for i in (0, 1)]
+                for d in sorted({a["device"] for a in measured})}
         logical = []
         for branch in branches:
             for call in branch.calls:
                 row = records.get(call.call_id)
                 validation = json.loads(row["validation_json"]) if row and row["validation_json"] else None
                 if row and row["status"] == "replay" and (call.replay_parent not in records or records[call.replay_parent]["status"] not in FINAL):
-                    raise ValueError("replay lacks original completed physical parent")
+                    raise _SnapshotChanged("replay lacks original completed physical parent")
                 logical.append({"call_id": call.call_id, "generation_id": call.generation_id, "replay_parent": call.replay_parent,
                     "world_id": branch.world_id, "family": branch.task.value, "phase": branch.phase,
                     "event": branch.event, "policy": branch.policy, "replicate": branch.replicate,
@@ -439,9 +466,10 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                     if min(b, y) > max(a, x):
                         raise ValueError("historical/current allocations overlap on the same device")
                 seen[allocation["device"]].append((a, b))
-            physical_ids = {c["generation_id"] for c in generation_costs.values() if c["attempts"]}
+            physical_ids = {(settings_json(settings or {}), c["generation_id"]) for c in generation_costs.values() if c["attempts"]}
             for previous in history:
-                previous_ids = {c["generation_id"] for c in previous["generations"] if c["attempts"]}
+                previous_ids = {(settings_json(previous["settings"] or {}), c["generation_id"])
+                                for c in previous["generations"] if c["attempts"]}
                 if physical_ids & previous_ids:
                     raise ValueError("historical physical generations supplied twice")
                 physical_ids.update(previous_ids)
@@ -489,6 +517,10 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 settings=chosen_settings or {}, inflight=inflight, recorded_active=True)]
         if any(w["status"] == "blocked" for w in work):
             gate = "provider defect requires diagnosis; recorded unknown work retained"
+        elif len(logical) > finished and allocations:
+            reason = max(allocations, key=lambda a: a["started_at"])["stop_reason"]
+            if reason and reason != "scheduler_close":
+                gate = reason
         return {"at": now, "gate": gate, "budget": asdict(budget) if budget else None, "settings": settings,
             "counts": {"scheduled_logical": len(logical), "finished_logical": finished, "remaining_logical": len(logical) - finished,
                 "scheduled_generations": len(generation_costs),
@@ -505,6 +537,8 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 "request_tokens": sum(c["physical_request_tokens"] for c in generation_costs.values()),
                 "output_tokens": sum(c["output_tokens"] or 0 for c in generation_costs.values()),
                 "unknown_output_attempts": sum(c["unknown_output_attempts"] for c in generation_costs.values()),
+                "by_device_seconds": {d: [sum(_attempt_range(a, now)[i] for a in attempts if a["device"] == d)
+                                           for i in (0, 1)] for d in sorted({a["device"] for a in attempts})},
                 "peak_memory_bytes": max((c["peak_memory_bytes"] for c in generation_costs.values()
                                           if c["peak_memory_bytes"] is not None), default=None)},
             "validated_deliveries": list(deliveries.values()),
@@ -516,6 +550,18 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
             "resources": resources, "forecast": forecast,
             "prior_runs": [{"counts": h["counts"], "physical": h["physical"]} for h in history],
             "overhead_rule": "original measured attempt costs include in-attempt loading/transport/termination; outside allocation overhead remains experiment overhead; allocation partition is not added to attempts"}
+    except _SnapshotChanged:
+        if not _read_retries:
+            raise
+        # There is no global SQLite snapshot across worker files. Raw parents
+        # are immutable once final, so a fresh bounded read resolves this live
+        # transition. A genuinely missing parent still fails after two rereads.
+        for _, reader in readers:
+            reader.store.connection.rollback()
+            reader.close()
+        readers.clear()
+        return progress_snapshot(worlds, branches, paths, now=supplied_now, budget=budget, gate=gate,
+            inflight=inflight, settings=settings, prior_paths=prior_paths, _read_retries=_read_retries - 1)
     finally:
         for _, reader in readers:
             reader.store.connection.rollback()
