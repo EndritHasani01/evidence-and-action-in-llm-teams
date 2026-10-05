@@ -1,6 +1,6 @@
 # M3-T03 — Local worker scheduling and cross-worker replay
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M3-T02](../M3/M3-T02-bounded-attempts-and-failures.md#completion-and-handoff).
 M2 passed and M3-T02 completed on 5 October 2026. Use its bounded
@@ -36,6 +36,13 @@ A small local scheduler executes balanced blocks across isolated serial workers 
 ## Validation and evidence
 
 Run two local CPU worker processes with intentionally uneven delays and order reversal. Move a mixed/Q continuation to the other worker, including invalid parent replies and held prose. Check parent identity/cost references, immutable snapshots, independent queues, saved seeds and equal committed scripted outcomes. Deliberately remove/mis-scope a parent and verify rejection. Test scheduler recovery from one interrupted worker.
+
+Implementation started on 5 October 2026 after inspecting T01/T02's runner,
+ledger and executed CPU evidence. Use read-only access to original worker
+records for prefixes and B/C parents; keep reply/attempt ownership and delivery
+checkpoints in their original worker files. A small local process controller
+will derive runnable/dependency-waiting work from the saved schedule and those
+checkpoints, rotate eligible starts, and preserve the existing bounded provider.
 
 **Evidence:** Not yet recorded. Add cross-worker traces and actual process/environment results before marking done.
 
