@@ -58,7 +58,8 @@ class RecordedFailure:
     reason: str
 
     def __post_init__(self):
-        if self.status not in ("timeout", "infrastructure_failure") or not self.reason:
+        if (type(self.status) is not str or self.status not in ("timeout", "infrastructure_failure")
+                or type(self.reason) is not str or not self.reason):
             raise ValueError("record a timeout or exhausted infrastructure failure")
 
 
@@ -195,10 +196,22 @@ class WorkerStore:
                                       (branch_id, round_number)).fetchone()
         if row is None:
             raise ValueError("missing saved pre-delivery barrier")
+        branch = _branch(json.loads(row["branch_json"]))
+        if branch.branch_id != branch_id:
+            raise ValueError("saved barrier branch identity differs")
+        calls = tuple(c for c in branch.calls if c.round_number == round_number)
+        if len(calls) != 4 or tuple(c.peer for c in calls) != (0, 1, 2, 3):
+            raise ValueError("saved barrier requires four ordered scheduled slots")
+        for call in calls:
+            saved_call = self.call(call.call_id)
+            if tuple(saved_call[k] for k in ("branch_id", "round_number", "peer", "seed",
+                                              "generation_id", "replay_parent")) != (
+                    branch_id, round_number, call.peer, call.seed, call.generation_id, call.replay_parent):
+                raise ValueError("saved call identity/seed/replay parent differs")
         data = json.loads(row["requests_json"])
         before = deserialize_state(data["before"].encode("utf-8"))
         slot = Slot(**data["slot"])
-        if slot != before.next_slot:
+        if before.branch_id != branch_id or slot != before.next_slot or slot.round_number != round_number:
             raise ValueError("saved barrier differs from its pre-delivery state")
         views = tuple(p.view(before.task, before.size, i, slot, before.manifest)
                       for i, p in enumerate(before.peers))
@@ -206,7 +219,7 @@ class WorkerStore:
             tuple(RenderedRequest(**v) for v in data["rendered"]),
             tuple(TokenizedRequest(v["text"], tuple(v["input_ids"]), tuple(v["attention_mask"]))
                   for v in data["tokenized"]))
-        return _branch(json.loads(row["branch_json"])), row["settings_json"], requests
+        return branch, row["settings_json"], requests
 
     def save_validation(self, branch, barrier):
         """Save deterministic outcomes only after every raw reply is durable."""

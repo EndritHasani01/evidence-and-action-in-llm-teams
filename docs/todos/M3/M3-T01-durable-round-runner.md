@@ -36,14 +36,19 @@ The validated round procedure runs through LangGraph/local SQLite, with exact du
 Run scripted save/reopen/resume checks, invalid parent reuse, equality mismatch rejection, per-branch delivery idempotence and replacement clearing. Inspect actual SQLite/durability behavior instead of assuming the research toy's results transfer. M3-T05 performs the full killed-process acceptance suite after attempt/scheduler/accounting integration.
 
 **Evidence so far (5 October 2026):** The prerequisite full CPU suite passed
-167 checks. Seven actual LangGraph/SQLite foundation checks now pass via
+167 checks. Seventeen actual LangGraph/SQLite checks now pass via
 `.venv/Scripts/python.exe -m unittest tests.durable_checks -v`, covering WAL/FULL,
 synchronous reopen, raw invalid/failure persistence before validation, unlocked
 inference, application rollback, active-attempt blocking, completed-round
-idempotence and live SQLite backup. See [durable checks](../../../tests/durable_checks.py).
+idempotence and live SQLite backup. The expanded checks cover every scheduled
+continuation start across all five families/both sizes, exact invalid/failed and
+Unicode-invalid parent reuse, nine equality/missing-parent defects, Q queue
+reopen/release, partial raw commits, pure-effect interruption, and saver failures
+before/after checkpoint commit. Delivery exports read committed checkpoints,
+excluding the saver's durable pending writes. See [durable checks](../../../tests/durable_checks.py).
 Environment: Windows, Python 3.11.9, SQLite 3.45.1, Pydantic 2.13.5,
 LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1, core 1.6.6.
-Mixed/Q durable replay, interruption and clearing evidence is pending;
+Full source/installed regression and a reproducible trace archive are pending.
 M3-T02–T05 retain attempt termination/recovery, scheduling, accounting and
 killed-process acceptance. No inference, GPU allocation or main execution.
 

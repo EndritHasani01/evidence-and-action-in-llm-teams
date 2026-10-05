@@ -21,7 +21,7 @@ from .replay import commit_continuation_round, obtain_continuation_round
 from .rounds import (RoundResult, commit_round, deserialize_state, initial_branch,
                      prefix_snapshot, prepare_round, snapshot_bytes, validate_round)
 from .schedule import _prepare_branches
-from .storage import RecordedFailure, WorkerStore, connect, record_json, settings_json
+from .storage import WorkerStore, connect, record_json, settings_json
 from .tasks import PEERS
 
 
