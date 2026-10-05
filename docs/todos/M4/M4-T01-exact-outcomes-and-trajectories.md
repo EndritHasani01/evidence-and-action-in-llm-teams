@@ -1,6 +1,6 @@
 # M4-T01 — Exact outcomes, preservation and trajectories
 
-**Status:** in progress
+**Status:** active
 
 **Dependencies:** [M3-T05](../M3/M3-T05-crash-safe-scripted-lifecycle.md). M1–M3 must have passed.
 As of 5 October 2026, M1–M3 have passed on CPU; see the
@@ -46,4 +46,12 @@ from clean commit `54b434c`. Authority, M3 gate evidence, complete saved manifes
 raw/validated outcomes, pre-delivery states and stopped slots have been inspected.
 Focused expectations, offline commands and retained tables will be recorded here
 after verification. M4's remaining analysis/report gate stays open.
+
+Checkpoint `bd255db` implements the pure scoring/coordinate/trajectory core.
+`python -S -m unittest tests.test_evaluate -q` now passes 24 focused checks,
+including saved-record decoding, exact parent joins, nested peer/world/family
+rates, six annotation labels and overlaps, read-only workers, exclusive JSON/gzip
+exports and the offline CLI's complete 1,178-slot development join. These checks
+block optional runtime/model imports. Integrated retained-bundle reproduction
+and complete regression evidence are still pending.
 

@@ -1,4 +1,4 @@
-"""CPU validation and population/schedule preparation; no inference or accepted freeze."""
+"""CPU validation, preparation and offline analysis; no inference or accepted freeze."""
 
 import argparse
 import json
@@ -48,6 +48,13 @@ def main() -> int:
     status.add_argument("--stage", choices=("development", "main"), default="development")
     status.add_argument("--count", choices=(60, 40), type=int, default=60)
     status.add_argument("--json", action="store_true", help="include every scheduled slot, parent, cost and resumable branch")
+    analyze = commands.add_parser("analyze", help="offline exact outcomes, coordinate diagnostics and trajectories")
+    analyze.add_argument("--manifest", required=True, type=Path)
+    analyze.add_argument("--schedule", required=True, type=Path)
+    analyze.add_argument("--worker", action="append", required=True, type=Path, help="authoritative workers only; missing files leave unknown slots")
+    analyze.add_argument("--stage", choices=("development", "main"), default="main")
+    analyze.add_argument("--count", choices=(60, 40), type=int, default=60)
+    analyze.add_argument("--output", required=True, type=Path, help="new derived JSON or JSON.gz table export")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
         command.add_argument("--authoritative", type=Path, help="saved population authority for exact input/configuration equality")
@@ -60,6 +67,21 @@ def main() -> int:
     validate.add_argument("--core-only", action="store_true",
                           help="run dependency-free core checks only; excludes strict reply validation")
     args = parser.parse_args()
+    if args.command == "analyze":
+        from .evaluate import evaluate_run, write_evaluation
+        from sqlite3 import Error as SQLiteError
+        try:
+            population = load_population(args.manifest)
+            schedules = load_schedules(args.schedule, population)
+            worlds = population.development if args.stage == "development" else population.worlds(args.count)
+            branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
+            tables = evaluate_run(worlds, branches, args.worker)
+            write_evaluation(args.output, tables)
+        except (OSError, ValueError, SQLiteError) as error:
+            parser.error(str(error))
+        print(f"Offline tables: {args.output}; {tables['coverage']['recorded']}/{tables['coverage']['scheduled']} recorded; "
+              f"{tables['coverage']['unknown']} unknown. No inference; scripted data are validation evidence.")
+        return 0
     if args.command == "status":
         from .accounting import format_status, progress_snapshot
         try:

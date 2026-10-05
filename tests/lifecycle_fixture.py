@@ -124,6 +124,7 @@ def stable_progress(snapshot):
 def offline_preview(worlds, branches, paths):
     """Minimal independent replay of slot outcomes/footprints, not M4 estimands."""
     from recovery.truth import changed_coordinates, exact_candidate, solve_world
+    from recovery.evaluate import candidate_payload
     records = {r["call_id"]: r for r in scientific_records(paths)["calls"]}
     by_world = {w.world_id: w for w in worlds}
     outcomes, footprints = [], []
@@ -140,7 +141,7 @@ def offline_preview(worlds, branches, paths):
             outcomes.append({"call_id": call.call_id, "generation_id": call.generation_id,
                 "status": row["status"] if row else "unexecuted",
                 "protocol_outcome": candidate["status"] if candidate else None,
-                "correct": exact_candidate(truth, candidate["value"], call.peer,
+                "correct": exact_candidate(truth, candidate_payload(truth.task, truth.size, call.peer, candidate), call.peer,
                     protocol_valid=candidate["status"] == "valid") if candidate else None})
     return {"kind": "offline CPU correctness/footprint preview; not empirical results or M4 analysis",
             "outcomes": outcomes, "footprints": footprints}
