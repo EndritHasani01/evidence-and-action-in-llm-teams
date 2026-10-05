@@ -21,14 +21,21 @@ GPU memory/capability/timing remain untested. Durable rounds now run through rea
 LangGraph/SQLite checkpoints with exact raw reply/failure reuse and branch-local
 effects. Bounded process execution and controller-death recovery enforce durable
 timeouts, one identical infrastructure retry and observed/uncertain work;
-22 attempt, 14 worker and 23 accounting checks pass in the 244-check
-source/installed CPU suites.
+18 durable, 22 attempt, 14 worker, 23 accounting and nine lifecycle checks pass
+in the 253-check source/installed CPU suites; the dependency-free core passes 81.
 Balanced local workers now access original prefix/replay parents read-only,
 execute durable controls and resume assigned checkpoints after interruption.
 Physical/policy accounting, read-only progress, allocation attribution and safe
 budget stops now pass CPU checks with synthetic allocations, historical measured
-costs and explicit unknowns. The complete M3 gate, Qwen3.5/T4 pilot and main
-experiments remain future work. See
+costs and explicit unknowns. **M3's CPU gate passes:** eleven real external
+controller kills preserve exact resumed states/deliveries, cleared fields,
+held prose and bounded retries. The fourteen-case
+[ordinary scripted bundle](tests/fixtures/scripted_lifecycle_run.zip) reproduces
+4,340 logical slots and 384 exact replay uses, with offline reconstruction and
+reopened backups. M4-T01 is ready; the full M4 analysis/report gate remains
+mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
+work. See
+[M3-T05 gate evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate),
 [M3-T04 evidence](docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence),
 [M3-T03 evidence](docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence),
 [M3-T02 evidence](docs/todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence),
@@ -69,8 +76,9 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m recovery validate
 ```
 
-Full validation includes the core, strict-reply, scripted-round, event, replay and
-local-view attainability, durable runner, bounded CPU subprocess and local worker checks. Native tokenizer/capacity admission is checked
+Full validation includes the core, strict-reply, scripted-round, event, replay,
+local-view attainability, durable runner, bounded CPU subprocess, local worker,
+accounting and externally killed lifecycle checks. Native tokenizer/capacity admission is checked
 separately with local pinned metadata. Without installation,
 `python -S -m recovery validate --core-only` runs only the dependency-free core
 subset with site packages disabled; it explicitly excludes strict replies, rounds,
