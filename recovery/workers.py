@@ -6,6 +6,7 @@ delivery effects are copied. Placement/order never assign scientific seeds.
 M5 supplies the accepted factories and authorization; M3 tests use CPU scripts.
 """
 
+from contextlib import contextmanager
 from dataclasses import asdict, dataclass
 import json
 import multiprocessing as mp
@@ -44,6 +45,38 @@ class Work:
 
 class WorkerInterrupted(RuntimeError):
     """The exclusive owner stopped; restart it before continuing assigned work."""
+
+
+@contextmanager
+def _own_file(path):
+    """An OS lock enforces one writer even after a controller/worker restart.
+
+    This one-byte sidecar stores no status, PID, replies or peer state. The OS
+    releases ownership when a killed process exits; no stale lease is guessed.
+    """
+    with Path(str(path) + ".owner").open("a+b") as lock:
+        lock.seek(0, os.SEEK_END)
+        if lock.tell() == 0:
+            lock.write(b"\0")
+            lock.flush()
+        lock.seek(0)
+        try:
+            if os.name == "nt":
+                import msvcrt
+                msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+                fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError as error:
+            raise WorkerInterrupted(f"preceding exclusive worker still owns {path}") from error
+        try:
+            yield
+        finally:
+            lock.seek(0)
+            if os.name == "nt":
+                msvcrt.locking(lock.fileno(), msvcrt.LK_UNLCK, 1)
+            else:
+                fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
 
 def _process_alive(pid):
@@ -105,8 +138,8 @@ def _worker(spec, paths, worlds, branches, tokenizer_factory, settings, bounds, 
         dependencies = tuple(p for p in paths if p != Path(spec.database).resolve())
         by_world = {w.world_id: w for w in worlds}
         by_branch = {b.branch_id: b for b in branches}
-        with DurableRunner(spec.database, tokenizer, provider, dependencies=dependencies,
-                           invocation_order=order) as runner:
+        with _own_file(spec.database), DurableRunner(spec.database, tokenizer, provider, dependencies=dependencies,
+                                                    invocation_order=order) as runner:
             connection.send(("ready", os.getpid()))
             while True:
                 command = connection.recv()
@@ -192,10 +225,11 @@ class LocalScheduler:
         try:
             for path in self.paths:
                 path.parent.mkdir(parents=True, exist_ok=True)
-                if path.exists():
-                    self._confirm_provider_exit(path)
-                with DurableRunner(path, None) as runner:
-                    runner.store.bind_run(self.worlds, self.branches, self.settings, self.bounds)
+                with _own_file(path):
+                    if path.exists():
+                        self._confirm_provider_exit(path)
+                    with DurableRunner(path, None) as runner:
+                        runner.store.bind_run(self.worlds, self.branches, self.settings, self.bounds)
             self.readers = [WorkerReader(path) for path in self.paths]
             self.status()  # Reject old drift/duplicate ownership before providers can run.
             for index in range(len(self.specs)):

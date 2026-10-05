@@ -243,6 +243,20 @@ class SchedulingTests(unittest.TestCase):
                            tokenizer_factory, settings=SETTINGS)
         self.assertFalse(any(Path(self.temp.name).glob("*.sqlite")))
 
+    def test_second_controller_cannot_open_an_idle_exclusive_worker_or_start_duplicate_calls(self):
+        directory = Path(self.temp.name) / "exclusive"
+        with self.scheduler(directory) as owner:
+            before = owner.status()
+            self.assertTrue(all(reader.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0] == 0
+                                for reader in owner.readers))
+            with self.assertRaisesRegex(WorkerInterrupted, "exclusive worker"):
+                with self.scheduler(directory):
+                    pass
+            self.assertEqual(owner.status(), before)
+            owner.run()
+            self.assertEqual(sum(reader.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0]
+                                 for reader in owner.readers), 72)
+
     def test_interrupted_q_worker_resumes_assigned_checkpoint_with_one_retry_and_no_duplicate_effects(self):
         baseline = Path(self.temp.name) / "baseline"
         with self.scheduler(baseline) as scheduler:
