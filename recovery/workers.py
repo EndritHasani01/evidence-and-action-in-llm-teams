@@ -21,6 +21,7 @@ import traceback
 from .attempts import ProcessProvider, _die_with_owner
 from .manifests import load_population, load_schedules
 from .populations import FAMILIES
+from .rounds import deserialize_state
 from .runner import DurableRunner, WorkerReader
 from .schedule import _prepare_branches, dependency_order
 from .storage import record_json, seconds, settings_json
@@ -475,6 +476,8 @@ class LocalScheduler:
                 raise WorkerInterrupted(f"worker {index} exited; restart its assigned work")
         idle = [(self.cursor + i) % len(self.specs) for i in range(len(self.specs))
                 if (self.cursor + i) % len(self.specs) not in self.inflight]
+        if not idle:
+            return ()
         ready = sorted((w for w in self.status() if w.status == "runnable"),
                        key=lambda w: (w.next_round, self.rank[w.branch_id]))
         admitted = []
@@ -562,7 +565,9 @@ def scheduled_work(worlds, branches, readers, *, settings, inflight=None, revers
                 if (values["branch_json"] != record_json(asdict(branch))
                         or values["settings_json"] != settings_json(settings)):
                     raise ValueError("worker checkpoint schedule/settings differ")
-                state = reader.state(branch_id)
+                # Metadata and peer state come from the same saved checkpoint;
+                # a second saver read can observe a newer worker transition.
+                state = deserialize_state(values["committed"])
                 r = state.last_slot.round_number if state.last_slot is not None and state.last_slot.phase == state.phase else 0
             else:
                 r = 0

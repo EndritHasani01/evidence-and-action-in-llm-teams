@@ -51,3 +51,13 @@ persistence layer or scientific/configuration change is needed.
 **Evidence:** Acceptance not yet recorded. These are deterministic runtime checks,
 not pilot or empirical results. M3 remains open until the checks pass.
 
+Focused validation now covers every requested killed-controller boundary,
+cross-worker mixed/Q replay, retry exhaustion, reset persistence and synthetic
+budget stop/resume. The eight focused lifecycle checks pass individually; the
+complete two-size fixture, retained bundle and full regressions remain pending.
+The large fixture exposed redundant scheduler checkpoint reads. Removing the
+second state read and avoiding readiness scans while all workers are busy passes
+all 14 existing worker checks (`m3-t05-worker-regression.log` in the host temporary
+directory). The fixture is being restarted with that change; the superseded
+incomplete fixture is not acceptance evidence.
+
