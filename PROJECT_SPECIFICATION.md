@@ -6,7 +6,11 @@ Final authoritative specification · 5 October 2026
 
 This document governs implementation, execution, evaluation, and reporting. It supersedes conflicting instructions in [FINAL_PROJECT_SPECIFICATION_PLAN.md](research/06_final_design/FINAL_PROJECT_SPECIFICATION_PLAN.md), the numbered blueprint, research/addition directories, old configurations, and dependency lists. Those artifacts preserve the design history and supporting evidence; they are not additional requirements.
 
-**Status:** the repository contains SILO source/data audits and deterministic information/update probes. The recovery runner, new state transformations, hardware/capability pilot, main inference, and empirical results remain unexecuted. Existing reference tests do not validate this experiment.
+**Status:** M1–M2 are implemented and verified on CPU: exact worlds/schedules,
+permitted views, scripted state/retention/delivery/replay, attainability and native
+token capacity. Durable runner integration, the hardware/capability pilot, main
+inference and empirical results remain unexecuted. Scripted/reference outcomes
+are protocol evidence, not model-capability or experimental recovery results.
 
 ## 1. Research purpose and design
 

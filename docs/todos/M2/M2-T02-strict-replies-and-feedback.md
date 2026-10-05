@@ -32,6 +32,11 @@ A complete reply receives one deterministic protocol-valid/invalid result, with 
 
 ## Validation and evidence
 
+The evidence below records this task's original 4 October 2026 completion.
+M2-T06 renewed its request archives and affected checks after the authorized
+5 October renderer/protocol revision; see the renewal at the end. Original
+measurements and handoff status are historical, not current gate claims.
+
 Test duplicate keys at every nesting level, nonfinite/huge exponent tokens, coercions, wrong lengths, BFS key "01", extra fields, self/unknown/duplicate recipients, stale/unheld refs, repeated lawful refs, per-recipient distinct-reference limits and aggregate prose limits. Include a valid candidate with one invalid send, wrong but valid integers, complete cap-ending JSON, malformed outputs below/at cap, failed slots, and feedback sentinel leaks. Preserve repeated delivery attempts for later accounting.
 
 **Evidence:** Implementation started 4 October 2026 from clean commit `fd44e57`.
@@ -147,3 +152,13 @@ input/schedule fixtures, renderer/request fixture, vendor and research remain
 unchanged. The new 20-case reply fixture has canonical UTF-8/LF bytes. The only
 new runtime dependency is the specification's Pydantic 2 schema layer.
 
+
+## Renewal under M2-T06
+
+On 5 October 2026, the finalized literal-block renderer, column metadata,
+footer and scalar-message boundary passed this task's 7 native checks.
+Its canonical archive was renewed and reproduced in a fresh hash-seed-37
+process; source and installed-library validation also passed. Current
+archive measurements are in the [fixture instructions](../../../tests/fixtures/README.md).
+[M2-T06 completion](M2-T06-attainability-and-capacity.md#completion-and-m2-gate)
+records the full validation, complete capacity admission and M2 gate.

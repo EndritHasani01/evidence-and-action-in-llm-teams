@@ -33,6 +33,11 @@ Mixed and Q branches consume exact parent first-round records and reconstruct th
 
 ## Validation and evidence
 
+The evidence below records this task's original 4 October 2026 completion.
+M2-T06 renewed its request archives and affected checks after the authorized
+5 October renderer/protocol revision; see the renewal at the end. Original
+measurements and handoff status are historical, not current gate claims.
+
 Include invalid parents, failed parents, mixed source-plus-prose sends, text-only sends, no prose, duplicate attempts, tombstones and deliberately mismatched requests/settings/seeds/views. Assert branch-local mixed assembly, round-two source/own-reply equality, no hidden held-text sentinel, chronological release, no duplicate history and unchanged parent/sibling states.
 
 **Evidence:** Implementation, exact-parent comparisons, native queue traces and
@@ -176,3 +181,13 @@ The replay archive's canonical bytes and four-prefix/54-round/216-request/
 confirms the protected scientific/configuration/authority/reference artifacts
 listed above are unchanged.
 
+
+## Renewal under M2-T06
+
+On 5 October 2026, the finalized literal-block renderer, column metadata,
+footer and scalar-message boundary passed this task's 5 native checks.
+Its canonical archive was renewed and reproduced in a fresh hash-seed-37
+process; source and installed-library validation also passed. Current
+archive measurements are in the [fixture instructions](../../../tests/fixtures/README.md).
+[M2-T06 completion](M2-T06-attainability-and-capacity.md#completion-and-m2-gate)
+records the full validation, complete capacity admission and M2 gate.

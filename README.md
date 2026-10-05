@@ -12,12 +12,14 @@ for both declared sizes. Complete main/development schedules and replay dependen
 also pass independent CPU checks. M1's gate is passed. Permitted peer views,
 lossless request rendering, strict whole-reply validation, synchronous
 scripted rounds/drained prefixes, literal event/retention/receipt boundaries and
-exact mixed/Q replay and local-view attainability pass 163 CPU checks plus
-32 native verification checks. **M2 is blocked at capacity:** both declared sizes
-have reachable requests exceeding 8,192 tokens; literal surrogate prose also
-exposes a tokenizer gap. Neither size is admitted. The durable workflow,
+exact mixed/Q replay and local-view attainability pass 167 CPU checks plus
+37 native verification checks. **M2's CPU gate passes:** the authorized literal
+layout preserves retained work within a complete 261,388-token upper bound,
+including output reserve, under the uniform 262,144 limit. Unpaired message
+surrogates are bounded whole-reply schema failures. Both sizes are CPU-admitted;
+GPU memory/capability/timing remain untested. The durable workflow,
 Qwen3.5/T4 pilot and main experiments remain future work. See
-[M2-T06 blocked evidence](docs/todos/M2/M2-T06-attainability-and-capacity.md#blocked-handoff-and-required-decision),
+[M2-T06 completion evidence](docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate),
 [M2-T05 evidence](docs/todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff),
 [M2-T04 evidence](docs/todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff),
 [M2-T03 evidence](docs/todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff),
@@ -154,9 +156,9 @@ round-two prose at the round-three boundary. Existing history order is preserved
 queues/deliveries, including zero for inactive Q; it rejects unexecuted recovery
 and uncommitted rounds. No queue data enters a peer view.
 The [replay archive](tests/fixtures/README.md#exact-parent-replay-and-delayed-prose)
-records 72 exact parent comparisons and complete Q release traces. Use these
+records 104 exact parent comparisons and complete Q release traces. Use these
 scheduled obtain/commit steps for continuation execution; `rounds.py` provides
-the underlying pure operations. Complete capacity is blocked in M2-T06; durable
+the underlying pure operations. Complete CPU capacity passes in M2-T06; durable
 reply persistence/checkpoints remain M3.
 
 ## Protocol attainability and capacity
@@ -170,15 +172,17 @@ all families/sizes and scheduled siblings/repeats/controls, including L forwardi
 F reacquisition, receipts and mixed/Q replay. Candidate/control/own-shard outputs
 fit 384 tokens at both sizes. This establishes attainability, not LLM capability.
 
-Complete capacity fails. A permitted invalid 384-token reply retained after one
-actual scripted round makes the next request use 14,642 target / 14,349 fallback
-tokens including the output reserve, above 8,192. The
-[capacity report](tests/fixtures/README.md#complete-capacity-failure-evidence)
-retains the exact counterexamples, full-horizon accounting/adversarial views,
-failed simple lossless layouts and a separate unpaired-surrogate gap. The live
-renderer preserves literal history and rejects overflow. The specification and
-default configuration are unchanged; an explicit protocol resolution is needed
-before M2 closes.
+The original 8,192-token regime failed with reachable 14,642 target / 14,349
+fallback totals. Its [negative archive](tests/fixtures/capacity_report_8192_original.json.gz)
+is preserved. The user-authorized remedy renders literal history blocks with
+column labels and a footer protecting trailing whitespace. The
+[complete proof](docs/implementation-research/m2-t06-capacity-proof.md) audits the
+loaded vocabulary, Unicode normalization and full horizon: at most 261,388 tokens
+including all 384 output tokens, within 262,144 uniformly. The renewed
+[capacity report](tests/fixtures/README.md#complete-capacity-admission)
+admits both sizes with 80 adversarial envelopes; observed maxima alone are not
+the proof. The scalar-message guard preserves raw invalid replies without effects.
+No truncation, answer repair or retention/population change is introduced.
 
 ```powershell
 python -m unittest tests.attainability_checks -q
@@ -188,9 +192,10 @@ python -m tests.tokenizer_capacity --tokenizer "$env:TEMP/recovery-capacity-wr5y
 
 The native commands require the locally downloaded pinned tokenizer metadata
 described in [M2-T06](docs/todos/M2/M2-T06-attainability-and-capacity.md#reproduction-environment-and-commands).
-All six capacity verification checks pass, then that command deliberately exits
-**1** for failed admission; exit **2** means a verification check failed. CPU
-validation passing does not override this native gate. No GPU use is admitted.
+All eight capacity checks pass and the command exits **0** for CPU admission;
+exit **1** means failed admission and **2** means failed verification. M5 still
+must establish worst-context memory/headroom, capability and timing after M3–M4.
+No GPU use or accepted freeze is admitted by these CPU results.
 
 The [independent references and attributed fixtures](tests/fixtures/README.md)
 validate task truth, not model capability, native SILO scores or recovery effects.
@@ -293,7 +298,8 @@ recovery remain untested.
 ## Permitted peer views and exact requests
 
 [state.py](recovery/state.py) owns immutable permitted views; [prompts.py](recovery/prompts.py)
-renders them as one user turn with labeled JSON data. The host projects an ordinary
+renders them as one user turn with structural JSON and labeled literal history.
+The host projects an ordinary
 `World` into a private peer shard or a complete-world control. The renderer itself
 accepts only `PeerView`, with no evaluator, schedule, condition or delayed queue.
 
@@ -320,11 +326,12 @@ replay transformations are implemented by the interfaces above.
 
 `tokenize_request` applies the injected native non-thinking template, preserves its
 exact text, token IDs and attention mask, and reserves all 384 output tokens inside
-8,192. Oversized requests fail without truncation. `dataclasses.asdict`/ordinary
+262,144. Oversized requests fail without truncation. `dataclasses.asdict`/ordinary
 JSON can save the request and token record in the later call ledger.
 The [seven retained short request/token fixtures](tests/fixtures/README.md#permitted-peer-requests-and-tokenizer-inputs)
 and [native tokenizer harness](tests/tokenizer_peer_views.py) verify literal archive
 preservation and exact native inputs. M2-T01's original 79-check CPU suite and
-five native-tokenizer checks passed; the current 163 CPU/32 native checks include
-the subsequent protocol, round, event, replay, witness and capacity-failure
-evidence. Complete worst-context admission is blocked in M2-T06.
+five native-tokenizer checks passed; the current 167 CPU/37 native checks include
+renewed protocol, round, event, replay, witness and complete CPU capacity evidence.
+Native NFC is recorded separately from exact rendered text; the host preserves
+archived strings. Hardware admission remains M5.

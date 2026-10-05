@@ -33,6 +33,11 @@ Each event and retention policy creates exactly its prescribed starting state fr
 
 ## Validation and evidence
 
+The evidence below records this task's original 4 October 2026 completion.
+M2-T06 renewed its request archives and affected checks after the authorized
+5 October renderer/protocol revision; see the renewal at the end. Original
+measurements and handoff status are historical, not current gate claims.
+
 Run the plan's L/B, B/C/K/mask, C/F, sham and receipt differential fixtures, including wrong/invalid fourth-round candidates and richer earlier candidates that must not be backfilled. Test old values in retained prose, remote acquired evidence, unknown replacements, tombstones and nested mutations. Include CPU v1→v2→v3 authority tests without introducing a live second revision or new arms.
 
 **Evidence:** Implementation, boundary snapshots, paired native renders and
@@ -163,3 +168,13 @@ The new archive is canonical UTF-8/LF. Git comparison against prerequisite
 `7f56c1b` confirms the protected scientific/configuration/authority/reference
 artifacts listed above are unchanged.
 
+
+## Renewal under M2-T06
+
+On 5 October 2026, the finalized literal-block renderer, column metadata,
+footer and scalar-message boundary passed this task's 4 native checks.
+Its canonical archive was renewed and reproduced in a fresh hash-seed-37
+process; source and installed-library validation also passed. Current
+archive measurements are in the [fixture instructions](../../../tests/fixtures/README.md).
+[M2-T06 completion](M2-T06-attainability-and-capacity.md#completion-and-m2-gate)
+records the full validation, complete capacity admission and M2 gate.

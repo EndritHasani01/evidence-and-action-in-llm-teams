@@ -85,6 +85,11 @@ of `load_population(..., authoritative=saved_population)` / `--authoritative`.
 
 ## Permitted peer requests and tokenizer inputs
 
+All native request archives below were renewed on 5 October 2026 under M2-T06's
+literal blocks, column-labeled metadata and fixed footer. The finalized renderer
+preserves raw text separately from native NFC tokenization. Prerequisite task
+documents retain their original dated measurements; current counts are here.
+
 [peer_requests.json](peer_requests.json) holds seven short scripted peer cases:
 ordinary/disclosed historical receipts, a compact wrong result, compact candidate
 absence, an unknown replacement edge, a known tombstone, and a retained valid
@@ -112,17 +117,17 @@ or an accepted M5 inference freeze.
 
 | Scripted case | Input tokens | Reserved output |
 |---|---:|---:|
-| Ordinary receipt | 1,830 | 384 |
-| Disclosed receipt | 1,826 | 384 |
-| Compact wrong result | 1,667 | 384 |
-| Compact absence | 1,604 | 384 |
-| Pending edge | 757 | 384 |
-| Known tombstone | 801 | 384 |
-| Retained valid reply | 1,578 | 384 |
+| Ordinary receipt | 1,743 | 384 |
+| Disclosed receipt | 1,739 | 384 |
+| Compact wrong result | 1,570 | 384 |
+| Compact absence | 1,507 | 384 |
+| Pending edge | 774 | 384 |
+| Known tombstone | 799 | 384 |
+| Retained valid reply | 1,502 | 384 |
 
-These measurements establish short-case behavior only. Complete worst retained
-contexts, legal reply/message capacity and attainability remain M2-T06. The
-renderer rejects overflow instead of shortening retained work.
+Six native checks establish short-case behavior and literal-block preservation.
+Complete retained-context capacity and attainability are verified separately in
+M2-T06 below. The renderer rejects overflow instead of shortening retained work.
 
 In a CPU Python environment with the recorded tokenizer packages, download only
 the pinned metadata to a local folder, then verify against the retained fixture:
@@ -145,7 +150,7 @@ UTF-8/LF bytes, enforced by Git attributes.
 
 ## Strict replies and actual tokenizer limits
 
-[protocol_replies.json](protocol_replies.json) saves 20 synthetic adversaries
+[protocol_replies.json](protocol_replies.json) saves 23 synthetic adversaries
 and outcomes from [tokenizer_protocol.py](../tokenizer_protocol.py). Each generated
 case retains literal text, every generated token ID, termination and the separate
 known-truncation flag. Results include reached JSON/schema/permission checks,
@@ -175,7 +180,9 @@ installed CPU protocol checks; these observed environments are not the M5 lock.
 Other cases cover duplicate reply/reference keys, nonfinite exponents, boolean
 candidate values, stale references, escaped literal prose, unexpected special
 markers, malformed output below the cap, wrong but structurally valid integers,
-and failed slots. All fixed public feedback passes the actual 32-token cap.
+and failed slots. Seven native checks also verify whole-reply rejection of
+unpaired decoded surrogates before effects, valid escaped pairs, controls and
+combining strings. All fixed public feedback passes the actual 32-token cap.
 Blanket special-token removal is shown to change an invalid reply into valid JSON;
 the validator performs no stripping, cleanup or repair. The final inference
 boundary must separately audit any permitted terminal transport framing in M5.
@@ -223,11 +230,11 @@ The fixture uses the same pinned Qwen3.5-9B revision and CPU packages listed
 above. Three native checks reproduce the complete saved trace, verify both
 physical orders over all five families/both sizes/all eight rounds, and check
 actual rendered exposure and final prefix drain. These scripted requests use
-699–3,912 input tokens plus the full 384-token output reserve; generated outputs
+716–3,574 input tokens plus the full 384-token output reserve; generated outputs
 use 0–243 tokens. These are observed fixture ranges, not a bound on every legal
 retained context, a local-view attainability witness, model capability or M5
-admission. Event/retention, exact mixed/Q controls and complete capacity remain
-M2-T04–T06; durable calls and process-crash checks remain M3.
+admission. Event/retention, exact mixed/Q controls and complete capacity are
+verified separately in M2-T04–T06; durable calls and process-crash checks remain M3.
 
 ```powershell
 python -m unittest tests.round_checks -v
@@ -260,7 +267,7 @@ tokens for Prefix Sum and three fewer for Sort than the ordinary absence
 wording. No padding is added and these are interface-package costs, not a
 claim of a pure information effect or a general token bound.
 
-Native boundary requests across all families/sizes use 736–3,218 input tokens
+Native boundary requests across all families/sizes use 753–2,924 input tokens
 with 384 reserved output tokens; scripted prefix replies use 3–269 tokens.
 Four native checks verify exact fixture reproduction, disclosure differences,
 mixed-parent request equality, and ordinary four-round accumulation after the
@@ -284,9 +291,10 @@ normal validation only reads the saved UTF-8/LF fixture. See
 ## Exact parent replay and delayed prose
 
 [replay_traces.json](replay_traces.json), reproduced by
-[tokenizer_replay.py](../tokenizer_replay.py), retains four original prefixes
-(Sort target and BFS fallback, worlds 1 and 2), 54 scripted continuation rounds, 216 exact
-permitted/rendered/native requests and 72 explicit parent comparisons. Both
+[tokenizer_replay.py](../tokenizer_replay.py), retains five original prefixes
+(Sort target and BFS fallback worlds 1/2, plus Unicode Sort target world 3),
+78 scripted continuation rounds, 312 exact permitted/rendered/native requests
+and 104 explicit parent comparisons. Both
 events include B/C first rounds, both complementary masks and complete Q_B/Q_C
 horizons. Two additional source-only Q cases record zero held prose and retain
 their own B/C parent records on distinct saved world IDs. The archive-wide join
@@ -301,11 +309,13 @@ Round-two Q current sources, own reply and source metadata equal the parent;
 held prose is absent from requests. At the round-three boundary its stable IDs
 release before new round-two prose without moving already-seen history.
 Invalid/failed outcomes, duplicate references and BFS tombstones remain literal.
+The Unicode case reuses exact invalid parents containing unpaired message
+escapes; their raw text/IDs persist without source/prose effects or backfill.
 
-Four native checks reproduce the archive and exercise both masks across all
+Five native checks reproduce the archive and exercise both masks across all
 five families, both sizes, revision/sham and extra continuation replicates.
 The same pinned Qwen3.5-9B tokenizer revision and CPU packages as above produce
-921–3,350 input tokens plus the full 384 output reserve, and 6–134 output tokens
+869–2,992 input tokens plus the full 384 output reserve, and 6–134 output tokens
 in this archive. These are observed scripted ranges, not complete capacity,
 durability, model capability or empirical recovery evidence.
 
@@ -315,7 +325,7 @@ python -m tests.tokenizer_replay --tokenizer $peerTokenizerDir
 ```
 
 `--write-fixture <new_replay_traces.json>` exclusively creates a new archive;
-normal checks only read the retained UTF-8/LF file. The 18 CPU replay checks
+normal checks only read the retained UTF-8/LF file. The 19 CPU replay checks
 also cover mismatches, missing versus failed parents, no-placeholder visibility,
 source/prose ordering, later acquisition divergence, inactive/empty text, nested
 isolation and four replayed plus twelve new opportunities per branch. See
@@ -338,7 +348,7 @@ Every final prefix/continuation is jointly correct, including L replacement
 forwarding, F reacquisition, preserving/sham siblings, receipts and mixed/Q replay.
 Four native checks reproduce the archive, verify actual output contracts,
 recompute answers from archived local inputs and audit unique parents/Q release.
-The actual witness uses 699–4,915 input tokens plus 384 reserved output and
+The actual witness uses 716–4,229 input tokens plus 384 reserved output and
 20–195 output tokens. Candidate/control/own-shard width fixtures use at most
 210 tokens at target and 162 at fallback. These establish protocol attainability;
 they establish neither complete capacity nor model capability.
@@ -358,40 +368,70 @@ python -m tests.tokenizer_attainability --tokenizer "$env:TEMP/recovery-capacity
 `--write-fixture <new.json.gz>` exclusively creates a new compressed archive.
 The gzip payload is canonical UTF-8/LF JSON with `mtime=0`; normal validation
 reads it without changing it. Compression reduces only the offline fixture
-(31 MB uncompressed, 714 KB compressed), never model-visible history. See
+(31.4 MB uncompressed, 714 KB compressed), never model-visible history. See
 [M2-T06 evidence](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#validation-and-evidence).
 
 ## Complete capacity failure evidence
 
-[capacity_report.json.gz](capacity_report.json.gz), reproduced by
-[tokenizer_capacity.py](../tokenizer_capacity.py), retains ten task/size accounting
+[capacity_report_8192_original.json.gz](capacity_report_8192_original.json.gz)
+preserves the original report from commit `ed86f1b`, before the authorized remedy.
+It retains ten task/size accounting
 rows, 30 adversarial rendered views, two reachable round-two counterexamples,
 three ordinary lossless-layout probes, literal special-string delivery and an
 unpaired-surrogate tokenizer gap. Requests, local views, physical own IDs and
 actual input counts are retained; no model was loaded or sampled.
 
-All six native verification checks pass. **The capacity command then exits 1**
-because neither requested size is admitted. Exit 2 denotes a failed verification
+All six original native verification checks passed. **That version's capacity
+command exited 1** because neither requested size was admitted. Exit 2 denotes a failed verification
 check; a regression check reproducing an overflow does not establish capacity.
 One permitted invalid 384-token reply plus lawful incoming prose gives 14,258
 target / 13,965 fallback input tokens before the full 384 output reserve. The
-production path rejects these without truncation. The report also identifies
+original production path rejected these without truncation. The report also identifies
 ASCII escaping, re-encoding expansion, NFC prose accounting, 200-digit valid
 mistakes, complete fixed fields/feedback and literal Q history counts. Its
 conservative bounds are deliberately loose, never used as a passing proof.
 
+Reproduction of this historical negative regime requires its original code at
+`ed86f1b`; the current command reads the renewed positive report below. See the task's
+[accounting and failure argument](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#capacity-accounting-and-exact-failure)
+and [original blocked handoff](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#blocked-handoff-and-required-decision).
+
+## Complete capacity admission
+
+[capacity_report.json.gz](capacity_report.json.gz), reproduced by
+[tokenizer_capacity.py](../tokenizer_capacity.py), is the current capacity evidence.
+It retains ten family/size bounds, 80 adversarial envelopes, both former reachable
+counterexamples, the original three layout probes, special-string delivery and
+the bounded scalar-message failure. The loaded-vocabulary/Unicode audit covers
+all 248,077 entries, including seven tokens added by tokenizer configuration,
+and all Unicode scalars. It also checks all 243 unassigned output IDs decode
+empty while preserving their physical output cost.
+
+The [complete argument](../../docs/implementation-research/m2-t06-capacity-proof.md)
+bounds target by **261,388** and fallback by **259,868**, including all 384
+output tokens, within the uniform **262,144** context. Both sizes pass CPU
+admission. The former reachable overflow now uses 2,664 target / 2,409 fallback
+including reserve. Adversaries cover repeated newline/ASCII, Cyrillic/Thai
+re-encoding, split Unicode, invalid UTF-8, native special tokens and large valid
+wrong integers. Maximum observed input is 33,106; the complete bound supplies
+admission, not this measurement. Histories remain literal and are never trimmed.
+
 ```powershell
-python -m tests.tokenizer_capacity --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
 $env:PYTHONHASHSEED = '37'
+python -m tests.tokenizer_capacity --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
 python -m tests.tokenizer_capacity --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/4B"
 ```
 
-Both commands reproduce the retained evidence and deliberately return 1. The
-4B metadata are byte-identical to the pinned 9B tokenizer/template; SHA-256 checks
-use the identities established in the prerequisite investigation. The actual
-loaded template, non-thinking setting, class and CPU package versions are recorded.
-`--write-fixture <new.json.gz>` exclusively creates new canonical UTF-8/LF JSON
-inside gzip (`mtime=0`); normal checks only read the archive. Compression is
-offline storage only. See the task's
-[accounting and failure argument](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#capacity-accounting-and-exact-failure)
-and [blocked handoff](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#blocked-handoff-and-required-decision).
+Both commands pass eight native checks and return **0**. Exit 1 denotes blocked
+capacity; exit 2 denotes failed verification. A separate fresh process with hash
+seed 37 also reproduced all 37 native checks/archives. The 4B tokenizer/template
+metadata are byte-identical to the pinned 9B artifacts; immutable revision/file
+identities, actual template/class, non-thinking setting and CPU packages are
+recorded in the report. No model was loaded or sampled. GPU feasibility is open:
+static FP16 full-attention KV alone at this cap is 8 GiB, before weights, other
+state/workspace and 1.5 GiB headroom. M5 must verify memory, capability and timing.
+
+`--write-fixture <new.json.gz>` exclusively creates a new canonical UTF-8/LF JSON
+archive inside gzip (`mtime=0`); normal checks only read it. Compression is offline
+storage only. [M2-T06 completion](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate)
+records source/installed-library/core validation and closes M2's CPU gate.

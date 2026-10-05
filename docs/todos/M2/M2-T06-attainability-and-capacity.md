@@ -1,6 +1,6 @@
 # M2-T06 — Protocol attainability and complete tokenizer capacity
 
-**Status:** blocked — attainability verified; neither size passes complete capacity
+**Status:** done
 
 **Dependencies:** [M2-T05](../M2/M2-T05-mixed-and-prose-delay-replay.md). M1 must have passed before M2 work begins.
 
@@ -19,7 +19,7 @@ A locally informed scripted strategy proves the real protocol is usable within f
 - Each scripted peer forwards its own currently held shard to a different peer in the first three rounds, uses legal placeholder candidates earlier, and computes only from acquired local evidence when sufficient. The solver never sees host gold or unseen records.
 - Exercise all five families, both size contracts, local/broadcast revision, sham/preserving siblings, resets, receipts, mixed replay and Q through the real schemas and renderer. Include L replacement forwarding and F reacquisition.
 - Tokenize actual serialized team/control candidates and useful one-shard messages. The simultaneous maximum prose/reference payload need not fit, but the witness and required output contracts must fit 384 generated tokens.
-- Bound actual retained requests over the complete prefix/recovery horizon, reserving all 384 output tokens inside 8,192. Include invalid own replies, maximum received prose, feedback, labels, tables, notices/receipts, source-delivery metadata, escaping, large wrong integers and special-looking strings.
+- Bound actual retained requests over the complete prefix/recovery horizon, reserving all 384 output tokens inside the authorized 262,144-token limit (revised from 8,192 on 5 October 2026). Include invalid own replies, maximum received prose, feedback, labels, tables, notices/receipts, source-delivery metadata, escaping, large wrong integers and special-looking strings.
 - Use both an accounting argument and adversarial rendered fixtures. Q release cannot duplicate retained history. The research's illustrative context and correct-output examples are not a worst-case proof.
 
 ## Completion criteria
@@ -31,6 +31,13 @@ A locally informed scripted strategy proves the real protocol is usable within f
 - Close M2 only with all six tasks' evidence linked in the plan. This does not permit GPU use: M3 and M4 must also pass.
 
 ## Validation and evidence
+
+The evidence through the original blocked handoff below records the pre-revision
+implementation at commit `ed86f1b`. Its negative report is preserved separately
+as `capacity_report_8192_original.json.gz`; the original commands/counts describe
+that version. The authorized remedy section records current implementation and
+supersedes the old gate status. The current capacity command uses the renewed
+positive report, not the historical archive.
 
 Retain the local-view witness trace, per-shape token table, tokenizer/template identity, worst-case accounting and adversarial input/output fixtures. Recheck visibility, synchrony, retention and replay against the finalized renderer where it changed. Show requested versus admitted sizes and the command/environment for every capacity result.
 
@@ -126,7 +133,7 @@ capacity fixtures. Simultaneous maximum references/prose is not required to fit.
 
 [tokenizer_capacity.py](../../../tests/tokenizer_capacity.py) retains the complete
 calculation and 30 rendered adversarial fixtures in
-[capacity_report.json.gz](../../../tests/fixtures/capacity_report.json.gz), alongside
+[capacity_report_8192_original.json.gz](../../../tests/fixtures/capacity_report_8192_original.json.gz), alongside
 two counterexamples obtained through an actual initial round. Six native checks
 pass; the command then returns **1**, deliberately reporting failed admission.
 Passing regression checks that reproduce an overflow does not pass the M2 gate.
@@ -272,7 +279,7 @@ overwriting a prior evidence archive.
 
 ## Blocked handoff and required decision
 
-**M2-T06 is implemented as CPU preparation and validation, but is not done.**
+**At the original handoff, M2-T06 was implemented as CPU preparation and validation, but was not done.**
 Attainability/output completion criteria pass; complete permitted-context
 admission fails for both sizes, with a separate unpaired-surrogate gap. M2 remains
 blocked (five of six tasks done); M3–M6 remain dependency-blocked. Prior task
@@ -301,6 +308,68 @@ candidate absence and no-effects semantics remain intact. The focused CPU suite
 passes 25 checks and native protocol suite passes seven checks, including controls,
 combining characters, escaped pairs and special-looking strings. Original negative
 evidence remains in [the original archive](../../../tests/fixtures/capacity_report_8192_original.json.gz).
-Layout/context admission and resource feasibility remain outstanding; M2 stays
-blocked and no GPU run or accepted freeze is authorized.
+The lossless literal layout, column tables and template-safe footer are now
+implemented. [The complete native proof](../../implementation-research/m2-t06-capacity-proof.md)
+bounds the full horizon by 261,388 including reserve within the uniform 262,144
+limit; all eight capacity checks admit target and fallback. Source validation
+passes 167 checks and core-only passes 81. Native rendering, protocol, barriers,
+boundaries, exact replay and witness archives are renewed; installed-library and
+fresh-process reproduction checks pass. GPU memory, capability and
+timing remain M5; no GPU run or accepted freeze is authorized.
 
+## Completion and M2 gate
+
+**M2-T06 is done; M2 is 6/6 verified on CPU.** The user-authorized pre-main
+revision preserves retained work in the finalized literal layout and raises only
+the uniform input regime; generated output (384), prose (128), feedback (32),
+rounds, populations, interventions and replay rules remain fixed.
+
+| Capacity evidence | Target | Fallback |
+|---|---:|---:|
+| Complete full-horizon input + output upper | 261,388 | 259,868 |
+| Uniform context, including all output reserve | 262,144 | 262,144 |
+| Former reachable round-two overflow, now input + reserve | 2,664 | 2,409 |
+| Correct candidate/control/own-shard output upper | 245 | 189 |
+| CPU admission | passed | passed |
+
+The [complete argument](../../implementation-research/m2-t06-capacity-proof.md)
+audits all 248,077 loaded vocabulary entries, including seven configuration-added
+tokens, every Unicode scalar using the native normalizer, and 243 unassigned output
+IDs that decode empty. Physical IDs remain recorded/charged. It derives weights
+48/45, seven own/21 received allowances and complete structural fields. These
+are proof allowances, not generated-token accounting or observed maxima.
+The [renewed capacity archive](../../../tests/fixtures/capacity_report.json.gz)
+contains all ten family/size bounds and 80 adversarial envelopes: newline/ASCII,
+Cyrillic/Thai re-encoding, split Unicode, invalid UTF-8, special tokens and large
+wrong integers. Maximum observed input is 33,106; this is not the proof.
+
+The renewed witness still records 4,340 calls and 384 exact parent joins; all
+required final answers remain correct. Input ranges are now 716–4,229 plus reserve;
+output floors/bounds are unchanged. The replay archive now has 78 rounds, 312
+requests and 104 exact parent comparisons, including persisted Unicode-invalid
+parents with no source/prose effects or candidate backfill. Length decoding,
+fake block headers, trailing controls, native template stripping and separate NFC
+representation are explicitly checked. Original failure evidence remains intact.
+
+**Executed verification:** source and actual installed-library suites each pass
+167 checks; core-only passes 81 with site packages disabled. All 37 native checks
+pass (6 renderer, 7 strict replies, 3 rounds, 4 events, 5 replay, 4 witness, 8 capacity).
+A fresh process with `PYTHONHASHSEED=37` reads/reproduces every native archive and
+independently reproduces the 9B report with 4B metadata; both capacity commands
+exit 0. `pip check`, compilation, Markdown links/anchors, task totals and
+`git diff --check` pass. Environment/revisions above remain current. The installed
+harness runs from the host temporary directory, imports the actual `.venv`
+package before adding source tests, and uses Pydantic 2.13.5. Its exhaustion test
+now supplies the source config explicitly; it does not rely on a packaged config.
+
+Reproduction uses the commands above with current archives; the historical
+8,192 report is evidence from `ed86f1b`. Installing the current package uses
+`.venv/Scripts/python.exe -m pip install --no-deps .` with normal build isolation.
+No model weights, generation, GPU allocation, pilot, accepted freeze or main run
+was used. Static FP16 full-attention KV at the cap is 8 GiB before other memory
+and 1.5 GiB headroom. M5 must verify actual resources/capability/timing; CPU
+admission does not admit a T4 configuration.
+
+**Handoff:** [M3-T01](../M3/M3-T01-durable-round-runner.md) is ready for durable
+save-before-effects integration. Progress is nine done, one ready, 19 blocked;
+M3–M4 still precede any GPU use, and execution requires separate authorization.

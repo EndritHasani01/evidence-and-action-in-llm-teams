@@ -32,6 +32,11 @@ One renderer accepts only a peer's permitted view and preserves the specified di
 
 ## Validation and evidence
 
+The evidence below records this task's original 4 October 2026 completion.
+M2-T06 renewed its request archives and affected checks after the authorized
+5 October renderer/protocol revision; see the renewal at the end. Original
+measurements and handoff status are historical, not current gate claims.
+
 Use paired worlds with hidden sentinel values and change hidden gold, future edits, condition fields, BFS endpoints and queue text independently. The unaffected peer render must remain identical. Test no duplicated raw tables/payloads, exact preservation of escaped/special-looking archived strings, explicit invalid-candidate absence, and value-independent ordering. Include notice, receipt, feedback and source-delivery metadata layouts in the audit.
 
 **Start evidence (4 October 2026):** Inspected the task contract, specification
@@ -144,3 +149,13 @@ Pydantic 2; `python -S -m recovery validate --core-only` explicitly runs the
 dependency-free subset (80 checks after the added CLI dependency regression).
 The five native renderer checks and all saved request/token fixtures still pass.
 
+
+## Renewal under M2-T06
+
+On 5 October 2026, the finalized literal-block renderer, column metadata,
+footer and scalar-message boundary passed this task's 6 native checks.
+Its canonical archive was renewed and reproduced in a fresh hash-seed-37
+process; source and installed-library validation also passed. Current
+archive measurements are in the [fixture instructions](../../../tests/fixtures/README.md).
+[M2-T06 completion](M2-T06-attainability-and-capacity.md#completion-and-m2-gate)
+records the full validation, complete capacity admission and M2 gate.
