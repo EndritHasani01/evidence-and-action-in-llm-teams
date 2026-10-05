@@ -17,8 +17,29 @@ exact mixed/Q replay and local-view attainability pass 167 CPU checks plus
 layout preserves retained work within a complete 261,388-token upper bound,
 including output reserve, under the uniform 262,144 limit. Unpaired message
 surrogates are bounded whole-reply schema failures. Both sizes are CPU-admitted;
-GPU memory/capability/timing remain untested. The durable workflow,
-Qwen3.5/T4 pilot and main experiments remain future work. See
+GPU memory/capability/timing remain untested. Durable rounds now run through real
+LangGraph/SQLite checkpoints with exact raw reply/failure reuse and branch-local
+effects. Bounded process execution and controller-death recovery enforce durable
+timeouts, one identical infrastructure retry and observed/uncertain work;
+18 durable, 22 attempt, 14 worker, 23 accounting and nine lifecycle checks pass
+in the 253-check source/installed CPU suites; the dependency-free core passes 81.
+Balanced local workers now access original prefix/replay parents read-only,
+execute durable controls and resume assigned checkpoints after interruption.
+Physical/policy accounting, read-only progress, allocation attribution and safe
+budget stops now pass CPU checks with synthetic allocations, historical measured
+costs and explicit unknowns. **M3's CPU gate passes:** eleven real external
+controller kills preserve exact resumed states/deliveries, cleared fields,
+held prose and bounded retries. The fourteen-case
+[ordinary scripted bundle](tests/fixtures/scripted_lifecycle_run.zip) reproduces
+4,340 logical slots and 384 exact replay uses, with offline reconstruction and
+reopened backups. M4-T01 is ready; the full M4 analysis/report gate remains
+mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
+work. See
+[M3-T05 gate evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate),
+[M3-T04 evidence](docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence),
+[M3-T03 evidence](docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence),
+[M3-T02 evidence](docs/todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence),
+[M3-T01 evidence](docs/todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence),
 [M2-T06 completion evidence](docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate),
 [M2-T05 evidence](docs/todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff),
 [M2-T04 evidence](docs/todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff),
@@ -43,7 +64,9 @@ Four peers perform four rounds of collaborative work before an announced factual
 ## CPU installation and validation
 
 Use Python 3.11. Strict reply validation requires Pydantic 2, declared as a CPU
-dependency. The mathematical core remains standard-library only. Inference
+dependency; durable execution also uses the declared tested LangGraph/SQLite
+packages. These CPU pins are not the M5 inference/environment freeze.
+The mathematical core remains standard-library only. Inference
 dependencies are optional and are not imported by CPU validation. From this
 source checkout, run:
 
@@ -53,13 +76,15 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m recovery validate
 ```
 
-Full validation includes the core, strict-reply, scripted-round, event, replay and
-local-view attainability checks. Native tokenizer/capacity admission is checked
+Full validation includes the core, strict-reply, scripted-round, event, replay,
+local-view attainability, durable runner, bounded CPU subprocess, local worker,
+accounting and externally killed lifecycle checks. Native tokenizer/capacity admission is checked
 separately with local pinned metadata. Without installation,
 `python -S -m recovery validate --core-only` runs only the dependency-free core
 subset with site packages disabled; it explicitly excludes strict replies, rounds,
-events, replay and attainability
+events, replay, attainability, durability, attempts and workers
 and cannot establish their gate. Full validation fails if Pydantic is unavailable.
+Full validation also requires LangGraph and its SQLite saver.
 Validation requires this checkout's tests and attributed vendor JSON. It checks
 both sizes regardless of the configured size, exits nonzero on failure, and
 never loads a model or executes an experiment.
@@ -135,7 +160,7 @@ from that original snapshot. Public notices invalidate stale sources; unknown
 replacement content stays pending. K keeps the actual fourth-slot result or
 absence and preserves it as labeled history when a new outcome replaces the
 latest candidate. `BranchState.boundary_applied` derives from persistent notices
-and survives serialization; durable apply-once execution remains M3.
+and survives serialization; M3-T01 now commits that boundary once in its new thread.
 The [boundary archive](tests/fixtures/README.md#event-boundaries-and-receipt-pairs)
 records paired renders and actual receipt token costs. Mixed and Q initial
 requests match their prescribed B/C parents.
@@ -157,9 +182,113 @@ queues/deliveries, including zero for inactive Q; it rejects unexecuted recovery
 and uncommitted rounds. No queue data enters a peer view.
 The [replay archive](tests/fixtures/README.md#exact-parent-replay-and-delayed-prose)
 records 104 exact parent comparisons and complete Q release traces. Use these
-scheduled obtain/commit steps for continuation execution; `rounds.py` provides
-the underlying pure operations. Complete CPU capacity passes in M2-T06; durable
-reply persistence/checkpoints remain M3.
+scheduled obtain/commit steps through [runner.py](recovery/runner.py) for durable
+execution; `rounds.py` provides the underlying pure operations. Complete CPU
+capacity passes in M2-T06.
+
+`DurableRunner(path, tokenizer, ProcessProvider(factory))` serially owns one worker
+file. The importable factory loads a resident inference provider in a spawned
+child, receiving only permitted inputs for each independent call. Use
+`scripted=True` with direct providers only for deterministic CPU fixtures.
+`start(prepared_world, scheduled_branch, settings=...)` durably initializes a
+prefix or deep-forked event boundary. `run_round(branch_id, round_number)` obtains
+the four exact calls, then commits branch-local delivery with synchronous
+checkpoints. Repeating that explicit round returns its committed result. The
+provider receives only the permitted view, literal rendered/native request,
+saved seed and fresh settings. Exact raw replies/final failures live in
+[storage.py](recovery/storage.py); logical replay points to its physical parent
+without duplicating raw outcomes. The default 120-second attempt bound includes
+loading and communication; terminate/kill each have a one-second grace. Known
+timeouts are saved before termination and never retried. Restart after a stopped
+owner records uncertain completion and allows at most one identical-request
+infrastructure retry; completed outcomes always win. Durable heartbeats and
+process loading/idle intervals retain work for later accounting. `state`, `result` and `deliveries` read
+committed checkpoints, and `backup` uses SQLite's backup API, including live WAL.
+The [durable archives](tests/fixtures/README.md#durable-round-runner-traces)
+reproduce CPU-counter and native-tokenizer execution without model inference.
+The [failure archive](tests/fixtures/README.md#bounded-attempt-and-process-failure-traces)
+adds measured CPU hangs, timeout/termination and actual controller-kill recovery.
+
+## Resource accounting and read-only status
+
+[accounting.py](recovery/accounting.py) derives logical/generation/attempt joins,
+policy costs, allocation, forecasts, matched coverage and resumable work from
+saved schedules and worker files. It uses no evaluator correctness or progress
+database. Invalid replies and recorded failures count as finished work;
+unexecuted slots remain unknown. Each continuation's cost includes its original
+16-call prefix and all 16 continuation uses, including measured replay-parent
+attempts and F's abandoned prefix. Unknown durations/output tokens and absent
+memory measurements stay explicit.
+
+```powershell
+.venv/Scripts/python.exe -m recovery status --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite
+.venv/Scripts/python.exe -m recovery status --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 40 --json
+```
+
+These commands only read; missing worker files are unknown work and are never
+created. JSON includes every scheduled slot/parent and resumable branch. Add
+`--prior-worker <path>` for every worker file from earlier measured development
+or failed configurations. Historical allocation remains charged once; only
+matching saved generation settings supply timing samples. Physical IDs are
+scoped by the existing saved settings when configurations differ. Repeated
+copies of the same physical records are rejected.
+
+`LocalScheduler(..., report=terminal_progress)` reports call/round transitions
+and bounded heartbeats while `run`/`advance` operates. Import `terminal_progress`
+and `Budget` from `recovery.accounting`. For budgeted execution each `WorkerSpec`
+must identify its `allocated_device`; `allocated_at` can supply the provider's
+actual reservation start before worker/model setup, and `provider_billing`
+records its separate billing rule. The scheduler requires a bounded
+`release_device(worker_index, device)` callback acknowledging actual release
+with `True` or its zoned timestamp. A local process exit alone leaves allocation
+open. `MeasuredReply(exact_response, peak_memory_bytes)` optionally records an
+adapter measurement without changing the scientific raw reply.
+
+Budget binding preserves the ceiling/reserves/overhead/shutdown allowance on
+restart. Admission requires conservative measured phase/condition/device
+ranges for main work and reserves every possible timeout/termination in the
+next round. The forecast pools measured families within each phase/condition,
+shows the observed prompt envelope, uses the slower device with a 25% margin,
+and charges idle devices in its serialized upper bound. Missing measurements
+are unavailable. An independent allocation deadline also stops hung work;
+confirmed worker/provider exit preserves uncertain attempts before release.
+`BudgetStop` retains all scheduled slots and exact resumable state. Loading
+inside measured attempts is already charged; the allocation partition is never
+added to those attempt costs. Outside idle/setup remains experiment overhead.
+
+[M3-T04 evidence](docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence)
+records CPU checks with explicitly synthetic allocations. Actual GPU timing,
+memory, provider release integration, timeout adequacy and the accepted freeze
+remain M5 gates; the integrated lifecycle gate remains M3-T05.
+
+## Scripted crash and offline lifecycle validation
+
+[lifecycle_checks.py](tests/lifecycle_checks.py) exercises real externally killed
+controllers at raw-reply, validation, staging, reset and delivery-checkpoint
+boundaries. Resumed worker files retain exact requests, invalid/failed replies,
+branch-local effects, held prose and uncertain physical attempts. The CPU
+fixture uses the existing prepared worlds and schedule; it is not a pilot or
+main experiment.
+
+[lifecycle_archive.py](tests/lifecycle_archive.py) packages ordinary population/
+schedule manifests, SQLite backups and derived progress/outcome evidence in
+[scripted_lifecycle_run.zip](tests/fixtures/scripted_lifecycle_run.zip). Read it
+without generation, or reproduce the scripted validation:
+
+```powershell
+.venv/Scripts/python.exe -m tests.lifecycle_archive --audit-only
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.lifecycle_archive
+```
+
+Extracted SQLite files use the same runner/status APIs. Each case's
+`selection.json` identifies its saved world/branch IDs, and `evidence.json` names
+its authoritative worker files. Baselines, interrupted originals and backups
+are separate copies; combine only the listed files for a case. Full manifests
+remain available for unknown-slot coverage. The offline preview demonstrates
+data availability and exact scoring/footprints; M4 owns the complete analyses
+and report. See [fixture reproduction](tests/fixtures/README.md#crash-safe-scripted-lifecycle-run-bundle)
+and [M3-T05 evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence).
 
 ## Protocol attainability and capacity
 

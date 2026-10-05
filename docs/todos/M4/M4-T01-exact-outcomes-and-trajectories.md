@@ -1,8 +1,15 @@
 # M4-T01 — Exact outcomes, preservation and trajectories
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M3-T05](../M3/M3-T05-crash-safe-scripted-lifecycle.md). M1–M3 must have passed.
+As of 5 October 2026, M1–M3 have passed on CPU; see the
+[M3 gate evidence](../M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate)
+and [retained lifecycle bundle](../../../tests/fixtures/scripted_lifecycle_run.zip).
+Use its saved manifests, exact raw/validated outcomes, committed histories and
+original generation/replay/attempt joins, including the stopped unknown slots.
+The offline preview demonstrates input completeness; the analysis required here
+has not been implemented or verified.
 
 ## References
 

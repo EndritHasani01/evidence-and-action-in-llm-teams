@@ -435,3 +435,207 @@ state/workspace and 1.5 GiB headroom. M5 must verify memory, capability and timi
 archive inside gzip (`mtime=0`); normal checks only read it. Compression is offline
 storage only. [M2-T06 completion](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate)
 records source/installed-library/core validation and closes M2's CPU gate.
+
+## Durable round runner traces
+
+[durable_round_traces.json.gz](durable_round_traces.json.gz) and
+[durable_native_traces.json.gz](durable_native_traces.json.gz) are derived CPU
+validation exports from the actual LangGraph/SQLite runner. The first uses the
+injected word counter; the second uses pinned Qwen3.5-9B tokenizer metadata.
+Neither samples a model. Each covers target Sort and fallback BFS, all their
+scheduled four-peer branches (these archives omit controls; T03 verifies them below), four prefix
+and four recovery rounds, both events, receipts, preserving edits and repeats:
+60 branches, 240 rounds, 960 logical calls, 864 physical attempts and 96 prescribed
+parent reuses. Unicode-invalid and failed parents remain exact. Two Q delivery
+transitions resume from saved replies, and both live SQLite backups reopen with
+identical committed states and successful integrity checks.
+
+[durable_archive.py](../durable_archive.py) derives exact views, rendered/native
+requests, raw replies/validity, logical/physical joins, committed states/queues
+and deterministic attempt statuses. Attempt wall clocks remain recorded in the
+SQLite ledger and are omitted from this reproducible fixture. The exports have
+no authority over runtime effects. JSON is canonical UTF-8/LF, gzip `mtime=0`;
+ordinary reproduction reads the existing archive. `--write-fixture` exclusively
+creates a new file.
+
+```powershell
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.durable_archive
+python -c "import sys; from pathlib import Path; sys.path.insert(1,str(Path('.venv/Lib/site-packages').resolve())); from tests.durable_archive import main; raise SystemExit(main())" --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B" --fixture tests/fixtures/durable_native_traces.json.gz
+```
+
+The native command uses the host's Transformers 5.12.0 / tokenizers 0.22.2 and
+the tested `.venv` LangGraph/Pydantic packages; source imports take precedence.
+Tokenizer/config/template files match the existing M2 identities. The metadata
+path is local and may need replacement on another host; install the tokenizer
+dependencies there before reproduction. [M3-T01](../../docs/todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence)
+records environment and focused/full verification. M3-T02 now verifies bounded
+process attempts and killed-controller recovery below; scheduling/accounting and
+combined lifecycle acceptance remain M3-T03–T05.
+
+## Bounded attempt and process failure traces
+
+[attempt_failure_traces.json.gz](attempt_failure_traces.json.gz) records 12 CPU
+failure cases derived from the actual attempt ledger and replacement checkpoints:
+78 attempts, 28 resident-process intervals, nine uncertain completions and four
+unknown attempt end times. It retains exact calls/raw outputs/validation,
+physical request instrumentation, committed states and real UTC/elapsed timing
+measurements. Five confirmed hung timeouts exceeded their deadlines by
+0.015–0.031 seconds on the retained Windows CPU run. This is protocol evidence,
+not a model result, allocation ledger or GPU-timeout admission.
+
+[attempt_archive.py](../attempt_archive.py) executes all 22
+[attempt checks](../attempt_checks.py), including real
+[controller kills](../attempt_worker.py), and compares exact call outcomes,
+attempt statuses and committed states with the saved archive. Measured clocks,
+PIDs and local module paths remain in evidence and can differ on reproduction.
+Known timeout decisions survive kills during termination; ambiguous completion
+and measured work survive restart without a third physical attempt.
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.attempt_checks -v
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.attempt_archive
+```
+
+To retain another measured run, append `--write-fixture <new_archive.json.gz>`;
+exclusive creation protects prior evidence. JSON is UTF-8/LF with gzip `mtime=0`.
+Reproduction never loads weights or performs model/GPU inference. See
+[M3-T02 evidence](../../docs/todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence)
+for the tested environment, bounds and remaining M3/M5 gates.
+
+## Local worker scheduling traces
+
+[worker_scheduling_traces.json.gz](worker_scheduling_traces.json.gz) is a derived
+CPU export from two isolated worker controllers and their bounded resident
+generation processes. Eight validation scenarios retain 666 logical calls,
+618 distinct generations, 619 physical attempts, 48 exact mixed/Q replay uses,
+17 process intervals and one uncertain interrupted attempt. Scenario totals
+describe separate scripted validation runs, not experimental coverage.
+
+The archive retains exact requests, saved seeds/settings, invalid/failed raw
+parents, original generation joins, independent committed states/queues and
+actual attempt/process times. It includes reversed peer/sibling order and
+worker rotation, reopening completed work without generation, Q interruption
+with held prose, a lost round acknowledgement, and five-family controls before
+recovery. Device visibility is a CPU test label, not a measured CUDA device.
+
+[worker_archive.py](../worker_archive.py) runs the focused
+[worker checks](../worker_checks.py) and compares the canonical JSON scientific
+records exactly. Worker placement, clocks/PIDs and module paths remain recorded
+measurements and may differ on reproduction. Raw strings, token IDs, requests,
+seeds, parent IDs, attempt outcomes and peer/queue state must match. Tuple fields
+are normalized to their retained JSON arrays before comparison.
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.worker_checks -v
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.worker_archive
+```
+
+`--write-fixture <new_archive.json.gz>` exclusively creates a new UTF-8/LF,
+gzip `mtime=0` archive. Ordinary reproduction reads existing evidence. No model
+weights or GPU inference are used. [M3-T03 evidence](../../docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence)
+records the environment and checks; M3-T04 owns allocation/policy costs and
+terminal progress, M3-T05 the combined gate, and M5 hardware admission.
+
+## Resource accounting and progress traces
+
+[accounting_progress_traces.json.gz](accounting_progress_traces.json.gz) retains
+nine CPU evidence cases: hand reconciliation, bounded ambiguous work, slower
+device forecasts, failed-configuration costs, historical measurement admission,
+timeout admission stops, a hard deadline and its resume, and terminal heartbeat
+captures. Allocations explicitly say `synthetic`; these are protocol checks,
+not GPU spending, model capability, pilot or main outcomes.
+
+The hand schedule has 112 logical slots, 100 generations, 12 exact replays and
+101 attempts including one infrastructure retry. It reconciles 203 recorded
+synthetic attempt seconds against 400 allocated seconds on two synthetic devices.
+These assigned two-second call/three-second interruption costs are hand-test
+inputs, not observed inference times. B,
+P_G and Q_B each cost 67 policy seconds; C, F and Q_C each cost 64, always
+including the prefix and all 16 continuation uses. Ambiguous work changes the
+physical attempt range to [201, 203] without inventing an end time.
+
+[accounting_archive.py](../accounting_archive.py) runs the focused
+[accounting checks](../accounting_checks.py) and reproduces exact joins, counts,
+hand costs, delivery records and stop/resume outcomes. Actual clocks, checkpoint
+IDs and CPU durations remain retained measurements, with bounds checked by the
+tests rather than asserted byte-identical. Backup/restart, concurrent saver
+initialization, cross-worker read races, token-count migration, live CLI reads
+and provider reservation starts are additionally verified by these checks.
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.accounting_checks -v
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.accounting_archive
+```
+
+`--write-fixture <new_archive.json.gz>` exclusively creates a new UTF-8/LF,
+gzip `mtime=0` export. Ordinary reproduction is read-only. Earlier attempt/worker
+comparators omit the newly derived `request_tokens` scalar (the original
+requests remain their authority) and absent peak-memory metadata; all original
+scientific fields still compare exactly. Token-count/measurement checks verify
+the added resource fields separately. Every prior fixture remains unchanged.
+See [M3-T04](../../docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence).
+
+## Crash-safe scripted lifecycle run bundle
+
+[scripted_lifecycle_run.zip](scripted_lifecycle_run.zip) is an ordinary CPU run
+bundle: saved complete target/fallback population and schedule inputs, worker
+SQLite snapshots, supported reopened backups, actual controller commands/logs,
+boundary markers, physical request traces and derived progress/outcome previews.
+The ZIP is packaging; manifests and worker records retain their existing formats
+and authority. SQLite backup includes committed WAL even for a killed owner.
+No new persistence or test-management service is involved.
+
+[lifecycle_checks.py](../lifecycle_checks.py) and the externally killed
+[controller](../lifecycle_worker.py) cover raw commit, deterministic validation,
+staging, delivery checkpoint and C/F boundary persistence. A cross-worker P_G
+replay uses exact invalid/timeout parents; Q_B/Q_C crashes preserve held prose,
+chronological release and independent original prefix/sibling states. A second
+precommit kill exhausts the only retry. Synthetic allocation exhaustion retains
+sixteen unknown slots and resumes with the original configuration and one
+uncertain attempt. Allocations are explicitly synthetic; durations are CPU
+observations, never GPU forecasts.
+
+The two complete scripted runs each select the first already prepared main world
+of every family. All their scheduled events, policies, receipts, Q variants,
+controls and repeats remain included: 145 branches, 540 four-peer rounds plus ten
+controls, 2,170 logical slots, 1,978 generations and 192 required replay uses per
+size. The separate full-manifest reconciliation executes no slots: main 60 is
+16,152/17,656 distinct/logical, main 40 is 11,504/12,560, and development is
+1,114/1,178 with the complete 90-slot capability prelude. These are validation
+populations and schedules, not empirical results or an accepted freeze.
+
+Each case's `selection.json` references the complete saved manifest IDs.
+`evidence.json` lists the accepted worker files, baseline/backup paths and counts.
+The reader normalizes Windows case-directory separators to ZIP-relative paths;
+new captures use forward slashes. The retained bundle stays unchanged.
+Use only those worker files together; interrupted originals, baselines and
+backups are copies of the same identities. `kill-*.json` contains the actual
+subprocess launch argv and exit receipt; the test applies `Popen.kill()` externally
+and confirms owner/inference exit before reopening. `boundary-*.json` records
+the precise point and both WAL/FULL connections. `progress.json` includes all
+logical/physical/policy joins and explicit missing costs. `offline-preview.json`
+derives exact slot correctness and D/U footprints without generation. Its
+preview is not the M4 estimand, diagnostic, uncertainty or reporting pipeline.
+The stopped budget snapshot/preview remains alongside its resumed worker.
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.lifecycle_checks -v
+.venv/Scripts/python.exe -m tests.lifecycle_archive --audit-only
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.lifecycle_archive
+```
+
+`--write-fixture <new_run.zip>` exclusively creates another bundle. Normal
+reproduction preserves the retained ZIP and compares every exact call/input,
+validation, committed transition, delivery, outcome and bounded attempt status.
+It ignores only measured clocks/checkpoint IDs, process/module paths and worker
+placement; actual measurements remain in the archive. Offline audit reconstructs
+complete progress/cost/outcome records at their saved timestamps, verifies both
+full schedules and reopens every accepted SQLite file. No weights, GPU, pilot or
+main inference is used. See [M3-T05](../../docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence)
+for gate evidence and the Windows CPU environment; M4 remains mandatory before
+GPU use, and the eventual accepted host must repeat persistence checks in M5.

@@ -1,6 +1,7 @@
 """CPU validation and population/schedule preparation; no inference or accepted freeze."""
 
 import argparse
+import json
 from pathlib import Path
 import sys
 import tomllib
@@ -39,6 +40,14 @@ def main() -> int:
     commands = parser.add_subparsers(dest="command", required=True)
     validate = commands.add_parser("validate", help="validate CPU contracts and optional saved populations/schedules")
     prepare = commands.add_parser("prepare", help="prepare populations, or complete schedules from saved inputs")
+    status = commands.add_parser("status", help="read-only progress/accounting from saved schedules and worker files")
+    status.add_argument("--manifest", required=True, type=Path)
+    status.add_argument("--schedule", required=True, type=Path)
+    status.add_argument("--worker", action="append", required=True, type=Path, help="one path per physical worker; missing files remain unknown")
+    status.add_argument("--prior-worker", action="append", default=[], type=Path, help="previous measured run files, charged once")
+    status.add_argument("--stage", choices=("development", "main"), default="development")
+    status.add_argument("--count", choices=(60, 40), type=int, default=60)
+    status.add_argument("--json", action="store_true", help="include every scheduled slot, parent, cost and resumable branch")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
         command.add_argument("--authoritative", type=Path, help="saved population authority for exact input/configuration equality")
@@ -51,6 +60,18 @@ def main() -> int:
     validate.add_argument("--core-only", action="store_true",
                           help="run dependency-free core checks only; excludes strict reply validation")
     args = parser.parse_args()
+    if args.command == "status":
+        from .accounting import format_status, progress_snapshot
+        try:
+            population = load_population(args.manifest)
+            schedules = load_schedules(args.schedule, population)
+            worlds = population.development if args.stage == "development" else population.worlds(args.count)
+            branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
+            snapshot = progress_snapshot(worlds, branches, args.worker, prior_paths=args.prior_worker)
+        except (OSError, ValueError) as error:
+            parser.error(str(error))
+        print(json.dumps(snapshot, ensure_ascii=True, allow_nan=False, sort_keys=True) if args.json else format_status(snapshot))
+        return 0
     try:
         size = load_size(args.config)
     except (OSError, ValueError) as error:
@@ -108,10 +129,11 @@ def main() -> int:
         try:
             # A declared CPU dependency, never the optional inference stack.
             import recovery.protocol
+            import recovery.runner
         except ImportError:
-            parser.error("full CPU validation requires Pydantic 2; install the package, or use --core-only for the core subset")
-    scope = ("core subset (strict replies, rounds, events, replay and attainability excluded)" if args.core_only
-             else "core, strict replies, rounds, events, replay and attainability")
+            parser.error("full CPU validation requires Pydantic 2 and LangGraph/SQLite; install the package, or use --core-only for the core subset")
+    scope = ("core subset (strict replies, rounds, events, replay, attainability, durability, attempts, workers, accounting and lifecycle excluded)" if args.core_only
+             else "core, strict replies, rounds, events, replay, attainability, durability, bounded attempts, local workers, accounting and killed-process lifecycle")
     print(f"CPU validation ({scope}): configured size={size.value}; checks cover target and fallback.", flush=True)
     suite = unittest.defaultTestLoader.discover(str(root / "tests"), top_level_dir=str(root))
     if not args.core_only:
@@ -120,6 +142,11 @@ def main() -> int:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.event_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.replay_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.attainability_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.durable_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.attempt_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.worker_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.accounting_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.lifecycle_checks"))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     return 0 if result.wasSuccessful() else 1
 

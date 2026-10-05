@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1 and M2 are verified on CPU (nine tasks done; both gates passed). The recovery package supplies task truth, prepared populations/schedules, permitted peer views, strict replies, synchronous scripted rounds, literal event/retention/receipt boundaries and exact mixed/Q replay. M2-T06 verifies local-view attainability and complete native capacity for both sizes under the authorized literal layout, scalar-message contract and uniform 262,144 context limit. M3-T01 is ready; durable execution and M3–M6 remain future work. No accepted inference environment, pilot or main results exist. See the [living handoff](#10-living-handoff) for current evidence; historical probes do not satisfy later gates.
+**Implementation status:** M1–M3 are verified on CPU and all three gates pass. Fourteen tasks are done; M4-T01 is ready. The package supplies exact worlds/schedules, permitted peer protocol, all interventions/replays, durable LangGraph/SQLite rounds, bounded subprocess attempts, local workers, resource accounting, progress and safe stops. M2-T06 admits both sizes under the finalized scalar/literal renderer and uniform 262,144 input limit. M3-T05 closes the combined lifecycle gate: nine checks cover eleven external controller kills; 253 source/installed-library and 81 core checks pass. The fourteen-case ordinary run bundle reproduces 4,340 scripted logical slots and 384 exact parent uses, with reopened backup and offline reconstruction evidence. All prior M3 CPU/native archives remain exact. M4–M6, accepted inference environment, hardware/capability pilot and main results remain open. See the [living handoff](#10-living-handoff); CPU admission is not GPU feasibility or an empirical result.
 
 ## 1. Execution roadmap
 
@@ -40,7 +40,8 @@ recovery/
   state.py                    peer views, boundary transformations, synchronous deliveries
   prompts.py                  one renderer, task hints, notice/receipt layouts
   schedule.py                 saved seeds, populations, call dependencies, allocation/progress
-  runner.py                   round graph and local worker coordination
+  runner.py                   fixed round graph, controls and original parent access
+  workers.py                  balanced local process scheduling and restart ownership
   storage.py                  durable calls/attempts, snapshots, checkpoints, safe exports
   inference.py                text-only model loading and one independent generation call
   evaluate.py                 exact outcomes, coordinate/trajectory/information diagnostics
@@ -316,8 +317,8 @@ Update these sections only when a capability is verified, a consequential decisi
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
 | M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
-| M3 | Ready to start | M3-T01 prerequisites pass; durable workflow remains unimplemented |
-| M4 | Not started | Requires M1–M3 |
+| M3 | Verified on CPU (5/5 tasks done; gate passed) | [M3-T05 gate evidence](todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate): 18 durable, 22 attempt, 14 worker, 23 accounting and nine lifecycle checks; 253 source/installed and 81 core checks pass. Eleven real controller kills preserve raw reuse, branch-local effects, cleared fields and Q prose. Both complete fixtures reconcile 4,340 logical slots / 3,956 generations / 384 replays; full main/development schedules, synthetic budget stop/resume and supported backups pass. [Fourteen-case ordinary bundle](../tests/fixtures/scripted_lifecycle_run.zip) passes offline audit and fresh reproduction; all prior M3 CPU/native archives reproduce. |
+| M4 | Not started; M4-T01 ready | [Exact offline outcomes/preservation/trajectories](todos/M4/M4-T01-exact-outcomes-and-trajectories.md) can use the retained M3 manifests and worker records. The full analysis/report gate remains required before GPU use. |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
 | M6 | Not started | Requires accepted M5 freeze |
 
@@ -325,12 +326,19 @@ Update these sections only when a capability is verified, a consequential decisi
 
 | Decision | Reason / reconsideration evidence |
 |---|---|
+| M3-T05 avoids redundant scheduler checkpoint reads | The complete scripted fixture exposed repeated readiness scans while all workers were busy and a second saver read for state already obtained with its metadata. Dispatch now waits when no worker is idle, and scheduling derives state from that same saved checkpoint. No cache or extra record is introduced. All 14 worker checks, nine lifecycle checks and 253 source/installed regressions pass. |
+| M3-T05 packages ordinary worker records through SQLite backup | The integrated crash gate and M4 handoff need inspectable persisted evidence. Existing manifests/SQLite snapshots remain authoritative; ZIP only packages them with actual kill commands/markers and derived previews. Eleven external controller kills and exact resumed-record comparisons pass, including both WAL/FULL connections, relocated workers and held prose. Fourteen cases reproduce; relative path normalization makes retained Windows references readable through ZIP paths without rewriting the evidence. No new persistence or test-management system. |
+| M3-T04 derives progress/costs from existing records and checkpoints | Existing call/attempt keys and saved configuration scope resolve physical and policy costs. The ledger stores request-token counts for responsive reads, verified against exact barriers, and optional peak memory; only allocation intervals add persistence. Loading inside an attempt is included in its measured cost, while allocation partitions setup/interruption/attempt/idle once. Twenty-three focused and 244 source/installed CPU checks pass. The pinned saver's first public read commits existing transactions through `executescript`; status primes it before its read snapshot. Cross-worker parent commits get at most two read retries, with no inference/effects. Provider reservation start/billing and confirmed release remain distinct from process lifetime. Nine accounting cases and all prior archives reproduce. |
+| M3-T03 accesses original worker records through SQLite read-only connections | The pinned saver public read path works with `mode=ro` and `query_only=ON`; writes are rejected. Committed channel values exclude pending node effects. Physical parent rows and attempts stay in their original file, while logical replay rows and independent queues stay in the assigned worker. Durable controls use the same raw-call/attempt ledger, with no delivery thread. Fourteen focused worker checks and 221 source/installed checks pass; parent access adds no physical charge. |
+| M3-T03 enforces exclusive file ownership before recovery | A provider PID cannot identify an idle worker that has not loaded inference. A one-byte OS-lock sidecar rejects a second controller before any writer/recovery is opened; it stores no scientific or progress data and is released by the OS on owner death. Restart also confirms the preceding inference process exited before admitting replacement work. The idle-owner rejection and Q interruption/resume checks pass. |
 | New shallow package; vendor/archive remain references | Native execution/scoring conflict with the required protocol; do not inherit obsolete architecture |
 | M1 task core uses frozen standard-library records and caller-owned generation/ownership RNGs | No numerical, graph or inference dependency is needed for these exact computations. Public candidate contracts/source manifests are separate from offline truth; BFS IDs bind only after edge shuffling and tombstones retain endpoints. |
 | M1-T02 legal edit sets precede sampling; events take only original v1 worlds | Main selection uses record then replacement, preserving uses a single pair draw without owner matching. Top-K preserving originals are strictly below the cutoff; cutoff-equal replacements preserve the ten-value multiset. Deterministic checks cover both sizes, independent BFS deletion truth and the exact 1,000-attempt ceiling. |
 | Prepared populations use one canonical JSON record and fixed integer seed slots | Saved actual worlds/edits are authoritative; gold and footprints remain evaluator-side. Stable world slots/configuration give disjoint local stream seeds, with event/policy absent from continuation seeds. Nested 40-world/focal populations derive from the saved 60; loading never regenerates. Exact baseline comparison detects changed valid inputs; no checksum/identity registry is added. Both-size fixtures and CPU CLI are verified; the M5 accepted freeze remains future work. |
 | M1-T03 schedules use existing world/branch/call keys and explicit prefix/raw-reply parents | Independent component/cell checks reconcile both complete main totals and the exact development matrix. Equal seeds create distinct generations unless a prescribed first-round B/C parent exists. The nested 40 is a view of the 60-world schedule; smoke is separate and the first 90 pilot slots are prefix/controls. Saved schedules are derived artifacts checked against the population, without copied raw worlds or another identity system. Save/reload, mutations, dependency orders and CPU prepare/validate pass in the 59-check suite; runtime equality/delivery remain M2/M3. |
 | LangGraph barriers plus local SQLite and explicit raw-call ledger | Meets §9's starting choice; replace with the permitted small loop only for a demonstrated unresolved semantic incompatibility in M3 |
+| M3-T01 uses replacement byte snapshots and an application-owned raw-call ledger | `prepare → obtain → commit` uses synchronous durability. Existing IDs join pre-delivery inputs, physical outcomes, attempts and logical replays; committed checkpoints exclusively own effects. Explicit round arguments make lost acknowledgements idempotent. Public saved checkpoint configurations exclude durable pending writes from delivery exports; normal graph resume consumes those writes. Active attempts without raw output stop for M3-T02 recovery. Tested CPU dependency pins are not an M5 freeze. [T01 evidence](todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence): 18 focused checks, 185 source/installed checks, 81 core checks and both 240-round CPU/native archives pass. No small-loop fallback or second effect store. |
+| M3-T02 uses one resident inference subprocess and the existing attempt keys | A spawn-compatible model loader is required for termination/reload while preserving resident weights. The parent owns SQLite; pipe I/O and an owner-sentinel watcher keep hangs and orphaned generation bounded. Known timeout is durable before kill; only an absent durable outcome after infrastructure interruption permits one identical retry. Existing `(call_id, number)` keys own bounds/observed work/uncertainty and loading/idle/stop intervals; this process table is necessary for later charging work omitted by attempt durations. Default bounds are 120 seconds plus one-second terminate/kill graces. Direct providers require explicit deterministic `scripted=True`. [T02 evidence](todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence): 22 focused and 207 source/installed CPU checks, exact archives and real kills pass. No delivery store, new identity, scheduler or dependency is added. |
 | Explicit narrow peer views and pure state/delivery transformations | Makes scientific visibility, replacement and replay inspectable and CPU-testable |
 | M2-T01 uses immutable permitted records and a single user-data renderer | Initial projection/held-source lookup take no evaluator or schedule labels. Current/pending/deleted sources, receipt history, derived text, feedback and latest-slot absence are distinct; public identity alone orders sources. Candidate state cannot precede recorded own/feedback slots. Native non-thinking template text and untruncated token inputs are ordinary saveable records. Fixed public feedback prevents hidden library-error payloads; complete capacity and event/round transformations remain later M2 tasks. |
 | M2-T02 uses complete JSON decoding, strict Pydantic 2 and whole-reply staging | Pydantic 2 is now a declared CPU dependency. Full validation includes the strict-reply suite; explicit `--core-only` retains dependency-free checks without claiming protocol admission. Generated IDs govern the 384-token cap; literal message texts are tokenized separately and summed. Source staging resolves only immutable sender-held records and preserves repeated attempts. Fixed public feedback has an actual tokenizer guard; invalid/failed outcomes replace candidates with absence. No delivery, correctness check, response repair or extra call is introduced. |
@@ -489,11 +497,134 @@ capacity reproduction pass. Native archives are renewed, including Unicode-inval
 parent replay. M2 closes and M3-T01 becomes ready. M5 still owns GPU memory,
 headroom, capability, timing and final configuration/size admission; none is claimed.
 
+M3-T01 completes on 5 October 2026. The actual worker-local graph saves exact
+raw replies/failures before validation/effects and checkpoints replacement
+branch state. Eighteen focused checks cover every scheduled first-round start
+across all families/sizes, invalid/failed replay, mismatch rejection, clearing,
+Q held-queue resume, partial raw commits and saver failures before/after delivery
+commit. Source and actual installed-library regressions each pass 185 checks;
+core-only passes 81. Both durable archives reproduce in fresh hash-seed-37
+processes: 60 branches, 240 rounds, 960 logical calls, 864 physical attempts and
+96 exact parent joins, with two Q transitions reconstructed from saved replies
+and all backup states preserved. These are scripted CPU checks and native
+tokenizer-only checks; no weights/model/GPU or experimental outcomes were used.
+At T01 completion, active attempts without raw outcomes stopped for T02's
+uncertain-completion, termination and bounded-retry handling. T02 completes
+that boundary below; scheduling/controls, cross-worker parents, accounting
+and the combined M3-T05 gate remain open.
+
+M3-T02 completes on 5 October 2026. A resident spawned inference process uses
+the existing exact inputs and application ledger; the parent remains responsive
+and terminates a hung attempt under its default 120-second bound. Timeout is
+durable before termination. Restart after the preceding owner stops preserves
+unknown completion/duration and observed work, permits one identical retry and
+exhausts a second interruption without a third attempt. Invalid/truncated/wrong
+and known failure records remain final; ordinary failures continue the fixed
+opportunities and never inherit an earlier candidate. Overflows stop before
+generation. Loading/resident idle/termination intervals remain available for
+M3-T04 attribution, including uncertain stop times after owner death.
+
+Twenty-two focused checks include real controller kills before/after raw reply,
+during loading and timeout termination; inference children die with their owners.
+Source/installed-library suites each pass 207, and core-only passes 81. Both
+240-round CPU/native durable archives remain exact. The 12-case failure archive
+reproduces exact call/attempt/state records with a fresh hash seed and retains
+78 attempts, 28 process intervals, nine uncertain completions and four unknown
+attempt ends. Five confirmed CPU hung timeouts exceeded their deadlines by
+0.015–0.031 seconds; this is not a GPU timing forecast or timeout admission.
+See [T02 verification](todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence).
+[M3-T03](todos/M3/M3-T03-local-worker-scheduling.md) is ready. Worker placement,
+controls/cross-worker parents, resource accounting/status, the combined M3 gate
+and execution-host/model adequacy remain open. Specification/configuration and
+prior archives are preserved; no weights, GPU/model inference or main outcomes
+were used.
+
+M3-T03 completes on 5 October 2026. Balanced saved world-index blocks and
+rotated eligible siblings execute through serial worker controllers and one
+bounded resident generation process per worker. Device visibility is inherited
+before child imports/factories. Original prefixes and B/C pre-delivery parents
+are accessed read-only, preserving physical IDs/raw failures and branch-local
+queues/effects. Full-information controls now persist in the same attempt ledger.
+Literal input/settings/bounds bindings reject drift before admission; OS file
+locks reject live/idle duplicate owners, and restart confirms provider exit.
+Status reconstructs runnable/dependency-waiting work without correctness input
+or another progress store.
+
+Fourteen focused checks include actual uneven-delay workers, order/placement
+reversal, immutable cross-worker parents, missing/mis-scoped dependency rejection,
+Q termination with held prose, lost acknowledgements and exclusive idle ownership.
+Source/installed suites each pass 221; core-only passes 81. Eight archived CPU
+scenarios reproduce 666 logical calls, 618 distinct generations, 619 attempts,
+48 exact replays, 17 process intervals and one uncertain interrupted attempt.
+The export comparator now normalizes in-memory tuples to retained JSON arrays;
+no scientific fields were relaxed. Both earlier CPU/native durable archives
+reproduce unchanged. See [T03 evidence](todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence).
+At that handoff, [M3-T04](todos/M3/M3-T04-accounting-progress-and-budget.md) was
+ready; attribution/progress/budget stops and the combined T05 gate remained open.
+Specification/configuration and prior archives are unchanged. No weights,
+GPU/model inference, pilot or main outcomes were used.
+
+M3-T04 completes on 5 October 2026. Physical costs join original generations
+and every measured/uncertain attempt; hypothetical policies include the original
+prefix and all sixteen continuation uses, including F and invalid/failed replay
+parents. Allocation intervals separately partition setup/interruption/attempt/
+unobserved work/idle, with no duplicate overhead. Provider reservation start,
+confirmed release and billing are separate from process lifetime. Only existing
+ledger token counts/optional memory and necessary allocation intervals persist;
+progress, policy totals, forecasts, dependencies and matched coverage are derived.
+
+Twenty-three focused and 244 source/installed checks pass. The nine-case archive
+reconciles 112 logical calls, 100 generations, 101 attempts, 203 synthetic attempt
+seconds and 400 synthetic allocated seconds. These hand-test costs are assigned,
+not observed inference times. Adverse timeouts, a hard deadline,
+uncertain work and exact single-retry resume preserve unknown opportunities.
+Measured phase/condition/device forecasts include slower devices, 25% margin,
+serialized idle allocation, reserves and external overhead; missing cells remain
+unavailable. Earlier configurations stay charged without supplying incompatible
+timing samples. Live CLI, heartbeat, backup/migration and concurrent reads pass.
+The initial full-suite status race was fixed after verifying that saver setup
+commits an existing SQLite transaction; bounded cross-worker rereads preserve
+monotonic parent commits without inference. All prior CPU/native durable,
+attempt and worker archives reproduce. See [T04 evidence](todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence).
+[M3-T05](todos/M3/M3-T05-crash-safe-scripted-lifecycle.md) is ready; M3 remains open.
+No scientific/frozen-configuration change or actual GPU/model/pilot/main run
+occurred. M5 retains actual provider-release, timing/memory and hardware gates.
+
+M3-T05 completes on 5 October 2026 and closes M3's CPU gate. Both declared sizes
+execute every scheduled path for the first prepared main world of each family:
+4,340 logical slots, 3,956 physical generations and 384 exact replays. Full
+60/40 main and development manifests independently reconcile with all
+unexecuted opportunities explicit. Eleven real external kills cover raw commit,
+validation/staging, delivery checkpoints, C/F boundaries and retry exhaustion.
+Uninterrupted versus relocated/reopened workers preserve every scientific call,
+input, validation and unique committed transition. Invalid/timeout parents are
+never resampled; held Q prose stays queued and releases chronologically. Budget
+exhaustion preserves sixteen unknown slots and one uncertain attempt, then
+resumes with the same configuration and one permitted retry.
+
+The [ordinary lifecycle bundle](../tests/fixtures/scripted_lifecycle_run.zip)
+retains fourteen cases, original manifests, SQLite backups, actual kill argv/
+receipts/markers, request traces and derived progress/correctness previews. Its
+actual packaged snapshots pass offline audit and a fresh hash-seed-37 exact
+reproduction. Source and installed-library suites each pass 253 checks, core-only
+passes 81, and all earlier M3 CPU/native durable, attempt, worker and accounting
+archives reproduce unchanged. The fixture's redundant scheduler reads were
+removed without new state/cache; portable relative archive references were
+verified with the retained offline audit. See [T05 evidence](todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence).
+
+[M4-T01](todos/M4/M4-T01-exact-outcomes-and-trajectories.md) is ready. The preview
+establishes available inputs, not completed M4 estimands/diagnostics/reporting.
+M4 remains mandatory before GPU use, and M5 must repeat persistence checks in
+the accepted host/environment. The scientific specification/configuration and
+all prior fixtures remain unchanged; no weights, model/GPU inference, pilot,
+main execution or publication occurred.
+
 ### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |
 |---|---|
-| Checkpoint/call/effect crash behavior in the real runner | M3 killed-process tests, then rerun against M5's accepted host lock; toy saver success is insufficient |
+| Complete offline analysis/report gate | Start M4-T01 from the retained manifests and M3 worker records; validate all prescribed outcomes/contrasts/diagnostics/missingness/costs and reproduce the full synthetic report in M4-T06 before GPU use |
+| Persistence and crash safety in the accepted inference host | M3-T05 passes on Windows/CPU; repeat the checkpoint/SQLite/process/backup checks in M5's accepted host lock and actual storage environment before inference admission |
 | Passing model/runtime/timeout and device headroom at the revised context | M5 maintained-loader diagnostics and bounded smoke/pilot, including the complete admitted input envelope. Static full-attention FP16 KV alone is 8 GiB at 262,144; weights/activations/workspace and 1.5 GiB headroom are additional. CPU admission is not T4 feasibility. |
 | 9B/4B, target/fallback size, 60/40 worlds | M5 capability and complete-schedule allocation evidence, following the specified precedence and shared development limit |
 | Compute provider availability, persistence and allocation rules | Before GPU reservation, record actual devices, durable storage/backup location, allocation start/stop and billing rules; provider choice cannot alter experimental semantics |
