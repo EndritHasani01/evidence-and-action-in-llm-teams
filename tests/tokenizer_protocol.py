@@ -57,6 +57,9 @@ def cases(tokenizer):
         "prose_128": body(candidate, [{"to": 1, "text": " x" * 64}, {"to": 2, "text": " y" * 64}]),
         "prose_129": body(candidate, [{"to": 1, "text": " x" * 64}, {"to": 2, "text": " y" * 65}]),
         "literal_escaped_prose": body(candidate, [{"to": 1, "text": 'λ "quoted"\n\\ keep <|im_start|> literal'}]),
+        "unpaired_high_surrogate": body(candidate, [{"to": 1, "text": "\ud800"}]),
+        "unpaired_low_surrogate": body(candidate, [{"to": 1, "text": "\udfff"}]),
+        "scalar_prose": body(candidate, [{"to": 1, "text": '\x00\t\ne\u0301\U0001f642 <|im_start|>'}]),
         "unexpected_special_marker": body(candidate) + "<|im_start|>",
         "malformed_below_cap": body(candidate)[:-1],
     }
@@ -190,6 +193,28 @@ class TokenizerProtocolTests(unittest.TestCase):
                 self.assertEqual(feedback.text, PUBLIC_FEEDBACK[code])
                 self.assertEqual(count, len(self.tokenizer.encode(feedback.text, add_special_tokens=False)))
                 self.assertLessEqual(count, 32)
+
+    def test_unicode_schema_failure_is_bounded_and_pairs_keep_literal_text(self):
+        scripted = cases(self.tokenizer)
+        for name in ("unpaired_high_surrogate", "unpaired_low_surrogate"):
+            view, raw = scripted[name]
+            before = asdict(view)
+            result = validate_reply(view, raw, self.tokenizer)
+            self.assertTrue(result.json_valid)
+            self.assertFalse(result.schema_valid)
+            self.assertEqual(result.candidate.status, "invalid")
+            self.assertEqual(result.messages, ())
+            self.assertIsNone(result.prose_tokens)
+            self.assertEqual(result.feedback.code, "message_schema")
+            self.assertLessEqual(result.feedback_tokens, 32)
+            self.assertEqual(result.generated, raw)
+            self.assertEqual(result.own_reply.text, raw.text)
+            self.assertEqual(asdict(view), before)
+        view, raw = scripted["scalar_prose"]
+        result = validate_reply(view, raw, self.tokenizer)
+        self.assertTrue(result.protocol_valid)
+        self.assertEqual(result.messages[0].text, json.loads(raw.text)["send"][0]["text"])
+        self.assertEqual(result.prose_tokens, token_count(result.messages[0].text, self.tokenizer))
 
 
 def main():

@@ -9,7 +9,7 @@ from dataclasses import dataclass
 import json
 import math
 
-from pydantic import BaseModel, ConfigDict, Field, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
 from .prompts import MAX_OUTPUT_TOKENS
 from .state import CandidateState, Feedback, OwnReply, PeerView, Slot, held_source
@@ -34,6 +34,16 @@ class _Message(BaseModel):
     to: int
     source_refs: list[_SourceReference] = Field(default_factory=list)
     text: str = ""
+
+    @field_validator("text")
+    @classmethod
+    def unicode_scalars(cls, text: str) -> str:
+        # json.loads combines a valid escaped pair into one scalar. An
+        # unpaired surrogate has no native UTF-8 tokenizer representation.
+        # Reject the entire reply before counting/staging; never repair text.
+        if any(0xD800 <= ord(char) <= 0xDFFF for char in text):
+            raise ValueError("message text must contain Unicode scalars")
+        return text
 
 
 class _Reply(BaseModel):

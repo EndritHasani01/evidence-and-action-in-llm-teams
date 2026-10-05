@@ -1,6 +1,6 @@
 # M2-T06 lessons, blockers, and ranked fixes
 
-**5 October 2026. Decision note only; no fix implemented or accepted.**
+**5 October 2026. Option 1 selected and implementation authorized; in progress.**
 The [specification](../../PROJECT_SPECIFICATION.md) remains authoritative.
 [M2-T06 evidence](../todos/M2/M2-T06-attainability-and-capacity.md)
 records the executed checks and reproduction commands; **M2 remains blocked**.
@@ -49,7 +49,7 @@ All options remain conditional on a complete bound and adversarial checks.
 | 3. Uniform budgets on rendered reply/prose cost | Defensible new regime | Moderate to low | High: enforcement before emission | Changes caps/generation distribution |
 | 4. Canonical valid history + invalid-slot markers | Defensible revised question | High | Low to moderate | Changes the retained-history treatment |
 
-1. **Recommend first, subject to resources.** Preserve every payload/label in a
+1. **Selected, subject to resources.** Preserve every payload/label in a
    readable lossless layout; raise 8,192 uniformly only with a tight bound.
    Keep output budgets, interventions and populations. This minimizes information
    loss and code complexity, but revises the bounded-computation regime.
@@ -95,8 +95,13 @@ tokenizer; fewer worlds cannot repair a per-call overflow. Lower token caps need
 renewed expansion bounds/witnesses. Silent trimming, dropped families/failed slots
 and selection of short/valid prefixes change treatments or populations.
 
-**Next decision:** assess 1's bound/resources, then 2's fidelity/complexity. If
-neither passes, consciously choose regime change (3) or history narrowing (4).
-Preserve original failure evidence; regenerate affected archives. Cap/history/
-Unicode revisions require authorization under [AGENTS.md](../../AGENTS.md);
-GPU checks await the required gates and separate authorization. M2 stays blocked.
+**Recorded selection:** the user chose option 1 on 5 October 2026: a readable
+lossless layout and a larger uniform context, preserving all retained work.
+The later instruction to implement it supersedes the earlier documentation-only
+restriction. The Unicode clarification is implemented and verified: 25 focused
+CPU checks and seven native-tokenizer checks pass. The specification now requires
+scalar message text; raw replies remain unchanged. A complete layout bound and
+resource feasibility remain outstanding; no replacement context limit is chosen.
+Preserve original failure evidence and renew affected checks before admission.
+GPU checks await the required gates and separate authorization under
+[AGENTS.md](../../AGENTS.md). M2 stays blocked.

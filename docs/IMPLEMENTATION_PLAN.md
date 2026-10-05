@@ -473,8 +473,15 @@ decision must resolve the exact retained-text/capacity and Unicode incompatibili
 and renew all affected M2 checks; passing the scripted witness alone is insufficient.
 
 The [M2-T06 lessons and ranked fixes](implementation-research/m2-t06-lessons-and-fixes.md)
-record conditional remedies and their required revalidation. They are proposals;
-no remedy is implemented, accepted or authorized, and M2 remains blocked.
+record conditional remedies and their required revalidation. On 5 October 2026,
+the user selected option 1: a readable lossless layout with a larger uniform
+context, preserving all retained work, then authorized implementation. Scalar
+message validation now rejects unpaired surrogates before native prose counting;
+valid escaped pairs and other scalar text remain literal. Raw replies/IDs,
+candidate absence and whole-reply no-effects semantics are preserved. The 25
+focused CPU checks and seven native protocol checks pass. A complete layout bound
+and resource feasibility remain outstanding; no replacement context limit or
+accepted configuration is chosen, no size is admitted, and M2 remains blocked.
 
 ### Unresolved issues
 

@@ -78,6 +78,37 @@ class StrictReplyTests(unittest.TestCase):
         self.assertLessEqual(result.feedback_tokens, 32)
         self.assertEqual(result.own_reply.text, result.generated.text)
 
+    def test_unpaired_message_surrogates_reject_whole_reply_before_token_count(self):
+        class ScalarTokenizer(WordTokenizer):
+            def encode(self, text, *, add_special_tokens):
+                text.encode("utf-8")
+                return super().encode(text, add_special_tokens=add_special_tokens)
+
+        before = asdict(self.view)
+        for literal in ("\ud800", "\udfff", "a\ud800b", "\ud800\ud800", "\udfff\ud800"):
+            with self.subTest(literal=ascii(literal)):
+                text = json.dumps({"candidate": placeholder(self.view), "send": [
+                    {"to": 1, "source_refs": [reference(self.view.sources[0])], "text": "legal"},
+                    {"to": 2, "text": literal}]}, ensure_ascii=True)
+                raw = recorded(text)
+                result = validate_reply(self.view, raw, ScalarTokenizer())
+                self.assert_invalid(result, "message_schema")
+                self.assertTrue(result.json_valid)
+                self.assertFalse(result.schema_valid)
+                self.assertIsNone(result.prose_tokens)
+                self.assertEqual(result.generated, raw)
+                self.assertEqual(asdict(self.view), before)
+
+    def test_scalar_prose_including_valid_escaped_pairs_is_not_normalized_or_repaired(self):
+        literal = '\x00\t\n"\\e\u0301\U0001f642 <|im_start|>'
+        text = json.dumps({"candidate": placeholder(self.view),
+                           "send": [{"to": 1, "text": literal}]}, ensure_ascii=True)
+        self.assertIn("\\ud83d\\ude42", text)
+        result = validate_reply(self.view, recorded(text), TOKENIZER)
+        self.assertTrue(result.protocol_valid)
+        self.assertEqual(result.messages[0].text, literal)
+        self.assertEqual(result.generated.text, text)
+
     def test_complete_document_only_no_repair_or_fragment_extraction(self):
         body = json.dumps({"candidate": placeholder(self.view), "send": []})
         for text in ("", " ", "null", "[]", "1", '"object"',

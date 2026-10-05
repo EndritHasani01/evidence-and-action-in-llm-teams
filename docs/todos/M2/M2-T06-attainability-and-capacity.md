@@ -290,3 +290,17 @@ visibility, retention, mixed/Q replay, witness and capacity checks before M2 clo
 No extra cap, truncation, dropped condition, GPU authorization or design change
 has been inferred from this implementation request.
 
+## Authorized remedy implementation — 5 October 2026
+
+The user selected ranked option 1 and then explicitly instructed implementation.
+This supersedes the earlier documentation-only instruction. The scalar-message
+clarification is implemented in [protocol.py](../../../recovery/protocol.py):
+unpaired decoded surrogates are whole-reply schema failures before prose counting;
+valid escaped pairs are accepted. Raw reply/IDs, bounded message-schema feedback,
+candidate absence and no-effects semantics remain intact. The focused CPU suite
+passes 25 checks and native protocol suite passes seven checks, including controls,
+combining characters, escaped pairs and special-looking strings. Original negative
+evidence remains in [the original archive](../../../tests/fixtures/capacity_report_8192_original.json.gz).
+Layout/context admission and resource feasibility remain outstanding; M2 stays
+blocked and no GPU run or accepted freeze is authorized.
+

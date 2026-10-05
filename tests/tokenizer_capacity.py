@@ -238,20 +238,16 @@ def capacity_archive(tokenizer, metadata):
     report["special_strings"].append({"generated": asdict(generated), "literal_prose": special,
                                       "protocol_valid": checked.protocol_valid, "prose_tokens": checked.prose_tokens,
                                       "received_fixture": native_measure(received, tokenizer)})
-    # The current schema accepts a JSON escape for an unpaired surrogate, but
-    # native prose tokenization has no representation for that Python string.
-    # Surface the incompatibility; do not invent a Unicode restriction, repair
-    # the sender's text, or hide the exception as a model formatting failure.
+    # The authorized scalar-text contract rejects this whole reply before
+    # native prose counting. Retain the exact raw failure and bounded outcome.
     text = json.dumps({"candidate": [0]*10, "send": [{"to": 1, "text": "\ud800"}]}, ensure_ascii=True, separators=(",", ":"))
     generated = GeneratedReply(text, tuple(tokenizer.encode(text, add_special_tokens=False)), "scripted")
-    try:
-        validate_reply(initial, generated, tokenizer)
-    except (TypeError, UnicodeError) as error:
-        report["unsupported_prose"] = {"generated": asdict(generated), "literal_prose": "\ud800",
-                                       "error_type": type(error).__name__,
-                                       "stage": "native literal prose tokenization", "resolved": False}
-    else:
-        report["unsupported_prose"] = {"resolved": True}
+    checked = validate_reply(initial, generated, tokenizer)
+    report["unsupported_prose"] = {"generated": asdict(generated), "literal_prose": "\ud800",
+                                   "validation": asdict(checked), "resolved": (
+                                       checked.json_valid and checked.schema_valid is False
+                                       and checked.prose_tokens is None and not checked.messages
+                                       and checked.feedback.code == "message_schema")}
     report["admitted_sizes"] = [size.value for size in Size
         if all(b["bound_fits"] for b in bounds if b["size"] == size.value)
         and all(r["fits"] for r in rows + report["reachable_counterexamples"] if r["size"] == size.value)
@@ -313,16 +309,21 @@ class NativeCapacityTests(unittest.TestCase):
             data = json.loads(row["received_fixture"]["request"]["content"].split("\nPeer data (JSON):\n", 1)[1])
             self.assertEqual(data["history"][0]["text"], row["literal_prose"])
 
-    def test_unpaired_surrogate_gap_is_reported_without_response_repair_or_delivery(self):
+    def test_unpaired_surrogate_is_bounded_schema_failure_without_repair_or_delivery(self):
         row = self.current["unsupported_prose"]
-        self.assertFalse(row["resolved"])
-        self.assertEqual(row["error_type"], "TypeError")
+        self.assertTrue(row["resolved"])
         raw = GeneratedReply(**dict(row["generated"], token_ids=tuple(row["generated"]["token_ids"])))
         self.assertLessEqual(len(raw.token_ids), 384)
         view = initial_view(case_world(Task.TOP_K, Size.TARGET).world, 0)
         before = asdict(view)
-        with self.assertRaises(TypeError):
-            validate_reply(view, raw, self.tokenizer)
+        checked = validate_reply(view, raw, self.tokenizer)
+        self.assertEqual(asdict(checked), asdict(validate_reply(view, raw, self.tokenizer)))
+        self.assertFalse(checked.schema_valid)
+        self.assertEqual(checked.feedback.code, "message_schema")
+        self.assertEqual(checked.messages, ())
+        self.assertIsNone(checked.prose_tokens)
+        self.assertEqual(checked.generated, raw)
+        self.assertEqual(checked.own_reply.text, raw.text)
         self.assertEqual(asdict(view), before)
 
 
