@@ -195,6 +195,7 @@ class AttemptLedgerTests(unittest.TestCase):
                 self.store.finish_attempt(self.call, raw_reply(TOKENIZER, "{}"), elapsed)
         self.assertEqual(self.store.call(self.call)["status"], "running")
         self.store.block_attempt(self.call, "provider returned a non-response", 0.4)
+        self.assertEqual(self.store.attempts(self.call)[0]["uncertain_completion"], 1)
         with self.assertRaises(UnresolvedAttempt):
             self.store.interrupt_attempt(self.call, "restart cannot make adapter bug retryable")
         self.assertIsNone(self.store.call(self.call)["raw_json"])
@@ -393,6 +394,7 @@ class ProcessAttemptTests(unittest.TestCase):
                 runner.run_round(self.branch.branch_id, 1)
             self.assertEqual(runner.state(self.branch.branch_id), initial)
             self.assertEqual(runner.store.attempts(self.branch.calls[0].call_id)[0]["status"], "blocked")
+            self.assertEqual(runner.store.attempts(self.branch.calls[0].call_id)[0]["uncertain_completion"], 1)
             self.assertTrue(all(runner.store.call(c.call_id)["raw_json"] is None for c in self.branch.calls[:4]))
         with DurableRunner(self.path, TOKENIZER, self.boundary()) as runner:
             with self.assertRaises(UnresolvedAttempt):

@@ -289,7 +289,7 @@ class WorkerStore:
             if self.call(call_id)["status"] != "running" or attempt["status"] != "running":
                 raise UnresolvedAttempt("defect requires its active attempt")
             self.connection.execute("""UPDATE attempts SET status='blocked',finished_at=?,
-                elapsed_seconds=?,reason=?,termination_reason='provider_defect'
+                elapsed_seconds=?,reason=?,termination_reason='provider_defect',uncertain_completion=1
                 WHERE call_id=? AND number=?""",
                 (utc_now(), seconds(elapsed_seconds), reason, call_id, attempt["number"]))
 
