@@ -199,6 +199,26 @@ class OfflineRecordTests(unittest.TestCase):
             self.assertTrue(all(r["auc"] == 1 for r in result["trajectories"]))
             if task in (Task.PREFIX, Task.SORT):
                 self.assertTrue(all(r["identical_wrong_agreement"] is None for r in result["rounds"]))
+            if task is Task.BFS:
+                self.assertTrue(all(r["v2_available"] for r in result["outcomes"] if r["phase"] == "continuation"))
+
+    def test_invalid_final_prefix_does_not_remove_a_world_or_backfill_eligibility(self):
+        worlds, branches = selection()
+        records, inputs, attempts = saved_records(worlds, branches)
+        prefix = next(b for b in branches if b.phase == "prefix")
+        last = records[next(c.call_id for c in prefix.calls if c.round_number == 4 and c.peer == 3)]
+        validation = json.loads(last["validation_json"])
+        validation["candidate"].update(status="invalid", value=None)
+        last["validation_json"] = encode(validation)
+        result = evaluate_records(worlds, branches, records, inputs, attempts)
+        self.assertEqual(len(result["outcomes"]), 32)
+        self.assertEqual(next(r for r in result["trajectories"] if r["phase"] == "continuation")["auc"], 1)
+        rows = [r for r in result["peer_diagnostics"] if r["peer"] == 3 and r["metric"] == "preservation"]
+        self.assertEqual(len(rows), 4)
+        self.assertTrue(all(r["denominator"] == 0 and r["rate"] is None for r in rows))
+        peer = next(r for r in result["outcomes"] if r["phase"] == "continuation" and r["peer"] == 3)
+        self.assertEqual(peer["prefix_protocol_outcome"], "invalid")
+        self.assertEqual(peer["prefix_correct"], 0)
 
     def test_invalid_failed_unknown_and_raw_validation_defect_are_distinct(self):
         worlds, branches = selection()
@@ -302,6 +322,17 @@ class OfflineRecordTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "duplicate"):
                 evaluate_run(worlds, branches, [path, backup])
 
+    def test_unbound_saved_source_drift_cannot_change_evaluator_truth(self):
+        worlds, branches = selection()
+        records, inputs, attempts = saved_records(worlds, branches)
+        prefix = next(b for b in branches if b.phase == "prefix")
+        barrier = inputs[prefix.branch_id, 1]
+        before = json.loads(barrier["requests"]["before"])
+        before["peers"][0]["sources"][0]["value"] = (before["peers"][0]["sources"][0]["value"] + 1) % 31
+        barrier["requests"]["before"] = encode(before)
+        with self.assertRaisesRegex(ValueError, "source.*manifest"):
+            evaluate_records(worlds, branches, records, inputs, attempts)
+
     def test_offline_imports_exclude_runtime_and_inference_dependencies(self):
         code = '''
 import sys, importlib.abc
@@ -359,18 +390,18 @@ class DiagnosticAggregationTests(unittest.TestCase):
         rows = []
         for family, world, peer, numerator, denominator in (
                 ("difference_array", "a", 0, 1, 1), ("difference_array", "a", 1, 0, 9),
-                ("difference_array", "b", 0, 0, 100), ("prefix_sum", "c", 0, 1, 1),
+                ("difference_array", "b", 0, 0, 21), ("prefix_sum", "c", 0, 1, 1),
                 ("bfs_distance", "d", 0, 0, 0)):
             rows.append(dict(base, family=family, world_id=world, branch_id=world + "/B", peer=peer,
                 numerator=numerator, denominator=denominator, rate=numerator / denominator if denominator else None,
-                eligible_coordinates=list(range(denominator))))
+                eligible_coordinates=list(range(1, denominator + 1)) if family == "difference_array" else list(range(denominator))))
         result = aggregate_diagnostics(rows)
         pooled = next(r for r in result if r["level"] == "all_families")
         self.assertEqual(pooled["rate"], 5 / 8)
         self.assertEqual((pooled["eligible_peers"], pooled["eligible_worlds"], pooled["eligible_families"]), (4, 3, 2))
         self.assertEqual(pooled["scheduled_families"], 3)
-        self.assertEqual(pooled["unique_coordinate_count"], 110)
-        self.assertEqual(pooled["peer_copy_count"], 111)
+        self.assertEqual(pooled["unique_coordinate_count"], 31)
+        self.assertEqual(pooled["peer_copy_count"], 32)
         rows[0].update(numerator=None, rate=None, reason="slot_unknown")
         self.assertIsNone(next(r for r in aggregate_diagnostics(rows) if r["level"] == "all_families")["rate"])
 

@@ -32,7 +32,7 @@ controller kills preserve exact resumed states/deliveries, cleared fields,
 held prose and bounded retries. The fourteen-case
 [ordinary scripted bundle](tests/fixtures/scripted_lifecycle_run.zip) reproduces
 4,340 logical slots and 384 exact replay uses, with offline reconstruction and
-reopened backups. M4-T01 is ready; the full M4 analysis/report gate remains
+reopened backups. M4-T01 is being verified; the full M4 analysis/report gate remains
 mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
 work. See
 [M3-T05 gate evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate),
@@ -289,6 +289,45 @@ remain available for unknown-slot coverage. The offline preview demonstrates
 data availability and exact scoring/footprints; M4 owns the complete analyses
 and report. See [fixture reproduction](tests/fixtures/README.md#crash-safe-scripted-lifecycle-run-bundle)
 and [M3-T05 evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence).
+
+## Offline exact outcomes and trajectories
+
+[evaluate.py](recovery/evaluate.py) reads the full saved schedule and original
+call/attempt/pre-delivery records without importing the runner or model stack.
+Recorded invalid/failed replies score zero; unexecuted opportunities remain
+unknown. Exact answers preserve list order/multiplicity and every BFS node key.
+Coordinate diagnostics use the same peer's valid prefix-round-four candidate
+for preservation eligibility, with empty/unknown denominators explicit.
+World/family summaries average eligible peers, then worlds, then equal families.
+All four rounds remain present for AUC, joint completion, trajectory categories,
+regression, fragmentation and six overlapping observable annotations.
+
+```powershell
+python -S -m recovery analyze --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 --output outcomes.json.gz
+python -S -m tests.outcome_archive
+```
+
+`analyze` exclusively creates a derived JSON (or `.json.gz`) export containing
+`outcomes`, `coordinates`, `peer_diagnostics`, `diagnostic_summaries`, `rounds`,
+`trajectories`, `annotations`, `annotation_counts` and original `attempts`.
+Each outcome retains its world/event/policy/replicate/round/peer and original
+generation/replay/prefix joins. Supply each accepted worker once; duplicate
+backups are rejected and missing files are never created. Use `--stage development`
+for the saved pilot schedule or `--count 40` for the nested main population.
+No scoring is fed into execution or stopping decisions.
+
+```python
+from recovery.evaluate import evaluate_run, write_evaluation
+
+tables = evaluate_run(worlds, branches, worker_paths)  # Full intended schedule.
+write_evaluation("outcomes.json.gz", tables)          # Existing files protected.
+```
+
+The [retained table fixture](tests/fixtures/README.md#exact-offline-outcomes-and-trajectories)
+reproduces sixteen offline cases from the M3 bundle, including full population
+joins and the stopped unknown slots. Scripted outcomes are validation evidence.
+M4-T02–T06 still own contrasts, information/work inventories, costs,
+uncertainty/missingness bounds and the complete report before GPU use.
 
 ## Protocol attainability and capacity
 

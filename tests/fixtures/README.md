@@ -639,3 +639,71 @@ full schedules and reopens every accepted SQLite file. No weights, GPU, pilot or
 main inference is used. See [M3-T05](../../docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence)
 for gate evidence and the Windows CPU environment; M4 remains mandatory before
 GPU use, and the eventual accepted host must repeat persistence checks in M5.
+
+## Exact offline outcomes and trajectories
+
+[exact_outcome_tables.json.gz](exact_outcome_tables.json.gz) contains derived
+M4-T01 validation tables from the authoritative manifests and accepted workers
+in [scripted_lifecycle_run.zip](scripted_lifecycle_run.zip). The original bundle
+is unchanged. These are scripted CPU outcomes, not model capability, a pilot,
+empirical findings or an accepted freeze. [outcome_archive.py](../outcome_archive.py)
+reads only ordinary JSON/application SQLite records; it imports no runner,
+checkpoint library, tokenizer or inference stack.
+
+Sixteen table cases cover the thirteen accepted worker selections, the stopped
+budget selection, and full target-60/fallback-40 main manifests. Backups,
+interrupted originals and baselines are never combined with accepted workers.
+Each complete five-world fixture has 2,170 recorded slots, 1,978 original
+physical attempts and 192 exact replay uses. The full joins retain all 17,656 /
+12,560 slots, including 15,486 / 10,390 unknowns outside recorded work. The
+stopped snapshot keeps sixteen unknown slots and its uncertain attempt.
+
+Each case contains these tidy JSON tables:
+
+- `outcomes`: exact whole-candidate correctness, execution/protocol status,
+  original call/generation/replay/attempt joins, prefix-round-four context and
+  usable v2 delivery IDs. BFS's saved canonical key/value pairs are decoded
+  before comparison with the full node dictionary; lists retain order and duplicates.
+- `coordinates`, `peer_diagnostics`: unique D/U coordinates and per-peer
+  changed accuracy, explicit old-gold persistence, other valid errors,
+  malformed/missing changed outputs, preservation, collateral damage and repair
+  of old U errors. Eligibility uses that peer's valid final-prefix candidate;
+  unknown eligibility and empty denominators have explicit reasons.
+- `diagnostic_summaries`: eligible peer means, then world means, then equal
+  eligible family means, with unique-coordinate/peer-copy counts. Unknown
+  eligible outcomes keep the summary unknown. Grouping preserves event, policy,
+  round and replicate; replicate zero remains primary.
+- `rounds`, `trajectories`: all four rounds, AUC over sixteen opportunities,
+  final joint correctness, first/stable joint times, regression, individual/joint
+  ever-correct indicators, fragmentation and the four complete categories.
+  Incomplete branches stay separate. Identical wrong agreement is N/A for
+  differently assigned Prefix/Sort segments.
+- `annotations`, `annotation_counts`: six nonexclusive observable labels,
+  original input/outcome/prefix/delivery provenance, applicable/observed/unknown
+  counts, inclusive pair intersections and exact overlap patterns (including
+  unknown/N/A labels). Their unit is a scheduled peer-round, not an independent
+  world or a partition of psychological causes.
+- `attempts`: the original physical attempt rows, including uncertain work;
+  replay never introduces another physical attempt or copied raw reply.
+
+[Hand-checked tests](../test_evaluate.py) include duplicate-sensitive answers,
+complete BFS dictionaries, valid/invalid/failed/unknown outcomes, empty D/U and
+old-prefix eligibility, collateral damage versus old-error repair, all trajectory
+categories and fragmentation. A rate fixture gives world means 1/2 and 0 in one
+family, and 1 in a second: the equal-family mean is 5/8, with 31 unique eligible
+coordinates and 32 peer copies. It must not become a pooled-coordinate ratio.
+[Archive checks](../test_outcome_archive.py) reproduce every retained table and
+verify full population coverage, original attempts and stopped unknowns.
+
+```powershell
+python -S -m unittest tests.test_evaluate -v
+$env:PYTHONHASHSEED = '37'
+python -S -m tests.outcome_archive
+```
+
+The latter compares every table with the retained export. `--write-fixture
+<new_tables.json.gz>` exclusively creates another derived export; ordinary
+reproduction preserves the fixture. The public `recovery analyze` command and
+API are documented in [README](../../README.md#offline-exact-outcomes-and-trajectories).
+Contrasts, information/work inventories, cost analysis, uncertainty/missingness
+bounds and the full reproducible report remain M4-T02–T06.

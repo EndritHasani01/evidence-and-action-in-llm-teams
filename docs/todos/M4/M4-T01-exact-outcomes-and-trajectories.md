@@ -44,14 +44,19 @@ Use hand-checked exact and duplicate-sensitive answers, full BFS dictionaries, m
 **Evidence:** Implementation started on 5 October 2026 on `feat/m4-offline-analysis`
 from clean commit `54b434c`. Authority, M3 gate evidence, complete saved manifests,
 raw/validated outcomes, pre-delivery states and stopped slots have been inspected.
-Focused expectations, offline commands and retained tables will be recorded here
-after verification. M4's remaining analysis/report gate stays open.
+M4's remaining analysis/report gate stays open.
 
 Checkpoint `bd255db` implements the pure scoring/coordinate/trajectory core.
-`python -S -m unittest tests.test_evaluate -q` now passes 24 focused checks,
+Checkpoint `d8a5026` adds persisted offline joins, annotations and the CLI.
+`python -S -m unittest tests.test_evaluate -q` now passes 26 focused checks,
 including saved-record decoding, exact parent joins, nested peer/world/family
 rates, six annotation labels and overlaps, read-only workers, exclusive JSON/gzip
 exports and the offline CLI's complete 1,178-slot development join. These checks
-block optional runtime/model imports. Integrated retained-bundle reproduction
-and complete regression evidence are still pending.
+block optional runtime/model imports. The final core suite passes 108 checks;
+27 installed-library checks pass outside the checkout with module paths/bytes
+asserted. The [retained tables](../../../tests/fixtures/exact_outcome_tables.json.gz)
+reproduce all sixteen [offline cases](../../../tests/fixtures/README.md#exact-offline-outcomes-and-trajectories),
+including both full main manifests and stopped slots, under hash seed 37.
+M3's retained lifecycle archive passes its offline audit after BFS preview decoding.
+Complete process-crash regression is still running.
 

@@ -324,6 +324,39 @@ def _recorded_outcome(branch, call, size, records, inputs):
     return candidate["status"], candidate_payload(branch.task, size, call.peer, candidate)
 
 
+def _check_inputs(worlds, branches, inputs):
+    """Check original/event sources even in manually started, unbound workers."""
+    by_branch = {b.branch_id: b for b in branches}
+    for (branch_id, number), saved in inputs.items():
+        branch = by_branch.get(branch_id)
+        if branch is None or number not in {c.round_number for c in branch.calls}:
+            raise ValueError("unscheduled saved round input")
+        prepared = worlds[branch.world_id]
+        current = prepared.world if branch.event == "original" else prepared.event_world(branch.event)
+        expected = {r.record_id: asdict(r) for r in current.records}
+        data = saved["requests"]
+        phase = "recovery" if branch.phase == "continuation" else branch.phase
+        if branch.phase == "control":
+            state, peers, slot = data["view"], [data["view"]], data["view"]["slot"]
+        else:
+            state, slot = json.loads(data["before"]), data["slot"]
+            peers = state["peers"]
+            if state["branch_id"] != branch_id or state["phase"] != phase or len(peers) != 4:
+                raise ValueError("saved state differs from branch scope")
+        if (state["task"] != branch.task.value or state["size"] != current.size.value
+                or slot != {"phase": phase, "round_number": number}):
+            raise ValueError("saved input differs from task/size/opportunity")
+        for peer in peers:
+            if len({s["record_id"] for s in peer["sources"]}) != len(peer["sources"]):
+                raise ValueError("duplicate saved source in evaluator input")
+            for source in peer["sources"]:
+                record = expected.get(source["record_id"])
+                if record is not None and "value" not in source:
+                    record = {k: record[k] for k in ("record_id", "owner", "position", "version")}
+                if record is None or _json(record) != _json(source):
+                    raise ValueError("saved current source differs from evaluator manifest")
+
+
 def _availability(branch, call, prepared, inputs):
     if branch.phase != "continuation" or branch.event == "sham":
         return {"v2_available": None, "v2_reason": "not_applicable", "v2_delivery_ids": []}
@@ -453,6 +486,7 @@ def evaluate_records(worlds, branches, records, inputs, attempts=()):
         raise ValueError("duplicate or unscheduled call in evaluation records")
     if any(b.world_id not in by_world or b.task is not by_world[b.world_id].world.task for b in branches):
         raise ValueError("scheduled branch lacks matching prepared world")
+    _check_inputs(by_world, branches, inputs)
     by_attempt = defaultdict(list)
     for attempt in attempts:
         scope = scheduled.get(attempt["call_id"])
