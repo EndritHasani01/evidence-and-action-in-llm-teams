@@ -356,6 +356,28 @@ class DurableTests(unittest.TestCase):
                     self.assertEqual(runner.store.call(call.call_id)["generation_id"], call.call_id)
             self.assertEqual(runner.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0], 24)
 
+    def test_identical_nonreplay_q_parent_requests_settings_and_seeds_are_not_deduplicated(self):
+        with self.runner() as runner:
+            prefix(runner, self.world)
+            runner.reply_provider = replay_provider(TOKENIZER, "silent")
+            parent = scheduled(self.world, "revision", "B")
+            q = scheduled(self.world, "revision", "Q_B")
+            runner.start(self.world, parent, settings=SETTINGS)
+            runner.run_round(parent.branch_id, 1)
+            runner.start(self.world, q, settings=SETTINGS)
+            runner.run_round(q.branch_id, 1)
+            b2 = runner.run_round(parent.branch_id, 2)
+            q2 = runner.run_round(q.branch_id, 2)
+            self.assertEqual(b2.barrier.requests.views, q2.barrier.requests.views)
+            self.assertEqual(b2.barrier.requests.rendered, q2.barrier.requests.rendered)
+            self.assertEqual(b2.barrier.requests.tokenized, q2.barrier.requests.tokenized)
+            for bcall, qcall in zip(parent.calls[4:8], q.calls[4:8]):
+                self.assertEqual(bcall.seed, qcall.seed)
+                self.assertEqual(runner.store.call(bcall.call_id)["generation_id"], bcall.call_id)
+                self.assertEqual(runner.store.call(qcall.call_id)["generation_id"], qcall.call_id)
+                self.assertNotEqual(bcall.call_id, qcall.call_id)
+            self.assertEqual(runner.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0], 28)
+
     def test_partial_raw_commit_resume_skips_only_completed_calls(self):
         seen = []
         def counted(view, rendered, tokenized, **kwargs):

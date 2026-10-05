@@ -435,3 +435,39 @@ state/workspace and 1.5 GiB headroom. M5 must verify memory, capability and timi
 archive inside gzip (`mtime=0`); normal checks only read it. Compression is offline
 storage only. [M2-T06 completion](../../docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate)
 records source/installed-library/core validation and closes M2's CPU gate.
+
+## Durable round runner traces
+
+[durable_round_traces.json.gz](durable_round_traces.json.gz) and
+[durable_native_traces.json.gz](durable_native_traces.json.gz) are derived CPU
+validation exports from the actual LangGraph/SQLite runner. The first uses the
+injected word counter; the second uses pinned Qwen3.5-9B tokenizer metadata.
+Neither samples a model. Each covers target Sort and fallback BFS, all their
+scheduled four-peer branches (controls remain outside this runner), four prefix
+and four recovery rounds, both events, receipts, preserving edits and repeats:
+60 branches, 240 rounds, 960 logical calls, 864 physical attempts and 96 prescribed
+parent reuses. Unicode-invalid and failed parents remain exact. Two Q delivery
+transitions resume from saved replies, and both live SQLite backups reopen with
+identical committed states and successful integrity checks.
+
+[durable_archive.py](../durable_archive.py) derives exact views, rendered/native
+requests, raw replies/validity, logical/physical joins, committed states/queues
+and deterministic attempt statuses. Attempt wall clocks remain recorded in the
+SQLite ledger and are omitted from this reproducible fixture. The exports have
+no authority over runtime effects. JSON is canonical UTF-8/LF, gzip `mtime=0`;
+ordinary reproduction reads the existing archive. `--write-fixture` exclusively
+creates a new file.
+
+```powershell
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.durable_archive
+python -c "import sys; from pathlib import Path; sys.path.insert(1,str(Path('.venv/Lib/site-packages').resolve())); from tests.durable_archive import main; raise SystemExit(main())" --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B" --fixture tests/fixtures/durable_native_traces.json.gz
+```
+
+The native command uses the host's Transformers 5.12.0 / tokenizers 0.22.2 and
+the tested `.venv` LangGraph/Pydantic packages; source imports take precedence.
+Tokenizer/config/template files match the existing M2 identities. The metadata
+path is local and may need replacement on another host; install the tokenizer
+dependencies there before reproduction. [M3-T01](../../docs/todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence)
+records environment and focused/full verification. Actual killed-process,
+termination/retry, worker and accounting acceptance remains M3-T02–T05.

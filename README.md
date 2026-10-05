@@ -17,8 +17,12 @@ exact mixed/Q replay and local-view attainability pass 167 CPU checks plus
 layout preserves retained work within a complete 261,388-token upper bound,
 including output reserve, under the uniform 262,144 limit. Unpaired message
 surrogates are bounded whole-reply schema failures. Both sizes are CPU-admitted;
-GPU memory/capability/timing remain untested. The durable workflow,
-Qwen3.5/T4 pilot and main experiments remain future work. See
+GPU memory/capability/timing remain untested. Durable rounds now run through real
+LangGraph/SQLite checkpoints with exact raw reply/failure reuse and branch-local
+effects; 18 focused CPU checks pass. Bounded process termination/retry recovery,
+worker scheduling/accounting, the complete M3 gate, Qwen3.5/T4 pilot and main
+experiments remain future work. See
+[M3-T01 evidence](docs/todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence),
 [M2-T06 completion evidence](docs/todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate),
 [M2-T05 evidence](docs/todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff),
 [M2-T04 evidence](docs/todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff),
@@ -43,7 +47,9 @@ Four peers perform four rounds of collaborative work before an announced factual
 ## CPU installation and validation
 
 Use Python 3.11. Strict reply validation requires Pydantic 2, declared as a CPU
-dependency. The mathematical core remains standard-library only. Inference
+dependency; durable execution also uses the declared tested LangGraph/SQLite
+packages. These CPU pins are not the M5 inference/environment freeze.
+The mathematical core remains standard-library only. Inference
 dependencies are optional and are not imported by CPU validation. From this
 source checkout, run:
 
@@ -54,12 +60,13 @@ python -m venv .venv
 ```
 
 Full validation includes the core, strict-reply, scripted-round, event, replay and
-local-view attainability checks. Native tokenizer/capacity admission is checked
+local-view attainability and durable runner checks. Native tokenizer/capacity admission is checked
 separately with local pinned metadata. Without installation,
 `python -S -m recovery validate --core-only` runs only the dependency-free core
 subset with site packages disabled; it explicitly excludes strict replies, rounds,
-events, replay and attainability
+events, replay, attainability and durability
 and cannot establish their gate. Full validation fails if Pydantic is unavailable.
+Full validation also requires LangGraph and its SQLite saver.
 Validation requires this checkout's tests and attributed vendor JSON. It checks
 both sizes regardless of the configured size, exits nonzero on failure, and
 never loads a model or executes an experiment.
@@ -135,7 +142,7 @@ from that original snapshot. Public notices invalidate stale sources; unknown
 replacement content stays pending. K keeps the actual fourth-slot result or
 absence and preserves it as labeled history when a new outcome replaces the
 latest candidate. `BranchState.boundary_applied` derives from persistent notices
-and survives serialization; durable apply-once execution remains M3.
+and survives serialization; M3-T01 now commits that boundary once in its new thread.
 The [boundary archive](tests/fixtures/README.md#event-boundaries-and-receipt-pairs)
 records paired renders and actual receipt token costs. Mixed and Q initial
 requests match their prescribed B/C parents.
@@ -157,9 +164,23 @@ queues/deliveries, including zero for inactive Q; it rejects unexecuted recovery
 and uncommitted rounds. No queue data enters a peer view.
 The [replay archive](tests/fixtures/README.md#exact-parent-replay-and-delayed-prose)
 records 104 exact parent comparisons and complete Q release traces. Use these
-scheduled obtain/commit steps for continuation execution; `rounds.py` provides
-the underlying pure operations. Complete CPU capacity passes in M2-T06; durable
-reply persistence/checkpoints remain M3.
+scheduled obtain/commit steps through [runner.py](recovery/runner.py) for durable
+execution; `rounds.py` provides the underlying pure operations. Complete CPU
+capacity passes in M2-T06.
+
+`DurableRunner(path, tokenizer, reply_provider)` serially owns one worker file.
+`start(prepared_world, scheduled_branch, settings=...)` durably initializes a
+prefix or deep-forked event boundary. `run_round(branch_id, round_number)` obtains
+the four exact calls, then commits branch-local delivery with synchronous
+checkpoints. Repeating that explicit round returns its committed result. The
+provider receives only the permitted view, literal rendered/native request,
+saved seed and fresh settings. Exact raw replies/final failures live in
+[storage.py](recovery/storage.py); logical replay points to its physical parent
+without duplicating raw outcomes. An active attempt without a durable outcome
+stops for M3-T02's interruption recovery. `state`, `result` and `deliveries` read
+committed checkpoints, and `backup` uses SQLite's backup API, including live WAL.
+The [durable archives](tests/fixtures/README.md#durable-round-runner-traces)
+reproduce CPU-counter and native-tokenizer execution without model inference.
 
 ## Protocol attainability and capacity
 
