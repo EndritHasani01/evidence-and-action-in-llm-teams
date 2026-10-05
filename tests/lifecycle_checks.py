@@ -53,7 +53,7 @@ class LifecycleTests(unittest.TestCase):
             "world_ids": [w.world_id for w in worlds], "branch_ids": [b.branch_id for b in branches]})
         write_json(directory / "progress.json", snapshot)
         write_json(directory / "offline-preview.json", offline_preview(worlds, branches, paths))
-        case = {"directory": str(directory.relative_to(self.root.parent)) if self.bundle else directory.name,
+        case = {"directory": directory.relative_to(self.root.parent).as_posix() if self.bundle else directory.name,
                 "workers": [p.name for p in paths], "counts": snapshot["counts"], **details}
         self.evidence[case["directory"]] = case
         return snapshot

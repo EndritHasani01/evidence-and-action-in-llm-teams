@@ -41,6 +41,14 @@ def selected(root, case):
 
 def audit(root):
     evidence = json.loads((root / "evidence.json").read_bytes())
+    # The retained Windows bundle predates portable case paths. Normalize only
+    # these relative references; actual command/module paths remain observations.
+    evidence["cases"] = {
+        key.replace("\\", "/"): (
+            {**case, "directory": case["directory"].replace("\\", "/")}
+            if isinstance(case, dict) and "directory" in case else case)
+        for key, case in evidence["cases"].items()
+    }
     for size in Size:
         directory = root / "inputs" / size.value
         prepared = load_population(directory / "population.json")

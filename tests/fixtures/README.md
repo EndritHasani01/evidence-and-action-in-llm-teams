@@ -610,6 +610,8 @@ populations and schedules, not empirical results or an accepted freeze.
 
 Each case's `selection.json` references the complete saved manifest IDs.
 `evidence.json` lists the accepted worker files, baseline/backup paths and counts.
+The reader normalizes Windows case-directory separators to ZIP-relative paths;
+new captures use forward slashes. The retained bundle stays unchanged.
 Use only those worker files together; interrupted originals, baselines and
 backups are copies of the same identities. `kill-*.json` contains the actual
 subprocess launch argv and exit receipt; the test applies `Popen.kill()` externally
