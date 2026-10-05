@@ -317,7 +317,7 @@ Update these sections only when a capability is verified, a consequential decisi
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
 | M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
-| M3 | In progress (3/5 tasks done) | M3-T01/T02/T03 done: 18 durable, 22 attempt and 14 worker checks, 221 source/installed checks, unchanged CPU/native durable archives and exact eight-case worker reproduction pass; M3-T04 active. Full M3 gate remains open |
+| M3 | In progress (4/5 tasks done) | M3-T01/T02/T03/T04 done: 18 durable, 22 attempt, 14 worker and 23 accounting checks; 244 source/installed checks and all retained CPU/native archives reproduce. M3-T05 ready; full M3 gate remains open |
 | M4 | Not started | Requires M1–M3 |
 | M5 | Not started | Requires passing M1–M4; no hardware/capability result exists |
 | M6 | Not started | Requires accepted M5 freeze |
@@ -326,7 +326,7 @@ Update these sections only when a capability is verified, a consequential decisi
 
 | Decision | Reason / reconsideration evidence |
 |---|---|
-| M3-T04 derives progress/costs from existing records and checkpoints | Existing call/attempt keys and saved configuration scope resolve physical and policy costs. The ledger stores request-token counts for responsive reads, verified against exact barriers, and optional peak memory; only allocation intervals add persistence. Loading inside an attempt is included in its measured cost, while allocation partitions setup/interruption/attempt/idle once. Twenty-three focused CPU checks pass. The pinned saver's first public read commits existing transactions through `executescript`; status primes it before its read snapshot. Cross-worker parent commits get at most two read retries, with no inference/effects. Provider reservation start/billing and confirmed release remain distinct from process lifetime. Full regressions remain in progress. |
+| M3-T04 derives progress/costs from existing records and checkpoints | Existing call/attempt keys and saved configuration scope resolve physical and policy costs. The ledger stores request-token counts for responsive reads, verified against exact barriers, and optional peak memory; only allocation intervals add persistence. Loading inside an attempt is included in its measured cost, while allocation partitions setup/interruption/attempt/idle once. Twenty-three focused and 244 source/installed CPU checks pass. The pinned saver's first public read commits existing transactions through `executescript`; status primes it before its read snapshot. Cross-worker parent commits get at most two read retries, with no inference/effects. Provider reservation start/billing and confirmed release remain distinct from process lifetime. Nine accounting cases and all prior archives reproduce. |
 | M3-T03 accesses original worker records through SQLite read-only connections | The pinned saver public read path works with `mode=ro` and `query_only=ON`; writes are rejected. Committed channel values exclude pending node effects. Physical parent rows and attempts stay in their original file, while logical replay rows and independent queues stay in the assigned worker. Durable controls use the same raw-call/attempt ledger, with no delivery thread. Fourteen focused worker checks and 221 source/installed checks pass; parent access adds no physical charge. |
 | M3-T03 enforces exclusive file ownership before recovery | A provider PID cannot identify an idle worker that has not loaded inference. A one-byte OS-lock sidecar rejects a second controller before any writer/recovery is opened; it stores no scientific or progress data and is released by the OS on owner death. Restart also confirms the preceding inference process exited before admitting replacement work. The idle-owner rejection and Q interruption/resume checks pass. |
 | New shallow package; vendor/archive remain references | Native execution/scoring conflict with the required protocol; do not inherit obsolete architecture |
@@ -557,16 +557,42 @@ scenarios reproduce 666 logical calls, 618 distinct generations, 619 attempts,
 The export comparator now normalizes in-memory tuples to retained JSON arrays;
 no scientific fields were relaxed. Both earlier CPU/native durable archives
 reproduce unchanged. See [T03 evidence](todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence).
-[M3-T04](todos/M3/M3-T04-accounting-progress-and-budget.md) is ready; resource
-attribution/terminal progress/budget stops and the combined T05 gate remain open.
+At that handoff, [M3-T04](todos/M3/M3-T04-accounting-progress-and-budget.md) was
+ready; attribution/progress/budget stops and the combined T05 gate remained open.
 Specification/configuration and prior archives are unchanged. No weights,
 GPU/model inference, pilot or main outcomes were used.
+
+M3-T04 completes on 5 October 2026. Physical costs join original generations
+and every measured/uncertain attempt; hypothetical policies include the original
+prefix and all sixteen continuation uses, including F and invalid/failed replay
+parents. Allocation intervals separately partition setup/interruption/attempt/
+unobserved work/idle, with no duplicate overhead. Provider reservation start,
+confirmed release and billing are separate from process lifetime. Only existing
+ledger token counts/optional memory and necessary allocation intervals persist;
+progress, policy totals, forecasts, dependencies and matched coverage are derived.
+
+Twenty-three focused and 244 source/installed checks pass. The nine-case archive
+reconciles 112 logical calls, 100 generations, 101 attempts, 203 synthetic attempt
+seconds and 400 synthetic allocated seconds. These hand-test costs are assigned,
+not observed inference times. Adverse timeouts, a hard deadline,
+uncertain work and exact single-retry resume preserve unknown opportunities.
+Measured phase/condition/device forecasts include slower devices, 25% margin,
+serialized idle allocation, reserves and external overhead; missing cells remain
+unavailable. Earlier configurations stay charged without supplying incompatible
+timing samples. Live CLI, heartbeat, backup/migration and concurrent reads pass.
+The initial full-suite status race was fixed after verifying that saver setup
+commits an existing SQLite transaction; bounded cross-worker rereads preserve
+monotonic parent commits without inference. All prior CPU/native durable,
+attempt and worker archives reproduce. See [T04 evidence](todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence).
+[M3-T05](todos/M3/M3-T05-crash-safe-scripted-lifecycle.md) is ready; M3 remains open.
+No scientific/frozen-configuration change or actual GPU/model/pilot/main run
+occurred. M5 retains actual provider-release, timing/memory and hardware gates.
 
 ### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |
 |---|---|
-| Resource accounting and combined killed-process lifecycle | T01 saver/replacement, T02 termination/retry/controller kills and T03 cross-worker replay/assigned-work recovery pass. M3-T04/T05 must integrate physical/policy attribution, safe budget stops and the combined gate, then rerun in M5's accepted host lock |
+| Combined killed-process lifecycle gate | T01 saver/replacement, T02 termination/retry/controller kills, T03 cross-worker replay/recovery and T04 accounting/live progress/safe stops pass. M3-T05 must verify their combined lifecycle and M4 artifact coverage, then rerun in M5's accepted host lock |
 | Passing model/runtime/timeout and device headroom at the revised context | M5 maintained-loader diagnostics and bounded smoke/pilot, including the complete admitted input envelope. Static full-attention FP16 KV alone is 8 GiB at 262,144; weights/activations/workspace and 1.5 GiB headroom are additional. CPU admission is not T4 feasibility. |
 | 9B/4B, target/fallback size, 60/40 worlds | M5 capability and complete-schedule allocation evidence, following the specified precedence and shared development limit |
 | Compute provider availability, persistence and allocation rules | Before GPU reservation, record actual devices, durable storage/backup location, allocation start/stop and billing rules; provider choice cannot alter experimental semantics |

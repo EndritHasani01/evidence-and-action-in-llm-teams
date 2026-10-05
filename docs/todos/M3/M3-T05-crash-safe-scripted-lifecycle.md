@@ -1,8 +1,13 @@
 # M3-T05 — Crash-safe scripted lifecycle acceptance
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M3-T04](../M3/M3-T04-accounting-progress-and-budget.md). The M2 gate must have passed.
+M2 passed and M3-T04 completed on 5 October 2026. Use its
+[CPU evidence](M3-T04-accounting-progress-and-budget.md#validation-and-evidence),
+manifest-derived status, exact physical/policy joins, allocation intervals and
+confirmed-release budget stops. Keep recorded failures, unexecuted slots and
+uncertain interrupted work distinct when integrating the killed-process suite.
 
 ## References
 

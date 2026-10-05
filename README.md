@@ -21,11 +21,15 @@ GPU memory/capability/timing remain untested. Durable rounds now run through rea
 LangGraph/SQLite checkpoints with exact raw reply/failure reuse and branch-local
 effects. Bounded process execution and controller-death recovery enforce durable
 timeouts, one identical infrastructure retry and observed/uncertain work;
-22 attempt and 14 worker checks pass in the 221-check source/installed CPU suites.
+22 attempt, 14 worker and 23 accounting checks pass in the 244-check
+source/installed CPU suites.
 Balanced local workers now access original prefix/replay parents read-only,
 execute durable controls and resume assigned checkpoints after interruption.
-Resource accounting, the complete M3 gate, Qwen3.5/T4 pilot and main
+Physical/policy accounting, read-only progress, allocation attribution and safe
+budget stops now pass CPU checks with synthetic allocations, historical measured
+costs and explicit unknowns. The complete M3 gate, Qwen3.5/T4 pilot and main
 experiments remain future work. See
+[M3-T04 evidence](docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence),
 [M3-T03 evidence](docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence),
 [M3-T02 evidence](docs/todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence),
 [M3-T01 evidence](docs/todos/M3/M3-T01-durable-round-runner.md#validation-and-evidence),

@@ -549,8 +549,10 @@ captures. Allocations explicitly say `synthetic`; these are protocol checks,
 not GPU spending, model capability, pilot or main outcomes.
 
 The hand schedule has 112 logical slots, 100 generations, 12 exact replays and
-101 attempts including one infrastructure retry. It reconciles 203 measured
-attempt seconds against 400 allocated seconds on two synthetic devices. B,
+101 attempts including one infrastructure retry. It reconciles 203 recorded
+synthetic attempt seconds against 400 allocated seconds on two synthetic devices.
+These assigned two-second call/three-second interruption costs are hand-test
+inputs, not observed inference times. B,
 P_G and Q_B each cost 67 policy seconds; C, F and Q_C each cost 64, always
 including the prefix and all 16 continuation uses. Ambiguous work changes the
 physical attempt range to [201, 203] without inventing an end time.
