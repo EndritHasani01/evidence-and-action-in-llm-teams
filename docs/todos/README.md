@@ -6,7 +6,7 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 9/29. Remaining: 20. Active: 0. Ready: 1. Blocked: 19.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 9/29. Remaining: 20. Active: 1. Ready: 0. Blocked: 19.** Counts measure verified task outcomes, not effort or runtime.
 
 M2-T01–T05 counts below describe their original completion checks. M2-T06 renews all
 affected archives/checks under the finalized renderer and supersedes earlier
