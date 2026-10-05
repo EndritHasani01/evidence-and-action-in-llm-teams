@@ -6,7 +6,7 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 14/29. Remaining: 15. Active: 1. Ready: 0. Blocked: 14.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 15/29. Remaining: 14. Active: 0. Ready: 3. Blocked: 11.** Counts measure verified task outcomes, not effort or runtime.
 
 M2-T01–T05 counts below describe their original completion checks. M2-T06 renews all
 affected archives/checks under the finalized renderer and supersedes earlier
@@ -26,7 +26,7 @@ capacity status; each prerequisite task links that renewal.
 - [M3-T03](M3/M3-T03-local-worker-scheduling.md#completion-and-handoff) is done: balanced local workers, original read-only prefix/mixed/Q parents, durable controls, exclusive ownership and assigned-work resume pass 14 focused checks, renewed in T05's 253 source/installed checks. Eight retained scenarios reproduce 666 logical calls/48 exact replay uses with one uncertain retry.
 - [M3-T04](M3/M3-T04-accounting-progress-and-budget.md#completion-and-handoff) is done: physical/policy joins, allocation/setup/idle/uncertainty attribution, read-only live status, historical measured forecasts and safe stops pass 23 focused checks, renewed in T05's 253 source/installed checks. Nine retained CPU cases reproduce; all earlier durable/attempt/worker archives remain exact.
 - [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate) is done: nine lifecycle checks cover eleven real external controller kills, both complete five-family fixtures, all original main/development schedule joins, reset/replay/delivery persistence, supported relocated backups and synthetic budget stop/resume. Fourteen retained cases reproduce 4,340 logical slots / 384 exact replay uses in an offline-readable SQLite bundle. All 253 source/installed and 81 core checks pass; every earlier M3 archive reproduces. M3's CPU gate passes.
-- [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) is active: exact offline outcomes, preservation and trajectories are being implemented from the complete manifests and retained M3 records. The M4 analysis/report gate remains required before GPU use.
+- [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff) is done: exact offline outcomes, unique-coordinate repair/preservation, four-round trajectories and six overlapping annotations preserve original replay/attempt joins and unknown slots. The 278-check complete regression, 108 final core checks and 27 installed-library checks pass; sixteen retained table cases reproduce. M4-T02–T04 are ready. The full M4 analysis/report gate remains required before GPU use.
 - Other blocked tasks await their listed prerequisites; dependency-blocked is distinct from a failed gate.
 - No GPU run, main experiment, scientific/frozen-configuration change or publication is authorized by creation of this task system.
 
@@ -35,7 +35,7 @@ capacity status; each prerequisite task links that renewal.
 | M1 | 3/3 | 0 | Passed on CPU | Exact worlds, coordinates, eligible populations, saved streams and complete schedules pass; [M1-T03 gate evidence](M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate) closes M1. |
 | M2 | 6/6 | 0 | Passed on CPU | All peer protocol, retention, replay, local-view attainability and complete native capacity checks pass; [M2-T06 completion](M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate) closes M2. GPU memory/capability/timing remain M5. |
 | M3 | 5/5 | 0 | Passed on CPU | Real externally killed controllers, all scripted paths, exact resumed states/deliveries, accounting/progress and stopped unknowns pass; [M3-T05 gate evidence](M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate) closes M3. |
-| M4 | 0/6 | 6 | M4-T01 active | All prescribed offline analysis and complete synthetic report reproduce; all M1–M4 CPU evidence passes in [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md). |
+| M4 | 1/6 | 5 | M4-T02–T04 ready; gate open | All prescribed offline analysis and complete synthetic report reproduce; all M1–M4 CPU evidence passes in [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md). |
 | M5 | 0/5 | 5 | Blocked by M1–M4 | Authorized smoke → 90-slot capability gate → full pilot → measured complete-schedule forecast and freeze; close in [M5-T05](M5/M5-T05-allocation-admission-and-freeze.md). |
 | M6 | 0/4 | 4 | Blocked by M5 / evidence | Full frozen schedule, independent audit, clean offline reproduction and authorized release pass; completion requires [M6-T01](M6/M6-T01-frozen-execution-and-resume.md) and [M6-T04](M6/M6-T04-reproducible-release.md). |
 
@@ -69,10 +69,10 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | [M3-T03 — Local worker scheduling and cross-worker replay](M3/M3-T03-local-worker-scheduling.md) | done | [M3-T02](M3/M3-T02-bounded-attempts-and-failures.md) | Plan §§2, 5, 8; spec §§8.1, 8.4, 9 |
 | [M3-T04 — Resource accounting, progress and safe budget stops](M3/M3-T04-accounting-progress-and-budget.md) | done | [M3-T03](M3/M3-T03-local-worker-scheduling.md) | Plan §5; spec §§6, 7.3, 8.3–8.4, 9 |
 | [M3-T05 — Crash-safe scripted lifecycle acceptance](M3/M3-T05-crash-safe-scripted-lifecycle.md) | done | [M3-T04](M3/M3-T04-accounting-progress-and-budget.md) | Plan §5 gate; spec §§4.2, 4.4, 6, 8.3–8.4, 9 |
-| [M4-T01 — Exact outcomes, preservation and trajectories](M4/M4-T01-exact-outcomes-and-trajectories.md) | active | [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md) | Plan §6 outcomes/diagnostics; spec §§5.1, 6, 7.1, 9 |
-| [M4-T02 — All prespecified contrasts and repeatability](M4/M4-T02-estimands-and-repeatability.md) | blocked | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 contrasts; spec §§1, 5.2–5.4, 6 |
-| [M4-T03 — Information inventories and retained-work references](M4/M4-T03-information-and-work-diagnostics.md) | blocked | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 explanatory outcomes; spec §§2.2, 7.2, 10 |
-| [M4-T04 — Policy costs and the frozen boundary rule](M4/M4-T04-policy-costs-and-boundary-rule.md) | blocked | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 costs; spec §7.3 |
+| [M4-T01 — Exact outcomes, preservation and trajectories](M4/M4-T01-exact-outcomes-and-trajectories.md) | done | [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md) | Plan §6 outcomes/diagnostics; spec §§5.1, 6, 7.1, 9 |
+| [M4-T02 — All prespecified contrasts and repeatability](M4/M4-T02-estimands-and-repeatability.md) | ready | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 contrasts; spec §§1, 5.2–5.4, 6 |
+| [M4-T03 — Information inventories and retained-work references](M4/M4-T03-information-and-work-diagnostics.md) | ready | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 explanatory outcomes; spec §§2.2, 7.2, 10 |
+| [M4-T04 — Policy costs and the frozen boundary rule](M4/M4-T04-policy-costs-and-boundary-rule.md) | ready | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 costs; spec §7.3 |
 | [M4-T05 — Paired uncertainty and shared-response missingness](M4/M4-T05-uncertainty-and-missingness.md) | blocked | [M4-T02](M4/M4-T02-estimands-and-repeatability.md), [M4-T04](M4/M4-T04-policy-costs-and-boundary-rule.md) | Plan §6 uncertainty; spec §§5–6, 7.3, 9 |
 | [M4-T06 — Reproducible report and pre-GPU analysis gate](M4/M4-T06-reproducible-report-and-cpu-gate.md) | blocked | [M4-T03](M4/M4-T03-information-and-work-diagnostics.md), [M4-T05](M4/M4-T05-uncertainty-and-missingness.md) | Plan §§6, 9–10; spec §§7.4, 9–10 |
 | [M5-T01 — Inference backend and allocation preparation](M5/M5-T01-inference-and-allocation-preparation.md) | blocked | [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md) | Plan §7 runtime; spec §§8.1, 8.4, 9 |

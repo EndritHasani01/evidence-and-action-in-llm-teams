@@ -1,6 +1,6 @@
 # M4-T01 — Exact outcomes, preservation and trajectories
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M3-T05](../M3/M3-T05-crash-safe-scripted-lifecycle.md). M1–M3 must have passed.
 As of 5 October 2026, M1–M3 have passed on CPU; see the
@@ -8,8 +8,8 @@ As of 5 October 2026, M1–M3 have passed on CPU; see the
 and [retained lifecycle bundle](../../../tests/fixtures/scripted_lifecycle_run.zip).
 Use its saved manifests, exact raw/validated outcomes, committed histories and
 original generation/replay/attempt joins, including the stopped unknown slots.
-The offline preview demonstrates input completeness; the analysis required here
-has not been implemented or verified.
+At the M3 handoff, the offline preview demonstrated input completeness. This
+task adds the offline analysis and verification documented below.
 
 ## References
 
@@ -58,5 +58,154 @@ asserted. The [retained tables](../../../tests/fixtures/exact_outcome_tables.jso
 reproduce all sixteen [offline cases](../../../tests/fixtures/README.md#exact-offline-outcomes-and-trajectories),
 including both full main manifests and stopped slots, under hash seed 37.
 M3's retained lifecycle archive passes its offline audit after BFS preview decoding.
-Complete process-crash regression is still running.
+Complete process-crash regression passes all 278 checks in 1,459.275 seconds,
+including all nine lifecycle checks. The two final source-drift/prefix-eligibility
+checks added during that run pass in the final focused/core/installed suites.
+
+### Implementation and scientific semantics
+
+[evaluate.py](../../../recovery/evaluate.py) supplies direct offline functions
+for exact scoring, coordinate diagnostics, trajectories, saved-record joins,
+annotation counts and exclusive JSON/gzip exports. The
+[CLI](../../../recovery/__main__.py) exposes `recovery analyze`. No dependency,
+identity system, persistence layer, model call or execution decision is added.
+The saved complete schedule remains the slot authority; worker calls, attempts
+and pre-delivery inputs remain the outcome/provenance authority.
+
+- Whole-list comparison retains order and duplicates; BFS comparison includes
+  every node and unreachable value. Recorded invalid/failed slots score zero;
+  pending/unexecuted slots are unknown. Completed raw replies require their
+  saved protocol validation before analysis; missing validation is an error.
+- Prefix context comes exclusively from each peer's original round-four call,
+  including invalid/failed absence. It never backfills an earlier correct answer.
+  D/U use unique task coordinates. Correct old U values define preservation and
+  collateral eligibility; incorrect old U values separately define repair.
+- Rates average eligible peers, then worlds, then equal eligible families.
+  Structural empty denominators and unknown prefix eligibility have separate
+  reasons/counts. Unknown eligible outcomes keep summaries unknown. Diagnostic
+  ineligibility never removes a world from the complete outcome table.
+- Four scheduled rounds supply sixteen opportunities for AUC. The boundary adds
+  no round. First/stable joint times, observed regressions, four complete
+  categories and fragmentation retain incomplete branches separately. Prefix/Sort
+  segments have no identical-answer agreement requirement.
+- The six annotations are observable and nonexclusive. Call-boundary sources
+  determine usable v2 availability, including tombstones; delivery IDs identify
+  archived receipt evidence. Counts expose applicability, observation, unknowns,
+  inclusive pair intersections and exact higher-order overlap patterns.
+- All tables preserve world/event/policy/replicate/round/peer and original
+  generation/replay/prefix relationships. Saved replay requests, permitted views,
+  settings, seeds and outcomes must equal the physical parent. An unexecuted
+  logical replay stays unknown even when that parent is already recorded.
+
+### Hand-checked expectations and retained tables
+
+[Focused tests](../../../tests/test_evaluate.py) verify all five candidate shapes,
+duplicate/order errors, complete BFS dictionaries and canonical saved pairs,
+malformed/failed/unknown outcomes, invalid final-prefix candidates, empty D/U,
+old-error repair versus collateral damage, nested rates and annotation overlaps.
+They also block imports of runtime/model dependencies, protect existing exports,
+reject duplicate workers and detect source-manifest drift in unbound workers.
+
+The Difference coordinate fixture changes j=1,2 in a 23-coordinate old answer.
+Its last-prefix candidate was wrong at unchanged j=4; the current candidate
+repairs j=4, damages previously correct j=3 and persists at old gold on j=1.
+Expected D accuracy/persistence are 1/2 each, preservation is 19/20, collateral
+damage is 1/20 and old-error repair is 1/1. Invalid current answers yield zero
+accuracy/preservation and a distinct malformed/missing changed-output category.
+The family-rate fixture yields 5/8 from family means 1/4 and 1, with 31 unique
+eligible coordinates versus 32 peer copies.
+
+| Joint correctness over four rounds | AUC | First joint | First maintained through round four | Complete category |
+|---|---:|---:|---:|---|
+| 1,1,1,1 | 1 | 1 | 1 | continuously correct |
+| 0,0,1,1 | 1/2 | 3 | 3 | correct at end after delay/regression |
+| 1,0,0,1 | 1/2 | 1 | 4 | correct at end after delay/regression |
+| 0,1,0,0 | 1/4 | 2 | N/A | temporarily correct, incorrect at end |
+| 0,0,0,0 | 0 | N/A | N/A | never jointly correct |
+
+These fixtures set all peers to the listed joint outcome. A separate fragmented
+fixture has one different correct peer per round: all peers are ever correct,
+joint completion remains zero and AUC is 1/4. Unknown opportunities make the
+branch incomplete and its AUC unknown; they receive no invented recovery time.
+
+[exact_outcome_tables.json.gz](../../../tests/fixtures/exact_outcome_tables.json.gz)
+contains sixteen derived cases. [Reconstruction](../../../tests/outcome_archive.py)
+reads the existing M3 manifests and evidence-named workers, with no generation.
+[Archive checks](../../../tests/test_outcome_archive.py) compare every table and
+independently verify scheduled/executed counts, original attempt/replay joins and
+stopped uncertainty. [Fixture documentation](../../../tests/fixtures/README.md#exact-offline-outcomes-and-trajectories)
+defines the table fields and reproduction contract.
+
+| Retained case | Scheduled | Recorded | Unknown |
+|---|---:|---:|---:|
+| Complete five-family fixture, each size | 2,170 | 2,170 | 0 |
+| Full target-60 main manifest | 17,656 | 2,170 | 15,486 |
+| Full fallback-40 main manifest | 12,560 | 2,170 | 10,390 |
+| Stopped budget prefix | 16 | 0 | 16 |
+
+The complete fixtures together retain 4,340 logical outcomes, 3,956 original
+physical attempts and 384 exact replay uses. Each size has 1,765 valid,
+270 invalid and 135 failed logical outcomes. All their complete scripted paths
+are never jointly correct; they were designed for protocol/lifecycle validation.
+The hand-checked fixtures above supply the remaining trajectory cases. Neither
+fixture supplies a model-capability or empirical recovery result.
+
+### Review discoveries
+
+M3's preview had passed serialized BFS key/value pairs directly to a dictionary
+scorer. The evaluator now decodes the existing canonical format with exact key
+checks, and the preview helper uses the same decoding. Hand-checked correct BFS
+answers are credited. The retained M3 BFS replies are wrong, so their scores and
+all prior artifacts remain unchanged; its complete offline audit passes.
+
+A regression test also demonstrated that manually started, unbound workers
+could carry sources inconsistent with the evaluator manifest. Analysis now checks
+saved original/event input scope and every known/pending current source against
+that manifest, including controls. This rejects drift before scoring without
+adding checksums or changing the saved records.
+
+### Reproduction and executed checks
+
+```powershell
+python -S -m unittest tests.test_evaluate -q
+python -S -m recovery validate --core-only
+$env:PYTHONHASHSEED = '37'
+python -S -m tests.outcome_archive
+.venv/Scripts/python.exe -m tests.lifecycle_archive --audit-only
+.venv/Scripts/python.exe -m recovery validate
+.venv/Scripts/python.exe -m pip check
+```
+
+For ordinary saved runs, [README](../../../README.md#offline-exact-outcomes-and-trajectories)
+documents `python -S -m recovery analyze` and `evaluate_run`. Output paths are
+exclusive. Backups/baselines cannot be supplied alongside original physical
+workers. Unknown workers are read-only missing inputs and are never created.
+
+| Executed check | Result |
+|---|---|
+| Focused dependency-free evaluator suite | 26 passed |
+| Final `python -S -m recovery validate --core-only` | 108 passed in 90.769 seconds |
+| Installed-library evaluator/archive harness outside checkout | 27 passed in 31.552 seconds; six implementation module paths/bytes asserted |
+| Fresh offline table reproduction, hash seed 37 | All sixteen cases and every table match the retained export |
+| Retained M3 lifecycle `--audit-only` | All fourteen original evidence cases, previews, worker integrity/progress/costs and stopped snapshots reproduce |
+| Complete CPU source regression | 278 passed in 1,459.275 seconds; all nine lifecycle checks pass |
+| Package build/install, `pip check`, compilation | Passed; ordinary non-editable isolated wheel build, no dependency changes |
+
+Windows build 26200, Python 3.11.9, SQLite 3.45.1, Pydantic 2.13.5, LangGraph
+1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1 and core 1.6.6. CPU validation only;
+this package environment is not an accepted M5 freeze. The documentation/status/
+protected-file audit passes all 289 relative links/anchors across nine documents
+and all 29 task/index statuses. `git diff --check` passes. Temporary logs use `$env:TEMP/m4-t01-*`; durable acceptance evidence is
+the retained export and executed reconstruction. Scientific specification,
+configuration, dependencies and all earlier fixtures remain unchanged.
+
+### Completion and handoff
+
+M4-T01 is implemented and verified on CPU. Checkpoints `bd255db`, `d8a5026` and
+`bb42ebf` separately commit the pure core, persisted evaluation/CLI and retained
+tables/source-drift review. The final evidence commit closes this task. Progress
+is fifteen done, three ready and eleven blocked; M4-T02–T04 can now consume the
+saved joins and tables. M4-T05–T06 and the complete analysis/report gate remain
+open. No GPU/model inference, pilot, main experiment, frozen/scientific change or
+publication occurred.
 

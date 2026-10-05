@@ -1,6 +1,6 @@
 # M4-T03 — Information inventories and retained-work references
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M4-T01](../M4/M4-T01-exact-outcomes-and-trajectories.md). M1–M3 must have passed.
 

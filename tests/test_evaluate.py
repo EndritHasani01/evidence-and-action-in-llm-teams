@@ -41,7 +41,7 @@ class ExactOutcomeTests(unittest.TestCase):
             score_candidate(gold, "valid", [True] * 10, 0)
 
     def test_bfs_full_dictionary_and_unreachable_node(self):
-        gold = Truth(Task.BFS, Size.FALLBACK, (0, 1, 2, 3, 4, 5, 6, -1))
+        gold = Truth(Task.BFS, Size.FALLBACK, (0, 1, 1, 1, 1, 1, 1, -1))
         answer = dict(reversed(list(gold.candidate().items())))
         self.assertEqual(score_candidate(gold, "valid", answer, 2), 1)
         answer["7"] = 7
@@ -52,22 +52,23 @@ class ExactOutcomeTests(unittest.TestCase):
 
     def test_segment_assignments_and_full_information_control(self):
         for task in (Task.PREFIX, Task.SORT):
-            gold = Truth(task, Size.TARGET, tuple(range(32)))
+            gold = Truth(task, Size.TARGET, tuple(range(1, 33)))
             for peer in range(4):
-                self.assertEqual(score_candidate(gold, "valid", list(range(8 * peer, 8 * peer + 8)), peer), 1)
-            self.assertEqual(score_candidate(gold, "valid", list(range(32)), None), 1)
+                self.assertEqual(score_candidate(gold, "valid", list(range(8 * peer + 1, 8 * peer + 9)), peer), 1)
+            self.assertEqual(score_candidate(gold, "valid", list(range(1, 33)), None), 1)
 
 
 class CoordinateOutcomeTests(unittest.TestCase):
     def setUp(self):
-        self.old = Truth(Task.DIFFERENCE, Size.FALLBACK, tuple(range(1, 24)))
-        self.new = Truth(Task.DIFFERENCE, Size.FALLBACK, (101, 102, *range(3, 24)))
+        # A constant legal array, with x_1 increased by one: d_1 += 1, d_2 -= 1.
+        self.old = Truth(Task.DIFFERENCE, Size.FALLBACK, (0,) * 23)
+        self.new = Truth(Task.DIFFERENCE, Size.FALLBACK, (1, -1, *([0] * 21)))
 
     def test_repair_old_errors_and_collateral_damage_are_distinct(self):
         old_answer = self.old.candidate(0)
         old_answer[3] = -4  # Coordinate 4 was an old U error, eligible for repair only.
         answer = self.new.candidate(0)
-        answer[0] = 1  # Coordinate 1 explicitly persists at old gold.
+        answer[0] = 0  # Coordinate 1 explicitly persists at old gold.
         answer[2] = -3  # Coordinate 3 was old-correct U, now collateral damage.
         coordinates, rates = score_coordinates(self.old, self.new, 0, "valid", answer, "valid", old_answer)
         self.assertEqual(coordinates[0]["coordinate"], 1)
@@ -108,9 +109,10 @@ class CoordinateOutcomeTests(unittest.TestCase):
         self.assertEqual(metric(rates, "changed_accuracy")["reason"], "no_changed_coordinates")
         self.assertIsNone(metric(rates, "old_value_persistence")["rate"])
         self.assertEqual(metric(rates, "preservation")["rate"], 1)
-        all_changed = Truth(self.old.task, self.old.size, tuple(v + 1 for v in self.old.values))
-        _, rates = score_coordinates(self.old, all_changed, 0, "valid", all_changed.candidate(),
-                                    "valid", self.old.candidate())
+        prefix_old = Truth(Task.PREFIX, Size.FALLBACK, tuple(range(1, 25)))
+        all_changed = Truth(Task.PREFIX, Size.FALLBACK, tuple(range(2, 26)))
+        _, rates = score_coordinates(prefix_old, all_changed, 0, "valid", all_changed.candidate(0),
+                                    "valid", prefix_old.candidate(0))
         self.assertEqual(metric(rates, "preservation")["reason"], "no_unchanged_coordinates")
         _, rates = score_coordinates(self.old, self.new, 0, "valid", self.new.candidate(),
                                     "valid", [-999] * 23)
@@ -129,8 +131,8 @@ class CoordinateOutcomeTests(unittest.TestCase):
         self.assertEqual(metric(rates, "preservation")["reason"], "prefix_round_four_unknown")
 
     def test_unique_global_coordinates_for_segments(self):
-        old = Truth(Task.PREFIX, Size.TARGET, tuple(range(32)))
-        new = Truth(Task.PREFIX, Size.TARGET, (*range(16), *range(116, 132)))
+        old = Truth(Task.PREFIX, Size.TARGET, tuple(range(1, 33)))
+        new = Truth(Task.PREFIX, Size.TARGET, (*range(1, 17), *range(18, 34)))
         for peer in range(4):
             coordinates, rates = score_coordinates(old, new, peer, "valid", new.candidate(peer),
                                                     "valid", old.candidate(peer))

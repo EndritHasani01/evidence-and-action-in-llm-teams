@@ -32,9 +32,14 @@ controller kills preserve exact resumed states/deliveries, cleared fields,
 held prose and bounded retries. The fourteen-case
 [ordinary scripted bundle](tests/fixtures/scripted_lifecycle_run.zip) reproduces
 4,340 logical slots and 384 exact replay uses, with offline reconstruction and
-reopened backups. M4-T01 is being verified; the full M4 analysis/report gate remains
+reopened backups. **M4-T01 is implemented and verified:** exact offline outcomes,
+coordinate repair/preservation, trajectories and observable annotations reproduce
+sixteen retained table cases. The complete regression passes 278 checks, final
+core passes 108 and installed-library evaluation passes 27. M4-T02–T04 are ready;
+the full M4 analysis/report gate remains
 mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
 work. See
+[M4-T01 completion evidence](docs/todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff),
 [M3-T05 gate evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate),
 [M3-T04 evidence](docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence),
 [M3-T03 evidence](docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence),
