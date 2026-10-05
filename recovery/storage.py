@@ -2,12 +2,13 @@
 
 Checkpoints, owned by runner.py, are the sole delivery/peer-state authority.
 These ordinary SQLite transactions never span inference or use saver internals.
-One worker serially owns a file; scheduling/attempt recovery belongs to M3-T02/03.
+One worker serially owns a file; process bounds belong to attempts.py.
 """
 
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 import json
+from math import isfinite
 from pathlib import Path
 import sqlite3
 
@@ -50,8 +51,8 @@ def connect(path: Path) -> sqlite3.Connection:
 class RecordedFailure:
     """Final known outcome, never a missing/unexecuted call or retry request.
 
-    Attempt termination and exhaustion must be established by the provider;
-    M3-T02 supplies that bounded process boundary. Detail remains host-only.
+    Attempt termination and exhaustion are established by the process controller.
+    Detail remains host-only.
     """
 
     status: str
@@ -64,7 +65,17 @@ class RecordedFailure:
 
 
 class UnresolvedAttempt(RuntimeError):
-    """No durable response: M3-T02 must resolve interruption before any retry."""
+    """No durable response: establish worker interruption before any retry."""
+
+
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def seconds(value: float) -> float:
+    if type(value) not in (int, float) or not isfinite(value) or value < 0:
+        raise ValueError("timing must be finite and nonnegative")
+    return float(value)
 
 
 class WorkerStore:
@@ -98,7 +109,27 @@ class WorkerStore:
                 uncertain_completion INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY (call_id, number)
             );
+            CREATE TABLE IF NOT EXISTS provider_processes (
+                call_id TEXT NOT NULL, number INTEGER NOT NULL,
+                pid INTEGER NOT NULL, started_at TEXT NOT NULL,
+                ready_at TEXT, last_observed_at TEXT NOT NULL,
+                stopped_at TEXT, recovered_at TEXT, termination_reason TEXT,
+                uncertain_stop INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (call_id, number),
+                FOREIGN KEY (call_id, number) REFERENCES attempts(call_id, number)
+            );
         """)
+        # Reopen T01 worker files without replacing their calls/checkpoints.
+        columns = {r[1] for r in self.connection.execute("PRAGMA table_info(attempts)")}
+        with self.connection:
+            for name, definition in (
+                ("timeout_seconds", "REAL"), ("termination_seconds", "REAL"),
+                ("observed_seconds", "REAL NOT NULL DEFAULT 0"),
+                ("termination_reason", "TEXT"), ("reason", "TEXT"),
+                ("recovered_at", "TEXT"), ("worker_pid", "INTEGER"),
+            ):
+                if name not in columns:
+                    self.connection.execute(f"ALTER TABLE attempts ADD COLUMN {name} {definition}")
 
     def close(self):
         self.connection.close()
@@ -160,7 +191,15 @@ class WorkerStore:
             return RecordedFailure(**json.loads(row["failure_json"]))
         raise ValueError("call has no durable completed response/failure")
 
-    def begin_attempt(self, call_id: str):
+    def attempts(self, call_id: str) -> tuple[dict, ...]:
+        self.call(call_id)
+        return tuple(dict(r) for r in self.connection.execute(
+            "SELECT * FROM attempts WHERE call_id=? ORDER BY number", (call_id,)))
+
+    def begin_attempt(self, call_id: str, *, timeout_seconds=None, termination_seconds=None) -> int:
+        for value in (timeout_seconds, termination_seconds):
+            if value is not None and seconds(value) == 0:
+                raise ValueError("attempt and termination bounds must be positive")
         with self.connection:
             row = self.call(call_id)
             if row["replay_parent"] is not None:
@@ -169,11 +208,22 @@ class WorkerStore:
                 raise UnresolvedAttempt(f"unresolved attempt without a durable reply: {call_id}")
             if row["status"] != "pending":
                 raise ValueError("only a pending physical call can start an attempt")
-            self.connection.execute("INSERT INTO attempts (call_id,number,status,started_at) VALUES (?,1,'running',?)",
-                                    (call_id, datetime.now(timezone.utc).isoformat()))
+            previous = self.attempts(call_id)
+            if previous and (len(previous) != 1 or previous[0]["status"] != "interrupted"):
+                raise UnresolvedAttempt("only one established infrastructure interruption permits a retry")
+            if previous and (previous[0]["timeout_seconds"], previous[0]["termination_seconds"]) != (
+                    timeout_seconds, termination_seconds):
+                raise ValueError("identical-request retry requires the original attempt bounds")
+            number = len(previous) + 1
+            self.connection.execute("""INSERT INTO attempts
+                (call_id,number,status,started_at,timeout_seconds,termination_seconds)
+                VALUES (?,?,'running',?,?,?)""",
+                (call_id, number, utc_now(), timeout_seconds, termination_seconds))
             self.connection.execute("UPDATE calls SET status='running' WHERE call_id=?", (call_id,))
+            return number
 
-    def finish_attempt(self, call_id: str, response, elapsed_seconds: float):
+    def finish_attempt(self, call_id: str, response, elapsed_seconds: float, *, termination_reason=None):
+        elapsed_seconds = seconds(elapsed_seconds)
         if response is None:
             response = RecordedFailure("infrastructure_failure", "provider recorded an exhausted failed slot")
         if type(response) not in (GeneratedReply, RecordedFailure):
@@ -185,11 +235,86 @@ class WorkerStore:
             row = self.call(call_id)
             if row["status"] != "running":
                 raise ValueError("response commit requires its active attempt")
+            attempt = self.attempts(call_id)[-1]
+            if attempt["status"] != "running":
+                raise UnresolvedAttempt("a blocked attempt cannot commit an inferred outcome")
             self.connection.execute("UPDATE calls SET status=?,raw_json=?,failure_json=? WHERE call_id=?",
                                     (status, raw, failure, call_id))
-            self.connection.execute("""UPDATE attempts SET status=?,finished_at=?,elapsed_seconds=?
-                WHERE call_id=? AND number=1""",
-                (status, datetime.now(timezone.utc).isoformat(), elapsed_seconds, call_id))
+            self.connection.execute("""UPDATE attempts SET status=?,finished_at=?,elapsed_seconds=?,
+                observed_seconds=?,termination_reason=?,reason=? WHERE call_id=? AND number=?""",
+                (status, utc_now(), elapsed_seconds, elapsed_seconds,
+                 termination_reason or (response.termination if raw is not None else response.status),
+                 response.reason if failure is not None else None, call_id, attempt["number"]))
+
+    def interrupt_attempt(self, call_id: str, reason: str, *, elapsed_seconds=None,
+                          termination_reason="worker_interruption"):
+        """Only an absent durable outcome can authorize the single retry.
+
+        After owner death, end time/duration are unknown. Keep observed work and
+        recovery time separately; neither lost work nor its ambiguity is erased.
+        """
+        if type(reason) is not str or not reason:
+            raise ValueError("interruption requires a concrete host-only reason")
+        if elapsed_seconds is not None:
+            elapsed_seconds = seconds(elapsed_seconds)
+        with self.connection:
+            row = self.call(call_id)
+            if row["status"] in ("completed", "timeout", "infrastructure_failure", "replay"):
+                return  # A durable outcome always wins, including a timeout.
+            if row["status"] != "running":
+                raise ValueError("interruption requires a running attempt")
+            attempt = self.attempts(call_id)[-1]
+            if attempt["status"] != "running":
+                raise UnresolvedAttempt("diagnosed provider/protocol defects require repair, not retry")
+            self.connection.execute("""UPDATE attempts SET status='interrupted',finished_at=?,
+                elapsed_seconds=?,observed_seconds=MAX(observed_seconds,?),uncertain_completion=1,
+                termination_reason=?,reason=?,recovered_at=? WHERE call_id=? AND number=?""",
+                (utc_now() if elapsed_seconds is not None else None, elapsed_seconds,
+                 elapsed_seconds or 0, termination_reason, reason,
+                 utc_now() if elapsed_seconds is None else None, call_id, attempt["number"]))
+            self.connection.execute("""UPDATE provider_processes SET uncertain_stop=1,
+                recovered_at=?,termination_reason=? WHERE stopped_at IS NULL
+                AND recovered_at IS NULL""", (utc_now(), termination_reason))
+            if attempt["number"] == 2:
+                failure = RecordedFailure("infrastructure_failure", "two infrastructure attempts interrupted: " + reason)
+                self.connection.execute("UPDATE calls SET status=?,failure_json=? WHERE call_id=?",
+                                        (failure.status, record_json(asdict(failure)), call_id))
+            else:
+                self.connection.execute("UPDATE calls SET status='pending' WHERE call_id=?", (call_id,))
+
+    def block_attempt(self, call_id: str, reason: str, elapsed_seconds: float):
+        """A diagnosed adapter/protocol defect stops; it is not a new sample."""
+        with self.connection:
+            attempt = self.attempts(call_id)[-1]
+            if self.call(call_id)["status"] != "running" or attempt["status"] != "running":
+                raise UnresolvedAttempt("defect requires its active attempt")
+            self.connection.execute("""UPDATE attempts SET status='blocked',finished_at=?,
+                elapsed_seconds=?,reason=?,termination_reason='provider_defect'
+                WHERE call_id=? AND number=?""",
+                (utc_now(), seconds(elapsed_seconds), reason, call_id, attempt["number"]))
+
+    def process_started(self, call_id: str, number: int, pid: int):
+        now = utc_now()
+        with self.connection:
+            self.connection.execute("INSERT INTO provider_processes (call_id,number,pid,started_at,last_observed_at) VALUES (?,?,?,?,?)",
+                                    (call_id, number, pid, now, now))
+
+    def process_ready(self, call_id: str, number: int):
+        with self.connection:
+            self.connection.execute("UPDATE provider_processes SET ready_at=? WHERE call_id=? AND number=?",
+                                    (utc_now(), call_id, number))
+
+    def observe_attempt(self, call_id: str, number: int, elapsed_seconds: float, pid: int):
+        with self.connection:
+            self.connection.execute("UPDATE attempts SET observed_seconds=?,worker_pid=? WHERE call_id=? AND number=? AND status='running'",
+                                    (seconds(elapsed_seconds), pid, call_id, number))
+            self.connection.execute("UPDATE provider_processes SET last_observed_at=? WHERE pid=? AND stopped_at IS NULL AND recovered_at IS NULL",
+                                    (utc_now(), pid))
+
+    def process_stopped(self, call_id: str, number: int, reason: str):
+        with self.connection:
+            self.connection.execute("""UPDATE provider_processes SET stopped_at=?,termination_reason=?
+                WHERE call_id=? AND number=? AND stopped_at IS NULL""", (utc_now(), reason, call_id, number))
 
     def inputs(self, branch_id: str, round_number: int):
         row = self.connection.execute("SELECT * FROM round_inputs WHERE branch_id=? AND round_number=?",
