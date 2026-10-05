@@ -2,7 +2,7 @@
 
 Call ledger inputs/outcomes precede effects; committed checkpoints exclusively
 own four-peer state/queues/delivery cursors. No model or evaluator is imported.
-attempts.py supplies process bounds; M3-T03 adds multi-worker scheduling.
+attempts.py supplies process bounds; workers.py owns local scheduling.
 """
 
 from dataclasses import asdict
@@ -17,11 +17,13 @@ from langgraph.graph import END, START, StateGraph
 from .attempts import ProcessProvider
 from .events import start_continuation
 from .manifests import _branch
-from .protocol import GeneratedReply
+from .prompts import render_request, tokenize_request
+from .protocol import GeneratedReply, failed_reply, validate_reply
 from .replay import commit_continuation_round, obtain_continuation_round
 from .rounds import (RoundResult, commit_round, deserialize_state, initial_branch,
                      prefix_snapshot, prepare_round, snapshot_bytes, validate_round)
 from .schedule import _prepare_branches
+from .state import initial_view
 from .storage import WorkerStore, connect, record_json, settings_json
 from .tasks import PEERS
 
@@ -34,6 +36,41 @@ class _Checkpoint(TypedDict):
     round_number: int
 
 
+class WorkerReader:
+    """Public saver/ledger reads, with SQLite-enforced read-only parent access.
+
+    Inspect saved channel values directly, excluding synthesized pending node
+    writes. No graph invocation, recovery, schema migration or peer effect is
+    permitted on this connection.
+    """
+
+    def __init__(self, path):
+        self.store = WorkerStore(path, readonly=True)
+        self.saver = SqliteSaver(self.store.connection)
+
+    def close(self):
+        self.store.close()
+
+    def values(self, branch_id):
+        saved = self.saver.get_tuple(DurableRunner._config(branch_id))
+        if saved is None:
+            return None
+        values = saved.checkpoint["channel_values"]
+        branch = _branch(json.loads(values["branch_json"]))
+        if branch.branch_id != branch_id:
+            raise ValueError("checkpoint branch identity differs")
+        state = deserialize_state(values["committed"])
+        if state.branch_id != branch_id:
+            raise ValueError("committed state branch identity differs")
+        return values
+
+    def state(self, branch_id):
+        values = self.values(branch_id)
+        if values is None:
+            raise ValueError(f"missing branch checkpoint: {branch_id}")
+        return deserialize_state(values["committed"])
+
+
 class DurableRunner:
     """One serial worker and SQLite file. Providers see only permitted inputs.
 
@@ -42,7 +79,7 @@ class DurableRunner:
     """
 
     def __init__(self, path: Path, tokenizer, reply_provider=None, *, invocation_order=PEERS,
-                 scripted=False):
+                 scripted=False, dependencies=()):
         order = tuple(invocation_order)
         if len(order) != 4 or any(type(p) is not int for p in order) or set(order) != set(PEERS):
             raise ValueError("invoke every peer exactly once")
@@ -50,11 +87,20 @@ class DurableRunner:
             raise ValueError("inference requires ProcessProvider(factory); direct CPU fixtures require scripted=True")
         self.tokenizer, self.reply_provider, self.order = tokenizer, reply_provider, order
         self.scripted = scripted
+        self.dependencies = []
         self.store = WorkerStore(path)
         try:
+            for dependency in dependencies:
+                if Path(dependency).resolve() == self.store.path:
+                    raise ValueError("a worker cannot be its own read-only dependency")
+                self.dependencies.append(WorkerReader(dependency))
+            self.store.parents = tuple(reader.store for reader in self.dependencies)
             self.store.recover_processes()
             self.checkpoint_connection = connect(self.store.path)
             self.saver = SqliteSaver(self.checkpoint_connection)
+            # Set up the local saver through its ordinary public read path, so
+            # other workers can read this initially empty file without writes.
+            self.saver.get_tuple(self._config(""))
             self.graph = (StateGraph(_Checkpoint)
                 .add_node("prepare", self._prepare)
                 .add_node("obtain", self._obtain)
@@ -63,6 +109,8 @@ class DurableRunner:
                 .add_edge("obtain", "commit").add_edge("commit", END)
                 .compile(checkpointer=self.saver))
         except BaseException:
+            for reader in self.dependencies:
+                reader.close()
             if hasattr(self, "checkpoint_connection"):
                 self.checkpoint_connection.close()
             self.store.close()
@@ -81,6 +129,8 @@ class DurableRunner:
         self.checkpoint_connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         self.checkpoint_connection.close()
         self.store.close()
+        for reader in self.dependencies:
+            reader.close()
 
     @staticmethod
     def _config(branch_id):
@@ -103,7 +153,18 @@ class DurableRunner:
         if branch.phase == "prefix":
             initial = initial_branch(world.world, branch.branch_id)
         else:
-            prefix = prefix_snapshot(self.state(branch.prefix_parent))
+            parents = []
+            if self.saver.get_tuple(self._config(branch.prefix_parent)) is not None:
+                parents.append(self.state(branch.prefix_parent))
+            for reader in self.dependencies:
+                values = reader.values(branch.prefix_parent)
+                if values is not None:
+                    if values["settings_json"] != settings_json(settings):
+                        raise ValueError("prefix parent settings differ")
+                    parents.append(deserialize_state(values["committed"]))
+            if len(parents) != 1:
+                raise ValueError("missing or duplicate original prefix checkpoint")
+            prefix = prefix_snapshot(parents[0])
             initial = start_continuation(prefix, world, branch)
         values = {"branch_json": record_json(asdict(branch)), "settings_json": settings_json(settings),
                   "committed": snapshot_bytes(initial), "round_number": 0}
@@ -117,6 +178,37 @@ class DurableRunner:
         else:
             self.graph.update_state(config, values, as_node="commit")
         return self.state(branch.branch_id)
+
+    def _generate(self, call, view, rendered, tokenized, *, settings):
+        row = self.store.call(call.call_id)
+        if row["status"] in ("completed", "timeout", "infrastructure_failure"):
+            return self.store.response(call.call_id)
+        if self.reply_provider is None:
+            raise ValueError("a pending physical call requires a provider")
+        if isinstance(self.reply_provider, ProcessProvider):
+            return self.reply_provider.obtain(self.store, call.call_id, view, rendered, tokenized,
+                                               seed=call.seed, settings=settings)
+        if not self.scripted:
+            raise ValueError("inference requires the bounded ProcessProvider")
+        self.store.begin_attempt(call.call_id)
+        started = monotonic()
+        raw = self.reply_provider(view, rendered, tokenized, seed=call.seed, settings=settings)
+        self.store.finish_attempt(call.call_id, raw, monotonic() - started)
+        return self.store.response(call.call_id)
+
+    def run_control(self, world, branch, *, settings):
+        """One durable full-information call; no peer thread or delivery effects."""
+        if branch not in _prepare_branches((world,)) or branch.phase != "control":
+            raise ValueError("control requires its scheduled original/revised world")
+        view = initial_view(world.world if branch.event == "original" else world.event_world(branch.event), None)
+        rendered = render_request(view)
+        tokenized = tokenize_request(rendered, self.tokenizer)
+        self.store.prepare_control(branch, settings_json(settings), view, rendered, tokenized)
+        raw = self._generate(branch.calls[0], view, rendered, tokenized,
+                             settings=json.loads(settings_json(settings)))
+        reply = (validate_reply(view, raw, self.tokenizer) if type(raw) is GeneratedReply else failed_reply(view))
+        self.store.save_control_validation(branch.calls[0].call_id, reply)
+        return reply
 
     def _prepare(self, checkpoint):
         state = deserialize_state(checkpoint["committed"])
@@ -145,25 +237,7 @@ class DurableRunner:
                     or view != requests.views[view.peer] or rendered != requests.rendered[view.peer]
                     or tokenized != requests.tokenized[view.peer]):
                 raise ValueError("provider input differs from its durable scheduled request")
-            row = self.store.call(call.call_id)
-            if row["status"] in ("completed", "timeout", "infrastructure_failure"):
-                raw = self.store.response(call.call_id)
-            else:
-                if self.reply_provider is None:
-                    raise ValueError("a pending physical call requires a provider")
-                if isinstance(self.reply_provider, ProcessProvider):
-                    raw = self.reply_provider.obtain(self.store, call.call_id, view, rendered, tokenized,
-                                                     seed=seed, settings=settings)
-                elif self.scripted:
-                    # Explicitly restricted to deterministic CPU fixtures; no
-                    # inference/model adapter may use this unbounded path.
-                    self.store.begin_attempt(call.call_id)
-                    started = monotonic()
-                    raw = self.reply_provider(view, rendered, tokenized, seed=seed, settings=settings)
-                    self.store.finish_attempt(call.call_id, raw, monotonic() - started)
-                else:
-                    raise ValueError("inference requires the bounded ProcessProvider")
-                raw = self.store.response(call.call_id)
+            raw = self._generate(call, view, rendered, tokenized, settings=settings)
             return raw if type(raw) is GeneratedReply else None
 
         if branch.phase == "continuation":

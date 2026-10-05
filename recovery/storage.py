@@ -31,15 +31,19 @@ def settings_json(settings: dict) -> str:
     return record_json(settings)
 
 
-def connect(path: Path) -> sqlite3.Connection:
-    connection = sqlite3.connect(str(path), check_same_thread=False, timeout=30)
+def connect(path: Path, *, readonly=False) -> sqlite3.Connection:
+    location = Path(path).resolve().as_uri() + "?mode=ro" if readonly else str(path)
+    connection = sqlite3.connect(location, uri=readonly, check_same_thread=False, timeout=30)
     try:
         connection.row_factory = sqlite3.Row
-        connection.execute("PRAGMA journal_mode=WAL")
-        connection.execute("PRAGMA synchronous=FULL")
+        if readonly:
+            connection.execute("PRAGMA query_only=ON")
+        else:
+            connection.execute("PRAGMA journal_mode=WAL")
+            connection.execute("PRAGMA synchronous=FULL")
         connection.execute("PRAGMA foreign_keys=ON")
         if (connection.execute("PRAGMA journal_mode").fetchone()[0] != "wal"
-                or connection.execute("PRAGMA synchronous").fetchone()[0] != 2):
+                or not readonly and connection.execute("PRAGMA synchronous").fetchone()[0] != 2):
             raise ValueError("worker database requires on-disk WAL/FULL durability")
     except BaseException:
         connection.close()
@@ -79,9 +83,12 @@ def seconds(value: float) -> float:
 
 
 class WorkerStore:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, *, readonly=False, parents=()):
         self.path = Path(path).resolve()
-        self.connection = connect(self.path)
+        self.parents = tuple(parents)
+        self.connection = connect(self.path, readonly=readonly)
+        if readonly:
+            return
         self.connection.executescript("""
             CREATE TABLE IF NOT EXISTS round_inputs (
                 branch_id TEXT NOT NULL, round_number INTEGER NOT NULL,
@@ -118,6 +125,9 @@ class WorkerStore:
                 PRIMARY KEY (call_id, number),
                 FOREIGN KEY (call_id, number) REFERENCES attempts(call_id, number)
             );
+            CREATE TABLE IF NOT EXISTS run_inputs (
+                singleton INTEGER PRIMARY KEY CHECK (singleton=1), inputs_json TEXT NOT NULL
+            );
         """)
         # Reopen T01 worker files without replacing their calls/checkpoints.
         columns = {r[1] for r in self.connection.execute("PRAGMA table_info(attempts)")}
@@ -133,6 +143,32 @@ class WorkerStore:
 
     def close(self):
         self.connection.close()
+
+    def bind_run(self, worlds, branches, settings, bounds):
+        """Reject restart input drift before admitting any new scheduled work.
+
+        The same literal run inputs bind each worker file; placement/order are
+        operational choices and do not change these scientific inputs.
+        """
+        payload = record_json({"worlds": [asdict(w) for w in sorted(worlds, key=lambda w: w.world_id)],
+            "branches": [asdict(b) for b in sorted(branches, key=lambda b: b.branch_id)],
+            "settings": json.loads(settings_json(settings)), "bounds": bounds})
+        with self.connection:
+            previous = self.connection.execute("SELECT inputs_json FROM run_inputs WHERE singleton=1").fetchone()
+            if previous is not None and previous[0] != payload:
+                raise ValueError("worker run inputs/settings/attempt bounds differ; resume the saved configuration")
+            self.connection.execute("INSERT OR IGNORE INTO run_inputs VALUES (1,?)", (payload,))
+
+    def _record(self, table, where, values):
+        # Table/predicate are internal constants, never user-supplied SQL.
+        matches = []
+        for store in (self, *self.parents):
+            row = store.connection.execute(f"SELECT * FROM {table} WHERE {where}", values).fetchone()
+            if row is not None:
+                matches.append((store, dict(row)))
+        if len(matches) != 1:
+            raise ValueError(f"{'missing' if not matches else 'duplicate'} saved {table} identity: {values}")
+        return matches[0]
 
     def prepare(self, branch, settings: str, requests: RoundRequests):
         """Save the frozen barrier and all pending slots in one transaction."""
@@ -171,10 +207,7 @@ class WorkerStore:
                      call.generation_id, call.replay_parent))
 
     def call(self, call_id: str) -> dict:
-        row = self.connection.execute("SELECT * FROM calls WHERE call_id=?", (call_id,)).fetchone()
-        if row is None:
-            raise ValueError(f"missing saved call: {call_id}")
-        return dict(row)
+        return self._record("calls", "call_id=?", (call_id,))[1]
 
     def response(self, call_id: str) -> GeneratedReply | RecordedFailure:
         row = self.call(call_id)
@@ -192,9 +225,41 @@ class WorkerStore:
         raise ValueError("call has no durable completed response/failure")
 
     def attempts(self, call_id: str) -> tuple[dict, ...]:
-        self.call(call_id)
-        return tuple(dict(r) for r in self.connection.execute(
+        store, _ = self._record("calls", "call_id=?", (call_id,))
+        return tuple(dict(r) for r in store.connection.execute(
             "SELECT * FROM attempts WHERE call_id=? ORDER BY number", (call_id,)))
+
+    def prepare_control(self, branch, settings, view, rendered, tokenized):
+        call = branch.calls[0]
+        payload = record_json({"view": asdict(view), "rendered": asdict(rendered), "tokenized": asdict(tokenized)})
+        identity = record_json(asdict(branch))
+        with self.connection:
+            row = self.connection.execute("SELECT * FROM round_inputs WHERE branch_id=? AND round_number=1",
+                                          (branch.branch_id,)).fetchone()
+            if row is not None:
+                if (row["branch_json"], row["settings_json"], row["requests_json"]) != (identity, settings, payload):
+                    raise ValueError("saved control request/settings/branch equality failed")
+                saved = self.call(call.call_id)
+                if tuple(saved[k] for k in ("branch_id", "round_number", "peer", "seed", "generation_id", "replay_parent")) != (
+                        branch.branch_id, 1, -1, call.seed, call.generation_id, None):
+                    raise ValueError("saved control slot identity differs")
+                return
+            self.connection.execute("INSERT INTO round_inputs VALUES (?,1,?,?,?)",
+                                    (branch.branch_id, identity, settings, payload))
+            self.connection.execute("""INSERT INTO calls
+                (call_id,branch_id,round_number,peer,seed,generation_id,status)
+                VALUES (?, ?,1,-1,?,?,'pending')""", (call.call_id, branch.branch_id, call.seed, call.generation_id))
+
+    def save_control_validation(self, call_id, reply):
+        raw = self.response(call_id)
+        if reply.generated != (raw if type(raw) is GeneratedReply else None):
+            raise ValueError("control validation differs from durable outcome")
+        encoded = record_json(asdict(reply))
+        with self.connection:
+            row = self.call(call_id)
+            if row["validation_json"] is not None and row["validation_json"] != encoded:
+                raise ValueError("control validation differs from recorded outcome")
+            self.connection.execute("UPDATE calls SET validation_json=? WHERE call_id=?", (encoded, call_id))
 
     def begin_attempt(self, call_id: str, *, timeout_seconds=None, termination_seconds=None) -> int:
         for value in (timeout_seconds, termination_seconds):
@@ -331,10 +396,7 @@ class WorkerStore:
                 WHERE call_id=? AND number=? AND stopped_at IS NULL""", (utc_now(), reason, call_id, number))
 
     def inputs(self, branch_id: str, round_number: int):
-        row = self.connection.execute("SELECT * FROM round_inputs WHERE branch_id=? AND round_number=?",
-                                      (branch_id, round_number)).fetchone()
-        if row is None:
-            raise ValueError("missing saved pre-delivery barrier")
+        _, row = self._record("round_inputs", "branch_id=? AND round_number=?", (branch_id, round_number))
         branch = _branch(json.loads(row["branch_json"]))
         if branch.branch_id != branch_id:
             raise ValueError("saved barrier branch identity differs")
