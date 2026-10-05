@@ -111,8 +111,8 @@ def main() -> int:
             import recovery.runner
         except ImportError:
             parser.error("full CPU validation requires Pydantic 2 and LangGraph/SQLite; install the package, or use --core-only for the core subset")
-    scope = ("core subset (strict replies, rounds, events, replay, attainability, durability and attempts excluded)" if args.core_only
-             else "core, strict replies, rounds, events, replay, attainability, durability and bounded attempts")
+    scope = ("core subset (strict replies, rounds, events, replay, attainability, durability, attempts and workers excluded)" if args.core_only
+             else "core, strict replies, rounds, events, replay, attainability, durability, bounded attempts and local workers")
     print(f"CPU validation ({scope}): configured size={size.value}; checks cover target and fallback.", flush=True)
     suite = unittest.defaultTestLoader.discover(str(root / "tests"), top_level_dir=str(root))
     if not args.core_only:
@@ -123,6 +123,7 @@ def main() -> int:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.attainability_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.durable_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.attempt_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.worker_checks"))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     return 0 if result.wasSuccessful() else 1
 

@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 import json
 from math import isfinite
 from pathlib import Path
+import os
 import sqlite3
 
 from .manifests import _branch
@@ -140,6 +141,9 @@ class WorkerStore:
             ):
                 if name not in columns:
                     self.connection.execute(f"ALTER TABLE attempts ADD COLUMN {name} {definition}")
+            process_columns = {r[1] for r in self.connection.execute("PRAGMA table_info(provider_processes)")}
+            if "device_visibility" not in process_columns:
+                self.connection.execute("ALTER TABLE provider_processes ADD COLUMN device_visibility TEXT")
 
     def close(self):
         self.connection.close()
@@ -266,6 +270,8 @@ class WorkerStore:
             if value is not None and seconds(value) == 0:
                 raise ValueError("attempt and termination bounds must be positive")
         with self.connection:
+            if self._record("calls", "call_id=?", (call_id,))[0] is not self:
+                raise ValueError("only the original worker can attempt its physical call")
             row = self.call(call_id)
             if row["replay_parent"] is not None:
                 raise ValueError("a replay cannot start physical inference")
@@ -375,8 +381,9 @@ class WorkerStore:
     def process_started(self, call_id: str, number: int, pid: int):
         now = utc_now()
         with self.connection:
-            self.connection.execute("INSERT INTO provider_processes (call_id,number,pid,started_at,last_observed_at) VALUES (?,?,?,?,?)",
-                                    (call_id, number, pid, now, now))
+            self.connection.execute("""INSERT INTO provider_processes
+                (call_id,number,pid,started_at,last_observed_at,device_visibility) VALUES (?,?,?,?,?,?)""",
+                (call_id, number, pid, now, now, os.environ.get("CUDA_VISIBLE_DEVICES")))
 
     def process_ready(self, call_id: str, number: int):
         with self.connection:
