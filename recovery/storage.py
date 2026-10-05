@@ -293,6 +293,20 @@ class WorkerStore:
                 WHERE call_id=? AND number=?""",
                 (utc_now(), seconds(elapsed_seconds), reason, call_id, attempt["number"]))
 
+    def confirm_timeout_termination(self, call_id: str, elapsed_seconds: float):
+        with self.connection:
+            self.connection.execute("""UPDATE attempts SET elapsed_seconds=?,observed_seconds=?,
+                finished_at=?,termination_reason='attempt_timeout' WHERE call_id=?
+                AND status='timeout' AND termination_reason='timeout_termination_pending'""",
+                (seconds(elapsed_seconds), seconds(elapsed_seconds), utc_now(), call_id))
+
+    def recover_processes(self):
+        """A new exclusive owner preserves unobserved prior process stop times."""
+        with self.connection:
+            self.connection.execute("""UPDATE provider_processes SET uncertain_stop=1,
+                recovered_at=?,termination_reason='owner_interruption' WHERE stopped_at IS NULL
+                AND recovered_at IS NULL""", (utc_now(),))
+
     def process_started(self, call_id: str, number: int, pid: int):
         now = utc_now()
         with self.connection:

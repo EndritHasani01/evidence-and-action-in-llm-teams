@@ -43,7 +43,7 @@ def trace_archive(tokenizer=TOKENIZER):
             def provide(view, rendered, tokenized, **kwargs):
                 return prefix_provider(view, rendered, tokenized)
             case = {"world_id": world.world_id, "task": task.value, "size": size.value, "branches": []}
-            with DurableRunner(path, tokenizer, provide) as runner:
+            with DurableRunner(path, tokenizer, provide, scripted=True) as runner:
                 for branch in branches:
                     initial = runner.start(world, branch, settings=SETTINGS)
                     if branch.phase == "continuation":
@@ -84,7 +84,7 @@ def trace_archive(tokenizer=TOKENIZER):
                 case["attempts"] = [dict(row) for row in runner.store.connection.execute(
                     "SELECT call_id,number,status,uncertain_completion FROM attempts ORDER BY call_id,number")]
                 runner.backup(backup)
-            with DurableRunner(backup, tokenizer, forbidden) as restored:
+            with DurableRunner(backup, tokenizer, forbidden, scripted=True) as restored:
                 for row in case["branches"]:
                     branch_id = _branch_id(row)
                     if record_json(asdict(restored.state(branch_id))) != record_json(row["rounds"][-1]["committed"]):

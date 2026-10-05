@@ -2,7 +2,7 @@
 
 Call ledger inputs/outcomes precede effects; committed checkpoints exclusively
 own four-peer state/queues/delivery cursors. No model or evaluator is imported.
-M3-T02 adds process termination/interruption recovery; M3-T03 adds scheduling.
+attempts.py supplies process bounds; M3-T03 adds multi-worker scheduling.
 """
 
 from dataclasses import asdict
@@ -14,6 +14,7 @@ from typing import TypedDict
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.graph import END, START, StateGraph
 
+from .attempts import ProcessProvider
 from .events import start_continuation
 from .manifests import _branch
 from .protocol import GeneratedReply
@@ -40,13 +41,18 @@ class DurableRunner:
     cannot accidentally advance the experiment after a lost acknowledgement.
     """
 
-    def __init__(self, path: Path, tokenizer, reply_provider=None, *, invocation_order=PEERS):
+    def __init__(self, path: Path, tokenizer, reply_provider=None, *, invocation_order=PEERS,
+                 scripted=False):
         order = tuple(invocation_order)
         if len(order) != 4 or any(type(p) is not int for p in order) or set(order) != set(PEERS):
             raise ValueError("invoke every peer exactly once")
+        if reply_provider is not None and not isinstance(reply_provider, ProcessProvider) and not scripted:
+            raise ValueError("inference requires ProcessProvider(factory); direct CPU fixtures require scripted=True")
         self.tokenizer, self.reply_provider, self.order = tokenizer, reply_provider, order
+        self.scripted = scripted
         self.store = WorkerStore(path)
         try:
+            self.store.recover_processes()
             self.checkpoint_connection = connect(self.store.path)
             self.saver = SqliteSaver(self.checkpoint_connection)
             self.graph = (StateGraph(_Checkpoint)
@@ -69,6 +75,8 @@ class DurableRunner:
         self.close()
 
     def close(self):
+        if isinstance(self.reply_provider, ProcessProvider):
+            self.reply_provider.close()
         # invoke(sync) has completed all writes before this clean checkpoint.
         self.checkpoint_connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")
         self.checkpoint_connection.close()
@@ -120,6 +128,8 @@ class DurableRunner:
         return {"round_number": requests.slot.round_number}
 
     def _obtain(self, checkpoint):
+        if isinstance(self.reply_provider, ProcessProvider):
+            self.reply_provider.check_termination()
         branch = _branch(json.loads(checkpoint["branch_json"]))
         r = checkpoint["round_number"]
         saved_branch, settings, requests = self.store.inputs(branch.branch_id, r)
@@ -141,10 +151,18 @@ class DurableRunner:
             else:
                 if self.reply_provider is None:
                     raise ValueError("a pending physical call requires a provider")
-                self.store.begin_attempt(call.call_id)
-                started = monotonic()
-                raw = self.reply_provider(view, rendered, tokenized, seed=seed, settings=settings)
-                self.store.finish_attempt(call.call_id, raw, monotonic() - started)
+                if isinstance(self.reply_provider, ProcessProvider):
+                    raw = self.reply_provider.obtain(self.store, call.call_id, view, rendered, tokenized,
+                                                     seed=seed, settings=settings)
+                elif self.scripted:
+                    # Explicitly restricted to deterministic CPU fixtures; no
+                    # inference/model adapter may use this unbounded path.
+                    self.store.begin_attempt(call.call_id)
+                    started = monotonic()
+                    raw = self.reply_provider(view, rendered, tokenized, seed=seed, settings=settings)
+                    self.store.finish_attempt(call.call_id, raw, monotonic() - started)
+                else:
+                    raise ValueError("inference requires the bounded ProcessProvider")
                 raw = self.store.response(call.call_id)
             return raw if type(raw) is GeneratedReply else None
 

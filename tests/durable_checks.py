@@ -52,7 +52,7 @@ class DurableTests(unittest.TestCase):
         self.branch = prefix_branch(self.world)
 
     def runner(self, reply_provider=provider, **kwargs):
-        return DurableRunner(self.path, TOKENIZER, reply_provider, **kwargs)
+        return DurableRunner(self.path, TOKENIZER, reply_provider, **kwargs, scripted=True)
 
     def test_real_wal_full_settings_and_synchronous_checkpoint_reopen(self):
         with self.runner() as runner:
@@ -165,7 +165,7 @@ class DurableTests(unittest.TestCase):
             runner.backup(backup)
             with self.assertRaises(FileExistsError):
                 runner.backup(backup)
-        with DurableRunner(backup, TOKENIZER, forbidden) as runner:
+        with DurableRunner(backup, TOKENIZER, forbidden, scripted=True) as runner:
             self.assertEqual(runner.state(self.branch.branch_id), expected)
             runner.run_round(self.branch.branch_id, 4)
             self.assertEqual(runner.store.connection.execute("PRAGMA integrity_check").fetchone()[0], "ok")
@@ -180,7 +180,7 @@ class DurableTests(unittest.TestCase):
     def test_durable_invalid_failed_and_unicode_parent_reuse_is_exact_and_branch_local(self):
         for mode in ("rich", "unicode"):
             path = Path(self.temp.name) / f"{mode}.sqlite"
-            with DurableRunner(path, TOKENIZER, provider) as runner:
+            with DurableRunner(path, TOKENIZER, provider, scripted=True) as runner:
                 prefix(runner, self.world)
                 self.parents(runner, mode=mode)
                 parents = {p: scheduled(self.world, "revision", p) for p in ("B", "C")}
@@ -213,7 +213,7 @@ class DurableTests(unittest.TestCase):
         for defect in ("missing", "settings", "seed", "rendered", "native", "view", "validation", "event", "replicate"):
             with self.subTest(defect=defect):
                 path = Path(self.temp.name) / f"defect-{defect}.sqlite"
-                with DurableRunner(path, TOKENIZER, provider) as runner:
+                with DurableRunner(path, TOKENIZER, provider, scripted=True) as runner:
                     prefix(runner, self.world)
                     if defect != "missing":
                         self.parents(runner)
@@ -262,7 +262,7 @@ class DurableTests(unittest.TestCase):
                     world = case_world(task, size)
                     path = Path(self.temp.name) / f"{size.value}-{task.value}.sqlite"
                     expected = {}
-                    with DurableRunner(path, TOKENIZER, provider) as runner:
+                    with DurableRunner(path, TOKENIZER, provider, scripted=True) as runner:
                         old = prefix(runner, world)
                         original = prefix_snapshot(runner.state(old.branch_id))
                         runner.reply_provider = replay_provider(TOKENIZER)
@@ -281,7 +281,7 @@ class DurableTests(unittest.TestCase):
                             # A second start must neither clear new work nor repeat the event.
                             self.assertEqual(runner.start(world, branch, settings=SETTINGS), result.committed)
                             self.assertEqual(prefix_snapshot(runner.state(old.branch_id)), original)
-                    with DurableRunner(path, TOKENIZER, forbidden) as runner:
+                    with DurableRunner(path, TOKENIZER, forbidden, scripted=True) as runner:
                         for branch_id, state in expected.items():
                             self.assertEqual(runner.state(branch_id), state)
                             self.assertEqual(runner.run_round(branch_id, 1).committed, state)
@@ -402,7 +402,7 @@ class DurableTests(unittest.TestCase):
                 path = Path(self.temp.name) / f"checkpoint-{when}.sqlite"
                 expected = run_round(initial_branch(self.world.world, self.branch.branch_id), TOKENIZER,
                                      event_provider(TOKENIZER)).committed
-                with DurableRunner(path, TOKENIZER, provider) as runner:
+                with DurableRunner(path, TOKENIZER, provider, scripted=True) as runner:
                     initial = runner.start(self.world, self.branch, settings=SETTINGS)
                     put = runner.saver.put
                     def interrupted(config, checkpoint, metadata, versions):
@@ -421,7 +421,7 @@ class DurableTests(unittest.TestCase):
                     self.assertEqual(runner.state(self.branch.branch_id), initial if when == "before" else expected)
                     self.assertEqual(runner.deliveries(self.branch.branch_id),
                                      (initial if when == "before" else expected).deliveries)
-                with DurableRunner(path, TOKENIZER, forbidden) as runner:
+                with DurableRunner(path, TOKENIZER, forbidden, scripted=True) as runner:
                     self.assertEqual(runner.run_round(self.branch.branch_id, 1).committed, expected)
                     self.assertEqual(runner.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0], 4)
 
@@ -431,7 +431,7 @@ class DurableTests(unittest.TestCase):
         class Oversized(RoundTokenizer):
             def __call__(self, *args, **kwargs):
                 return {"input_ids": [1] * MAX_CONTEXT_TOKENS, "attention_mask": [1] * MAX_CONTEXT_TOKENS}
-        with DurableRunner(self.path, Oversized(), forbidden) as runner:
+        with DurableRunner(self.path, Oversized(), forbidden, scripted=True) as runner:
             initial = runner.start(self.world, self.branch, settings=SETTINGS)
             with self.assertRaisesRegex(ValueError, "context limit"):
                 runner.run_round(self.branch.branch_id, 1)
@@ -448,7 +448,7 @@ class DurableTests(unittest.TestCase):
         class Changed(RoundTokenizer):
             def apply_chat_template(self, *args, **kwargs):
                 return super().apply_chat_template(*args, **kwargs) + " changed template"
-        with DurableRunner(self.path, Changed(), forbidden) as runner:
+        with DurableRunner(self.path, Changed(), forbidden, scripted=True) as runner:
             with self.assertRaisesRegex(ValueError, "equality"):
                 runner.run_round(self.branch.branch_id, 1)
             with self.assertRaisesRegex(ValueError, "settings"):
