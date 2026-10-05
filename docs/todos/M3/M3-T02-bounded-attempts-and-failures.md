@@ -1,6 +1,6 @@
 # M3-T02 — Bounded attempts, timeouts and interruption semantics
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M3-T01](../M3/M3-T01-durable-round-runner.md#completion-and-handoff).
 The M2 gate passed and M3-T01 completed on 5 October 2026. Use its exact
@@ -37,5 +37,9 @@ Every scheduled attempt terminates or resumes under the declared bounds, preserv
 
 Use CPU subprocesses simulating slow, hung, interrupted and completed calls. Kill before/after raw persistence; assert retry eligibility, identical retry request/settings/seed, no formatting/timeout resampling and no prior-candidate fallback. Trigger pre-generation overflow. Verify a durable result wins on resume and ambiguous work stays charged. Test ordinary continued scheduled opportunities after failures.
 
-**Evidence:** Not yet recorded. Add failure-state traces, timeout/termination measurements and command/environment results before marking done.
+**Evidence:** Implementation started on 5 October 2026 after inspecting M3-T01's
+ledger/checkpoints, its 18 deterministic checks and the M2 capacity prerequisite.
+Attempt recovery will use the same call/attempt identities and database; a bounded
+inference subprocess will enforce termination without holding SQLite locks.
+Executed process-failure evidence and final regression results remain pending.
 
