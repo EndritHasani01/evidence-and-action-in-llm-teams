@@ -1,6 +1,6 @@
 # M3-T05 — Crash-safe scripted lifecycle acceptance
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M3-T04](../M3/M3-T04-accounting-progress-and-budget.md). The M2 gate must have passed.
 M2 passed and M3-T04 completed on 5 October 2026. Use its
@@ -40,5 +40,14 @@ The integrated durable runner produces an auditable CPU run bundle and survives 
 
 Record the actual killed-process commands, crash boundaries, SQLite/durability settings, environments, fixture IDs, comparison outputs and reopened backup paths. A raised exception or the historical nine-check toy is insufficient evidence. Fix discovered defects in their owning implementation, rerun the affected checks, and preserve the accepted integrated fixture for offline analysis.
 
-**Evidence:** Not yet recorded. These are deterministic runtime checks, not pilot or empirical results.
+Work started on 5 October 2026 from clean commit `70ac24d`. M2 and M3-T01–T04
+prerequisite evidence and retained fixtures have been inspected. Acceptance will
+use the existing manifests, raw-call/attempt ledger, replacement checkpoints and
+SQLite backup API. Add real externally killed CPU controllers at the specified
+boundaries, compare their resumed scientific records with uninterrupted records,
+and retain the integrated fixture in an ordinary run bundle for M4. No new
+persistence layer or scientific/configuration change is needed.
+
+**Evidence:** Acceptance not yet recorded. These are deterministic runtime checks,
+not pilot or empirical results. M3 remains open until the checks pass.
 
