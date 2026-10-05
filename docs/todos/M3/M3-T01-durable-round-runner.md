@@ -1,6 +1,6 @@
 # M3-T01 — Durable rounds and exact response reuse
 
-**Status:** ready
+**Status:** in progress
 
 **Dependencies:** [M2-T06](../M2/M2-T06-attainability-and-capacity.md). The M2 CPU gate passed on 5 October 2026; use its finalized literal renderer, scalar-message contract and 262,144 input limit.
 
@@ -35,5 +35,11 @@ The validated round procedure runs through LangGraph/local SQLite, with exact du
 
 Run scripted save/reopen/resume checks, invalid parent reuse, equality mismatch rejection, per-branch delivery idempotence and replacement clearing. Inspect actual SQLite/durability behavior instead of assuming the research toy's results transfer. M3-T05 performs the full killed-process acceptance suite after attempt/scheduler/accounting integration.
 
-**Evidence:** Not yet recorded. Add named checks, actual package/SQLite versions and artifact paths before marking done.
+**Evidence:** Implementation started on 5 October 2026. Prerequisite files and
+M2's completed CPU/capacity evidence have been inspected. Integration will reuse
+the existing pure request/validation/delivery procedures, a small application
+call ledger, and replacement LangGraph checkpoints. Committed checkpoints will
+remain the sole owner of peer state and delivery effects. Actual save/reopen,
+resume, replay-equality, clearing and backup evidence is pending; M3-T02–T05
+retain attempt termination, scheduling, accounting and killed-process acceptance.
 

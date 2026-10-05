@@ -28,7 +28,7 @@ capacity status; each prerequisite task links that renewal.
 |---|---:|---:|---|---|
 | M1 | 3/3 | 0 | Passed on CPU | Exact worlds, coordinates, eligible populations, saved streams and complete schedules pass; [M1-T03 gate evidence](M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate) closes M1. |
 | M2 | 6/6 | 0 | Passed on CPU | All peer protocol, retention, replay, local-view attainability and complete native capacity checks pass; [M2-T06 completion](M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate) closes M2. GPU memory/capability/timing remain M5. |
-| M3 | 0/5 | 5 | Ready to start M3-T01 | Durable lifecycle, process-crash/restart, worker replay, accounting and safe-stop checks must pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
+| M3 | 0/5 | 5 | M3-T01 in progress | Durable lifecycle, process-crash/restart, worker replay, accounting and safe-stop checks must pass; close in [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md). |
 | M4 | 0/6 | 6 | Blocked by M1–M3 | All prescribed offline analysis and complete synthetic report reproduce; all M1–M4 CPU evidence passes in [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md). |
 | M5 | 0/5 | 5 | Blocked by M1–M4 | Authorized smoke → 90-slot capability gate → full pilot → measured complete-schedule forecast and freeze; close in [M5-T05](M5/M5-T05-allocation-admission-and-freeze.md). |
 | M6 | 0/4 | 4 | Blocked by M5 / evidence | Full frozen schedule, independent audit, clean offline reproduction and authorized release pass; completion requires [M6-T01](M6/M6-T01-frozen-execution-and-resume.md) and [M6-T04](M6/M6-T04-reproducible-release.md). |
@@ -58,7 +58,7 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | [M2-T04 — Literal events, retention boundaries and receipts](M2/M2-T04-events-retention-and-receipts.md) | done | [M2-T03](M2/M2-T03-synchronous-rounds-and-prefixes.md) | Plan §4; spec §§2.3, 4.1–4.3, 9 |
 | [M2-T05 — Exact mixed-group replay and prose-delay delivery](M2/M2-T05-mixed-and-prose-delay-replay.md) | done | [M2-T04](M2/M2-T04-events-retention-and-receipts.md) | Plan §§2, 4; spec §§4.2, 4.4, 9 |
 | [M2-T06 — Protocol attainability and complete tokenizer capacity](M2/M2-T06-attainability-and-capacity.md) | done | [M2-T05](M2/M2-T05-mixed-and-prose-delay-replay.md) | Plan §4 gate; spec §§3.2, 8.2, 9 |
-| [M3-T01 — Durable rounds and exact response reuse](M3/M3-T01-durable-round-runner.md) | ready | [M2-T06](M2/M2-T06-attainability-and-capacity.md) | Plan §§2, 5; spec §§3–4, 9 |
+| [M3-T01 — Durable rounds and exact response reuse](M3/M3-T01-durable-round-runner.md) | in progress | [M2-T06](M2/M2-T06-attainability-and-capacity.md) | Plan §§2, 5; spec §§3–4, 9 |
 | [M3-T02 — Bounded attempts, timeouts and interruption semantics](M3/M3-T02-bounded-attempts-and-failures.md) | blocked | [M3-T01](M3/M3-T01-durable-round-runner.md) | Plan §5; spec §§3.2, 6, 9 |
 | [M3-T03 — Local worker scheduling and cross-worker replay](M3/M3-T03-local-worker-scheduling.md) | blocked | [M3-T02](M3/M3-T02-bounded-attempts-and-failures.md) | Plan §§2, 5, 8; spec §§8.1, 8.4, 9 |
 | [M3-T04 — Resource accounting, progress and safe budget stops](M3/M3-T04-accounting-progress-and-budget.md) | blocked | [M3-T03](M3/M3-T03-local-worker-scheduling.md) | Plan §5; spec §§6, 7.3, 8.3–8.4, 9 |
