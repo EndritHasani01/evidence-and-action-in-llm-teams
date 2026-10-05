@@ -129,6 +129,12 @@ class WorkerStore:
             CREATE TABLE IF NOT EXISTS run_inputs (
                 singleton INTEGER PRIMARY KEY CHECK (singleton=1), inputs_json TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS allocations (
+                number INTEGER PRIMARY KEY, device TEXT NOT NULL,
+                stage TEXT NOT NULL, started_at TEXT NOT NULL, stopped_at TEXT,
+                deadline_at TEXT, budget_json TEXT, billing_json TEXT,
+                stop_reason TEXT
+            );
         """)
         # Reopen T01 worker files without replacing their calls/checkpoints.
         columns = {r[1] for r in self.connection.execute("PRAGMA table_info(attempts)")}
@@ -138,6 +144,7 @@ class WorkerStore:
                 ("observed_seconds", "REAL NOT NULL DEFAULT 0"),
                 ("termination_reason", "TEXT"), ("reason", "TEXT"),
                 ("recovered_at", "TEXT"), ("worker_pid", "INTEGER"),
+                ("peak_memory_bytes", "INTEGER"),
             ):
                 if name not in columns:
                     self.connection.execute(f"ALTER TABLE attempts ADD COLUMN {name} {definition}")
@@ -148,20 +155,56 @@ class WorkerStore:
     def close(self):
         self.connection.close()
 
-    def bind_run(self, worlds, branches, settings, bounds):
+    def bind_run(self, worlds, branches, settings, bounds, *, budget=None):
         """Reject restart input drift before admitting any new scheduled work.
 
         The same literal run inputs bind each worker file; placement/order are
         operational choices and do not change these scientific inputs.
         """
-        payload = record_json({"worlds": [asdict(w) for w in sorted(worlds, key=lambda w: w.world_id)],
+        inputs = {"worlds": [asdict(w) for w in sorted(worlds, key=lambda w: w.world_id)],
             "branches": [asdict(b) for b in sorted(branches, key=lambda b: b.branch_id)],
-            "settings": json.loads(settings_json(settings)), "bounds": bounds})
+            "settings": json.loads(settings_json(settings)), "bounds": bounds}
+        if budget is not None:
+            inputs["budget"] = asdict(budget)
+        payload = record_json(inputs)
         with self.connection:
             previous = self.connection.execute("SELECT inputs_json FROM run_inputs WHERE singleton=1").fetchone()
             if previous is not None and previous[0] != payload:
                 raise ValueError("worker run inputs/settings/attempt bounds differ; resume the saved configuration")
             self.connection.execute("INSERT OR IGNORE INTO run_inputs VALUES (1,?)", (payload,))
+
+    def allocation_started(self, device, stage, *, budget=None, deadline_at=None,
+                           billing=None, started_at=None):
+        """Record explicitly allocated devices, including time without a model.
+
+        Only the exclusive owner may write. A process exit is not a provider
+        release; leave the interval open until release is acknowledged.
+        """
+        if not device or stage not in ("development", "main", "validation"):
+            raise ValueError("record an identified device and allocation stage")
+        with self.connection:
+            if self.connection.execute("SELECT 1 FROM allocations WHERE stopped_at IS NULL").fetchone():
+                raise ValueError("preceding allocation has no confirmed release")
+            cursor = self.connection.execute("""INSERT INTO allocations
+                (device,stage,started_at,deadline_at,budget_json,billing_json)
+                VALUES (?,?,?,?,?,?)""", (device, stage, started_at or utc_now(), deadline_at,
+                record_json(asdict(budget)) if budget is not None else None,
+                record_json(billing) if billing is not None else None))
+            return cursor.lastrowid
+
+    def allocation_stopped(self, number, reason, *, released_at=None):
+        with self.connection:
+            row = self.connection.execute("SELECT * FROM allocations WHERE number=?", (number,)).fetchone()
+            if row is None:
+                raise ValueError("missing allocation")
+            if row["stopped_at"] is None:
+                self.connection.execute("UPDATE allocations SET stopped_at=?,stop_reason=? WHERE number=?",
+                    (released_at or utc_now(), reason, number))
+
+    def allocation_stop_requested(self, number, reason):
+        with self.connection:
+            self.connection.execute("UPDATE allocations SET stop_reason=? WHERE number=? AND stopped_at IS NULL",
+                                    (reason, number))
 
     def _record(self, table, where, values):
         # Table/predicate are internal constants, never user-supplied SQL.
@@ -293,8 +336,11 @@ class WorkerStore:
             self.connection.execute("UPDATE calls SET status='running' WHERE call_id=?", (call_id,))
             return number
 
-    def finish_attempt(self, call_id: str, response, elapsed_seconds: float, *, termination_reason=None):
+    def finish_attempt(self, call_id: str, response, elapsed_seconds: float, *, termination_reason=None,
+                       peak_memory_bytes=None):
         elapsed_seconds = seconds(elapsed_seconds)
+        if peak_memory_bytes is not None and (type(peak_memory_bytes) is not int or peak_memory_bytes < 0):
+            raise ValueError("peak memory is measured nonnegative bytes or unavailable")
         if response is None:
             response = RecordedFailure("infrastructure_failure", "provider recorded an exhausted failed slot")
         if type(response) not in (GeneratedReply, RecordedFailure):
@@ -312,10 +358,10 @@ class WorkerStore:
             self.connection.execute("UPDATE calls SET status=?,raw_json=?,failure_json=? WHERE call_id=?",
                                     (status, raw, failure, call_id))
             self.connection.execute("""UPDATE attempts SET status=?,finished_at=?,elapsed_seconds=?,
-                observed_seconds=?,termination_reason=?,reason=? WHERE call_id=? AND number=?""",
+                observed_seconds=?,termination_reason=?,reason=?,peak_memory_bytes=? WHERE call_id=? AND number=?""",
                 (status, utc_now(), elapsed_seconds, elapsed_seconds,
                  termination_reason or (response.termination if raw is not None else response.status),
-                 response.reason if failure is not None else None, call_id, attempt["number"]))
+                 response.reason if failure is not None else None, peak_memory_bytes, call_id, attempt["number"]))
 
     def interrupt_attempt(self, call_id: str, reason: str, *, elapsed_seconds=None,
                           termination_reason="worker_interruption"):

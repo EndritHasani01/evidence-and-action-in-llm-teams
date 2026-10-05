@@ -8,6 +8,7 @@ M5 supplies the accepted factories and authorization; M3 tests use CPU scripts.
 
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
+from datetime import datetime, timedelta, timezone
 import json
 import multiprocessing as mp
 from multiprocessing.connection import wait
@@ -31,6 +32,7 @@ class WorkerSpec:
     database: Path
     provider_factory: object
     cuda_visible_devices: str | None = None
+    allocated_device: str | None = None
 
 
 @dataclass(frozen=True)
@@ -175,9 +177,10 @@ class LocalScheduler:
 
     def __init__(self, workers, worlds, branches, tokenizer_factory, *, settings,
                  reverse=False, worker_rotation=0, invocation_order=PEERS,
-                 timeout_seconds=120, termination_seconds=1, heartbeat_seconds=1):
+                 timeout_seconds=120, termination_seconds=1, heartbeat_seconds=1,
+                 budget=None, release_device=None, allocation_stage=None, report=None, prior_paths=()):
         self.specs = tuple(workers)
-        self.paths = tuple(Path(w.database).resolve() for w in workers)
+        self.paths = tuple(Path(w.database).resolve() for w in self.specs)
         self.worlds, self.branches = tuple(worlds), tuple(branches)
         self.settings = json.loads(settings_json(settings))
         self.tokenizer_factory = tokenizer_factory
@@ -207,6 +210,22 @@ class LocalScheduler:
         self.cursor = worker_rotation % len(self.specs)
         self.processes, self.connections, self.readers = {}, {}, []
         self.inflight = {}
+        self.budget, self.release_device, self.report = budget, release_device, report
+        self.prior_paths = tuple(Path(p).resolve() for p in prior_paths)
+        self.allocation_stage = allocation_stage or ("development" if all(w.development for w in self.worlds) else "main")
+        self.deadline = None
+        self.allocations = {}
+        self.stop_reason = None
+        self._reported_signature = self._last_reported = None
+        if budget is not None:
+            from .accounting import Budget
+            devices = [w.allocated_device for w in self.specs]
+            if (not isinstance(budget, Budget) or not callable(release_device) or not all(devices)
+                    or len(set(devices)) != len(devices)
+                    or budget.shutdown_seconds < len(self.specs) * 5 * self.bounds["termination_seconds"]):
+                raise ValueError("budget requires distinct allocated devices, a bounded release acknowledgement and complete shutdown allowance")
+        if report is not None and not callable(report):
+            raise ValueError("report must consume derived status snapshots")
 
     @classmethod
     def from_manifests(cls, workers, population_path, schedule_path, tokenizer_factory, *,
@@ -229,11 +248,14 @@ class LocalScheduler:
                     if path.exists():
                         self._confirm_provider_exit(path)
                     with DurableRunner(path, None) as runner:
-                        runner.store.bind_run(self.worlds, self.branches, self.settings, self.bounds)
+                        runner.store.bind_run(self.worlds, self.branches, self.settings, self.bounds, budget=self.budget)
             self.readers = [WorkerReader(path) for path in self.paths]
             self.status()  # Reject old drift/duplicate ownership before providers can run.
+            if self.budget is not None:
+                self._allocate()
             for index in range(len(self.specs)):
                 self._launch(index)
+            self._report(force=True)
         except BaseException:
             self.close()
             raise
@@ -259,6 +281,7 @@ class LocalScheduler:
         self.close()
 
     def _launch(self, index):
+        self._check_deadline()
         context = mp.get_context("spawn")
         connection, child = context.Pipe()
         process = context.Process(target=_worker, args=(self.specs[index], self.paths,
@@ -276,7 +299,11 @@ class LocalScheduler:
             else:
                 os.environ["CUDA_VISIBLE_DEVICES"] = old_visibility
         self.processes[index], self.connections[index] = process, connection
-        if not wait([connection, process.sentinel], timeout=self.bounds["timeout_seconds"]):
+        wait_seconds = self.bounds["timeout_seconds"]
+        if self.deadline is not None:
+            wait_seconds = min(wait_seconds, max(0, self.deadline - monotonic()))
+        if not wait([connection, process.sentinel], timeout=wait_seconds):
+            self._check_deadline()
             raise WorkerInterrupted(f"worker {index} did not initialize within its bound")
         try:
             kind, payload = connection.recv()
@@ -307,6 +334,27 @@ class LocalScheduler:
         self.processes.clear()
         self.connections.clear()
         self.inflight.clear()
+        # A local process exit alone never ends paid/physical allocation.
+        # Writes happen only after the exclusive worker has exited.
+        for index, number in tuple(self.allocations.items()):
+            from .storage import WorkerStore
+            with _own_file(self.paths[index]):
+                store = WorkerStore(self.paths[index])
+                try:
+                    reason = self.stop_reason or "scheduler_close"
+                    store.recover_processes()
+                    for row in store.connection.execute("SELECT call_id FROM calls WHERE status='running'").fetchall():
+                        attempt = store.attempts(row[0])[-1]
+                        if attempt["status"] == "running":
+                            store.interrupt_attempt(row[0], "confirmed worker/provider exit at " + reason)
+                    store.allocation_stop_requested(number, reason)
+                    released = self.release_device(index, self.specs[index].allocated_device)
+                    if released is not True and not isinstance(released, str):
+                        raise WorkerInterrupted("provider release is unconfirmed; allocation remains open and chargeable")
+                    store.allocation_stopped(number, reason, released_at=released if isinstance(released, str) else None)
+                    del self.allocations[index]
+                finally:
+                    store.close()
         for reader in self.readers:
             reader.close()
         self.readers.clear()
@@ -325,82 +373,95 @@ class LocalScheduler:
         self._launch(index)
 
     def status(self):
-        """Read-only runnable/waiting/active/done work from existing records.
+        """Read-only runnable/waiting/active/done work from existing records."""
+        return scheduled_work(self.worlds, self.branches, self.readers,
+                              settings=self.settings, inflight=self.inflight)
 
-        This scheduling view supplies M3-T04; it is not resource accounting or a
-        persisted progress store. It never reads candidate correctness.
-        """
-        if not self.readers:
-            raise ValueError("open the scheduler before reading its worker records")
-        owned, completed = {}, {}
-        for index, reader in enumerate(self.readers):
-            recorded = {r[0] for r in reader.store.connection.execute("SELECT DISTINCT branch_id FROM round_inputs")}
-            recorded.update(r[0] for r in reader.store.connection.execute("SELECT DISTINCT thread_id FROM checkpoints"))
-            if recorded - self.by_branch.keys():
-                raise ValueError("worker contains work outside the saved run schedule")
-            for branch_id in recorded:
-                if branch_id in owned:
-                    raise ValueError("duplicate branch ownership across workers")
-                branch = self.by_branch[branch_id]
-                values = reader.values(branch_id) if branch.phase != "control" else None
-                if values is not None:
-                    if (values["branch_json"] != record_json(asdict(branch))
-                            or values["settings_json"] != settings_json(self.settings)):
-                        raise ValueError("worker checkpoint schedule/settings differ")
-                    state = reader.state(branch_id)
-                    r = state.last_slot.round_number if state.last_slot is not None and state.last_slot.phase == state.phase else 0
-                else:
-                    r = 0
-                    if branch.phase != "control":
-                        raise ValueError("saved branch inputs lack their original checkpoint")
-                rows = {row["call_id"]: dict(row) for row in reader.store.connection.execute(
-                    "SELECT * FROM calls WHERE branch_id=?", (branch_id,))}
-                if rows.keys() - {c.call_id for c in branch.calls}:
-                    raise ValueError("worker contains an unscheduled logical slot")
-                for call in branch.calls:
-                    row = rows.get(call.call_id)
-                    if row is not None and tuple(row[k] for k in ("seed", "generation_id", "replay_parent", "round_number", "peer")) != (
-                            call.seed, call.generation_id, call.replay_parent, call.round_number,
-                            -1 if call.peer is None else call.peer):
-                        raise ValueError("worker slot seed/scope/parent differs")
-                    if call.round_number <= r and (row is None or row["validation_json"] is None):
-                        raise ValueError("missing committed call/validation dependency")
-                    if call.round_number <= r:
-                        if row["status"] not in ("completed", "timeout", "infrastructure_failure", "replay"):
-                            raise ValueError("committed slot lacks a durable outcome")
-                        if call.replay_parent is None:
-                            reader.store.response(call.call_id)
-                if branch.phase == "control":
-                    row = rows.get(branch.calls[0].call_id)
-                    r = int(row is not None and row["validation_json"] is not None)
-                owned[branch_id], completed[branch_id] = index, r
-        active = {b: i for i, (b, _) in self.inflight.items()}
-        incomplete = [b for b in self.ordered if completed.get(b.branch_id, 0) < (1 if b.phase == "control" else 4)]
-        first_block = min((self.block[b.branch_id] for b in incomplete), default=None)
-        prelude = tuple(b.branch_id for b in incomplete if self.block[b.branch_id] == first_block
-                        and b.phase in ("prefix", "control"))
-        work = []
-        for branch in self.ordered:
-            branch_id = branch.branch_id
-            r = completed.get(branch_id, 0)
-            done = r == (1 if branch.phase == "control" else 4)
-            waiting = []
-            if not done and branch_id not in active:
-                if self.block[branch_id] != first_block:
-                    waiting.append("earlier balanced world block")
-                if branch.phase == "continuation" and prelude:
-                    waiting.extend(prelude)
-                if branch.prefix_parent is not None and completed.get(branch.prefix_parent, 0) != 4:
-                    waiting.append(branch.prefix_parent)
-                if r == 0:
-                    waiting.extend(c.replay_parent for c in branch.calls if c.replay_parent is not None
-                                   and completed.get(c.replay_parent.rsplit("/r", 1)[0], 0) < 1)
-            status = "active" if branch_id in active else "done" if done else "dependency_waiting" if waiting else "runnable"
-            work.append(Work(branch_id, owned.get(branch_id, active.get(branch_id)), r,
-                             None if done else r + 1, status, tuple(dict.fromkeys(waiting))))
-        return tuple(work)
+    def progress(self):
+        from .accounting import progress_snapshot
+        return progress_snapshot(self.worlds, self.branches, self.paths, budget=self.budget,
+            inflight=self.inflight, settings=self.settings, prior_paths=self.prior_paths,
+            gate=self.stop_reason or "M3 CPU verification; M5 inference gate open")
+
+    def _allocate(self):
+        from .accounting import BudgetStop
+        from .storage import WorkerStore
+        snapshot = self.progress()
+        resources = snapshot["resources"]
+        if resources["active_devices"]:
+            raise BudgetStop("preceding allocations require confirmed provider release")
+        available = (resources["remaining_ceiling_gpu_hours"]
+                     - sum(resources["remaining_reserves_gpu_hours"].values())) * 3600 - self.budget.overhead_seconds
+        duration = available / len(self.specs) - self.budget.shutdown_seconds
+        if duration <= 0:
+            self.stop_reason = "budget_exhausted_before_allocation"
+            raise BudgetStop(self.stop_reason)
+        self.deadline = monotonic() + duration
+        deadline_at = (datetime.now(timezone.utc) + timedelta(seconds=duration)).isoformat()
+        for index, spec in enumerate(self.specs):
+            with _own_file(self.paths[index]):
+                store = WorkerStore(self.paths[index])
+                try:
+                    self.allocations[index] = store.allocation_started(spec.allocated_device, self.allocation_stage,
+                        budget=self.budget, deadline_at=deadline_at)
+                finally:
+                    store.close()
+
+    def _check_deadline(self):
+        if self.deadline is not None and monotonic() >= self.deadline:
+            from .accounting import BudgetStop
+            self.stop_reason = "allocation_deadline"
+            raise BudgetStop(self.stop_reason)
+
+    def _admit(self, work):
+        self._check_deadline()
+        if self.budget is None:
+            return
+        from .accounting import BudgetStop
+        snapshot = self.progress()
+        forecast, resources = snapshot["forecast"], snapshot["resources"]
+        available = resources["remaining_ceiling_gpu_hours"] - sum(resources["remaining_reserves_gpu_hours"].values())
+        shutdown = len(resources["active_devices"]) * self.budget.shutdown_seconds / 3600
+        if self.allocation_stage == "main" and not forecast["available"]:
+            self.stop_reason = "remaining_forecast_unavailable"
+        elif forecast["available"] and forecast["remaining_gpu_hours"][1] + shutdown >= available:
+            self.stop_reason = "remaining_forecast_exceeds_budget"
+        else:
+            # Serial workers can use two attempts only for interrupted calls.
+            # Reserve every still-possible attempt in this whole round; idle
+            # allocated devices also consume the common deadline horizon.
+            bound = 0
+            rows = {r["call_id"]: r for r in snapshot["logical_slots"]}
+            for call in self.by_branch[work.branch_id].calls:
+                if call.round_number == work.next_round and call.replay_parent is None and not rows[call.call_id]["finished"]:
+                    attempts = rows[call.call_id]["cost"]["attempts"]
+                    bound += max(0, 2 - attempts) * (self.bounds["timeout_seconds"] + 2 * self.bounds["termination_seconds"])
+            if self.deadline - monotonic() <= bound + self.budget.overhead_seconds:
+                self.stop_reason = "timeout_and_termination_allowance"
+        if self.stop_reason:
+            self._report(force=True)
+            raise BudgetStop(self.stop_reason)
+
+    def _report(self, *, force=False):
+        if self.report is None:
+            return
+        clock = monotonic()
+        if not force and self._last_reported is not None and clock - self._last_reported < self.bounds["heartbeat_seconds"]:
+            # Cheap ledger counters expose call transitions immediately.
+            signature = tuple((reader.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0],
+                reader.store.connection.execute("SELECT count(*) FROM calls WHERE status IN ('completed','timeout','infrastructure_failure','replay')").fetchone()[0])
+                for reader in self.readers)
+            if signature == self._reported_signature:
+                return
+        else:
+            signature = tuple((reader.store.connection.execute("SELECT count(*) FROM attempts").fetchone()[0],
+                reader.store.connection.execute("SELECT count(*) FROM calls WHERE status IN ('completed','timeout','infrastructure_failure','replay')").fetchone()[0])
+                for reader in self.readers)
+        self.report(self.progress())
+        self._reported_signature, self._last_reported = signature, clock
 
     def dispatch(self):
+        self._check_deadline()
         for index, process in self.processes.items():
             if not process.is_alive():
                 raise WorkerInterrupted(f"worker {index} exited; restart its assigned work")
@@ -414,12 +475,15 @@ class LocalScheduler:
             if not eligible:
                 continue
             index = eligible[0]
+            self._admit(work)
             command = work.branch_id, work.next_round
             self.connections[index].send(command)
             self.inflight[index] = command
             idle.remove(index)
             self.cursor = (index + 1) % len(self.specs)
             admitted.append((index, *command))
+        if admitted:
+            self._report(force=True)
         return tuple(admitted)
 
     def advance(self, timeout=0.1):
@@ -430,6 +494,9 @@ class LocalScheduler:
             if any(w.status != "done" for w in self.status()):
                 raise ValueError("no runnable work: missing/inconsistent dependency")
             return ()
+        timeout = min(seconds(timeout), self.bounds["heartbeat_seconds"], 0.1)
+        if self.deadline is not None:
+            timeout = min(timeout, max(0, self.deadline - monotonic()))
         readable = wait(handles, timeout=timeout)
         finished = []
         for index in tuple(self.inflight):
@@ -447,8 +514,101 @@ class LocalScheduler:
                 finished.append((index, *payload))
             elif process.sentinel in readable:
                 raise WorkerInterrupted(f"worker {index} interrupted; restart its assigned work")
+        self._check_deadline()
+        self._report(force=bool(finished))
         return tuple(finished)
 
     def run(self):
-        while self.inflight or any(w.status != "done" for w in self.status()):
-            self.advance()
+        from .accounting import BudgetStop
+        try:
+            while self.inflight or any(w.status != "done" for w in self.status()):
+                self.advance()
+        except BudgetStop:
+            self.close()
+            raise
+
+
+def scheduled_work(worlds, branches, readers, *, settings, inflight=None, reverse=False, recorded_active=False):
+    """Read-only dependency/ownership reconstruction shared by status and dispatch."""
+    if not readers:
+        raise ValueError("open worker records before reading scheduling status")
+    by_branch = {b.branch_id: b for b in branches}
+    ordered = balanced_order(worlds, branches, reverse=reverse)
+    by_world = {w.world_id: w for w in worlds}
+    block = {b.branch_id: by_world[b.world_id].index for b in branches}
+    inflight = inflight or {}
+    owned, completed, running, blocked = {}, {}, {}, set()
+    for index, reader in enumerate(readers):
+        if reader is None:
+            continue
+        recorded = {r[0] for r in reader.store.connection.execute("SELECT DISTINCT branch_id FROM round_inputs")}
+        recorded.update(r[0] for r in reader.store.connection.execute("SELECT DISTINCT thread_id FROM checkpoints"))
+        if recorded - by_branch.keys():
+            raise ValueError("worker contains work outside the saved run schedule")
+        for branch_id in recorded:
+            if branch_id in owned:
+                raise ValueError("duplicate branch ownership across workers")
+            branch = by_branch[branch_id]
+            values = reader.values(branch_id) if branch.phase != "control" else None
+            if values is not None:
+                if (values["branch_json"] != record_json(asdict(branch))
+                        or values["settings_json"] != settings_json(settings)):
+                    raise ValueError("worker checkpoint schedule/settings differ")
+                state = reader.state(branch_id)
+                r = state.last_slot.round_number if state.last_slot is not None and state.last_slot.phase == state.phase else 0
+            else:
+                r = 0
+                if branch.phase != "control":
+                    raise ValueError("saved branch inputs lack their original checkpoint")
+            rows = {row["call_id"]: dict(row) for row in reader.store.connection.execute(
+                "SELECT * FROM calls WHERE branch_id=?", (branch_id,))}
+            if rows.keys() - {c.call_id for c in branch.calls}:
+                raise ValueError("worker contains an unscheduled logical slot")
+            for call in branch.calls:
+                row = rows.get(call.call_id)
+                if row is not None and row["status"] == "running":
+                    attempt = reader.store.attempts(call.call_id)[-1]
+                    if attempt["status"] == "blocked":
+                        blocked.add(branch_id)
+                    else:
+                        running[branch_id] = index
+                if row is not None and tuple(row[k] for k in ("seed", "generation_id", "replay_parent", "round_number", "peer")) != (
+                        call.seed, call.generation_id, call.replay_parent, call.round_number,
+                        -1 if call.peer is None else call.peer):
+                    raise ValueError("worker slot seed/scope/parent differs")
+                if call.round_number <= r and (row is None or row["validation_json"] is None):
+                    raise ValueError("missing committed call/validation dependency")
+                if call.round_number <= r:
+                    if row["status"] not in ("completed", "timeout", "infrastructure_failure", "replay"):
+                        raise ValueError("committed slot lacks a durable outcome")
+                    if call.replay_parent is None:
+                        reader.store.response(call.call_id)
+            if branch.phase == "control":
+                row = rows.get(branch.calls[0].call_id)
+                r = int(row is not None and row["validation_json"] is not None)
+            owned[branch_id], completed[branch_id] = index, r
+    active = (running if recorded_active else {}) | {b: i for i, (b, _) in inflight.items()}
+    incomplete = [b for b in ordered if completed.get(b.branch_id, 0) < (1 if b.phase == "control" else 4)]
+    first_block = min((block[b.branch_id] for b in incomplete), default=None)
+    prelude = tuple(b.branch_id for b in incomplete if block[b.branch_id] == first_block
+                    and b.phase in ("prefix", "control"))
+    work = []
+    for branch in ordered:
+        branch_id = branch.branch_id
+        r = completed.get(branch_id, 0)
+        done = r == (1 if branch.phase == "control" else 4)
+        waiting = []
+        if not done and branch_id not in active:
+            if block[branch_id] != first_block:
+                waiting.append("earlier balanced world block")
+            if branch.phase == "continuation" and prelude:
+                waiting.extend(prelude)
+            if branch.prefix_parent is not None and completed.get(branch.prefix_parent, 0) != 4:
+                waiting.append(branch.prefix_parent)
+            if r == 0:
+                waiting.extend(c.replay_parent for c in branch.calls if c.replay_parent is not None
+                               and completed.get(c.replay_parent.rsplit("/r", 1)[0], 0) < 1)
+        status = "blocked" if branch_id in blocked else "active" if branch_id in active else "done" if done else "dependency_waiting" if waiting else "runnable"
+        work.append(Work(branch_id, owned.get(branch_id, active.get(branch_id)), r,
+                         None if done else r + 1, status, tuple(dict.fromkeys(waiting))))
+    return tuple(work)

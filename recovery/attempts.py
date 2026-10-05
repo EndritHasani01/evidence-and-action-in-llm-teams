@@ -7,6 +7,7 @@ No inference dependency is imported here. M5 supplies and verifies the adapter.
 """
 
 import multiprocessing as mp
+from dataclasses import dataclass
 from multiprocessing.connection import wait
 import os
 from queue import Empty, Queue
@@ -23,6 +24,19 @@ class InfrastructureInterruption(RuntimeError):
 
 class ProviderDefect(ValueError):
     """An adapter/protocol error requiring diagnosis, not another sample."""
+
+
+@dataclass(frozen=True)
+class MeasuredReply:
+    """Optional adapter measurement, outside the literal scientific reply."""
+
+    response: GeneratedReply | RecordedFailure
+    peak_memory_bytes: int
+
+    def __post_init__(self):
+        if (type(self.response) not in (GeneratedReply, RecordedFailure)
+                or type(self.peak_memory_bytes) is not int or self.peak_memory_bytes < 0):
+            raise ValueError("record an exact outcome and measured peak device bytes")
 
 
 def _die_with_owner():
@@ -48,7 +62,7 @@ def _serve(factory, connection):
             response = provider(view, rendered, tokenized, seed=seed, settings=settings)
             if response is None:
                 response = RecordedFailure("infrastructure_failure", "provider recorded an exhausted failed slot")
-            if type(response) not in (GeneratedReply, RecordedFailure):
+            if type(response) not in (GeneratedReply, RecordedFailure, MeasuredReply):
                 raise ProviderDefect("provider must return exact generated output or a recorded final failure")
             connection.send(("response", response))
     except InfrastructureInterruption as error:
@@ -218,5 +232,8 @@ class ProcessProvider:
                 # A later restart records ambiguity; do not infer non-completion.
                 raise
             if store.call(call_id)["status"] == "running":
-                store.finish_attempt(call_id, response, monotonic() - started)
+                memory = response.peak_memory_bytes if type(response) is MeasuredReply else None
+                if type(response) is MeasuredReply:
+                    response = response.response
+                store.finish_attempt(call_id, response, monotonic() - started, peak_memory_bytes=memory)
             return store.response(call_id)

@@ -22,7 +22,8 @@ def stable_cases(archive):
     result = []
     for case in archive["cases"]:
         attempts = [{k: v for k, v in attempt.items() if k not in (
-            "started_at", "finished_at", "elapsed_seconds", "observed_seconds", "recovered_at", "worker_pid")}
+            "started_at", "finished_at", "elapsed_seconds", "observed_seconds", "recovered_at", "worker_pid")
+                    and not (k == "peak_memory_bytes" and v is None)}
             for attempt in case["attempts"]]
         result.append({"case": case["case"], "calls": case["calls"], "attempts": attempts,
                        "state": case["state"]})

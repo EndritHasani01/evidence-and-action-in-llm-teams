@@ -38,7 +38,11 @@ Manifest-derived progress and reconciled physical/policy accounting show remaini
 
 Use hand-calculated schedules with shared prefixes, mixed/Q replay, F, timeouts, ambiguous attempts, idle devices and setup. Verify no double overhead or physical replay charge. Test cost-range unavailability before measurements, later slower-device forecasts, heartbeat behavior, backup/restart reconstruction and budget exhaustion at an adverse timeout boundary.
 
-**Evidence:** Not yet recorded. Add reconciliation tables, status captures and safe-stop results before marking done.
+**Evidence in progress:** The first 15 focused CPU checks pass (46.963 seconds).
+Hand reconciliation covers 112 logical uses, 100 generations, 101 attempts and
+203 measured attempt seconds; two synthetic devices total 400 allocated seconds.
+Full regressions, historical measurement admission and retained evidence remain
+required before marking done.
 
 ### Implementation approach
 
