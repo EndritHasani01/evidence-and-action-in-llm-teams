@@ -443,7 +443,7 @@ records source/installed-library/core validation and closes M2's CPU gate.
 validation exports from the actual LangGraph/SQLite runner. The first uses the
 injected word counter; the second uses pinned Qwen3.5-9B tokenizer metadata.
 Neither samples a model. Each covers target Sort and fallback BFS, all their
-scheduled four-peer branches (controls remain outside this runner), four prefix
+scheduled four-peer branches (these archives omit controls; T03 verifies them below), four prefix
 and four recovery rounds, both events, receipts, preserving edits and repeats:
 60 branches, 240 rounds, 960 logical calls, 864 physical attempts and 96 prescribed
 parent reuses. Unicode-invalid and failed parents remain exact. Two Q delivery
@@ -503,3 +503,38 @@ exclusive creation protects prior evidence. JSON is UTF-8/LF with gzip `mtime=0`
 Reproduction never loads weights or performs model/GPU inference. See
 [M3-T02 evidence](../../docs/todos/M3/M3-T02-bounded-attempts-and-failures.md#validation-and-evidence)
 for the tested environment, bounds and remaining M3/M5 gates.
+
+## Local worker scheduling traces
+
+[worker_scheduling_traces.json.gz](worker_scheduling_traces.json.gz) is a derived
+CPU export from two isolated worker controllers and their bounded resident
+generation processes. Eight validation scenarios retain 666 logical calls,
+618 distinct generations, 619 physical attempts, 48 exact mixed/Q replay uses,
+17 process intervals and one uncertain interrupted attempt. Scenario totals
+describe separate scripted validation runs, not experimental coverage.
+
+The archive retains exact requests, saved seeds/settings, invalid/failed raw
+parents, original generation joins, independent committed states/queues and
+actual attempt/process times. It includes reversed peer/sibling order and
+worker rotation, reopening completed work without generation, Q interruption
+with held prose, a lost round acknowledgement, and five-family controls before
+recovery. Device visibility is a CPU test label, not a measured CUDA device.
+
+[worker_archive.py](../worker_archive.py) runs the focused
+[worker checks](../worker_checks.py) and compares the canonical JSON scientific
+records exactly. Worker placement, clocks/PIDs and module paths remain recorded
+measurements and may differ on reproduction. Raw strings, token IDs, requests,
+seeds, parent IDs, attempt outcomes and peer/queue state must match. Tuple fields
+are normalized to their retained JSON arrays before comparison.
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.worker_checks -v
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.worker_archive
+```
+
+`--write-fixture <new_archive.json.gz>` exclusively creates a new UTF-8/LF,
+gzip `mtime=0` archive. Ordinary reproduction reads existing evidence. No model
+weights or GPU inference are used. [M3-T03 evidence](../../docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence)
+records the environment and checks; M3-T04 owns allocation/policy costs and
+terminal progress, M3-T05 the combined gate, and M5 hardware admission.

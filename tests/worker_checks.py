@@ -16,6 +16,7 @@ from recovery.schedule import _prepare_branches
 from recovery.storage import WorkerStore, record_json
 from recovery.tasks import Size, Task
 from recovery.workers import LocalScheduler, WorkerInterrupted, WorkerSpec, balanced_order
+import recovery.workers as workers_module
 from tests.attempt_checks import read_trace, process_alive
 from tests.durable_checks import forbidden, prefix, prefix_branch, provider
 from tests.event_checks import case_world, population, scheduled
@@ -209,6 +210,8 @@ class SchedulingTests(unittest.TestCase):
         for directory in (first, second):
             events = [e for i in range(2) for e in read_trace(directory / f"trace-{i}.jsonl")]
             self.assertEqual(len({e["pid"] for e in events if e["event"] == "load"}), 2)
+            self.assertTrue(all(Path(e["module"]).resolve() == Path(workers_module.__file__).resolve()
+                                for e in events if e["event"] == "load"))
             self.assertEqual({e["visibility"] for e in events}, {"cpu-0", "cpu-1"})
             generations = [e for e in events if e["event"] == "generation"]
             self.assertEqual(len(generations), sum(c.replay_parent is None for b in self.branches for c in b.calls))
