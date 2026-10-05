@@ -253,6 +253,35 @@ records CPU checks with explicitly synthetic allocations. Actual GPU timing,
 memory, provider release integration, timeout adequacy and the accepted freeze
 remain M5 gates; the integrated lifecycle gate remains M3-T05.
 
+## Scripted crash and offline lifecycle validation
+
+[lifecycle_checks.py](tests/lifecycle_checks.py) exercises real externally killed
+controllers at raw-reply, validation, staging, reset and delivery-checkpoint
+boundaries. Resumed worker files retain exact requests, invalid/failed replies,
+branch-local effects, held prose and uncertain physical attempts. The CPU
+fixture uses the existing prepared worlds and schedule; it is not a pilot or
+main experiment.
+
+[lifecycle_archive.py](tests/lifecycle_archive.py) packages ordinary population/
+schedule manifests, SQLite backups and derived progress/outcome evidence in
+[scripted_lifecycle_run.zip](tests/fixtures/scripted_lifecycle_run.zip). Read it
+without generation, or reproduce the scripted validation:
+
+```powershell
+.venv/Scripts/python.exe -m tests.lifecycle_archive --audit-only
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.lifecycle_archive
+```
+
+Extracted SQLite files use the same runner/status APIs. Each case's
+`selection.json` identifies its saved world/branch IDs, and `evidence.json` names
+its authoritative worker files. Baselines, interrupted originals and backups
+are separate copies; combine only the listed files for a case. Full manifests
+remain available for unknown-slot coverage. The offline preview demonstrates
+data availability and exact scoring/footprints; M4 owns the complete analyses
+and report. See [fixture reproduction](tests/fixtures/README.md#crash-safe-scripted-lifecycle-run-bundle)
+and [M3-T05 evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence).
+
 ## Protocol attainability and capacity
 
 [witness.py](recovery/witness.py) is a CPU validation strategy. Each peer forwards

@@ -578,3 +578,62 @@ requests remain their authority) and absent peak-memory metadata; all original
 scientific fields still compare exactly. Token-count/measurement checks verify
 the added resource fields separately. Every prior fixture remains unchanged.
 See [M3-T04](../../docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence).
+
+## Crash-safe scripted lifecycle run bundle
+
+[scripted_lifecycle_run.zip](scripted_lifecycle_run.zip) is an ordinary CPU run
+bundle: saved complete target/fallback population and schedule inputs, worker
+SQLite snapshots, supported reopened backups, actual controller commands/logs,
+boundary markers, physical request traces and derived progress/outcome previews.
+The ZIP is packaging; manifests and worker records retain their existing formats
+and authority. SQLite backup includes committed WAL even for a killed owner.
+No new persistence or test-management service is involved.
+
+[lifecycle_checks.py](../lifecycle_checks.py) and the externally killed
+[controller](../lifecycle_worker.py) cover raw commit, deterministic validation,
+staging, delivery checkpoint and C/F boundary persistence. A cross-worker P_G
+replay uses exact invalid/timeout parents; Q_B/Q_C crashes preserve held prose,
+chronological release and independent original prefix/sibling states. A second
+precommit kill exhausts the only retry. Synthetic allocation exhaustion retains
+sixteen unknown slots and resumes with the original configuration and one
+uncertain attempt. Allocations are explicitly synthetic; durations are CPU
+observations, never GPU forecasts.
+
+The two complete scripted runs each select the first already prepared main world
+of every family. All their scheduled events, policies, receipts, Q variants,
+controls and repeats remain included: 145 branches, 540 four-peer rounds plus ten
+controls, 2,170 logical slots, 1,978 generations and 192 required replay uses per
+size. The separate full-manifest reconciliation executes no slots: main 60 is
+16,152/17,656 distinct/logical, main 40 is 11,504/12,560, and development is
+1,114/1,178 with the complete 90-slot capability prelude. These are validation
+populations and schedules, not empirical results or an accepted freeze.
+
+Each case's `selection.json` references the complete saved manifest IDs.
+`evidence.json` lists the accepted worker files, baseline/backup paths and counts.
+Use only those worker files together; interrupted originals, baselines and
+backups are copies of the same identities. `kill-*.json` contains the actual
+subprocess launch argv and exit receipt; the test applies `Popen.kill()` externally
+and confirms owner/inference exit before reopening. `boundary-*.json` records
+the precise point and both WAL/FULL connections. `progress.json` includes all
+logical/physical/policy joins and explicit missing costs. `offline-preview.json`
+derives exact slot correctness and D/U footprints without generation. Its
+preview is not the M4 estimand, diagnostic, uncertainty or reporting pipeline.
+The stopped budget snapshot/preview remains alongside its resumed worker.
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.lifecycle_checks -v
+.venv/Scripts/python.exe -m tests.lifecycle_archive --audit-only
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.lifecycle_archive
+```
+
+`--write-fixture <new_run.zip>` exclusively creates another bundle. Normal
+reproduction preserves the retained ZIP and compares every exact call/input,
+validation, committed transition, delivery, outcome and bounded attempt status.
+It ignores only measured clocks/checkpoint IDs, process/module paths and worker
+placement; actual measurements remain in the archive. Offline audit reconstructs
+complete progress/cost/outcome records at their saved timestamps, verifies both
+full schedules and reopens every accepted SQLite file. No weights, GPU, pilot or
+main inference is used. See [M3-T05](../../docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence)
+for gate evidence and the Windows CPU environment; M4 remains mandatory before
+GPU use, and the eventual accepted host must repeat persistence checks in M5.
