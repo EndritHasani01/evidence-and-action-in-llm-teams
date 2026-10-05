@@ -1,6 +1,6 @@
 # M4-T01 — Exact outcomes, preservation and trajectories
 
-**Status:** ready
+**Status:** in progress
 
 **Dependencies:** [M3-T05](../M3/M3-T05-crash-safe-scripted-lifecycle.md). M1–M3 must have passed.
 As of 5 October 2026, M1–M3 have passed on CPU; see the
@@ -41,5 +41,9 @@ Offline scoring turns the complete slot manifest and recorded replies into exact
 
 Use hand-checked exact and duplicate-sensitive answers, full BFS dictionaries, malformed/failed/unknown slots, invalid final-prefix candidates, empty D/U eligibility, repaired old errors and collateral damage. Include continuously correct, delayed, regressing, transient, never-joint and fragmented trajectories, plus differently assigned Prefix/Sort outputs. Reproduce expected peer/world/family denominators and failure annotations.
 
-**Evidence:** Not yet recorded. Add fixture expectations, evaluator commands and generated table paths before marking done.
+**Evidence:** Implementation started on 5 October 2026 on `feat/m4-offline-analysis`
+from clean commit `54b434c`. Authority, M3 gate evidence, complete saved manifests,
+raw/validated outcomes, pre-delivery states and stopped slots have been inspected.
+Focused expectations, offline commands and retained tables will be recorded here
+after verification. M4's remaining analysis/report gate stays open.
 
