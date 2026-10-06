@@ -6,7 +6,7 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 15/29. Remaining: 14. Active: 0. Ready: 3. Blocked: 11.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 15/29. Remaining: 14. Active: 1. Ready: 2. Blocked: 11.** Counts measure verified task outcomes, not effort or runtime.
 
 M2-T01–T05 counts below describe their original completion checks. M2-T06 renews all
 affected archives/checks under the finalized renderer and supersedes earlier
@@ -70,7 +70,7 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | [M3-T04 — Resource accounting, progress and safe budget stops](M3/M3-T04-accounting-progress-and-budget.md) | done | [M3-T03](M3/M3-T03-local-worker-scheduling.md) | Plan §5; spec §§6, 7.3, 8.3–8.4, 9 |
 | [M3-T05 — Crash-safe scripted lifecycle acceptance](M3/M3-T05-crash-safe-scripted-lifecycle.md) | done | [M3-T04](M3/M3-T04-accounting-progress-and-budget.md) | Plan §5 gate; spec §§4.2, 4.4, 6, 8.3–8.4, 9 |
 | [M4-T01 — Exact outcomes, preservation and trajectories](M4/M4-T01-exact-outcomes-and-trajectories.md) | done | [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md) | Plan §6 outcomes/diagnostics; spec §§5.1, 6, 7.1, 9 |
-| [M4-T02 — All prespecified contrasts and repeatability](M4/M4-T02-estimands-and-repeatability.md) | ready | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 contrasts; spec §§1, 5.2–5.4, 6 |
+| [M4-T02 — All prespecified contrasts and repeatability](M4/M4-T02-estimands-and-repeatability.md) | active | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 contrasts; spec §§1, 5.2–5.4, 6 |
 | [M4-T03 — Information inventories and retained-work references](M4/M4-T03-information-and-work-diagnostics.md) | ready | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 explanatory outcomes; spec §§2.2, 7.2, 10 |
 | [M4-T04 — Policy costs and the frozen boundary rule](M4/M4-T04-policy-costs-and-boundary-rule.md) | ready | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 costs; spec §7.3 |
 | [M4-T05 — Paired uncertainty and shared-response missingness](M4/M4-T05-uncertainty-and-missingness.md) | blocked | [M4-T02](M4/M4-T02-estimands-and-repeatability.md), [M4-T04](M4/M4-T04-policy-costs-and-boundary-rule.md) | Plan §6 uncertainty; spec §§5–6, 7.3, 9 |

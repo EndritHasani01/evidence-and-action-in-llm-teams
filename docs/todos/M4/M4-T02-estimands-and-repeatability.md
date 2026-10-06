@@ -1,6 +1,6 @@
 # M4-T02 — All prespecified contrasts and repeatability
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M4-T01](../M4/M4-T01-exact-outcomes-and-trajectories.md). M1–M3 must have passed.
 
@@ -34,5 +34,20 @@ Every prespecified estimate has an explicit formula, population and endpoint, wi
 
 Use independently hand-calculated θ equal-effect null/positive/negative cases; φ no-influence null and beneficial/harmful cases; φ positive with φ_corr zero for equal event effects; and round-one exclusion. Verify focal-peer matching, own-group/E_clear signs, every secondary contrast/endpoint, equal-family rather than pooled weighting, subset eligibility, replicate separation and ties/sign reversals.
 
-**Evidence:** Not yet recorded. Add a formula-to-fixture result table and executed analysis checks before marking done.
+**Evidence:** Started on 6 October 2026 on `feat/m4-offline-analysis` from clean
+commit `9a51df7`. The specification, plan, M4-T01 handoff and M1–M3 gate evidence
+have been inspected. Analysis will reuse the full scheduled outcome/diagnostic
+tables and their original generation/replay/prefix joins. The full M4 gate remains
+open; uncertainty and missingness bounds remain M4-T05 work.
+
+The first checkpoint implements [analysis.py](../../../recovery/analysis.py)'s
+explicit world components, equal-family summaries and separate conditional
+repeats. `python -S -m unittest tests.test_analysis -q` passes 21 formula checks;
+`python -S -m unittest tests.test_analysis tests.test_evaluate -q` passes 47 checks
+in 7.593 seconds. Exact rational means preserve mathematical ties; each component
+retains logical/physical call IDs, rounds, peers, prefix eligibility, coefficients
+and unknowns. Saved-run/CLI integration and retained reconstruction remain open
+at this checkpoint. The initial fixture read incorrectly assumed a separate
+fallback schedule file; tests now derive it from the existing saved fallback
+population, without generating worlds or changing any retained fixture.
 
