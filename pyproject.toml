@@ -17,6 +17,7 @@ dependencies = [
 
 [project.optional-dependencies]
 inference = ["torch", "transformers", "accelerate", "bitsandbytes"]
+report = ["matplotlib>=3.7,<4"]
 
 [tool.setuptools]
 packages = ["recovery"]

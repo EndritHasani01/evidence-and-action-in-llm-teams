@@ -55,3 +55,15 @@ Plot rendering is separate from inference. No new authoritative store, scientifi
 configuration, GPU/model execution, pilot or empirical result is needed. M4's
 report/CPU gate remains open until all required checks pass.
 
+The report/CLI now passes 18 dependency-free focused checks in 12.722 seconds;
+the optional renderer adds two checks, with all 20 passing in 28.346 seconds.
+Cases use exact rational effects, original IDs and recorded complete-world
+slots (failures remain recorded); scheduled repeats cannot replace replicate
+zero. Exports preserve raw strings, worker bytes and exclusive destinations;
+repeated scientific tables, case IDs, plotting inputs and compressed bytes match.
+Seven explicit exhibits include raw world/family displays, all supporting M4
+tables and assumptions. Matplotlib is an optional `report` extra, imported only
+for rendering; the mandatory CPU/inference dependencies are unchanged.
+Original M3 reconstruction, final figure review, complete CPU/installed checks
+and the named coverage/category audit remain required before gate closure.
+

@@ -59,8 +59,10 @@ def main() -> int:
     analyze.add_argument("--diagnostics", action="store_true", help="include information/work inventories and deterministic references")
     analyze.add_argument("--costs", action="store_true", help="include original measured costs and the frozen C/K boundary rule")
     analyze.add_argument("--uncertainty", action="store_true", help="include paired intervals/missingness; also includes estimands and costs")
-    analyze.add_argument("--resampling-seed", type=int, help="saved nonnegative world-bootstrap seed; requires --uncertainty (default 20261006)")
-    analyze.add_argument("--as-of", help="explicit zoned accounting timestamp for reproducible costs; requires --costs or --uncertainty")
+    analyze.add_argument("--report", action="store_true", help="export seven synthetic-validation exhibits, all M4 tables and exact cases to a new directory; requires --as-of")
+    analyze.add_argument("--figures", action="store_true", help="render report SVG/PNG figures with optional Matplotlib; requires --report")
+    analyze.add_argument("--resampling-seed", type=int, help="saved nonnegative world-bootstrap seed; requires --uncertainty or --report (default 20261006)")
+    analyze.add_argument("--as-of", help="explicit zoned accounting timestamp for reproducible costs; required for --report")
     analyze.add_argument("--tokenizer", type=Path, help="local matching tokenizer metadata for exact diagnostic history counts; no weights/downloads")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
@@ -82,17 +84,28 @@ def main() -> int:
             schedules = load_schedules(args.schedule, population)
             worlds = population.development if args.stage == "development" else population.worlds(args.count)
             branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
-            if args.tokenizer and not args.diagnostics:
-                raise ValueError("--tokenizer requires --diagnostics")
-            if args.as_of and not (args.costs or args.uncertainty):
-                raise ValueError("--as-of requires --costs or --uncertainty")
-            if args.resampling_seed is not None and not args.uncertainty:
-                raise ValueError("--resampling-seed requires --uncertainty")
+            if args.tokenizer and not (args.diagnostics or args.report):
+                raise ValueError("--tokenizer requires --diagnostics or --report")
+            if args.as_of and not (args.costs or args.uncertainty or args.report):
+                raise ValueError("--as-of requires --costs or --uncertainty or --report")
+            if args.resampling_seed is not None and not (args.uncertainty or args.report):
+                raise ValueError("--resampling-seed requires --uncertainty or --report")
+            if args.figures and not args.report:
+                raise ValueError("--figures requires --report")
             tokenizer = None
             if args.tokenizer:
                 from transformers import AutoTokenizer
                 tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
-            if args.uncertainty:
+            if args.report:
+                from .report import report_run, write_report
+                from .uncertainty import DEFAULT_SEED
+                result = report_run(worlds, branches, args.worker, now=args.as_of,
+                    seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed, tokenizer=tokenizer,
+                    provenance=dict(manifest=args.manifest.name, schedule=args.schedule.name,
+                        workers=[p.name for p in args.worker], stage=args.stage, count=args.count if args.stage == "main" else None))
+                write_report(args.output, result, figures=args.figures)
+                tables = result["tables"]
+            elif args.uncertainty:
                 from .uncertainty import DEFAULT_SEED, uncertainty_run
                 tables = uncertainty_run(worlds, branches, args.worker, now=args.as_of,
                     seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed,
@@ -109,7 +122,8 @@ def main() -> int:
                 tables = analyze_run(worlds, branches, args.worker)
             else:
                 tables = evaluate_run(worlds, branches, args.worker)
-            write_evaluation(args.output, tables)
+            if not args.report:
+                write_evaluation(args.output, tables)
         except (OSError, ValueError, ImportError, SQLiteError) as error:
             parser.error(str(error))
         print(f"Offline tables: {args.output}; {tables['coverage']['recorded']}/{tables['coverage']['scheduled']} recorded; "
