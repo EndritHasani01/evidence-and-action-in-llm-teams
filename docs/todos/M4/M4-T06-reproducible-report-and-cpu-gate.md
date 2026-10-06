@@ -1,8 +1,14 @@
 # M4-T06 — Reproducible report and pre-GPU analysis gate
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M4-T03](../M4/M4-T03-information-and-work-diagnostics.md), [M4-T05](../M4/M4-T05-uncertainty-and-missingness.md). M1–M3 must have passed.
+Both prerequisites are done as of 6 October 2026, and M1–M3's CPU gates pass.
+The [M4-T05 handoff](M4-T05-uncertainty-and-missingness.md#completion-and-handoff)
+supplies paired uncertainty, shared-response sensitivity, completion/coverage,
+conditional-repeat trajectories and paired policy costs from the original workers.
+All sixteen retained uncertainty cases reproduce. This task is ready to assemble
+the complete synthetic report; its report/CPU gate has not passed.
 
 ## References
 

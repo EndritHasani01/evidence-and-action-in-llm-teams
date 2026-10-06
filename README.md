@@ -49,10 +49,15 @@ verification passes 81. **M4-T04 is implemented and verified:** original measure
 costs and the frozen C/K coverage rule reproduce sixteen retained cases, with
 whole-branch costs, unknown selected branches and fixed denominators. Complete
 CPU regression passes 362 checks; final review passes 191 core checks (188
-passed, three optional skips) and 110 installed-library checks. M4-T05 is ready;
-the full M4 analysis/report gate remains
+passed, three optional skips) and 110 installed-library checks. **M4-T05 is
+implemented and verified:** paired world intervals, shared-response missingness,
+completion bounds and paired whole-policy displays reproduce sixteen retained
+cases. Complete CPU regression passes 396 checks; final focused checks pass 33,
+core checks run 225 (221 passed, four optional skips), and installed-library M4
+checks pass 144. **M4-T06 is ready;** the full M4 analysis/report gate remains
 mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
 work. See
+[M4-T05 completion evidence](docs/todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff),
 [M4-T04 completion evidence](docs/todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff),
 [M4-T03 completion evidence](docs/todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff),
 [M4-T02 completion evidence](docs/todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff),
@@ -503,7 +508,7 @@ The [sixteen retained cases](tests/fixtures/README.md#policy-costs-and-frozen-bo
 reconcile with M3 and preserve full main/stopped unknowns. Pure record analysis
 runs without runtime/model dependencies; decoding real committed checkpoints
 requires the declared CPU serializer. This is CPU validation, not GPU timing or
-empirical policy evidence. M4-T05/T06 remain required before GPU use.
+empirical policy evidence. M4-T06's complete report gate remains required before GPU use.
 
 ## Offline uncertainty and missingness
 
