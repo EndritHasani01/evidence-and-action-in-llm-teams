@@ -149,7 +149,7 @@ def reconstruct_before(prepared, peer, status, candidate, sources):
 
 # Frozen narrow syntax: only literal ID/version/value association, not general
 # semantic interpretation. Absence of a match stays unresolved, never absent.
-ASSOCIATION = re.compile(r"(?<![A-Za-z0-9_])(?P<record_id>x\d{3})/v1=(?P<value>-?(?:0|[1-9]\d*))(?![A-Za-z0-9_])")
+ASSOCIATION = re.compile(r"(?<!\w)(?P<record_id>x[0-9]{3})/v1=(?P<value>-?(?:0|[1-9][0-9]*))(?!\w|[.+-]\d)")
 
 
 def old_value_visibility(record_id, before_value, receipt, excerpts):

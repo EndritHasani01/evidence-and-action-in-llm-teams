@@ -83,3 +83,13 @@ history counts reproduce under hash seed 37. The dependency-free core runs
 The complete CPU lifecycle regression and final installed-package verification
 remain in progress at this review checkpoint.
 
+The complete integrated CPU regression passes all 334 checks in 1,571.760
+seconds, including all nine lifecycle checks. While it ran, two isolated
+offline review fixes preserved unknown delivery releases and prevented an
+integer association from matching the prefix of a decimal, mixed-digit number
+or adjacent numeric arithmetic. The final association checks retain ordinary
+sentence punctuation. The final 26 focused checks pass in 12.990 seconds and
+fresh hash-seed-37 archive reconstruction reproduces all six cases unchanged.
+Core and installed-package checks are being refreshed against these final
+review changes; the earlier installed 81-check verification already passed.
+

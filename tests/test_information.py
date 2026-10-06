@@ -84,11 +84,15 @@ class InformationCoreTests(unittest.TestCase):
 
     def test_numeric_coincidence_wrong_ids_versions_and_unrecognized_prose_unresolved(self):
         for text in ("7 is useful", "candidate [7,7]", "x001/v1=7", "x000/v2=7", "x000/v1=70",
-                     "x000 used to be seven", "x000/v1=07", "ax000/v1=7"):
+                     "x000 used to be seven", "x000/v1=07", "ax000/v1=7",
+                     "x000/v1=7.5", "x000/v1=7.0", "x000/v1=7e0", "x000/v1=7_000",
+                     "x000/v1=7+2", "x000/v1=7-2", "x000/v1=7\u0661", "\u03b1x000/v1=7"):
             result = old_value_visibility("x000", 7, None, [{"text": text, "call_id": "original"}])
             self.assertEqual(result["status"], "unresolved", text)
             self.assertIsNone(result["visible"])
         self.assertEqual(old_value_visibility("x000", 7, None, [{"text": "7 7"}])["numeric_occurrences"], 2)
+        self.assertTrue(old_value_visibility("x000", 7, None, [{"text": "x000/v1=7."}])["visible"])
+        self.assertIsNone(old_value_visibility("x000", 75, None, [{"text": "x000/v1=7\u0665"}])["visible"])
 
     def test_source_bound_literal_and_host_receipt_keep_original_links_and_conflicts(self):
         result = old_value_visibility("x000", 7, None, [{"text": "x000/v1=7 and x000/v1=8",

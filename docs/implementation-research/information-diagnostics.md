@@ -11,11 +11,13 @@ configuration or add a scientific requirement.
 Inspect only the actual rendered historical receipt and literal retained own
 replies/received prose. A host receipt explicitly exposes the genuine archived
 v1 integer associated with its ID and versions. A derived excerpt qualifies
-only when it contains the exact syntax `xNNN/v1=INTEGER` with an integer spelling
-without leading zeros, naming the edited ID and matching its genuine archived
+only when it contains the exact syntax `xNNN/v1=INTEGER` with ASCII digits and
+an integer spelling without leading zeros, naming the edited ID and matching its genuine archived
 v1 value. Record the original call/message/delivery IDs, history index, exact
 matched excerpt and character span. Keep wrong source-bound assertions separately.
 Derived assertions remain untrusted prose, even when they match the raw record.
+The integer cannot be a prefix of a decimal, exponent, underscored number or
+adjacent numeric arithmetic. Ordinary sentence punctuation can follow it.
 
 Numeric coincidence, other IDs/versions, candidates without association and
 other wording do not qualify. No match means **unresolved**, never evidence that
