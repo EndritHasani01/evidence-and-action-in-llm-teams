@@ -45,10 +45,15 @@ verified:** information inventories, conservative source associations, receipt
 timing and deterministic work references reproduce six retained cases and 200
 native history counts. The complete integrated CPU regression passes 334
 checks; final core checks pass 160 with two optional skips, and installed-library
-verification passes 81. M4-T04 is ready;
+verification passes 81. **M4-T04 is implemented and verified:** original measured
+costs and the frozen C/K coverage rule reproduce sixteen retained cases, with
+whole-branch costs, unknown selected branches and fixed denominators. Complete
+CPU regression passes 362 checks; final review passes 191 core checks (188
+passed, three optional skips) and 110 installed-library checks. M4-T05 is ready;
 the full M4 analysis/report gate remains
 mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
 work. See
+[M4-T04 completion evidence](docs/todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff),
 [M4-T03 completion evidence](docs/todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff),
 [M4-T02 completion evidence](docs/todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff),
 [M4-T01 completion evidence](docs/todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff),
