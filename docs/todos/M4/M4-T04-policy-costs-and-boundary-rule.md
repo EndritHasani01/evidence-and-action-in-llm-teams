@@ -61,3 +61,11 @@ unknown outcomes without changing physical work or known policy costs.
 Complete CPU regression, installed-library verification and final consistency
 audits are in progress; this task remains active until they pass.
 
+Inventory review demonstrated that the host-injected v2 record was counted
+among retained remote records. The view now uses M4-T03's exclusion convention,
+while separate rule coverage still requires the edited current record. The
+new regression verifies both distinctions and unchanged whole-policy selection.
+All 28 final dependency-free focused checks pass in 10.121 seconds; all sixteen
+updated cost cases reconcile with M3 again. This changes a derived inventory
+view, not attempts, costs, quality, branch selection or scientific design.
+

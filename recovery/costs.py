@@ -473,8 +473,11 @@ def cost_records(worlds, branches, records, inputs, attempts=(), *, committed=No
                 interpretation="Retrospective oracle-recognized completion within four rounds; the fixed schedule still executes all calls.")))
         initial = _initial_state(branch, inputs, committed)
         current = by_world[branch.world_id].event_world(branch.event)
+        edit = (by_world[branch.world_id].main_edit if branch.event == "revision" else
+                by_world[branch.world_id].preserving_edit if branch.event == "preserving" else None)
         for peer in range(4):
-            evidence.append(dict(base, peer=peer, inventory=source_inventory(current, initial["peers"][peer]["sources"], peer) if initial else None,
+            evidence.append(dict(base, peer=peer, inventory=source_inventory(current,
+                initial["peers"][peer]["sources"], peer, exclude_record_id=edit.record_id if edit else None) if initial else None,
                 reason=None if initial else "initial_coverage_unknown"))
     by_cost, by_quality = {r["branch_id"]: r for r in policy_costs}, {r["branch_id"]: r for r in quality}
     selections = boundary_selections(worlds, branches, inputs, committed=committed)

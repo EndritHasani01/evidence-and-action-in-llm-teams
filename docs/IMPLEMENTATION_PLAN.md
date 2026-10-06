@@ -359,6 +359,14 @@ Update these sections only when a capability is verified, a consequential decisi
 
 ### Discoveries or deviations
 
+M4-T04 inventory review found that the new retained-remote view counted the
+host-injected edited record. It now applies M4-T03's `exclude_record_id`
+convention. The separately computed current-manifest coverage includes that
+record, as required by the frozen rule. A focused check removes only v2 and
+verifies K selection, while complete inputs select C and retained remote counts
+exclude v2. All sixteen updated cost cases reproduce unchanged M3 costs and
+selection; no scientific or frozen-configuration change is made.
+
 M1-T01 verified that all five mathematical families and both sizes need no CPU
 runtime dependencies; the model stack remains optional and unimported. Its
 one-draw generator remains deliberately unconditioned; M1-T02 now supplies §2.2

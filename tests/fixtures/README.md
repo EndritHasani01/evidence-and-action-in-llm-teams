@@ -840,6 +840,8 @@ Policy `seconds` and token fields reproduce M3's measured subtotals;
 Output/memory measurement gaps and uncertain attempts are counted explicitly.
 Allocation partitions and provider billing remain separate. No duplicate store,
 new identity system, inference call or execution decision is added.
+Retained remote evidence excludes the host-injected edited record, matching
+M4-T03. The separate rule coverage requires every current record, including it.
 
 The [hand-calculated fixture](../cost_fixture.py) has 128 logical calls,
 116 original generations, 117 attempts, twelve replays, a three-second

@@ -285,6 +285,22 @@ class WholePolicyTests(unittest.TestCase):
         self.assertIsNone(chosen["complete_policy_seconds"])
         self.assertTrue(next(row for row in result["strategy_worlds"] if row["strategy"] == "always_C")["available"])
 
+    def test_retained_remote_inventory_excludes_host_v2_but_rule_requires_it(self):
+        w, b, r, i, a = fixture(policies=("B", "C", "K"))
+        result = cost_records(w, b, r, i, a, now=clock(400))
+        record_id = w[0].main_edit.record_id
+        for row in result["retained_evidence"]:
+            inventory = row["inventory"]
+            self.assertEqual(inventory["excluded_record_id"], record_id)
+            self.assertNotIn([record_id, 2], inventory["remote_pairs"])
+            self.assertTrue(inventory["complete_current_raw"])
+        self.assertEqual(result["boundary_selections"][0]["selected_policy"], "C")
+        sources = json.loads(i[next(branch.branch_id for branch in b if branch.policy == "B"), 1]["requests"]["before"])["peers"][0]["sources"]
+        missing_v2 = [s for s in sources if s["record_id"] != record_id]
+        set_boundary(i, b, [missing_v2, sources, sources, sources])
+        result = cost_records(w, b, r, i, a, now=clock(400))
+        self.assertEqual(result["boundary_selections"][0]["selected_policy"], "K")
+
 
 if __name__ == "__main__":
     unittest.main()

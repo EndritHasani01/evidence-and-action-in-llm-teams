@@ -479,7 +479,8 @@ world/prefix/generation IDs and preservation denominators. Selection tables stat
 when the rule is constant and retain unknown boundaries in their population.
 
 `retained_evidence`, `quality_preservation`, and measured `policy_costs` are
-separate views. `strategy_worlds` and `paired_comparisons` supply paired plotting
+separate views. Retained remote-record counts exclude the host-injected edited
+record; current-manifest completeness still includes it. `strategy_worlds` and `paired_comparisons` supply paired plotting
 and uncertainty inputs; shared generation costs cancel before forming duration
 differences. Oracle-recognized stable-completion cost is explicitly retrospective:
 the fixed schedule still runs all calls. No utility or accuracy-per-message score
