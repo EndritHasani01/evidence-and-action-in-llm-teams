@@ -69,3 +69,26 @@ repeat exclusion and common overlapping world IDs. The default saved seed is
 intervals remain separately labeled descriptions. Original-worker/CLI/cost and
 trajectory integration and the complete CPU gate are still pending.
 
+The saved-run integration now passes 32 dependency-free focused checks in
+16.533 seconds. [CLI/API usage](../../../README.md#offline-uncertainty-and-missingness)
+adds uncertainty, original costs and estimands from one read-only worker snapshot.
+[Sixteen retained cases](../../../tests/fixtures/uncertainty_tables.json.gz)
+reproduce directly from the ordinary M3 workers; the archive check passes in
+60.607 seconds and checks worker bytes. Complete and incomplete trajectories,
+family completion bounds, unknown selected branches, shared cost cancellation,
+paired preservation/cost cohorts and empty diagnostic populations are covered.
+Whole-policy IDs are checked against the original schedule. Large nonlinear
+bounds are conservative, shared-variable envelopes; missing future cost ends
+are explicitly unbounded. No missing reply or completion time is imputed.
+
+Independent reference verification in the existing system Python environment
+(NumPy 2.4.2 / SciPy 1.17.1, separate from project dependencies) agrees on 156
+two-sided exact-binomial intervals, six quantile endpoints and a complete
+unequal-family paired bootstrap. Maximum binomial difference is 4.95e-13.
+The [exact-binomial method](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats._result_classes.BinomTestResult.proportion_ci.html)
+and [type-7 quantile convention](https://numpy.org/doc/stable/reference/generated/numpy.quantile.html)
+are documented primary references. Temporary reference/log helpers use
+`$env:TEMP/m4-t05-*`. Full source/core regression, installed-library validation,
+hash-seed reproduction and final documentation/protected-artifact checks remain
+pending; the task is active.
+

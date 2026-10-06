@@ -7,7 +7,8 @@ import unittest
 
 from recovery.analysis import MAIN_FAMILIES, _exact
 from recovery.uncertainty import (DRAWS, contrast_bounds, contrast_uncertainty, exact_binomial, hoeffding,
-    paired_interval, percentile, reporting_references, shared_values, world_resamples)
+    paired_interval, percentile, reporting_references, shared_values, trajectory_bounds,
+    uncertainty_records, world_resamples, _duration_bounds, policy_display_summaries)
 
 
 def component(ids, *, operator="mean", coefficient=1, values=None):
@@ -100,6 +101,19 @@ class StatisticalArithmeticTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             paired_interval([row, row], [f])
 
+    def test_independent_finite_stratified_distribution_has_expected_percentiles(self):
+        f, g = MAIN_FAMILIES[:2]
+        rows = [dict(world_id="a", family=f, value=0), dict(world_id="b", family=f, value=1),
+                dict(world_id="c", family=g, value=0.5)]
+        # Exhaustive support: family f's mean is 0, .5 or 1; g is always .5.
+        # Equal-family pooled values .25/.5/.75 have probabilities .25/.5/.25.
+        result = paired_interval(rows, [f, g], seed=37, primary=True, limits=[0, 1])
+        self.assertEqual(result["estimate"], 0.5)
+        self.assertEqual(result["interval"], [0.25, 0.75])
+        self.assertFalse(result["degenerate"])
+        self.assertIsNone(result["hoeffding"])
+        self.assertEqual(len(set(result["family_seeds"].values())), 2)
+
 
 class SharedMissingnessTests(unittest.TestCase):
     def test_shared_linear_cancellation_and_known_parent_constraint(self):
@@ -153,9 +167,29 @@ class SharedMissingnessTests(unittest.TestCase):
         self.assertEqual(contrast_bounds(row)["interval"], [0, 1])
         self.assertIn("undefined", contrast_bounds(row)["limitation"])
         self.assertIsNone(contrast_bounds(dict(row, eligibility="ineligible"))["interval"])
+        shared = contrast(component(["x"]), component(["x"], coefficient=-1), eligibility="unknown")
+        self.assertEqual(contrast_bounds(shared)["interval"], [0, 0])
+        self.assertEqual(contrast_bounds(shared)["method"], "conditional_shared_endpoint_cancellation")
+        self.assertIn("undefined", contrast_bounds(shared)["limitation"])
+        first, second = component([]), component([], coefficient=-1)
+        first["branch_id"], second["branch_id"] = "unavailable-B", "unavailable-C"
+        self.assertEqual(contrast_bounds(contrast(first, second, eligibility="unknown"))["interval"], [-1, 1])
 
 
 class ContrastUncertaintyTests(unittest.TestCase):
+    def test_structurally_empty_preservation_population_is_na_end_to_end(self):
+        from tests.estimand_fixture import prepared, selection, tables
+        worlds, branches = selection(worlds=[w for w in prepared("fallback")[0].main if w.index == 3])
+        data = tables(worlds, branches)
+        for diagnostic in data["peer_diagnostics"]:
+            diagnostic.update(denominator=0, numerator=0, rate=None, eligible_coordinates=[], reason="no_correct_prefix_U_coordinates")
+        result = uncertainty_records(worlds, branches, data)
+        preservation = [r for r in result["summaries"] if r["endpoint"] == "preservation"]
+        self.assertTrue(preservation)
+        self.assertTrue(all(r["eligible_worlds"] == 0 for r in preservation))
+        self.assertTrue(all(r["sensitivity"]["interval"] is None for r in preservation))
+        self.assertTrue(all(r["intended_population"]["interval"] is None for r in preservation))
+
     def test_frozen_population_bounds_and_separate_complete_case_uncertainty(self):
         from recovery.analysis import analyze_estimands
         from tests.estimand_fixture import prepared, selection, tables, constant
@@ -201,6 +235,162 @@ class ContrastUncertaintyTests(unittest.TestCase):
         self.assertEqual([round(r["reference"], 3) for r in result["focal"]], [0.200, 0.343, 0.245, 0.420])
         self.assertAlmostEqual(result["fallback_standard_error_ratio"], math.sqrt(1.5))
         self.assertIn("not achieved power", result["interpretation"])
+
+
+def trajectory_rows(matrix, shared=None):
+    shared = shared or {}
+    return [dict(round=r+1, peer=p, generation_id=shared.get((r, p), f"r{r}/p{p}"), correct=v)
+            for r, row in enumerate(matrix) for p, v in enumerate(row)]
+
+
+class TrajectorySensitivityTests(unittest.TestCase):
+    def test_fragmented_complete_trajectory_has_no_joint_completion(self):
+        rows = trajectory_rows([[int(r != p) for p in range(4)] for r in range(4)])
+        result = trajectory_bounds(rows)
+        self.assertTrue(result["execution_complete"])
+        self.assertEqual(result["metrics"]["fragmented"], [1, 1])
+        self.assertEqual(result["metrics"]["joint_ever"], [0, 0])
+        self.assertEqual(result["metrics"]["all_individually_ever"], [1, 1])
+        self.assertEqual(result["metrics"]["never_jointly_correct"], [1, 1])
+
+    def test_shared_unknown_first_and_final_cannot_create_infeasible_temporary_success(self):
+        matrix = [[None, 1, 1, 1], [0, 1, 1, 1], [0, 1, 1, 1], [None, 1, 1, 1]]
+        rows = trajectory_rows(matrix, {(0, 0): "x", (3, 0): "x"})
+        result = trajectory_bounds(rows)
+        self.assertFalse(result["execution_complete"])
+        self.assertEqual(result["unknown_response_ids"], ["x"])
+        self.assertEqual(result["metrics"]["temporarily_correct_but_incorrect_at_end"], [0, 0])
+        self.assertEqual(result["metrics"]["final_joint"], [0, 1])
+        self.assertEqual(result["metrics"]["regression"], [0, 1])
+        constrained = trajectory_bounds(rows, {("correct", "x"): Fraction(1)})
+        self.assertFalse(constrained["execution_complete"])
+        self.assertEqual(constrained["metrics"]["final_joint"], [1, 1])
+        self.assertEqual(constrained["metrics"]["regression"], [1, 1])
+
+    def test_nonlinear_trajectory_bounds_match_independent_tiny_enumeration(self):
+        matrix = [[1]*4, [None, 1, 1, 1], [0, 1, 1, 1], [None, 1, 1, 1]]
+        result = trajectory_bounds(trajectory_rows(matrix))
+        independent = []
+        for x, y in product((0, 1), repeat=2):
+            joint = [1, x, 0, y]
+            independent.append(dict(final_joint=y, joint_ever=1,
+                regression=int(any(joint[i] and not joint[j] for i in range(4) for j in range(i+1, 4))),
+                temporarily_correct_but_incorrect_at_end=int(not y)))
+        for metric in independent[0]:
+            self.assertEqual(result["metrics"][metric], [min(r[metric] for r in independent), max(r[metric] for r in independent)])
+
+    def test_large_incomplete_trajectory_has_conservative_labeled_marginals(self):
+        result = trajectory_bounds(trajectory_rows([[None]*4 for _ in range(4)]))
+        self.assertFalse(result["execution_complete"])
+        self.assertEqual(len(result["unknown_response_ids"]), 16)
+        self.assertEqual(result["method"], "conservative_shared_trajectory_envelope")
+        self.assertTrue(all(interval == [0, 1] for interval in result["metrics"].values()))
+
+    def test_conservative_trajectory_envelope_contains_every_independent_completion(self):
+        matrix = [[None]*4, [None]*4, [None, 1, 1, 1], [1]*4]
+        result = trajectory_bounds(trajectory_rows(matrix))
+        self.assertEqual(result["method"], "conservative_shared_trajectory_envelope")
+        independent = []
+        for bits in product((0, 1), repeat=9):
+            completed = [list(bits[:4]), list(bits[4:8]), [bits[8], 1, 1, 1], [1]*4]
+            joint = [int(all(row)) for row in completed]
+            ever = [any(row[p] for row in completed) for p in range(4)]
+            category = "continuously_correct" if all(joint) else "correct_at_end_after_delay_or_regression"
+            independent.append(dict(final_joint=joint[-1], joint_ever=int(any(joint)),
+                all_individually_ever=int(all(ever)), individual_ever_mean=sum(ever)/4,
+                fragmented=int(all(ever) and not any(joint)),
+                regression=int(any(joint[i] and not joint[j] for i in range(4) for j in range(i+1, 4))),
+                **{name:int(category == name) for name in result["metrics"] if name in (
+                    "continuously_correct", "correct_at_end_after_delay_or_regression",
+                    "temporarily_correct_but_incorrect_at_end", "never_jointly_correct")}))
+        for metric, interval in result["metrics"].items():
+            self.assertLessEqual(interval[0], min(r[metric] for r in independent))
+            self.assertGreaterEqual(interval[1], max(r[metric] for r in independent))
+
+
+class PolicyUncertaintyTests(unittest.TestCase):
+    def test_costs_reject_changed_original_generation_and_selected_branch_ids(self):
+        import copy
+        from recovery.costs import cost_records
+        from recovery.evaluate import evaluate_records
+        from tests.cost_fixture import fixture, clock
+        w, b, r, i, a = fixture(policies=("B", "C", "K"))
+        data = evaluate_records(w, b, r, i, a)
+        data["costs"] = cost_records(w, b, r, i, a, now=clock(400), tables=data)
+        changed = copy.deepcopy(data)
+        changed["costs"]["policy_costs"][0]["generation_ids"][0] = "wrong-original"
+        with self.assertRaisesRegex(ValueError, "schedule identity"):
+            uncertainty_records(w, b, changed)
+        changed = copy.deepcopy(data)
+        changed["costs"]["boundary_selections"][0]["selected_branch_id"] = next(branch.branch_id for branch in b if branch.policy == "B")
+        with self.assertRaisesRegex(ValueError, "entire recorded C/K"):
+            uncertainty_records(w, b, changed)
+
+    def test_preservation_cost_axis_keeps_its_own_eligible_world_cohort(self):
+        f = MAIN_FAMILIES[0]
+        rows = []
+        for wid, eligible, seconds in (("a", True, 10), ("b", False, 20)):
+            rows.append(dict(world_id=wid, family=f, population="main", display="policy_C", event="revision",
+                quality_cost_available=True, metrics={
+                    "preservation": dict(value=1 if eligible else None, observed=eligible,
+                        eligibility="eligible" if eligible else "ineligible", range=[0, 1],
+                        measured_interval=[1, 1] if eligible else None, sensitivity=dict(interval=[1, 1] if eligible else None)),
+                    "policy_seconds": dict(value=seconds, observed=True, eligibility="eligible", range=None,
+                        measured_interval=[seconds, seconds], sensitivity=dict(interval=[seconds, seconds]))}))
+        result = policy_display_summaries(rows, [dict(population="main", families=[f])])
+        preservation = next(r for r in result if r["family"] == f and r["metric"] == "preservation")
+        self.assertEqual(preservation["eligible_worlds"], 1)
+        self.assertEqual(preservation["paired_cost"]["intended_population"]["interval"], [10, 10])
+        self.assertEqual(preservation["paired_cost"]["intended_population"]["lower"]["family_world_ids"], {f: ["a"]})
+
+    def test_shared_unknown_original_costs_cancel_before_unbounded_extrema(self):
+        generations = {"prefix": dict(seconds=[1, 3], protocol_outcome="unknown"),
+                       "C": dict(seconds=[2, 2], protocol_outcome="valid"),
+                       "B": dict(seconds=[4, 4], protocol_outcome="valid")}
+        self.assertEqual(_duration_bounds([(1, ["prefix", "C"]), (-1, ["prefix", "B"])], generations)["interval"], [-2, -2])
+        self.assertEqual(_duration_bounds([(1, ["prefix", "C"])], generations)["interval"], [3, None])
+        self.assertEqual(_duration_bounds([(-1, ["prefix", "B"])], generations)["interval"], [None, -5])
+
+    def test_whole_policy_pairing_exact_costs_and_incomplete_selected_bounds(self):
+        from recovery.costs import cost_records
+        from recovery.evaluate import evaluate_records
+        from tests.cost_fixture import fixture, clock
+        worlds, branches, records, inputs, attempts = fixture(policies=("B", "C", "K"))
+        data = evaluate_records(worlds, branches, records, inputs, attempts)
+        data["costs"] = cost_records(worlds, branches, records, inputs, attempts, now=clock(400), tables=data)
+        result = uncertainty_records(worlds, branches, data)
+        display = next(r for r in result["policy_world_displays"] if r["display"] == "boundary_rule-always_B")
+        self.assertEqual(display["metrics"]["policy_seconds"]["sensitivity"]["interval"], [-3, -3])
+        q, cost = [next(r for r in result["policy_display_summaries"] if r["display"] == "boundary_rule-always_B"
+                  and r["metric"] == metric and r["family"] == worlds[0].world.task.value) for metric in ("auc", "policy_seconds")]
+        self.assertEqual(q["complete_case_description"]["lower"]["family_world_ids"], cost["complete_case_description"]["lower"]["family_world_ids"])
+        self.assertEqual(cost["intended_population"]["interval"], [-3, -3])
+        for r in result["policy_display_summaries"]:
+            if r["paired_cost"]:
+                self.assertEqual(r["complete_case_description"]["lower"]["family_world_ids"],
+                    r["paired_cost"]["complete_case_description"]["lower"]["family_world_ids"])
+        C = next(b for b in branches if b.policy == "C")
+        for call in C.calls[4:]:
+            del records[call.call_id]
+        attempts = [a for a in attempts if a["call_id"] in records]
+        data = evaluate_records(worlds, branches, records, inputs, attempts)
+        data["costs"] = cost_records(worlds, branches, records, inputs, attempts, now=clock(400), tables=data)
+        result = uncertainty_records(worlds, branches, data)
+        selected = next(r for r in result["policy_world_displays"] if r["display"] == "boundary_rule")
+        self.assertFalse(selected["quality_cost_available"])
+        self.assertEqual(selected["whole_branch_terms"], [dict(coefficient=1, branch_id=C.branch_id)])
+        self.assertEqual(selected["metrics"]["auc"]["sensitivity"]["interval"], [0.25, 1])
+        self.assertIsNone(selected["metrics"]["policy_seconds"]["sensitivity"]["interval"][1])
+        self.assertIsNone(selected["metrics"]["policy_seconds"]["value"])
+
+    def test_preservation_sharing_uses_coordinate_rate_not_whole_candidate_credit(self):
+        c = component(["shared"])
+        c["endpoint"] = "preservation"
+        c["atoms"][0].update(denominator=3, numerator=2, eligible_coordinates=[0, 1, 2], value=2/3)
+        self.assertEqual(contrast_bounds(contrast(c))["exact"], [_exact(Fraction(2, 3))]*2)
+        other = dict(c, coefficient=-1)
+        c["atoms"][0].update(numerator=None, value=None)
+        self.assertEqual(contrast_bounds(contrast(c, other))["interval"], [0, 0])
 
 
 if __name__ == "__main__":

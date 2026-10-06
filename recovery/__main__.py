@@ -58,7 +58,9 @@ def main() -> int:
     analyze.add_argument("--estimands", action="store_true", help="include prespecified contrasts and conditional repeatability")
     analyze.add_argument("--diagnostics", action="store_true", help="include information/work inventories and deterministic references")
     analyze.add_argument("--costs", action="store_true", help="include original measured costs and the frozen C/K boundary rule")
-    analyze.add_argument("--as-of", help="explicit zoned accounting timestamp for reproducible costs; requires --costs")
+    analyze.add_argument("--uncertainty", action="store_true", help="include paired intervals/missingness; also includes estimands and costs")
+    analyze.add_argument("--resampling-seed", type=int, help="saved world-bootstrap seed; requires --uncertainty (default 20261006)")
+    analyze.add_argument("--as-of", help="explicit zoned accounting timestamp for reproducible costs; requires --costs or --uncertainty")
     analyze.add_argument("--tokenizer", type=Path, help="local matching tokenizer metadata for exact diagnostic history counts; no weights/downloads")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
@@ -82,13 +84,20 @@ def main() -> int:
             branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
             if args.tokenizer and not args.diagnostics:
                 raise ValueError("--tokenizer requires --diagnostics")
-            if args.as_of and not args.costs:
-                raise ValueError("--as-of requires --costs")
+            if args.as_of and not (args.costs or args.uncertainty):
+                raise ValueError("--as-of requires --costs or --uncertainty")
+            if args.resampling_seed is not None and not args.uncertainty:
+                raise ValueError("--resampling-seed requires --uncertainty")
             tokenizer = None
             if args.tokenizer:
                 from transformers import AutoTokenizer
                 tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
-            if args.costs:
+            if args.uncertainty:
+                from .uncertainty import DEFAULT_SEED, uncertainty_run
+                tables = uncertainty_run(worlds, branches, args.worker, now=args.as_of,
+                    seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed,
+                    diagnostics=args.diagnostics, tokenizer=tokenizer)
+            elif args.costs:
                 from .costs import costs_run
                 tables = costs_run(worlds, branches, args.worker, now=args.as_of,
                     diagnostics=args.diagnostics, estimands=args.estimands, tokenizer=tokenizer)

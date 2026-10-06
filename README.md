@@ -348,9 +348,8 @@ write_evaluation("outcomes.json.gz", tables)          # Existing files protected
 The [retained table fixture](tests/fixtures/README.md#exact-offline-outcomes-and-trajectories)
 reproduces sixteen offline cases from the M3 bundle, including full population
 joins and the stopped unknown slots. Scripted outcomes are validation evidence.
-Information/work inventories and policy costs are described below;
-uncertainty/missingness bounds and the complete report remain later M4 tasks
-before GPU use.
+Information/work inventories, policy costs and uncertainty/missingness are
+described below. The complete M4 report gate remains required before GPU use.
 
 ## Offline contrasts and conditional repeats
 
@@ -383,7 +382,8 @@ their original prefix/partition and new continuation seeds. Repeat tables separa
 zero-effect ties, strict sign reversals and changes in complete trajectory categories;
 they assess conditional stability and supply no receipt/Q or new-prefix repeatability.
 Q activity never selects worlds: inactive and unobserved treatments stay included.
-These tables retain inputs for M4-T05; intervals and missingness bounds remain future work.
+These tables supply the original components/identities used by the uncertainty
+and missingness workflow below.
 
 ```python
 from recovery.analysis import analyze_run
@@ -504,6 +504,61 @@ reconcile with M3 and preserve full main/stopped unknowns. Pure record analysis
 runs without runtime/model dependencies; decoding real committed checkpoints
 requires the declared CPU serializer. This is CPU validation, not GPU timing or
 empirical policy evidence. M4-T05/T06 remain required before GPU use.
+
+## Offline uncertainty and missingness
+
+[uncertainty.py](recovery/uncertainty.py) derives paired intervals, frozen-population
+sensitivity and completion coverage from the same original worker snapshots.
+`--uncertainty` includes estimands and costs; diagnostics remain optional:
+
+```powershell
+python -S -m recovery analyze --uncertainty --resampling-seed 20261006 --as-of 2026-10-06T00:00:00+00:00 --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 --output uncertainty.json.gz
+.venv/Scripts/python.exe -m tests.uncertainty_archive
+```
+
+Exactly 10,000 world draws within each eligible family use sorted world IDs,
+saved family seeds, equal-family means and explicit linear type-7 quantiles.
+The two pooled primaries use 1.25/98.75 percentiles; family descriptions and
+secondaries use 2.5/97.5. Matching family/world cohorts reuse the same draws
+across events, policies, endpoints and overlapping displays. Repeats remain
+conditional comparisons of the same worlds and never increase independent N.
+Within-family constants also receive the specified weighted Hoeffding companion,
+with the formula's actual range. Family final-completion counts include exact
+two-sided binomial bounds; incomplete-population and complete-case bounds are
+separate. Approximate bootstrap coverage is not exact small-sample coverage.
+
+The `uncertainty` block contains `settings`, `populations`, `world_bounds`,
+`summaries`, `world_trajectories`, `family_completion`, `trajectory_summaries`,
+`policy_world_displays`, `policy_display_summaries` and `reporting_references`.
+World contrasts and family means remain in `estimands`. Recorded failures stay
+zero; unknown logical uses stay unexecuted even if their recorded originals
+constrain sensitivity. Shared response coefficients cancel before extrema.
+Small nonlinear completions are enumerated; larger expressions retain shared
+variables and conservative labels. Unknown prefix eligibility may leave
+preservation undefined. Empty eligible populations are N/A.
+
+Intended-population intervals require the full eligible outcome cohort;
+`complete_case_description` never replaces it. Incomplete trajectory categories
+and counts remain explicit, with no invented completion time. Policy quality
+and its cost axis share a cohort and draws; preservation's `paired_cost` uses
+its own eligible worlds. Ambiguous observed durations have percentile envelopes;
+unmeasured future policy costs have explicitly unbounded ends. The 0.10 and
+normal-approximation power/fallback references are reporting context, not
+equivalence margins or achieved-power claims.
+
+```python
+from recovery.uncertainty import uncertainty_run
+from recovery.evaluate import write_evaluation
+
+tables = uncertainty_run(worlds, branches, worker_paths,
+    seed=20261006, now="2026-10-06T00:00:00+00:00")
+write_evaluation("uncertainty.json.gz", tables)  # Exclusive derived export.
+```
+
+[Retained uncertainty evidence](tests/fixtures/README.md#paired-uncertainty-and-shared-response-missingness)
+reconstructs sixteen original-worker scopes, including both complete fixtures,
+full main manifests and stopped work. Scripted values validate analysis; they
+are not model findings. M4-T06's complete report gate remains open before GPU use.
 
 ## Protocol attainability and capacity
 

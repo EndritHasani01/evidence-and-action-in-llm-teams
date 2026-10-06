@@ -817,7 +817,8 @@ without producing an enormous automatic dictionary diff. `--write-fixture`
 exclusively creates a new derived export. [CLI/API usage](../../README.md#offline-information-and-retained-work)
 accepts ordinary saved runs. These tables are validation evidence, not empirical
 recovery results. [Policy costs](#policy-costs-and-frozen-boundary-rule) are now
-available; uncertainty/missingness and the complete report gate remain later M4 tasks.
+available; uncertainty/missingness is supplied below and the complete report gate
+remains M4-T06.
 
 ## Policy costs and frozen boundary rule
 
@@ -873,5 +874,54 @@ $env:PYTHONHASHSEED = '37'
 Reconstruction compares every table with the retained export and reconciles
 the unchanged M3 ledger. `--write-fixture` exclusively creates a new export.
 [CLI/API usage](../../README.md#offline-policy-costs-and-the-boundary-rule)
-supports ordinary saved runs. Uncertainty/bounds and complete report reproduction
-remain M4-T05/T06; no GPU/model, pilot, main execution or accepted freeze is implied.
+supports ordinary saved runs. Uncertainty/bounds are supplied by M4-T05 below;
+complete report reproduction remains M4-T06.
+No GPU/model, pilot, main execution or accepted freeze is implied.
+
+## Paired uncertainty and shared-response missingness
+
+[uncertainty_tables.json.gz](uncertainty_tables.json.gz) records sixteen derived
+M4-T05 scopes reconstructed by [uncertainty_archive.py](../uncertainty_archive.py)
+from evidence-named original workers in the existing M3 bundle. Worker bytes
+are checked before/after every analysis. The saved accounting clock is
+`2026-10-06T00:00:00+00:00`, resampling seed 20261006, and family seeds are that
+seed plus the existing task-order index. Each family draws its observed world
+count with replacement 10,000 times. Sorted world IDs define the draw indices;
+identical cohorts share draws across endpoints. Quantiles use linear
+interpolation at `(B-1)*p`, type 7. Primaries use probabilities 0.0125/0.9875;
+descriptive secondaries use 0.025/0.975. Repeats are separate conditional displays.
+
+Each case contains all uncertainty settings, populations, original world/repeat
+components, world sensitivity, family/pooled intervals and separate complete
+cases, family completion counts, incomplete trajectory categories/marginals,
+paired whole-policy quality/preservation/cost views and reporting references.
+The complete five-family fixtures each have 2,170 recorded outcomes. Full target
+and fallback joins retain 15,486/10,390 unknown slots, original main family
+denominators 12/8, and only five observed worlds. Their primary point intervals
+are unavailable; complete-case descriptions are zero. Frozen θ sensitivity is
+[-1.8333333333333333,1.8333333333333333] for target and [-1.75,1.75] for fallback;
+φ sensitivity is [-0.9166666666666666,0.9166666666666666] and [-0.875,0.875]. These
+are bounds on scripted validation joins, not experimental estimates.
+
+[Independent focused fixtures](../test_uncertainty.py) check finite stratified
+resampling support, weighted/clipped Hoeffding intervals, exact binomial counts,
+shared linear cancellation, shared nonlinear feasible completions, fragmentation,
+conservative larger trajectories, unknown eligibility and paired cost cohorts.
+Unknown shared prefix costs cancel in differences; absolute future costs have
+no asserted finite upper bound. A recorded parent can constrain a missing
+logical use without changing its unknown execution status. Empty diagnostic
+populations stay unavailable. Larger nonlinear envelopes retain variable/term
+identities and warn that marginal extrema need not be jointly attainable.
+
+```powershell
+python -S -m unittest tests.test_uncertainty tests.test_uncertainty_run -q
+.venv/Scripts/python.exe -m unittest tests.test_uncertainty_archive -q
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.uncertainty_archive
+```
+
+Every retained table must reproduce. `--write-fixture` exclusively creates a
+new derived export; the original run and all prerequisite fixtures remain
+unchanged. [CLI/API usage](../../README.md#offline-uncertainty-and-missingness)
+works on ordinary saved runs without importing inference. The report and full
+M4 gate remain M4-T06; CPU evidence does not admit GPU or main execution.
