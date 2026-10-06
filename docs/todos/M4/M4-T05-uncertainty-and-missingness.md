@@ -58,3 +58,14 @@ checks, complete CPU regression and installed-library verification are required
 before completion. No new persistence, dependency, scientific configuration,
 GPU/model execution or empirical result is part of this task.
 
+The statistical core in [uncertainty.py](../../../recovery/uncertainty.py)
+now passes fifteen dependency-free checks in 1.520 seconds. Independent fixtures
+verify explicit primary/secondary quantiles, exact binomial tail inversion,
+equal-family weights, degenerate/clipped Hoeffding intervals, shared linear
+cancellation, feasible nonlinear completions, fixed missingness denominators,
+repeat exclusion and common overlapping world IDs. The default saved seed is
+20261006; each family uses that seed plus its existing task-order index. Exactly
+10,000 draws use sorted world IDs and linear type-7 quantiles. Complete-case
+intervals remain separately labeled descriptions. Original-worker/CLI/cost and
+trajectory integration and the complete CPU gate are still pending.
+
