@@ -51,3 +51,13 @@ at this checkpoint. The initial fixture read incorrectly assumed a separate
 fallback schedule file; tests now derive it from the existing saved fallback
 population, without generating worlds or changing any retained fixture.
 
+Saved-worker integration now provides `analyze_run` and `recovery analyze
+--estimands`, preserving M4-T01's ordinary outcome export. The new
+[retained contrast tables](../../../tests/fixtures/estimand_tables.json.gz)
+reconstruct four cases from original accepted M3 workers, including all missing
+worlds in both full main manifests. `python -S -m unittest tests.test_analysis
+tests.test_analysis_run tests.test_estimand_archive tests.test_evaluate
+tests.test_outcome_archive -q` passes 53 checks in 74.566 seconds. Broader CPU,
+installed-library and documentation/protected-artifact checks remain open at
+this second checkpoint.
+

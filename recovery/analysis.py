@@ -7,6 +7,7 @@ This module does not calculate uncertainty, impute outcomes or call a model.
 
 from collections import defaultdict
 from fractions import Fraction
+import json
 
 from .schedule import _branch_id, dependency_order
 from .tasks import PEERS, Task
@@ -355,6 +356,9 @@ def analyze_estimands(worlds, branches, tables):
         raise ValueError("analysis requires unique worlds at one declared size and population domain")
     expected = {c.call_id: (b, c) for b in branches for c in b.calls}
     outcomes, diagnostics = defaultdict(list), defaultdict(list)
+    prefix_calls = {(b.branch_id, c.peer): c.call_id for b in branches if b.phase == "prefix"
+                    for c in b.calls if c.round_number == 4}
+    by_call = {}
     seen = set()
     for row in tables["outcomes"]:
         scope = expected.get(row["call_id"])
@@ -367,15 +371,18 @@ def analyze_estimands(worlds, branches, tables):
                 "size": world.world.size.value, "phase": b.phase, "event": b.event, "policy": b.policy,
                 "replicate": b.replicate, "prefix_parent": b.prefix_parent, "round": c.round_number,
                 "peer": c.peer, "seed": c.seed, "generation_id": c.generation_id,
-                "replay_parent": c.replay_parent}.items()):
+                "replay_parent": c.replay_parent,
+                "prefix_call_id": prefix_calls.get((b.prefix_parent, c.peer))}.items()):
             raise ValueError("analysis outcome differs from original schedule/world")
         correct = row["correct"]
         if correct is not None and (type(correct) is not int or correct not in (0, 1)):
             raise ValueError("analysis correctness must be exact 0/1/unknown")
-        if ((row["protocol_outcome"] == "unknown") != (correct is None)
+        if (row["protocol_outcome"] not in ("valid", "invalid", "failed", "unknown")
+                or (row["protocol_outcome"] == "unknown") != (correct is None)
                 or row["protocol_outcome"] in ("invalid", "failed") and correct != 0):
             raise ValueError("analysis failure/unknown scoring differs from evaluator")
         seen.add(row["call_id"])
+        by_call[row["call_id"]] = row
         outcomes[b.branch_id].append(row)
     if seen != expected.keys():
         raise ValueError("analysis must retain the complete scheduled outcome join")
@@ -384,6 +391,9 @@ def analyze_estimands(worlds, branches, tables):
         key = row["call_id"], row["metric"]
         if key in seen_diagnostics or row["call_id"] not in expected:
             raise ValueError("duplicate/unscheduled analysis diagnostic")
+        if any(row[k] != by_call[row["call_id"]][k] for k in (
+                "branch_id", "world_id", "family", "size", "event", "policy", "replicate", "round", "peer", "prefix_call_id")):
+            raise ValueError("analysis diagnostic differs from its original opportunity")
         seen_diagnostics.add(key)
         diagnostics[row["branch_id"]].append(row)
     populations = population_table(worlds)
@@ -401,8 +411,14 @@ def analyze_estimands(worlds, branches, tables):
         key = tuple(repeated[k] for k in ("world_id", "estimand", "event", "endpoint", "round"))
         repeatability.append({k: repeated[k] for k in ("world_id", "family", "estimand", "event", "endpoint")} |
             compare_replicates(originals[key], repeated))
-    trajectories = {(r["world_id"], r["event"], r["policy"], r["replicate"]): r
-                    for r in tables["trajectories"] if r["phase"] == "continuation"}
+    # Derive category changes from the same joined outcomes as the contrasts;
+    # do not let a stale trajectory export become another source of truth.
+    from .evaluate import trajectory
+    trajectories = {(b.world_id, b.event, b.policy, b.replicate): trajectory([
+        [r["correct"] for r in sorted(outcomes[b.branch_id], key=lambda r: r["peer"])
+         if r["round"] == number] for number in ROUNDS]) for b in branches
+        if b.phase == "continuation" and b.event in ("revision", "sham") and b.policy in ("B", "C", "K", "P_G", "P_H")
+        and not by_world[b.world_id].development and by_world[b.world_id].index <= 2}
     changes = []
     for world in worlds:
         if world.development or world.index > 2:
@@ -425,3 +441,55 @@ def analyze_estimands(worlds, branches, tables):
         "populations": populations, "world_contrasts": primary,
         "summaries": summarize_contrasts(primary, populations), "repeat_contrasts": repeats,
         "repeatability": repeatability, "trajectory_changes": changes}
+
+
+def prose_activity(worlds, branches, inputs):
+    """Count realized nonempty held texts from existing committed Q states.
+
+    Unobserved first-round delivery stays unknown. Empty text is queued literally
+    but provides no prose exposure. Inactive branches remain in every Q estimate.
+    No checkpointer/runner import or new persisted activity counter is needed.
+    """
+    by_world, rows = {w.world_id: w for w in worlds}, []
+    for branch in sorted(branches, key=lambda b: b.branch_id):
+        if branch.policy not in ("Q_B", "Q_C"):
+            continue
+        saved = next((inputs[branch.branch_id, number] for number in (2, 3, 4)
+                      if (branch.branch_id, number) in inputs), None)
+        state = json.loads(saved["requests"]["before"]) if saved else None
+        observed = (state is not None and state.get("committed") is True and
+                    (state.get("last_slot") or {}).get("phase") == "recovery" and
+                    state["last_slot"]["round_number"] >= 1)
+        held, counts = [], None
+        if observed:
+            for delivery in state["pending"] + state["deliveries"]:
+                if delivery["generated"] != {"phase": "recovery", "round_number": 1} or delivery["text"] is None:
+                    continue
+                release = delivery["first_usable"]
+                if release is not None and release != {"phase": "recovery", "round_number": 3}:
+                    raise ValueError("saved Q prose does not have its prescribed release boundary")
+                held.append(delivery)
+            counts = [sum(d["recipient"] == peer and bool(d["text"]) for d in held) for peer in PEERS]
+        rows.append({"world_id": branch.world_id, "family": branch.task.value,
+            "size": by_world[branch.world_id].world.size.value, "branch_id": branch.branch_id,
+            "event": branch.event, "policy": branch.policy, "replicate": branch.replicate,
+            "observed": bool(observed), "active": any(counts) if observed else None,
+            "reason": None if observed else "committed_round_one_delivery_not_observed",
+            "nonempty_texts_per_recipient": counts,
+            "nonempty_texts": sum(counts) if observed else None,
+            "queued_text_components": len(held) if observed else None,
+            "delivery_ids": [d["delivery_id"] for d in held] if observed else None,
+            "inclusion": "fixed eligible population regardless of prose activity"})
+    return rows
+
+
+def analyze_run(worlds, branches, paths):
+    """Read original workers once, score offline, then add contrast/repeat tables."""
+    from .evaluate import read_records, evaluate_records
+
+    worlds, branches = tuple(worlds), tuple(branches)
+    records, inputs, attempts = read_records(worlds, branches, paths)
+    tables = evaluate_records(worlds, branches, records, inputs, attempts)
+    tables["estimands"] = analyze_estimands(worlds, branches, tables)
+    tables["estimands"]["prose_activity"] = prose_activity(worlds, branches, inputs)
+    return tables

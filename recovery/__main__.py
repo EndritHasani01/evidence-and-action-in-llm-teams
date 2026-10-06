@@ -55,6 +55,7 @@ def main() -> int:
     analyze.add_argument("--stage", choices=("development", "main"), default="main")
     analyze.add_argument("--count", choices=(60, 40), type=int, default=60)
     analyze.add_argument("--output", required=True, type=Path, help="new derived JSON or JSON.gz table export")
+    analyze.add_argument("--estimands", action="store_true", help="include prespecified contrasts and conditional repeatability")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
         command.add_argument("--authoritative", type=Path, help="saved population authority for exact input/configuration equality")
@@ -75,7 +76,11 @@ def main() -> int:
             schedules = load_schedules(args.schedule, population)
             worlds = population.development if args.stage == "development" else population.worlds(args.count)
             branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
-            tables = evaluate_run(worlds, branches, args.worker)
+            if args.estimands:
+                from .analysis import analyze_run
+                tables = analyze_run(worlds, branches, args.worker)
+            else:
+                tables = evaluate_run(worlds, branches, args.worker)
             write_evaluation(args.output, tables)
         except (OSError, ValueError, SQLiteError) as error:
             parser.error(str(error))

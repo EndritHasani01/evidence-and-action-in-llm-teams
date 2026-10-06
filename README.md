@@ -331,8 +331,54 @@ write_evaluation("outcomes.json.gz", tables)          # Existing files protected
 The [retained table fixture](tests/fixtures/README.md#exact-offline-outcomes-and-trajectories)
 reproduces sixteen offline cases from the M3 bundle, including full population
 joins and the stopped unknown slots. Scripted outcomes are validation evidence.
-M4-T02–T06 still own contrasts, information/work inventories, costs,
-uncertainty/missingness bounds and the complete report before GPU use.
+Information/work inventories, costs, uncertainty/missingness bounds and the
+complete report remain later M4 tasks before GPU use.
+
+## Offline contrasts and conditional repeats
+
+[analysis.py](recovery/analysis.py) adds every prespecified contrast to the
+full offline outcome join. Use the saved complete schedule and original workers:
+
+```powershell
+python -S -m recovery analyze --estimands --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 --output analysis.json.gz
+python -S -m tests.estimand_archive
+```
+
+The additional `estimands` block contains fixed `populations`, `world_contrasts`,
+equal-family `summaries`, separate `repeat_contrasts`/`repeatability`,
+`trajectory_changes` and observed/unknown `prose_activity`. θ uses revised minus
+sham C−B AUC; φ is `E_keep(revision)` over the same retained peers in rounds 2–4.
+Round one remains a construction reference. Receipt comparisons use Prefix/Sort;
+Q uses Sort/BFS; preserving edits use the original first eight Top-K/BFS worlds.
+All named secondary effects and accuracy/final/preservation companions are included.
+
+Each world row exposes its formula, coefficients, endpoint, eligible peers/rounds,
+original prefix/call/generation IDs, exact numerator/denominator and unknown
+components. `endpoint=preservation, round=null` is the four-round mean of eligible
+peer preservation rates; `round=4` is final preservation. Structural empty
+denominators are N/A; unknown prefix eligibility remains unknown. Intended
+population estimates require all eligible components. A separately labeled
+`complete_case_description` includes its own world/family denominators.
+
+Replicate zero supplies population estimates. The ten fixed repeated worlds retain
+their original prefix/partition and new continuation seeds. Repeat tables separate
+zero-effect ties, strict sign reversals and changes in complete trajectory categories;
+they assess conditional stability and supply no receipt/Q or new-prefix repeatability.
+Q activity never selects worlds: inactive and unobserved treatments stay included.
+These tables retain inputs for M4-T05; intervals and missingness bounds remain future work.
+
+```python
+from recovery.analysis import analyze_run
+from recovery.evaluate import write_evaluation
+
+tables = analyze_run(worlds, branches, worker_paths)
+write_evaluation("analysis.json.gz", tables)  # Exclusive derived export.
+```
+
+The [retained contrast tables](tests/fixtures/README.md#prespecified-estimates-and-conditional-repeatability)
+reconstruct directly from the original scripted lifecycle workers at both sizes,
+including all unknown worlds in the full main manifests. These are CPU validation
+artifacts; M4's complete analysis/report gate remains open.
 
 ## Protocol attainability and capacity
 

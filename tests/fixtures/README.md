@@ -705,5 +705,60 @@ The latter compares every table with the retained export. `--write-fixture
 <new_tables.json.gz>` exclusively creates another derived export; ordinary
 reproduction preserves the fixture. The public `recovery analyze` command and
 API are documented in [README](../../README.md#offline-exact-outcomes-and-trajectories).
-Contrasts, information/work inventories, cost analysis, uncertainty/missingness
-bounds and the full reproducible report remain M4-T02–T06.
+Information/work inventories, cost analysis, uncertainty/missingness bounds and
+the full reproducible report remain later M4 tasks.
+
+## Prespecified estimates and conditional repeatability
+
+[estimand_tables.json.gz](estimand_tables.json.gz) contains four derived M4-T02
+cases from the original [scripted lifecycle bundle](scripted_lifecycle_run.zip):
+the complete five-family fixture at each size and the full target-60/fallback-40
+main joins. [estimand_archive.py](../estimand_archive.py) reads only the original
+accepted workers and saved manifests. All earlier fixtures remain unchanged.
+These tables validate CPU implementation; they are not model, pilot or empirical
+recovery results.
+
+- `populations` fixes the main, receipt, Q, preserving and repeat cohorts before
+  outcomes. Shared world IDs preserve overlapping subsets; original prefixes,
+  partitions and continuation seeds remain explicit. Preserving uses sixteen
+  worlds at both main counts; repeats use ten original worlds.
+- `world_contrasts` and `summaries` expose θ, its revised/sham components, φ
+  (`E_keep(revision)`), sham/correction-specific/E_clear and own-group effects,
+  all mask trajectories/mixed means, main secondary effects, six receipt cells,
+  η/direct/representation companions, Q effects and preserving B/C/K endpoints.
+  Accuracy, normalized AUC, final joint completion and preservation scopes are
+  named. World/family formulas and denominators never pool peer opportunities
+  or complete cases into the intended population.
+- Each component retains its coefficient, exact rational mean, peers/rounds,
+  eligibility, scheduled/observed calls and original call/generation/prefix IDs.
+  Linear atoms include exact weights; final joint completion retains its
+  all-four operator. Unknown components survive for M4-T05. Structural empty
+  preservation denominators are N/A; unknown old-prefix eligibility is distinct.
+- `repeat_contrasts`, `repeatability` and `trajectory_changes` retain replicate
+  zero as primary. Repeats use the same prefixes/partitions and new continuation
+  seeds; zero-effect ties are distinct from strict sign reversals. Incomplete
+  trajectory pairs are unknown. No receipt/Q/new-prefix repetition is implied.
+- `prose_activity` derives actual nonempty held texts from committed saved Q
+  states, preserving delivery IDs and counts before/after release. Empty text is
+  queued literally without prose exposure. Inactive/unobserved treatments remain
+  included; missing committed delivery evidence is unknown, not observed silence.
+
+Both complete fixtures have 2,170 recorded slots and θ=φ=0. Full main joins keep
+15,486 / 10,390 unknown slots. Their intended primary estimates are unknown,
+with five complete worlds and separately labeled complete-case values of zero.
+Q activity is observed in eight branches per size; the full main tables retain
+another 88 / 56 unobserved Q branches. Hand-calculated fixtures supply nonzero
+effects, inactive prose, sign reversals and category changes absent from these
+protocol-focused workers.
+
+```powershell
+python -S -m unittest tests.test_analysis tests.test_analysis_run tests.test_estimand_archive -q
+$env:PYTHONHASHSEED = '37'
+python -S -m tests.estimand_archive
+```
+
+Reconstruction compares every derived table with the retained export.
+`--write-fixture <new_tables.json.gz>` exclusively creates another export.
+The [CLI/API](../../README.md#offline-contrasts-and-conditional-repeats) reads
+ordinary saved runs without inference. Intervals, missingness bounds, cost and
+the full M4 report gate remain later work.
