@@ -48,3 +48,16 @@ original-worker reconciliation and complete CPU regression are required before
 completion. Uncertainty/reporting, GPU/model admission and empirical execution
 remain later gates.
 
+Checkpoint `83a138b` shares M3's original ledger arithmetic and implements the
+coverage-only choice. Ten new dependency-free checks pass; all 23 existing M3
+accounting checks pass again in 77.906 seconds. The complete offline join now
+adds whole-policy costs, selected/comparator endpoints, retained-evidence views,
+explicit measurement gaps and `recovery analyze --costs`. The latest focused
+dependency-free suite passes 27 checks in 9.243 seconds. All sixteen
+[derived cost cases](../../../tests/fixtures/policy_cost_tables.json.gz) reconstruct
+from original M3 workers and reconcile with its physical/policy totals,
+allocation partition and exact committed delivery IDs. Full manifests add
+unknown outcomes without changing physical work or known policy costs.
+Complete CPU regression, installed-library verification and final consistency
+audits are in progress; this task remains active until they pass.
+

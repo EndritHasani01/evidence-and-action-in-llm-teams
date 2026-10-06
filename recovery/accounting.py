@@ -12,16 +12,13 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 
-from .costs import (timestamp, _attempt_range, _allocation_resources, ledger_generation_costs,
+from .costs import (FINAL, OVERHEAD_RULE, timestamp, _attempt_range, _allocation_resources, ledger_generation_costs,
                     ledger_policy_costs, physical_costs)
 from .rounds import deserialize_state
 from .runner import WorkerReader, DurableRunner
 from .schedule import dependency_order
 from .storage import record_json, seconds, settings_json, utc_now, WorkerStore
 from .workers import scheduled_work
-
-
-FINAL = {"completed", "timeout", "infrastructure_failure", "replay"}
 
 
 @dataclass(frozen=True)
@@ -258,12 +255,10 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 raise ValueError("allocation budget bindings differ")
             if configurations:
                 budget = Budget(**json.loads(configurations.pop()))
-        by_attempt = defaultdict(list)
         for attempt in attempts:
             attempt["device"] = next((a["device"] for a in reversed(allocations)
                 if a["worker"] == attempt["worker"] and timestamp(a["started_at"]) <= timestamp(attempt["started_at"])
                 <= timestamp(a["stopped_at"] or now)), f"worker:{attempt['worker']}")
-            by_attempt[attempt["call_id"]].append(attempt)
         # Read-only compatibility with pre-T04 backups. Ordinary migrated
         # calls already carry the scalar request count.
         for row in records.values():
@@ -399,7 +394,7 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
             "work": work, "matched_comparisons": _comparisons(worlds, branches, completed),
             "resources": resources, "forecast": forecast,
             "prior_runs": [{"counts": h["counts"], "physical": h["physical"]} for h in history],
-            "overhead_rule": "original measured attempt costs include in-attempt loading/transport/termination; outside allocation overhead remains experiment overhead; allocation partition is not added to attempts"}
+            "overhead_rule": OVERHEAD_RULE}
     except _SnapshotChanged:
         if not _read_retries:
             raise

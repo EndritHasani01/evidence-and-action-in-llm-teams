@@ -816,5 +816,60 @@ Reconstruction compares complete table values; mismatches name the case/table/ro
 without producing an enormous automatic dictionary diff. `--write-fixture`
 exclusively creates a new derived export. [CLI/API usage](../../README.md#offline-information-and-retained-work)
 accepts ordinary saved runs. These tables are validation evidence, not empirical
-recovery results. Costs, uncertainty/missingness and the complete report gate
-remain later M4 tasks.
+recovery results. [Policy costs](#policy-costs-and-frozen-boundary-rule) are now
+available; uncertainty/missingness and the complete report gate remain later M4 tasks.
+
+## Policy costs and frozen boundary rule
+
+[policy_cost_tables.json.gz](policy_cost_tables.json.gz) contains sixteen derived
+M4-T04 cases: thirteen original-worker selections from the existing M3 bundle,
+two complete main population joins and one stopped prefix. Reconstruction by
+[cost_archive.py](../cost_archive.py) reads evidence-named original workers only,
+at the saved accounting clock `2026-10-06T00:00:00+00:00`; no providers run.
+M3's exact subset-bound live snapshots independently reconcile physical and
+policy totals, allocation/overhead and committed delivery IDs. Adding the full
+manifest leaves physical work and known policy costs unchanged.
+
+Each case contains `physical`, `generations`, `policy_costs`, `resources`,
+`validated_deliveries`/`delivery_counts`, `retained_evidence`,
+`quality_preservation`, `boundary_selections`, `selection_frequencies`,
+`strategy_worlds` and `paired_comparisons`. Original call/generation/attempt,
+world/event/policy/replicate/prefix IDs join the existing exact outcome tables.
+Policy `seconds` and token fields reproduce M3's measured subtotals;
+`complete_policy_seconds` is unavailable with any unknown scheduled policy call.
+Output/memory measurement gaps and uncertain attempts are counted explicitly.
+Allocation partitions and provider billing remain separate. No duplicate store,
+new identity system, inference call or execution decision is added.
+
+The [hand-calculated fixture](../cost_fixture.py) has 128 logical calls,
+116 original generations, 117 attempts, twelve replays, a three-second
+interruption/retry, and a recorded timeout. Every other attempt costs two seconds:
+physical cost is 235 seconds; B/P_G/Q_B cost 67 each, C/K/F/Q_C cost 64 each,
+including the 32-second shared prefix. Known physical request/output tokens are
+234/115, with two unknown output attempts. An ambiguous interruption gives
+[233,235] seconds physically and [65,67] for B/P_G/Q_B. A separate 400-second
+synthetic allocation partitions into one setup, three interruption, 231 attempt
+and 165 idle seconds; it is never added to 235 measured attempt seconds.
+
+Both complete five-family cases contain 2,170 logical outcomes, 1,978 physical
+attempts and 192 replays. All 22 ordinary B/C/K comparison choices select K;
+their frequency tables explicitly state that the rule is constant. Synthetic
+all-covered/tombstone fixtures select C; missing/pending/mixed coverage selects K.
+Unavailable C/K branches never trigger favorable fallback. Full target-60 and
+fallback-40 joins preserve 15,486/10,390 unknown outcome slots and 134/94 unknown
+choice boundaries. The stopped prefix retains sixteen unknown outcomes and one
+uncertain attempt. These are scripted protocol/cost fixtures, not model findings.
+
+```powershell
+python -S -m unittest tests.test_costs tests.test_costs_run -q
+.venv/Scripts/python.exe -m unittest tests.test_cost_archive -q
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.cost_archive
+.venv/Scripts/python.exe -m tests.accounting_archive
+```
+
+Reconstruction compares every table with the retained export and reconciles
+the unchanged M3 ledger. `--write-fixture` exclusively creates a new export.
+[CLI/API usage](../../README.md#offline-policy-costs-and-the-boundary-rule)
+supports ordinary saved runs. Uncertainty/bounds and complete report reproduction
+remain M4-T05/T06; no GPU/model, pilot, main execution or accepted freeze is implied.

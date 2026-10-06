@@ -57,6 +57,8 @@ def main() -> int:
     analyze.add_argument("--output", required=True, type=Path, help="new derived JSON or JSON.gz table export")
     analyze.add_argument("--estimands", action="store_true", help="include prespecified contrasts and conditional repeatability")
     analyze.add_argument("--diagnostics", action="store_true", help="include information/work inventories and deterministic references")
+    analyze.add_argument("--costs", action="store_true", help="include original measured costs and the frozen C/K boundary rule")
+    analyze.add_argument("--as-of", help="explicit zoned accounting timestamp for reproducible costs; requires --costs")
     analyze.add_argument("--tokenizer", type=Path, help="local matching tokenizer metadata for exact diagnostic history counts; no weights/downloads")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
@@ -80,12 +82,18 @@ def main() -> int:
             branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
             if args.tokenizer and not args.diagnostics:
                 raise ValueError("--tokenizer requires --diagnostics")
-            if args.diagnostics:
+            if args.as_of and not args.costs:
+                raise ValueError("--as-of requires --costs")
+            tokenizer = None
+            if args.tokenizer:
+                from transformers import AutoTokenizer
+                tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
+            if args.costs:
+                from .costs import costs_run
+                tables = costs_run(worlds, branches, args.worker, now=args.as_of,
+                    diagnostics=args.diagnostics, estimands=args.estimands, tokenizer=tokenizer)
+            elif args.diagnostics:
                 from .information import information_run
-                tokenizer = None
-                if args.tokenizer:
-                    from transformers import AutoTokenizer
-                    tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
                 tables = information_run(worlds, branches, args.worker, tokenizer=tokenizer, estimands=args.estimands)
             elif args.estimands:
                 from .analysis import analyze_run

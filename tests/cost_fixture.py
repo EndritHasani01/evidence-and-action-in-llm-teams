@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 import json
+import sqlite3
 
 from recovery.tasks import Task
 from tests.outcome_fixture import encode, saved_records, selection
@@ -34,7 +35,7 @@ def fixture(task=Task.SORT, policies=("B", "C", "K", "F", "P_G", "Q_B", "Q_C")):
         validation = json.loads(row["validation_json"])
         validation.update(generated=None, json_valid=False, schema_valid=False, permissions_valid=False)
         validation["candidate"].update(status="failed", value=None)
-        row.update(status="timeout", raw_json=None, failure_json=encode({"reason": "fixture timeout"}),
+        row.update(status="timeout", raw_json=None, failure_json=encode({"status": "timeout", "reason": "fixture timeout"}),
                    validation_json=encode(validation))
         next(a for a in attempts if a["call_id"] == failed)["status"] = "timeout"
     return worlds, branches, records, inputs, sorted(attempts, key=lambda a: (a["call_id"], a["number"]))
@@ -48,3 +49,22 @@ def set_boundary(inputs, branches, sources_by_peer):
             for peer, sources in zip(state["peers"], sources_by_peer):
                 peer["sources"] = sources
             saved["requests"]["before"] = encode(state)
+
+
+def write_cost_worker(path, records, inputs, attempts):
+    from tests.outcome_fixture import write_worker
+    write_worker(path, records, inputs, attempts)
+    con = sqlite3.connect(path)
+    try:
+        con.execute("ALTER TABLE calls ADD COLUMN request_tokens INTEGER")
+        fields = ("elapsed_seconds", "observed_seconds", "started_at", "finished_at", "recovered_at", "peak_memory_bytes")
+        for name in fields:
+            con.execute(f"ALTER TABLE attempts ADD COLUMN {name}")
+        for cid, row in records.items():
+            con.execute("UPDATE calls SET request_tokens=? WHERE call_id=?", (row.get("request_tokens"), cid))
+        for a in attempts:
+            con.execute("UPDATE attempts SET " + ",".join(name + "=?" for name in fields) + " WHERE call_id=? AND number=?",
+                        (*[a[name] for name in fields], a["call_id"], a["number"]))
+        con.commit()
+    finally:
+        con.close()

@@ -189,7 +189,7 @@ def candidate_payload(task, size, peer, candidate_state):
     return value
 
 
-def read_records(worlds, branches, paths, *, include_committed=False):
+def read_records(worlds, branches, paths, *, include_committed=False, include_resources=False):
     """Read application records in SQLite snapshots without checkpoint setup.
 
     Saved pre-delivery peer state supplies call-boundary annotations. Optional
@@ -203,6 +203,7 @@ def read_records(worlds, branches, paths, *, include_committed=False):
     expected_worlds = {w.world_id: _json(asdict(w)) for w in worlds}
     expected_branches = {b.branch_id: _json(asdict(b)) for b in branches}
     records, inputs, attempts, bindings, committed = {}, {}, [], [], {}
+    resources = {"allocations": [], "processes": [], "budgets": []}
     with ExitStack() as stack:
         for worker, path in enumerate(paths):
             if not path.exists():
@@ -228,6 +229,11 @@ def read_records(worlds, branches, paths, *, include_committed=False):
                 inputs[key] = row
             attempts.extend(dict(r, worker=worker, worker_file=path.name)
                             for r in con.execute("SELECT * FROM attempts"))
+            if include_resources:
+                for table, name in (("allocations", "allocations"), ("provider_processes", "processes")):
+                    if con.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name=?", (table,)).fetchone():
+                        resources[name].extend(dict(r, worker=worker, worker_file=path.name)
+                                               for r in con.execute(f"SELECT * FROM {table}"))
             if include_committed and con.execute(
                     "SELECT 1 FROM sqlite_master WHERE type='table' AND name='checkpoints'").fetchone():
                 # Use the installed saver's public serializer, without creating
@@ -264,10 +270,14 @@ def read_records(worlds, branches, paths, *, include_committed=False):
                        for r in inputs.values() if r["worker"] == worker):
                     raise ValueError("saved requests differ from bound generation settings")
                 bindings.append(bound)
+                if include_resources and bound.get("budget"):
+                    resources["budgets"].append(bound["budget"])
         if bindings and any(b != bindings[0] for b in bindings):
             raise ValueError("worker run bindings differ")
     result = records, inputs, sorted(attempts, key=lambda r: (r["call_id"], r["number"]))
-    return (*result, committed) if include_committed else result
+    if include_committed:
+        result = (*result, committed)
+    return (*result, resources) if include_resources else result
 
 
 def _recorded_outcome(branch, call, size, records, inputs):

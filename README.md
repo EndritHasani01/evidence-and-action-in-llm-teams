@@ -343,8 +343,9 @@ write_evaluation("outcomes.json.gz", tables)          # Existing files protected
 The [retained table fixture](tests/fixtures/README.md#exact-offline-outcomes-and-trajectories)
 reproduces sixteen offline cases from the M3 bundle, including full population
 joins and the stopped unknown slots. Scripted outcomes are validation evidence.
-Information/work inventories are described below; costs, uncertainty/missingness
-bounds and the complete report remain later M4 tasks before GPU use.
+Information/work inventories and policy costs are described below;
+uncertainty/missingness bounds and the complete report remain later M4 tasks
+before GPU use.
 
 ## Offline contrasts and conditional repeats
 
@@ -439,6 +440,64 @@ The [six retained cases](tests/fixtures/README.md#information-inventories-and-re
 include complete fixtures, full unknown main populations and a stopped prefix.
 The atlas witnesses establish sufficiency/ambiguity for named CPU views; none
 is a model finding, live intervention or source of correctness feedback.
+
+## Offline policy costs and the boundary rule
+
+`recovery analyze --costs` reads the existing call/attempt, allocation and
+checkpoint records. Add `--estimands` and/or `--diagnostics` for the other M4
+tables in the same read snapshots. `--as-of` supplies an explicit zoned clock
+for reproducible accounting bounds on interrupted/open work; it does not filter
+the saved records to a historical run. Missing workers remain unknown and
+exports exclusively create new JSON/JSON.gz files.
+
+```powershell
+python -m recovery analyze --costs --estimands --diagnostics `
+  --manifest tests/fixtures/population_target.json `
+  --schedule tests/fixtures/schedules_target.json --stage main --count 60 `
+  --worker worker-0.sqlite --worker worker-1.sqlite `
+  --as-of 2026-10-06T00:00:00+00:00 --output policy-costs.json.gz
+```
+
+The [cost implementation](recovery/costs.py) shares M3's original arithmetic
+with live status. Physical generations/attempts and allocated device time are
+charged once. Each hypothetical continuation includes its original sixteen-call
+prefix and all sixteen continuation calls, including F's abandoned prefix and
+original measured costs for replay. Unknown scheduled calls make the complete
+policy cost unavailable. Measured token/duration subtotals, missing output/memory
+measurements, failures and ambiguous attempts remain explicit. Allocation
+setup/interruption/attempt/idle partitions reconcile separately; outside overhead
+stays experiment overhead and is never added again to each policy. Provider
+billing is separate from allocation time.
+
+The frozen rule chooses C exactly when every peer initially holds all current
+ID/version pairs, including known tombstones and excluding pending replacements;
+otherwise it chooses K. Only recorded first-call input or a committed pre-call
+boundary can supply coverage. Later sources, gold, candidates and branch
+availability cannot change the choice. Incomplete/unscheduled selected branches
+remain unavailable. Whole-branch comparisons with always B/C/K retain common
+world/prefix/generation IDs and preservation denominators. Selection tables state
+when the rule is constant and retain unknown boundaries in their population.
+
+`retained_evidence`, `quality_preservation`, and measured `policy_costs` are
+separate views. `strategy_worlds` and `paired_comparisons` supply paired plotting
+and uncertainty inputs; shared generation costs cancel before forming duration
+differences. Oracle-recognized stable-completion cost is explicitly retrospective:
+the fixed schedule still runs all calls. No utility or accuracy-per-message score
+is calculated.
+
+```python
+from recovery.costs import costs_run
+from recovery.evaluate import write_evaluation
+
+tables = costs_run(worlds, branches, worker_paths, now="2026-10-06T00:00:00+00:00")
+write_evaluation("policy-costs.json.gz", tables)
+```
+
+The [sixteen retained cases](tests/fixtures/README.md#policy-costs-and-frozen-boundary-rule)
+reconcile with M3 and preserve full main/stopped unknowns. Pure record analysis
+runs without runtime/model dependencies; decoding real committed checkpoints
+requires the declared CPU serializer. This is CPU validation, not GPU timing or
+empirical policy evidence. M4-T05/T06 remain required before GPU use.
 
 ## Protocol attainability and capacity
 
