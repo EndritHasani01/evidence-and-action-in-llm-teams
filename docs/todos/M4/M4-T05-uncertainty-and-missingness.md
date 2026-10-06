@@ -92,3 +92,14 @@ are documented primary references. Temporary reference/log helpers use
 hash-seed reproduction and final documentation/protected-artifact checks remain
 pending; the task is active.
 
+Final identity review adds the actual scheduled Q replay fixture: four absent
+logical uses remain unknown while their recorded B parents make the round-one
+contrast exactly zero and constrain the full cost to 67 fixture seconds.
+Fixed coverage still reports four unexecuted uses and no unresolved physical
+response. Full-main archive assertions additionally require every shared Q/
+retained-group/cleared-group first-round sensitivity to cancel to zero.
+The offline join also rejects a changed selected policy outside C/K, even if its
+branch ID is otherwise valid. All 33 final focused checks pass in 17.846 seconds;
+these are review additions to unchanged statistical arithmetic and retained
+tables. Complete regression and final installed/archive checks remain in progress.
+

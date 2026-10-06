@@ -177,6 +177,31 @@ class SharedMissingnessTests(unittest.TestCase):
 
 
 class ContrastUncertaintyTests(unittest.TestCase):
+    def test_unexecuted_scheduled_replay_stays_unknown_but_recorded_parent_constrains_it(self):
+        from recovery.analysis import analyze_estimands
+        from recovery.costs import cost_records
+        from recovery.evaluate import evaluate_records
+        from recovery.tasks import Task
+        from tests.cost_fixture import fixture, clock
+        w, b, records, inputs, attempts = fixture(Task.SORT, ("B", "C", "K", "Q_B"))
+        delayed = next(branch for branch in b if branch.policy == "Q_B")
+        for call in delayed.calls[:4]:
+            del records[call.call_id]  # Original B responses and attempts remain recorded.
+        data = evaluate_records(w, b, records, inputs, attempts)
+        data["costs"] = cost_records(w, b, records, inputs, attempts, now=clock(400), tables=data)
+        result = uncertainty_records(w, b, data)
+        bounds = next(r for r in result["world_bounds"] if r["estimand"] == "Q_B-B" and r["endpoint"] == "accuracy" and r["round"] == 1)
+        self.assertFalse(bounds["execution_observed"])
+        self.assertEqual(bounds["sensitivity"]["interval"], [0, 0])
+        summary = next(r for r in result["summaries"] if r["estimand"] == "Q_B-B" and r["endpoint"] == "accuracy" and r["round"] == 1 and r["family"] == w[0].world.task.value)
+        self.assertEqual(summary["paired_coverage"]["unknown_calls"], 4)
+        self.assertEqual(summary["paired_coverage"]["unresolved_response_ids"], 0)
+        self.assertIsNone(summary["intended_population"]["interval"])
+        cost = next(r for r in result["policy_world_displays"] if r["display"] == "policy_Q_B")["metrics"]["policy_seconds"]
+        self.assertFalse(cost["observed"])
+        self.assertIsNone(cost["measured_interval"])
+        self.assertEqual(cost["sensitivity"]["interval"], [67, 67])
+
     def test_structurally_empty_preservation_population_is_na_end_to_end(self):
         from tests.estimand_fixture import prepared, selection, tables
         worlds, branches = selection(worlds=[w for w in prepared("fallback")[0].main if w.index == 3])
@@ -323,6 +348,9 @@ class PolicyUncertaintyTests(unittest.TestCase):
             uncertainty_records(w, b, changed)
         changed = copy.deepcopy(data)
         changed["costs"]["boundary_selections"][0]["selected_branch_id"] = next(branch.branch_id for branch in b if branch.policy == "B")
+        with self.assertRaisesRegex(ValueError, "entire recorded C/K"):
+            uncertainty_records(w, b, changed)
+        changed["costs"]["boundary_selections"][0]["selected_policy"] = "B"
         with self.assertRaisesRegex(ValueError, "entire recorded C/K"):
             uncertainty_records(w, b, changed)
 

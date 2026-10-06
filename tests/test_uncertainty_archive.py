@@ -31,6 +31,11 @@ class UncertaintyArchiveTests(unittest.TestCase):
                 self.assertEqual(row["complete_case_description"]["independent_worlds"], 5)
             self.assertEqual(len(full["populations"][-1]["world_ids"]), 10)
             self.assertTrue(any(not r["execution_observed"] for r in full["world_bounds"]))
+            shared_first = [r for r in full["world_bounds"] if r["endpoint"] == "accuracy" and r["round"] == 1
+                            and r["estimand"] in ("Q_B-B", "Q_C-C", "E_keep", "E_clear")]
+            self.assertTrue(shared_first)
+            self.assertTrue(any(not r["execution_observed"] for r in shared_first))
+            self.assertTrue(all(r["sensitivity"]["interval"] == [0, 0] for r in shared_first))
             self.assertTrue(any(r["metric"] == "policy_seconds" and r["sensitivity"]["interval"]
                                 and r["sensitivity"]["interval"][1] is None for r in full["policy_display_summaries"]))
         for name, case in actual["cases"].items():

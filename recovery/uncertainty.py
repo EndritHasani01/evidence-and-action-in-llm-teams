@@ -538,7 +538,8 @@ def policy_display_rows(branches, tables, known):
         base = {k: selection[k] for k in ("world_id", "family", "event", "replicate", "prefix_parent")}
         population = "preserving" if selection["event"] == "preserving" else "main"
         chosen = selection["selected_branch_id"]
-        if chosen is not None and chosen != selection["comparator_branch_ids"].get(selection["selected_policy"]):
+        if chosen is not None and (selection["selected_policy"] not in ("C", "K") or
+                chosen != selection["comparator_branch_ids"].get(selection["selected_policy"])):
             raise ValueError("boundary rule must select its entire recorded C/K branch")
         emit(base, "boundary_rule", [(1, chosen)], population=population)
         for policy, bid in selection["comparator_branch_ids"].items():
