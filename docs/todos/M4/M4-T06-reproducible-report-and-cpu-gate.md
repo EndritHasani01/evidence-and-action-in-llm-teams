@@ -1,6 +1,6 @@
 # M4-T06 — Reproducible report and pre-GPU analysis gate
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M4-T03](../M4/M4-T03-information-and-work-diagnostics.md), [M4-T05](../M4/M4-T05-uncertainty-and-missingness.md). M1–M3 must have passed.
 Both prerequisites are done as of 6 October 2026, and M1–M3's CPU gates pass.
@@ -39,5 +39,19 @@ Offline analyze/export operations reproduce the complete intended report from th
 
 Test tied/missing positive and negative signs, duplicate selections, all-zero regression fallback and no complete cases. Run complete and deliberately incomplete scripted bundles through analysis/export in an environment without inference imports. Compare repeated outputs and plotting data, verify report links/provenance, and inspect figures for coherent labels/denominators. Use the focused synthetic checks from M4-T01–T05 as the report's acceptance evidence rather than claiming effects.
 
-**Evidence:** Not yet recorded. Add reproduction commands, environments, bundle/table/case paths and the M1–M4 gate decision before marking done.
+**Evidence:** Started 6 October 2026 from clean `330bf7c` on
+`feat/m4-offline-analysis`. The repository contract, task, specification §§1–7,
+9–10, plan report/coverage requirements, technical synthesis, prerequisite
+M4-T03/T05 evidence and M1–M3 CPU gate evidence were inspected.
+`python -S -m unittest tests.test_analysis tests.test_information tests.test_costs tests.test_uncertainty -q`
+passes all 87 prerequisite checks in 10.536 seconds on Python 3.11.9, with
+site packages disabled.
+
+The report will reuse the existing original-worker joins and scientific tables.
+Remaining acceptance work is exact rational case selection, unaltered ID-linked
+excerpts, seven grouped exhibits and deterministic plotting inputs, complete and
+incomplete offline reproduction, and the named M1–M4 coverage/category audit.
+Plot rendering is separate from inference. No new authoritative store, scientific
+configuration, GPU/model execution, pilot or empirical result is needed. M4's
+report/CPU gate remains open until all required checks pass.
 
