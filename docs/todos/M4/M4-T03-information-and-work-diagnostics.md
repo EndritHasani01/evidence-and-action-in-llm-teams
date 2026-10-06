@@ -45,3 +45,12 @@ requests, validations and committed checkpoints; exact history token counts
 require a tokenizer that reproduces the saved inputs. No new live state or
 scientific configuration is needed. The complete M4 gate remains open.
 
+The pure [reference core](../../../recovery/information.py) and conservative
+[association rubric](../../implementation-research/information-diagnostics.md)
+are implemented. `python -S -m unittest tests.test_information -q` passes 12
+checks in 1.152 seconds, including both sizes, every numeric edit position,
+directions and peer slices, wrong-candidate residual identities, unavailable
+candidates, receipt censoring, tombstones/pending records, source association
+and independent specified-view atlas examples. Worker/CLI integration and
+retained inventory reconstruction remain open at this checkpoint.
+
