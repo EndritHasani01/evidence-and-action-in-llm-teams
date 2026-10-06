@@ -1,6 +1,6 @@
 # M4-T05 — Paired uncertainty and shared-response missingness
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M4-T02](../M4/M4-T02-estimands-and-repeatability.md), [M4-T04](../M4/M4-T04-policy-costs-and-boundary-rule.md). M1–M3 must have passed.
 M4-T02 is done as of 6 October 2026: its exact world components/weights, endpoint
@@ -43,5 +43,18 @@ Complete and incomplete runs yield the prescribed uncertainty, coverage and boun
 
 Test paired clustering/family stratification, repeats not increasing N, overlap identity, quantile endpoints, constant-within-family degeneracy, clipped Hoeffding ranges and exact completion bounds. Enumerate tiny shared-response linear/nonlinear fixtures independently, including missingness cancellation and fragmented/incomplete trajectories. Check empty eligible populations yield explicit N/A, not false certainty.
 
-**Evidence:** Not yet recorded. Add saved resampling settings, independent fixture expectations and executed results before marking done.
+**Evidence:** Started 6 October 2026 from clean `ed579e4` on
+`feat/m4-offline-analysis`. The repository contract, specification §§5–7,
+plan uncertainty/cost requirements, technical synthesis and M1–M3/M4-T02/T04
+CPU evidence were inspected. The unchanged prerequisite formula/cost checks
+pass: `python -S -m unittest tests.test_analysis tests.test_costs -q`, 45 tests
+in 4.231 seconds on Python 3.11.9 with site packages disabled.
+
+Implementation will derive uncertainty and missingness from the existing
+outcome/component/cost joins, using standard-library arithmetic, saved seeds,
+explicit percentile interpolation and shared world/response identities.
+Independent tiny enumerations, original-worker reconstruction, read-only CLI
+checks, complete CPU regression and installed-library verification are required
+before completion. No new persistence, dependency, scientific configuration,
+GPU/model execution or empirical result is part of this task.
 
