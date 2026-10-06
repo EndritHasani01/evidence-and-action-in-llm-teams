@@ -1,6 +1,6 @@
 # M4-T03 — Information inventories and retained-work references
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M4-T01](../M4/M4-T01-exact-outcomes-and-trajectories.md). M1–M3 must have passed.
 
@@ -36,5 +36,12 @@ Offline evidence shows what information and work survived, with source-bound ann
 
 Check receipt timing/censoring, tombstone/pending coverage, repeated delivery versus acquisition, numeric coincidence without association, wrong old candidates and residual identities at endpoints/shard boundaries. Reproduce selected atlas counterexamples from safe independent CPU fixtures without overwriting archive evidence.
 
-**Evidence:** Not yet recorded. Add inventory fixtures, rubric, reference outputs and executed checks before marking done.
+**Evidence:** Started on 6 October 2026 on `feat/m4-offline-analysis` from clean
+commit `7059d7b`. Authority, the M1–M3 CPU gates and M4-T01 prerequisite evidence
+were inspected. `python -S -m unittest tests.test_evaluate tests.test_outcome_archive -q`
+passes all 27 prerequisite checks in 31.510 seconds, including reconstruction
+from the original lifecycle workers. Information inventories will reuse saved
+requests, validations and committed checkpoints; exact history token counts
+require a tokenizer that reproduces the saved inputs. No new live state or
+scientific configuration is needed. The complete M4 gate remains open.
 
