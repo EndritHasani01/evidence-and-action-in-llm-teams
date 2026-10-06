@@ -6,7 +6,7 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 17/29. Remaining: 12. Active: 0. Ready: 1. Blocked: 11.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 17/29. Remaining: 12. Active: 1. Ready: 0. Blocked: 11.** Counts measure verified task outcomes, not effort or runtime.
 
 M2-T01–T05 counts below describe their original completion checks. M2-T06 renews all
 affected archives/checks under the finalized renderer and supersedes earlier
@@ -74,7 +74,7 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | [M4-T01 — Exact outcomes, preservation and trajectories](M4/M4-T01-exact-outcomes-and-trajectories.md) | done | [M3-T05](M3/M3-T05-crash-safe-scripted-lifecycle.md) | Plan §6 outcomes/diagnostics; spec §§5.1, 6, 7.1, 9 |
 | [M4-T02 — All prespecified contrasts and repeatability](M4/M4-T02-estimands-and-repeatability.md) | done | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 contrasts; spec §§1, 5.2–5.4, 6 |
 | [M4-T03 — Information inventories and retained-work references](M4/M4-T03-information-and-work-diagnostics.md) | done | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 explanatory outcomes; spec §§2.2, 7.2, 10 |
-| [M4-T04 — Policy costs and the frozen boundary rule](M4/M4-T04-policy-costs-and-boundary-rule.md) | ready | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 costs; spec §7.3 |
+| [M4-T04 — Policy costs and the frozen boundary rule](M4/M4-T04-policy-costs-and-boundary-rule.md) | active | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 costs; spec §7.3 |
 | [M4-T05 — Paired uncertainty and shared-response missingness](M4/M4-T05-uncertainty-and-missingness.md) | blocked | [M4-T02](M4/M4-T02-estimands-and-repeatability.md), [M4-T04](M4/M4-T04-policy-costs-and-boundary-rule.md) | Plan §6 uncertainty; spec §§5–6, 7.3, 9 |
 | [M4-T06 — Reproducible report and pre-GPU analysis gate](M4/M4-T06-reproducible-report-and-cpu-gate.md) | blocked | [M4-T03](M4/M4-T03-information-and-work-diagnostics.md), [M4-T05](M4/M4-T05-uncertainty-and-missingness.md) | Plan §§6, 9–10; spec §§7.4, 9–10 |
 | [M5-T01 — Inference backend and allocation preparation](M5/M5-T01-inference-and-allocation-preparation.md) | blocked | [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md) | Plan §7 runtime; spec §§8.1, 8.4, 9 |
