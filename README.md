@@ -54,13 +54,15 @@ implemented and verified:** paired world intervals, shared-response missingness,
 completion bounds and paired whole-policy displays reproduce sixteen retained
 cases. Complete CPU regression passes 396 checks; final focused checks pass 33,
 core checks run 225 (221 passed, four optional skips), and installed-library M4
-checks pass 144. **M4-T06 is implemented and under final CPU validation:**
-seven grouped exhibits, exact cases and five portable complete/incomplete/stopped
-reports are retained. Focused checks pass 24; core checks run 251 (243 passed,
-eight optional skips), and the installed M4 suite passes 165. The full source
-regression and current original-worker reconstruction remain required to close
-M4. Qwen3.5/T4 pilot and main experiments remain future work. See
-[M4-T06 evidence](docs/todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#validation-and-evidence),
+checks pass 144. **M4-T06 is implemented and verified; M4's CPU gate passes.**
+Seven grouped exhibits, exact cases and five portable complete/incomplete/stopped
+reports are retained. Full source regression passes all 424 checks, including
+all nine lifecycle checks. Focused/core/installed checks pass 25/252 (244 passed,
+eight optional skips)/166. All sixteen original-worker scopes reproduce twice
+with identical tables, cases, plotting inputs and export bytes. **M5-T01 is ready
+for CPU preparation.** Qwen3.5/T4 hardware, capability, resource admission,
+pilot and main experiments remain future work. See
+[M4-T06 completion evidence](docs/todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate),
 [M4-T05 completion evidence](docs/todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff),
 [M4-T04 completion evidence](docs/todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff),
 [M4-T03 completion evidence](docs/todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff),
@@ -358,7 +360,8 @@ The [retained table fixture](tests/fixtures/README.md#exact-offline-outcomes-and
 reproduces sixteen offline cases from the M3 bundle, including full population
 joins and the stopped unknown slots. Scripted outcomes are validation evidence.
 Information/work inventories, policy costs and uncertainty/missingness are
-described below. The complete M4 report gate remains required before GPU use.
+described below. The completed [M4 CPU audit](docs/validation/m4-cpu-gate.md)
+records the report gate and remaining M5 requirements.
 
 ## Offline contrasts and conditional repeats
 
@@ -405,7 +408,7 @@ write_evaluation("analysis.json.gz", tables)  # Exclusive derived export.
 The [retained contrast tables](tests/fixtures/README.md#prespecified-estimates-and-conditional-repeatability)
 reconstruct directly from the original scripted lifecycle workers at both sizes,
 including all unknown worlds in the full main manifests. These are CPU validation
-artifacts; M4's complete analysis/report gate remains open.
+artifacts; M4's complete analysis/report gate passes on CPU.
 
 ## Offline information and retained work
 
@@ -512,7 +515,8 @@ The [sixteen retained cases](tests/fixtures/README.md#policy-costs-and-frozen-bo
 reconcile with M3 and preserve full main/stopped unknowns. Pure record analysis
 runs without runtime/model dependencies; decoding real committed checkpoints
 requires the declared CPU serializer. This is CPU validation, not GPU timing or
-empirical policy evidence. M4-T06's complete report gate remains required before GPU use.
+empirical policy evidence. The [M4 CPU audit](docs/validation/m4-cpu-gate.md)
+passes; actual GPU timing/resource admission remains M5 work.
 
 ## Offline uncertainty and missingness
 
@@ -567,7 +571,8 @@ write_evaluation("uncertainty.json.gz", tables)  # Exclusive derived export.
 [Retained uncertainty evidence](tests/fixtures/README.md#paired-uncertainty-and-shared-response-missingness)
 reconstructs sixteen original-worker scopes, including both complete fixtures,
 full main manifests and stopped work. Scripted values validate analysis; they
-are not model findings. M4-T06's complete report gate remains open before GPU use.
+are not model findings. M4-T06's complete report gate passes on CPU; actual
+hardware/capability/resource admission remains M5 work.
 
 ## Reproducible offline reports
 

@@ -1,8 +1,17 @@
 # M5-T01 — Inference backend and allocation preparation
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M4-T06](../M4/M4-T06-reproducible-report-and-cpu-gate.md). M1–M4 must have passed.
+M4-T06 completes on 6 October 2026 and the
+[M1–M4 CPU audit](../../validation/m4-cpu-gate.md) passes. The
+[report handoff](../M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate)
+supplies fixed case/annotation rules, analysis settings, assumptions, exact
+original-worker reproduction and synthetic reports. This unblocks CPU
+preparation only. Actual language weights, state/RNG and raw decoding,
+finite outputs, T4 memory/headroom/timing, accepted-host persistence,
+capability and complete-schedule allocation remain unverified M5 work;
+execution still requires its explicit authorization.
 
 ## References
 

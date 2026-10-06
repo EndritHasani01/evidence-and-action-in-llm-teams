@@ -7,7 +7,14 @@ This is the evidence index for [M4-T06](../todos/M4/M4-T06-reproducible-report-a
 It does not authorize compute or replace M5's hardware, capability, resource and
 environment gates.
 
-**CPU decision: pending final source, installed and original-worker reproduction checks.**
+**CPU decision: passed on 6 October 2026.** All 424 current-source checks pass,
+including all nine integrated lifecycle checks and eleven real controller kills.
+Final focused/core/installed checks pass 25/252 (244 passed, eight optional
+skips)/166. All sixteen original-worker scopes reproduce twice under both
+current source and installed hash-seed-37 blocked-import validation. Original
+workers and all prerequisite artifacts remain unchanged. The detailed commands,
+environment, times and limits are in the
+[completion evidence](../todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate).
 
 ## Coverage map audit
 
@@ -116,8 +123,8 @@ unresolved is not absence. Cases and prose do not establish semantic causation.
 
 ## Remaining gates
 
-[M5-T01](../todos/M5/M5-T01-inference-and-allocation-preparation.md) can become
-ready when this CPU audit passes. It prepares a backend/allocation plan without
+[M5-T01](../todos/M5/M5-T01-inference-and-allocation-preparation.md) is now
+ready. It prepares a backend/allocation plan without
 GPU use. Actual smoke, first 90 capability slots, complete pilot, measured
 forecast and immutable accepted freeze remain separate M5 tasks and require
 their specified evidence and execution authorization. M6 execution, empirical
