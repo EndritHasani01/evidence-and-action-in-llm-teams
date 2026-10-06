@@ -1,6 +1,6 @@
 # M4-T03 — Information inventories and retained-work references
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M4-T01](../M4/M4-T01-exact-outcomes-and-trajectories.md). M1–M3 must have passed.
 
@@ -92,4 +92,78 @@ sentence punctuation. The final 26 focused checks pass in 12.990 seconds and
 fresh hash-seed-37 archive reconstruction reproduces all six cases unchanged.
 Core and installed-package checks are being refreshed against these final
 review changes; the earlier installed 81-check verification already passed.
+
+## Completion and handoff
+
+Completed on 6 October 2026. [information.py](../../../recovery/information.py)
+and `recovery analyze --diagnostics` derive the required inventories and work
+references from the existing schedule, saved requests, original replies,
+validations and committed checkpoints. `--estimands` combines the M4-T02 tables;
+`--tokenizer` optionally measures history content with a matching local tokenizer.
+The [CLI/API documentation](../../../README.md#offline-information-and-retained-work)
+and [conservative rubric](../../implementation-research/information-diagnostics.md)
+describe every measurement and correct-candidate assumption.
+
+The completed outputs retain all four prefix rounds, actual owner-v1 exposure,
+L/B receipt timing/origins/censoring, C/F initial evidence and separate attempts/
+acquisitions, source-bound visibility, hypothetical reconstruction, raw
+sufficiency and offline correctness strata. Invalid/failed last candidates stay
+unavailable; wrong valid candidates preserve their residual errors under the
+offline delta reference. Cleared candidates cannot supply receipt reconstruction.
+The six named-view atlas examples and edit footprints cover the requested
+families, including CPU-only Max, Sort ties/crossings and BFS disconnection.
+Evidence, preserved output and measured computation retain their existing
+separate tables/records. No peer feedback, inclusion rule or live arm changes.
+
+### Executed validation
+
+| Check | Executed result |
+|---|---|
+| M4-T01 prerequisite outcomes/archive | 27 passed in 31.510 seconds |
+| Integrated references/inventories plus evaluator regression | 52 passed in 17.490 seconds |
+| Complete integrated CPU regression, including real controller kills | 334 passed in 1,571.760 seconds; all nine lifecycle checks pass |
+| Final focused references/inventories after both narrow review fixes | 26 passed in 12.990 seconds |
+| Final dependency-free core with site packages disabled | 162 checks in 133.911 seconds: 160 passed, two optional checkpoint checks skipped |
+| Final installed-library verification outside checkout | 81 passed in 128.173 seconds; all twelve module locations/source bytes verified, plus installed CLI preserving 1,178 unknown development slots |
+| Fresh retained information reconstruction, hash seed 37 | All six [cases](../../../tests/fixtures/information_tables.json.gz) reproduce unchanged from original M3 workers |
+| Native tokenizer history measurements, hash seed 37 | All 160 prefix peer-round and 40 compact-boundary [counts](../../../tests/fixtures/information_tokens.json) reproduce at both sizes/all five families |
+| Packaging and source consistency | Noneditable `pip install --no-deps .`, `pip check`, compilation and `git diff --check` pass |
+| Documentation and protected-artifact audit | 402 local links/anchors across fourteen documents pass; all 29 task/index statuses and six milestone counts agree; specification/configuration/dependencies/research/vendor/prerequisites and all prior fixtures are unchanged |
+
+The complete integrated regression started before the two isolated offline
+review fixes. Final focused, core, installed-library and fresh archive checks
+above verify the final code; execution/protocol code is unchanged by those fixes.
+The three stopped preliminary diff-stalled runs remain excluded from passing
+evidence. The corrected compact comparisons identify a case/table/row rather
+than constructing an automatic multi-megabyte diff.
+
+Environment: Windows build 26200, Python 3.11.9, SQLite 3.45.1; CPU environment
+Pydantic 2.13.5, LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1 and
+LangChain Core 1.6.6. Native counts used the separate existing metadata-enabled
+environment with Transformers 5.12.0 and Tokenizers 0.22.2. No model weights
+were loaded. Installed verification imports the twelve library modules before
+adding checkout tests and runs `tests.test_information`, `tests.test_information_run`,
+`tests.test_evaluate`, `tests.test_outcome_archive`, `tests.test_analysis`,
+`tests.test_analysis_run` and `tests.test_estimand_archive`; the CLI subprocess
+runs outside the checkout. These are CPU validation environments, not an M5 freeze.
+
+```powershell
+python -S -m unittest tests.test_information tests.test_information_run.InformationRunTests -q
+python -S -m recovery validate --core-only
+.venv/Scripts/python.exe -m recovery validate
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.information_archive
+python -m tests.tokenizer_information --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+```
+
+Checkpoint commits: `a51c780` prerequisite/scope verification, `1ce962a` reference
+core, `f3de741` ordinary-worker/CLI integration and retained evidence, `970539d`
+unknown delivery/footprint review, and `c18833a` conservative numeric associations.
+The completion evidence and handoff are committed separately.
+
+**Next:** [M4-T04](M4-T04-policy-costs-and-boundary-rule.md) remains ready.
+M4 has three of six tasks done; costs/boundary rule, uncertainty/missingness and
+the reproducible report gate remain required before GPU use. The rubric is ready
+for the later M5 freeze. Hardware/model feasibility, pilot, main execution and
+empirical findings remain unexecuted.
 

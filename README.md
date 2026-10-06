@@ -40,10 +40,16 @@ and verified:** all prespecified contrasts, fixed/equal-family denominators,
 unknown components and separate conditional repeats reconstruct from original
 workers. The complete CPU regression passes 306 checks; core and installed
 analysis checks pass 134 and 54. Four retained contrast-table cases reproduce,
-including the full unknown main populations. M4-T03/T04 are ready;
+including the full unknown main populations. **M4-T03 is implemented and
+verified:** information inventories, conservative source associations, receipt
+timing and deterministic work references reproduce six retained cases and 200
+native history counts. The complete integrated CPU regression passes 334
+checks; final core checks pass 160 with two optional skips, and installed-library
+verification passes 81. M4-T04 is ready;
 the full M4 analysis/report gate remains
 mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
 work. See
+[M4-T03 completion evidence](docs/todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff),
 [M4-T02 completion evidence](docs/todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff),
 [M4-T01 completion evidence](docs/todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff),
 [M3-T05 gate evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate),
