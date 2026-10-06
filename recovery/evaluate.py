@@ -189,19 +189,20 @@ def candidate_payload(task, size, peer, candidate_state):
     return value
 
 
-def read_records(worlds, branches, paths):
+def read_records(worlds, branches, paths, *, include_committed=False):
     """Read application records in SQLite snapshots without checkpoint setup.
 
-    Only saved pre-delivery peer state is needed for call-boundary annotations.
-    Reading it directly avoids importing the runner or interpreting private
-    LangGraph checkpoint serialization. Missing files never get created.
+    Saved pre-delivery peer state supplies call-boundary annotations. Optional
+    committed snapshots establish final-round delivery/acquisition, using the
+    installed public checkpoint serializer in the same read transaction.
+    No saver setup or runner invocation occurs; missing files never get created.
     """
     paths = tuple(Path(p).resolve() for p in paths)
     if len(set(paths)) != len(paths):
         raise ValueError("each worker file must be supplied once")
     expected_worlds = {w.world_id: _json(asdict(w)) for w in worlds}
     expected_branches = {b.branch_id: _json(asdict(b)) for b in branches}
-    records, inputs, attempts, bindings = {}, {}, [], []
+    records, inputs, attempts, bindings, committed = {}, {}, [], [], {}
     with ExitStack() as stack:
         for worker, path in enumerate(paths):
             if not path.exists():
@@ -227,6 +228,27 @@ def read_records(worlds, branches, paths):
                 inputs[key] = row
             attempts.extend(dict(r, worker=worker, worker_file=path.name)
                             for r in con.execute("SELECT * FROM attempts"))
+            if include_committed and con.execute(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name='checkpoints'").fetchone():
+                # Use the installed saver's public serializer, without creating
+                # a saver, running setup, interpreting pending writes or loading
+                # the runner. Read in the SAME application-ledger snapshot.
+                from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
+                serde = JsonPlusSerializer()
+                for saved in con.execute("""SELECT c.* FROM checkpoints AS c
+                    WHERE checkpoint_ns='' AND checkpoint_id=(SELECT MAX(checkpoint_id)
+                    FROM checkpoints WHERE thread_id=c.thread_id AND checkpoint_ns='')"""):
+                    branch_id = saved["thread_id"]
+                    if branch_id in committed:
+                        raise ValueError("duplicate committed branch across workers")
+                    values = serde.loads_typed((saved["type"], saved["checkpoint"]))["channel_values"]
+                    if values["branch_json"] != expected_branches.get(branch_id):
+                        raise ValueError("committed checkpoint differs from scheduled branch")
+                    if any(r["settings_json"] != values["settings_json"] for (bid, _), r in inputs.items()
+                           if bid == branch_id):
+                        raise ValueError("committed settings differ from saved requests")
+                    committed[branch_id] = {"state": json.loads(values["committed"]),
+                        "worker": worker, "worker_file": path.name, "checkpoint_id": saved["checkpoint_id"]}
             binding = con.execute("SELECT inputs_json FROM run_inputs WHERE singleton=1").fetchone()
             if binding:
                 bound = json.loads(binding[0])
@@ -244,7 +266,8 @@ def read_records(worlds, branches, paths):
                 bindings.append(bound)
         if bindings and any(b != bindings[0] for b in bindings):
             raise ValueError("worker run bindings differ")
-    return records, inputs, sorted(attempts, key=lambda r: (r["call_id"], r["number"]))
+    result = records, inputs, sorted(attempts, key=lambda r: (r["call_id"], r["number"]))
+    return (*result, committed) if include_committed else result
 
 
 def _recorded_outcome(branch, call, size, records, inputs):

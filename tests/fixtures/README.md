@@ -762,3 +762,59 @@ Reconstruction compares every derived table with the retained export.
 The [CLI/API](../../README.md#offline-contrasts-and-conditional-repeats) reads
 ordinary saved runs without inference. Intervals, missingness bounds, cost and
 the full M4 report gate remain later work.
+
+## Information inventories and retained work
+
+[information_tables.json.gz](information_tables.json.gz) contains six derived
+M4-T03 cases reconstructed by [information_archive.py](../information_archive.py)
+from the accepted original workers in [scripted_lifecycle_run.zip](scripted_lifecycle_run.zip).
+Both five-family fixtures have 2,170 recorded slots. Full target-60/fallback-40
+joins retain 15,486/10,390 unknown slots; the stopped prefix retains sixteen
+unknown outcomes even though its already-rendered owner-v1 exposure is verified.
+No backup is combined with its original physical worker.
+
+Each case contains `prefix`, `owner_exposure`, `communication`, `delivery_attempts`,
+`receipt_timing`/`receipt_timing_counts`, `boundary_acquisition`,
+`receipt_information`/`receipt_strata`, `transport_references`, `edit_descriptors`
+and the information `atlas`. Call/branch/peer/round and original replay/prefix
+IDs join the existing outcomes. Original committed checkpoints, decoded with
+the public CPU serializer in the worker's read transaction, establish final
+source acquisitions. Repeated references remain separate attempts; only newly
+known ID/version pairs count as acquisitions. Unobserved commitment stays unknown.
+
+The [association and measurement rubric](../../docs/implementation-research/information-diagnostics.md)
+keeps numeric coincidence unresolved, identifies literal source-bound matches,
+and states every correct-candidate assumption. A cleared old candidate cannot
+supply receipt reconstruction. Prefix/Difference transport nevertheless remains
+a separately labeled offline reference on the actual valid last candidate,
+including its residual errors. Invalid/failed last candidates are unavailable.
+
+The included [independent atlas witnesses](../information_examples.py) demonstrate
+Max/Top-K discarded alternatives, local Prefix after-only ambiguity and
+before-value sufficiency, complete Difference with an unchanged anchor, local
+Sort boundary ambiguity/full-multiset sufficiency, and BFS alternative topology.
+These small named views are CPU illustrations; further communication can resolve
+their ambiguity. No historical archive script or output is changed.
+
+[information_tokens.json](information_tokens.json) retains 160 native prefix
+peer-round counts and 40 compact-boundary counts across all families and both
+sizes. [tokenizer_information.py](../tokenizer_information.py) uses the existing
+local pinned 9B metadata, validates full input-ID equality and compares independent
+backend encodings. Scripted M3 token IDs cannot be substituted for native counts.
+Counts describe independently encoded retained content, not marginal prompt cost
+or model/GPU timing; no weights are loaded.
+
+```powershell
+python -S -m unittest tests.test_information tests.test_information_run.InformationRunTests -q
+.venv/Scripts/python.exe -m unittest tests.test_information_run.InformationArchiveTests -q
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.information_archive
+python -m tests.tokenizer_information --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+```
+
+Reconstruction compares complete table values; mismatches name the case/table/row
+without producing an enormous automatic dictionary diff. `--write-fixture`
+exclusively creates a new derived export. [CLI/API usage](../../README.md#offline-information-and-retained-work)
+accepts ordinary saved runs. These tables are validation evidence, not empirical
+recovery results. Costs, uncertainty/missingness and the complete report gate
+remain later M4 tasks.

@@ -67,6 +67,21 @@ class InformationCoreTests(unittest.TestCase):
         self.assertFalse(result["complete_current_raw"])
         self.assertEqual((result["pending_records"], result["known_tombstones"]), (1, 0))
 
+    def test_local_current_raw_prefix_suffices_without_unrelated_tail(self):
+        world = self.world(Task.PREFIX)
+        current = world.event_world("revision")
+        sources = [asdict(r) for r in current.records if r.position < 16]
+        result = source_inventory(current, sources, 1)
+        self.assertFalse(result["complete_current_raw"])
+        self.assertTrue(result["raw_recomputation_sufficient"])
+        self.assertIsNone(source_inventory(current, sources[:-1], 1)["raw_recomputation_sufficient"])
+
+    def test_receipt_first_usable_boundary_cannot_be_in_the_future(self):
+        rows = [dict(round=r, call_id=str(r), correct=0, v2_available=True, v2_delivery_ids=["d"]) for r in range(1, 5)]
+        with self.assertRaisesRegex(ValueError, "usable"):
+            receipt_timing(rows, [dict(delivery_id="d", recipient=0, origin="peer",
+                first_usable=dict(phase="recovery", round_number=2))], 0)
+
     def test_numeric_coincidence_wrong_ids_versions_and_unrecognized_prose_unresolved(self):
         for text in ("7 is useful", "candidate [7,7]", "x001/v1=7", "x000/v2=7", "x000/v1=70",
                      "x000 used to be seven", "x000/v1=07", "ax000/v1=7"):
@@ -145,6 +160,7 @@ class InformationCoreTests(unittest.TestCase):
             self.assertEqual(result["category"], "receipt_or_outcome_censored")
             self.assertIsNone(result["receipt_to_success_lag"])
             self.assertTrue(result["censored"])
+        self.assertIsNone(self.timing([None] * 4, [None] * 4)["correct_before_authoritative_receipt"])
 
     def test_atlas_selected_independent_ambiguity_and_sufficiency_witnesses(self):
         rows = examples()
@@ -168,6 +184,8 @@ class InformationCoreTests(unittest.TestCase):
                 self.assertIsInstance(result["sort_crossed_boundaries"], list)
             if task is Task.BFS:
                 self.assertEqual(result["bfs_disconnected"], bool(result["bfs_unreachable_nodes"]))
+                self.assertIsInstance(result["old_value"], list)
+                self.assertIsInstance(result["new_value"], list)
 
 
 if __name__ == "__main__":

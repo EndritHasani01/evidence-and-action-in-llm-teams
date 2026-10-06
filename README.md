@@ -337,8 +337,8 @@ write_evaluation("outcomes.json.gz", tables)          # Existing files protected
 The [retained table fixture](tests/fixtures/README.md#exact-offline-outcomes-and-trajectories)
 reproduces sixteen offline cases from the M3 bundle, including full population
 joins and the stopped unknown slots. Scripted outcomes are validation evidence.
-Information/work inventories, costs, uncertainty/missingness bounds and the
-complete report remain later M4 tasks before GPU use.
+Information/work inventories are described below; costs, uncertainty/missingness
+bounds and the complete report remain later M4 tasks before GPU use.
 
 ## Offline contrasts and conditional repeats
 
@@ -385,6 +385,54 @@ The [retained contrast tables](tests/fixtures/README.md#prespecified-estimates-a
 reconstruct directly from the original scripted lifecycle workers at both sizes,
 including all unknown worlds in the full main manifests. These are CPU validation
 artifacts; M4's complete analysis/report gate remains open.
+
+## Offline information and retained work
+
+[information.py](recovery/information.py) adds the §7.2 inventories and CPU
+references to the original outcome export:
+
+```powershell
+.venv/Scripts/python.exe -m recovery analyze --diagnostics --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 --output information.json.gz
+.venv/Scripts/python.exe -m tests.information_archive
+```
+
+Combine `--diagnostics --estimands` to export both. The `information` block
+contains all four prefix rounds' old-gold correctness, source coverage and
+history/communication measurements; actual rendered owner-v1 exposure; L/B
+receipt timing with origins and censoring; C/F initial remote evidence and
+unique acquisitions versus repeated delivery attempts; source-bound receipt
+annotations, offline correctness strata, transport references and edit descriptors.
+The [rubric](docs/implementation-research/information-diagnostics.md) defines
+conservative associations and assumptions. Cleared candidates cannot supply
+receipt reconstruction. Wrong retained candidates remain literal, and missing
+last candidates never inherit an earlier answer.
+
+Committed checkpoints establish final-round acquisitions. Their public decoder
+requires the declared CPU dependencies, while the pure functions and missing-worker
+exports work with site packages disabled. Reads share the worker's application
+snapshot and invoke neither the saver nor the runner. Unobserved final delivery
+remains unknown. Existing exports and original worker files stay protected.
+
+For exact history-content token counts, supply `--tokenizer <local-metadata-directory>`
+in a tokenizer-enabled environment. It loads only local CPU metadata and requires
+exact reproduction of saved input IDs. Without it, nonempty history counts are
+unavailable; saved request-token counts remain visible. Content counts sum
+independently encoded retained items and exclude layout headers; they are not
+marginal prompt cost or GPU time. The [native fixture](tests/fixtures/information_tokens.json)
+checks both sizes and all five families.
+
+```python
+from recovery.information import information_run
+from recovery.evaluate import write_evaluation
+
+tables = information_run(worlds, branches, worker_paths, estimands=True)
+write_evaluation("information.json.gz", tables)
+```
+
+The [six retained cases](tests/fixtures/README.md#information-inventories-and-retained-work)
+include complete fixtures, full unknown main populations and a stopped prefix.
+The atlas witnesses establish sufficiency/ambiguity for named CPU views; none
+is a model finding, live intervention or source of correctness feedback.
 
 ## Protocol attainability and capacity
 

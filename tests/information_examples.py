@@ -1,5 +1,7 @@
 """Small independent specified-view atlas witnesses; no archive imports/writes."""
 
+import json
+
 
 def prefixes(values):
     return [sum(values[:j + 1]) for j in range(len(values))]
@@ -60,4 +62,4 @@ def examples():
         multiset.remove(4)
         multiset.append(8)
         assert sorted(multiset)[2:4] == rows[3]["new_" + label]
-    return rows
+    return json.loads(json.dumps(rows))  # The reference outputs use JSON endpoint arrays.

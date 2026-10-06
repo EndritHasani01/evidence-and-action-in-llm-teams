@@ -56,6 +56,8 @@ def main() -> int:
     analyze.add_argument("--count", choices=(60, 40), type=int, default=60)
     analyze.add_argument("--output", required=True, type=Path, help="new derived JSON or JSON.gz table export")
     analyze.add_argument("--estimands", action="store_true", help="include prespecified contrasts and conditional repeatability")
+    analyze.add_argument("--diagnostics", action="store_true", help="include information/work inventories and deterministic references")
+    analyze.add_argument("--tokenizer", type=Path, help="local matching tokenizer metadata for exact diagnostic history counts; no weights/downloads")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
         command.add_argument("--authoritative", type=Path, help="saved population authority for exact input/configuration equality")
@@ -76,13 +78,22 @@ def main() -> int:
             schedules = load_schedules(args.schedule, population)
             worlds = population.development if args.stage == "development" else population.worlds(args.count)
             branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
-            if args.estimands:
+            if args.tokenizer and not args.diagnostics:
+                raise ValueError("--tokenizer requires --diagnostics")
+            if args.diagnostics:
+                from .information import information_run
+                tokenizer = None
+                if args.tokenizer:
+                    from transformers import AutoTokenizer
+                    tokenizer = AutoTokenizer.from_pretrained(args.tokenizer, local_files_only=True)
+                tables = information_run(worlds, branches, args.worker, tokenizer=tokenizer, estimands=args.estimands)
+            elif args.estimands:
                 from .analysis import analyze_run
                 tables = analyze_run(worlds, branches, args.worker)
             else:
                 tables = evaluate_run(worlds, branches, args.worker)
             write_evaluation(args.output, tables)
-        except (OSError, ValueError, SQLiteError) as error:
+        except (OSError, ValueError, ImportError, SQLiteError) as error:
             parser.error(str(error))
         print(f"Offline tables: {args.output}; {tables['coverage']['recorded']}/{tables['coverage']['scheduled']} recorded; "
               f"{tables['coverage']['unknown']} unknown. No inference; scripted data are validation evidence.")

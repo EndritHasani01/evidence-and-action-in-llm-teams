@@ -54,3 +54,22 @@ candidates, receipt censoring, tombstones/pending records, source association
 and independent specified-view atlas examples. Worker/CLI integration and
 retained inventory reconstruction remain open at this checkpoint.
 
+Ordinary-worker integration now supplies `information_run` and `recovery analyze
+--diagnostics`, independently or with `--estimands`. The six retained
+[inventory cases](../../../tests/fixtures/information_tables.json.gz) include
+both complete five-family runs, both full unknown main populations and the
+stopped/resumed prefix. The public checkpoint serializer reads final committed
+deliveries in the same read-only application snapshot, with no saver setup or
+runner invocation. Receipt reconstruction uses only an actually retained old
+candidate; C's archived cleared result never supplies that annotation.
+
+`python -S -m unittest tests.test_information tests.test_information_run.InformationRunTests tests.test_evaluate -q`
+passes 52 checks in 17.490 seconds. The separate native harness verifies 160
+prefix peer-round and 40 compact-boundary counts at both sizes, using existing
+local metadata without weights. Full CPU and installed-package verification
+remain in progress at this checkpoint. A retained-table check exposed BFS tuple
+versus JSON-array comparison, and the automatic multi-megabyte dictionary diff
+made three preliminary validations stall. Those runs were stopped and are not
+passing evidence. Endpoint/reference outputs now use JSON arrays and a compact
+case/table/row mismatch assertion; safe fresh reconstruction is complete.
+
