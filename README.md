@@ -54,9 +54,13 @@ implemented and verified:** paired world intervals, shared-response missingness,
 completion bounds and paired whole-policy displays reproduce sixteen retained
 cases. Complete CPU regression passes 396 checks; final focused checks pass 33,
 core checks run 225 (221 passed, four optional skips), and installed-library M4
-checks pass 144. **M4-T06 is ready;** the full M4 analysis/report gate remains
-mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
-work. See
+checks pass 144. **M4-T06 is implemented and under final CPU validation:**
+seven grouped exhibits, exact cases and five portable complete/incomplete/stopped
+reports are retained. Focused checks pass 24; core checks run 251 (243 passed,
+eight optional skips), and the installed M4 suite passes 165. The full source
+regression and current original-worker reconstruction remain required to close
+M4. Qwen3.5/T4 pilot and main experiments remain future work. See
+[M4-T06 evidence](docs/todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#validation-and-evidence),
 [M4-T05 completion evidence](docs/todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff),
 [M4-T04 completion evidence](docs/todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff),
 [M4-T03 completion evidence](docs/todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff),
@@ -564,6 +568,63 @@ write_evaluation("uncertainty.json.gz", tables)  # Exclusive derived export.
 reconstructs sixteen original-worker scopes, including both complete fixtures,
 full main manifests and stopped work. Scripted values validate analysis; they
 are not model findings. M4-T06's complete report gate remains open before GPU use.
+
+## Reproducible offline reports
+
+[report.py](recovery/report.py) assembles seven explicit exhibits from one
+read-only snapshot of the supplied authoritative workers. `--report` includes
+all outcomes, contrasts, diagnostics, costs and uncertainty without separate
+flags. An explicit zoned accounting clock is required; the output directory
+must be new. Every current report and figure is labeled **synthetic CPU
+validation**, with no model capability or empirical claim.
+
+```powershell
+python -m recovery analyze --manifest population.json --schedule schedules.json `
+  --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 `
+  --report --as-of '2026-10-06T00:00:00+00:00' --resampling-seed 20261006 `
+  --output report-new
+```
+
+Open `report-new/report.html` locally. It links seven exhibits, exact case cards,
+literal call/message traces, all scientific tables (`tables.json.gz`), original
+input selection (`inputs.json.gz`), provenance/settings (`report.json`), saved
+plotting inputs (`plotting.json`) and world/interval CSVs. Unknown slots and
+empty eligible populations remain unavailable; invalid/failed recorded slots
+keep their original outcomes. Non-scalar raw text uses reversible JSON string
+notation in HTML and remains unchanged in the trace JSON.
+
+Case medians use exact rational effects and immutable world IDs. They require
+every scheduled slot in the supplied world scope recorded, including failures,
+controls and scheduled repeats; selecting contrasts use replicate zero.
+Duplicate worlds merge their reasons, missing signs remain explicit, and
+all-zero regression/smallest-ID fallbacks are fixed. Case eligibility never
+changes an estimand population. The case/annotation rules, source-association
+assumptions, 10,000-draw settings and original generation settings are exported
+for the later M5 freeze.
+
+Data export imports no inference, execution or plotting module. Matplotlib is
+an optional extra, needed only to render figures. Saved plotting inputs suffice;
+rendering reads no workers and performs no analysis resampling.
+
+```powershell
+python -m pip install '.[report]'
+python -m recovery.figures --report report-new
+# Or add --figures to the original analyze --report command.
+```
+
+Rendering exclusively creates `figures/` with seven SVG/PNG pairs and a small
+plotting-environment record, then links them from the HTML. That record is
+separate from the accepted inference freeze. Existing reports/figure directories
+are protected. Prefix-policy computation, actual allocation and billing remain
+separate; CPU attempt durations do not measure GPU runtime penalties. Paired
+policy differences remain in the supporting tables and use their own axes;
+the quality/cost figure shows absolute whole-policy endpoints.
+
+[Retained report evidence](tests/fixtures/README.md#reproducible-synthetic-reports)
+includes sixteen repeated original-worker scopes and five portable complete,
+incomplete and stopped reports with all exhibits. The
+[coverage/category audit](docs/validation/m4-cpu-gate.md) records named CPU
+evidence and the remaining hardware, capability, host and resource gates.
 
 ## Protocol attainability and capacity
 

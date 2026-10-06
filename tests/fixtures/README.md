@@ -924,4 +924,60 @@ Every retained table must reproduce. `--write-fixture` exclusively creates a
 new derived export; the original run and all prerequisite fixtures remain
 unchanged. [CLI/API usage](../../README.md#offline-uncertainty-and-missingness)
 works on ordinary saved runs without importing inference. The report and full
-M4 gate remain M4-T06; CPU evidence does not admit GPU or main execution.
+M4 gate are recorded below; CPU evidence does not admit GPU or main execution.
+
+## Reproducible synthetic reports
+
+[report_tables.json.gz](report_tables.json.gz) retains sixteen M4-T06 reports
+from the original evidence-named M3 workers: thirteen ordinary selections,
+two full frozen 60/40 main joins and the stopped prefix. Each contains the
+seven exhibits, exact case selection, deterministic plotting inputs, settings,
+coverage, supporting table-row counts and repeated export/link evidence.
+The source workers remain authoritative; these records are derived validation.
+
+[scripted_reports.zip](scripted_reports.zip) is a portable companion with five
+reports: complete target/fallback, deliberately incomplete full-main
+target-60/fallback-40, and stopped work. Extract it and open `INDEX.md`, then
+the linked `report.html`. It includes 126 files: an index, five reports with
+all tables/input snapshots/traces, CSVs, cases, settings and plotting data,
+and 35 SVG plus 35 PNG exhibits with plotting-environment records. Every
+report/figure is labeled synthetic CPU validation. It contains no SQLite
+execution copy or second authoritative store.
+
+The complete fixtures have 2,170 recorded outcomes each. Full target/fallback
+joins preserve 15,486/10,390 unknown slots and denominators 60/40, with only
+five observed worlds. Intended primary estimates/intervals are unavailable;
+complete-case descriptions and shared-response sensitivity are distinct.
+The stopped prefix retains sixteen unknown slots and unavailable cases.
+Missing native history counts and empty preservation populations remain N/A.
+Cases retain exact replies, before/after edits, original call/message/delivery
+IDs, trajectories, availability and preservation denominators. Invalid
+non-scalar Unicode is displayed as a reversible JSON string literal without
+repairing its original raw reply.
+
+```powershell
+python -S -m unittest tests.test_report tests.test_report_run -q
+.venv/Scripts/python.exe -m unittest tests.test_report_figures -q
+.venv/Scripts/python.exe -m unittest tests.test_report_archive -q
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.report_archive --export new-report-reproduction
+# Optional plotting from those already-saved inputs:
+.venv/Scripts/python.exe -m recovery.figures --report new-report-reproduction/complete-target
+```
+
+[report_archive.py](../report_archive.py) reads only original M3 workers,
+analyzes every scope twice, compares every table/report/trace/input, checks
+worker bytes before/after, exports twice and compares compressed/HTML/CSV
+bytes. It checks exact scheduled/recorded/unknown counts and every local
+report link/anchor. The retained bundle check joins report/plot/table/case
+evidence and checks all SVG/PNG files. `--write-fixture` exclusively creates
+a new expected export; it never replaces original evidence. Optional
+Matplotlib rendering has its own deterministic-byte checks and was visually
+reviewed; it imports no inference and reads no workers.
+
+[CLI/API usage](../../README.md#reproducible-offline-reports),
+[task evidence](../../docs/todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#validation-and-evidence)
+and the [M1–M4 CPU audit](../../docs/validation/m4-cpu-gate.md) record the
+commands and limits. CPU report acceptance does not establish language-weight
+loading, finite GPU output, T4 headroom/timing, capability, accepted-host
+persistence, allocation feasibility, pilot results or main findings.

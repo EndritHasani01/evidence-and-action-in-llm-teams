@@ -87,3 +87,15 @@ maps all 22 plan rows and seven specification check categories to named evidence
 Final current-source reproduction, full regression and installed-package
 checks are still required; this task and M4's gate remain active/open.
 
+The final dependency-free core command, `python -S -m recovery validate --core-only`,
+runs 251 checks in 219.957 seconds: 243 pass and eight optional archive/renderer
+checks skip. The actual installed M4 package suite outside the checkout passes
+165 checks in 224.674 seconds under `PYTHONHASHSEED=37`; twelve installed module
+paths/bytes match current source. Installed `analyze --report --figures` preserves
+all 1,178 unknown development slots, saves seed 37, renders seven figure pairs,
+passes 27 local links and protects the absent worker and existing output.
+The renewed native tokenizer capacity command passes eight checks in 1.994
+seconds with local 9B metadata only; target/fallback bounds remain
+261,388/259,868 including reserve. `compileall` and `pip check` pass. Full source
+regression and final blocked-import original-worker reconstruction are running.
+

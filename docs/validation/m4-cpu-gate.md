@@ -79,6 +79,24 @@ denominators and complete-case labels. Exact shared-response sensitivity,
 weighted Hoeffding companions, completion bounds and conditional repeats are
 unchanged from M4-T05.
 
+The existing [evaluator](../../recovery/evaluate.py) implements the following
+six nonexclusive annotation rules from specification §7.1; M4-T06 does not
+change them. `annotation_counts` retains positives, negatives, unknowns,
+not-applicable cases, intersections and patterns with original call IDs.
+
+| Exported label | Observable rule |
+|---|---|
+| `protocol_inference_failure` | Recorded invalid/failed peer outcome; an unexecuted slot is unknown. |
+| `v2_unavailable` | Revised source absent at the saved call boundary; unknown boundary is unknown, and other event types are not applicable. |
+| `incorrect_after_v2` | Incorrect reply after v2 is known at that boundary. Known unavailability or a correct reply gives false; unresolved required outcome/boundary gives unknown. |
+| `explicit_old_value_persistence` | At least one changed D coordinate explicitly equals its old gold value. Invalid/failed output supplies no explicit old value; empty D is not applicable. |
+| `collateral_error` | At least one eligible unchanged U coordinate, correct in prefix round four, is now incorrect. Empty eligibility is not applicable; missing prefix/outcome evidence stays unknown. |
+| `regression` | Current peer is incorrect after an earlier correct response in the same branch. Current correctness gives false; unresolved current/prior evidence remains unknown when no observed transition settles it. |
+
+These labels describe observable events, overlap, and do not partition causes.
+Source association separately follows the already-frozen
+[conservative rubric](../implementation-research/information-diagnostics.md).
+
 Cases require every scheduled slot in the supplied world scope recorded,
 including failures, controls and scheduled repeats; selecting contrasts use
 replicate zero. This affects illustration eligibility only. Strict sign medians
