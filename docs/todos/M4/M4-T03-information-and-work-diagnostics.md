@@ -73,3 +73,13 @@ made three preliminary validations stall. Those runs were stopped and are not
 passing evidence. Endpoint/reference outputs now use JSON arrays and a compact
 case/table/row mismatch assertion; safe fresh reconstruction is complete.
 
+Final conservative review keeps an unobserved delivery release/acquisition
+unknown, rather than recording a negative outcome. Hand-calculated Sort
+crossings and BFS leaf-bridge deletion checks cover both sizes. The final
+`python -S -m unittest tests.test_information tests.test_information_run.InformationRunTests -q`
+passes all 26 checks in 13.912 seconds; all six retained cases and 200 native
+history counts reproduce under hash seed 37. The dependency-free core runs
+162 checks in 133.360 seconds: 160 pass and two optional checkpoint checks skip.
+The complete CPU lifecycle regression and final installed-package verification
+remain in progress at this review checkpoint.
+

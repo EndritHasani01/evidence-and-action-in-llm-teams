@@ -186,6 +186,30 @@ class InformationCoreTests(unittest.TestCase):
                 self.assertEqual(result["bfs_disconnected"], bool(result["bfs_unreachable_nodes"]))
                 self.assertIsInstance(result["old_value"], list)
                 self.assertIsInstance(result["new_value"], list)
+        # Hand-checked rank displacement crosses every shard boundary. Equal
+        # values use stable IDs solely for this descriptor, never scoring.
+        for size in Size:
+            base = self.world(Task.SORT, size.value)
+            original = replace(base.world, records=tuple(replace(r, value=r.position) for r in base.world.records))
+            increasing = replace(base, world=original, main_edit=Edit("x000", 99))
+            result = edit_descriptor(increasing, "revision")
+            self.assertEqual(result["sort_crossed_boundaries"], [size.shard_size * j for j in (1, 2, 3)])
+            self.assertEqual((result["sort_old_rank"], result["sort_new_rank"], result["magnitude"]), (0, size.numeric_length - 1, 99))
+            decreasing = replace(base, world=original, main_edit=Edit(f"x{size.numeric_length - 1:03d}", 0))
+            result = edit_descriptor(decreasing, "revision")
+            self.assertEqual(result["sort_new_rank"], 1)  # x000's tied zero precedes the edited ID.
+            self.assertEqual(result["direction"], "decrease")
+            # A leaf bridge plus five chords inside the remaining component:
+            # deletion disconnects exactly the leaf at both declared sizes.
+            base = self.world(Task.BFS, size.value)
+            edges = [(j - 1, j) for j in range(1, size.node_count - 1)] + [(0, size.node_count - 1)]
+            edges += [(0, 2), (0, 3), (0, 4), (1, 3), (1, 4)]
+            original = replace(base.world, records=tuple(replace(r, value=edge) for r, edge in zip(base.world.records, edges)))
+            bridge = f"e{size.node_count - 2:03d}"
+            result = edit_descriptor(replace(base, world=original, main_edit=Edit(bridge, None)), "revision")
+            self.assertTrue(result["bfs_disconnected"])
+            self.assertEqual(result["bfs_unreachable_nodes"], [size.node_count - 1])
+            self.assertEqual(result["changed_coordinates"], [size.node_count - 1])
 
 
 if __name__ == "__main__":

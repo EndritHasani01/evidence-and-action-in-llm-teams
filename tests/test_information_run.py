@@ -84,6 +84,9 @@ class InformationRunTests(unittest.TestCase):
         self.assertEqual((acquired["unique_acquired_count"], acquired["all_validated_delivery_attempts"], acquired["observed_delivery_attempts"]), (1, 2, 2))
         self.assertEqual([a["acquired"] for a in tables["delivery_attempts"]], [True, False])
         self.assertTrue(all(a["first_usable"]["round_number"] == 5 for a in tables["delivery_attempts"]))
+        partial = information_records(w, b, r, i, a)
+        self.assertTrue(all(attempt["delivered"] is None and attempt["acquired"] is None for attempt in partial["delivery_attempts"]))
+        self.assertTrue(all(row["unique_acquired_count"] is None for row in partial["boundary_acquisition"]))
         # A final committed horizon cannot silently lose a delivery.
         c[branch.branch_id]["state"]["deliveries"].pop()
         with self.assertRaisesRegex(ValueError, "lacks a validated delivery"):

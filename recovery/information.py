@@ -455,7 +455,7 @@ def information_records(worlds, branches, records, inputs, attempts=(), *, commi
                     raise ValueError("committed checkpoint lacks a validated delivery attempt")
                 if observed and any(observed[k] != attempt[k] for k in ("message_id", "recipient", "source", "text")):
                     raise ValueError("committed delivery differs from validated attempt")
-                send_attempts.append(dict(identity, **attempt, delivered=observed is not None,
+                send_attempts.append(dict(identity, **attempt, delivered=True if observed is not None else None,
                     first_usable=observed["first_usable"] if observed else None,
                     acquired=observed["acquired"] if observed else None,
                     delivery_observation="committed" if observed else "release_not_observed"))
@@ -506,7 +506,7 @@ def information_records(worlds, branches, records, inputs, attempts=(), *, commi
                     complete_delivery_horizon=completed.get(branch.branch_id) == 4,
                     observed_unique_acquired_pairs=[list(a) for a in acquisitions], observed_unique_acquired_count=len(acquisitions),
                     unique_acquired_count=len(acquisitions) if completed.get(branch.branch_id) == 4 else None,
-                    observed_delivery_attempts=sum(a["delivered"] for a in relevant),
+                    observed_delivery_attempts=sum(a["delivered"] is True for a in relevant),
                     all_validated_delivery_attempts=len(relevant) if all_known else None,
                     validated_attempt_delivery_ids=[a["delivery_id"] for a in relevant],
                     interpretation="Post-intervention acquisition is an outcome, never a policy-effect adjustment."))
