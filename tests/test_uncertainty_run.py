@@ -83,6 +83,7 @@ class OfflineUncertaintyRunTests(unittest.TestCase):
                 "--schedule", str(ROOT/"tests/fixtures/schedules_target.json"),
                 "--worker", str(Path(directory)/"missing.sqlite"), "--output", str(output)]
             for extra, error in ((["--resampling-seed", "0"], "requires --uncertainty"),
+                                 (["--uncertainty", "--resampling-seed", "-1"], "nonnegative integer"),
                                  (["--uncertainty", "--as-of", "2026-10-06"], "explicit timezone")):
                 run = subprocess.run(args+extra, cwd=ROOT, capture_output=True, text=True, timeout=30)
                 self.assertEqual(run.returncode, 2)

@@ -100,6 +100,12 @@ class StatisticalArithmeticTests(unittest.TestCase):
         row = dict(world_id="a", family=f, value=1)
         with self.assertRaises(ValueError):
             paired_interval([row, row], [f])
+        # Python's integer-seed absolute-value convention can alias families
+        # when seed+family_index straddles zero; reject negative public seeds.
+        with self.assertRaises(ValueError):
+            paired_interval([row], [f], seed=-1)
+        with self.assertRaises(ValueError):
+            world_resamples(["a"], -1)
 
     def test_independent_finite_stratified_distribution_has_expected_percentiles(self):
         f, g = MAIN_FAMILIES[:2]
@@ -252,6 +258,12 @@ class ContrastUncertaintyTests(unittest.TestCase):
         self.assertTrue(shared)
         self.assertTrue(all(ids == shared[0] for ids in shared))
         self.assertTrue(all(r["replicate"] == 0 for r in result["summaries"]))
+        full = uncertainty_records(worlds, branches, data)
+        repeated = [r for r in full["trajectory_summaries"] if r["replicate"] == 1]
+        self.assertTrue(repeated)
+        self.assertTrue(all(r["population"] == "repeat" for r in repeated))
+        self.assertTrue(all(r["scope"] == "Conditional on original prefix/partition" for r in repeated))
+        self.assertEqual(full["settings"]["population_estimates_use_replicate"], 0)
 
     def test_power_references_are_the_prespecified_arithmetic(self):
         result = reporting_references()

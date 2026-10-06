@@ -99,7 +99,18 @@ Fixed coverage still reports four unexecuted uses and no unresolved physical
 response. Full-main archive assertions additionally require every shared Q/
 retained-group/cleared-group first-round sensitivity to cancel to zero.
 The offline join also rejects a changed selected policy outside C/K, even if its
-branch ID is otherwise valid. All 33 final focused checks pass in 17.846 seconds;
+branch ID is otherwise valid. All 33 final focused checks pass in 17.357 seconds;
 these are review additions to unchanged statistical arithmetic and retained
 tables. Complete regression and final installed/archive checks remain in progress.
+
+The complete CPU regression passes 396 checks in 1,870.135 seconds, including
+all nine real-controller lifecycle checks. Subsequent metadata review makes
+repeat trajectory displays explicitly target the conditional `repeat` population
+and names replicate zero as the population-estimate source. An independent
+comparison of all sixteen regenerated cases confirms every estimate, bound,
+component, cost and coverage value is unchanged; only scope/population labels
+change. Nonnegative resampling seeds are now required: the verified Python
+integer-seed absolute-value convention otherwise aliases family streams when
+`seed + family_index` straddles zero. All 33 updated focused checks pass in
+18.676 seconds. Final package/core/archive and documentation checks remain open.
 

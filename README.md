@@ -517,7 +517,7 @@ python -S -m recovery analyze --uncertainty --resampling-seed 20261006 --as-of 2
 ```
 
 Exactly 10,000 world draws within each eligible family use sorted world IDs,
-saved family seeds, equal-family means and explicit linear type-7 quantiles.
+saved nonnegative family seeds, equal-family means and explicit linear type-7 quantiles.
 The two pooled primaries use 1.25/98.75 percentiles; family descriptions and
 secondaries use 2.5/97.5. Matching family/world cohorts reuse the same draws
 across events, policies, endpoints and overlapping displays. Repeats remain

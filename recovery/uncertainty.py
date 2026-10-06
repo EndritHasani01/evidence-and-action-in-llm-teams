@@ -78,8 +78,8 @@ def hoeffding(estimate, limits, family_counts, alpha):
 def world_resamples(world_ids, seed):
     """One family stream. Draw IDs, never peer/round/replicate observations."""
     ids = tuple(sorted(world_ids))
-    if not ids or len(set(ids)) != len(ids) or type(seed) is not int:
-        raise ValueError("resampling requires unique world IDs and an integer seed")
+    if not ids or len(set(ids)) != len(ids) or type(seed) is not int or seed < 0:
+        raise ValueError("resampling requires unique world IDs and a nonnegative integer seed")
     rng = Random(seed)
     return [tuple(rng.randrange(len(ids)) for _ in ids) for _ in range(DRAWS)]
 
@@ -90,7 +90,7 @@ def paired_interval(rows, families, *, seed=DEFAULT_SEED, primary=False, limits=
     The caller supplies an explicit eligible/observed cohort. Missing families
     yield N/A; this function never chooses a complete-case population itself.
     """
-    if type(seed) is not int or len(set(families)) != len(families) or set(families) - set(MAIN_FAMILIES):
+    if type(seed) is not int or seed < 0 or len(set(families)) != len(families) or set(families) - set(MAIN_FAMILIES):
         raise ValueError("invalid resampling seed/families")
     seen, groups = set(), {f: [] for f in families}
     for row in rows:
@@ -416,7 +416,7 @@ def trajectory_summaries(rows, populations, *, seed=DEFAULT_SEED, cache=None):
     for row in rows:
         grouped[row["phase"], row["event"], row["policy"], row["replicate"]].append(row)
     for (phase, event, policy, replicate), group in sorted(grouped.items(), key=lambda item: repr(item[0])):
-        population = ("preserving" if event == "preserving" else "receipts" if policy and policy.endswith("_delta")
+        population = ("repeat" if replicate else "preserving" if event == "preserving" else "receipts" if policy and policy.endswith("_delta")
                       else "prose_delay" if policy and policy.startswith("Q_") else "main")
         targets = families[population]
         counts = {f: sum(r["family"] == f for r in group) for f in targets}
@@ -431,6 +431,7 @@ def trajectory_summaries(rows, populations, *, seed=DEFAULT_SEED, cache=None):
                           for f, n in counts.items())/len(targets) for j in (0, 1)] if all(counts.values()) else None
             result.append(dict(phase=phase, event=event, policy=policy, replicate=replicate,
                 population=population, metric=metric, scheduled_worlds=len(group),
+                scope="Conditional on original prefix/partition" if replicate else "Supplied fixed population",
                 complete_worlds=len(complete), incomplete_worlds=len(group)-len(complete),
                 family_denominators=counts, world_ids=[r["world_id"] for r in group],
                 intended_population=paired_interval(observed, targets, seed=seed, limits=[0, 1], cache=cache),
@@ -607,8 +608,8 @@ def policy_display_summaries(rows, populations, *, seed=DEFAULT_SEED, cache=None
 def uncertainty_records(worlds, branches, tables, *, seed=DEFAULT_SEED):
     """Use the existing validated joins; derive all §6 tables without new I/O."""
     from .analysis import analyze_estimands
-    if type(seed) is not int:
-        raise ValueError("resampling seed must be an integer")
+    if type(seed) is not int or seed < 0:
+        raise ValueError("resampling seed must be a nonnegative integer")
     worlds, branches = tuple(worlds), tuple(branches)
     # Reconstruct rather than trusting a stale derived estimand/trajectory export.
     estimands = analyze_estimands(worlds, branches, tables)
@@ -626,7 +627,7 @@ def uncertainty_records(worlds, branches, tables, *, seed=DEFAULT_SEED):
             rng="Python random.Random; randrange(n), n draws per family per resample in sorted world-ID order",
             quantile=QUANTILE, primary_probabilities=[0.0125, 0.9875], secondary_probabilities=[0.025, 0.975],
             cluster="Generated world and one realized prefix; all siblings, peers, rounds, groups, controls and repeats travel together",
-            replicate_zero_only=True, weighting="equal eligible-family means", limitation=LIMITATION),
+            population_estimates_use_replicate=0, weighting="equal eligible-family means", limitation=LIMITATION),
         reporting_references=reporting_references(), populations=estimands["populations"], coverage=tables.get("coverage"))
     return result
 

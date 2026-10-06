@@ -59,7 +59,7 @@ def main() -> int:
     analyze.add_argument("--diagnostics", action="store_true", help="include information/work inventories and deterministic references")
     analyze.add_argument("--costs", action="store_true", help="include original measured costs and the frozen C/K boundary rule")
     analyze.add_argument("--uncertainty", action="store_true", help="include paired intervals/missingness; also includes estimands and costs")
-    analyze.add_argument("--resampling-seed", type=int, help="saved world-bootstrap seed; requires --uncertainty (default 20261006)")
+    analyze.add_argument("--resampling-seed", type=int, help="saved nonnegative world-bootstrap seed; requires --uncertainty (default 20261006)")
     analyze.add_argument("--as-of", help="explicit zoned accounting timestamp for reproducible costs; requires --costs or --uncertainty")
     analyze.add_argument("--tokenizer", type=Path, help="local matching tokenizer metadata for exact diagnostic history counts; no weights/downloads")
     for command in (validate, prepare):
