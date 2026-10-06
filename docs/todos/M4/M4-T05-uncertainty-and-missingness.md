@@ -3,6 +3,9 @@
 **Status:** blocked
 
 **Dependencies:** [M4-T02](../M4/M4-T02-estimands-and-repeatability.md), [M4-T04](../M4/M4-T04-policy-costs-and-boundary-rule.md). M1–M3 must have passed.
+M4-T02 is done as of 6 October 2026: its exact world components/weights, endpoint
+ranges, fixed populations, original shared-response IDs and separate conditional
+repeats are ready for use. M4-T04 remains the unsatisfied prerequisite.
 
 ## References
 

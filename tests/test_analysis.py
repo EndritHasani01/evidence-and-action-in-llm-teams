@@ -81,10 +81,18 @@ class EstimandTests(unittest.TestCase):
                                 ("B-L", .25, 0), ("C-F", -.5, -1)):
             self.assertEqual(find(result, name)["value"], auc)
             self.assertEqual(find(result, name, endpoint="final_joint")["value"], final)
+            self.assertEqual(find(result, name, endpoint="preservation")["value"], auc)
+            self.assertEqual(find(result, name, endpoint="preservation", number=4)["value"], final)
+        for name, values in (("C-B", [0, 1, 0, 0]), ("K-C", [0, 0, 1, 0]), ("K-B", [0, 1, 1, 0]),
+                             ("B-L", [1, 0, 0, 0]), ("C-F", [0, 0, -1, -1])):
+            for number, value in enumerate(values, 1):
+                self.assertEqual(find(result, name, endpoint="preservation", number=number)["value"], value)
         for name, sham, interaction in (("K-C", -.25, .5), ("K-B", -.5, 1)):
             self.assertEqual(find(result, name, "sham")["value"], sham)
             self.assertEqual(find(result, name + "_corr", "revision_minus_sham")["value"], interaction)
             self.assertEqual(find(result, name + "_corr", "revision_minus_sham", "final_joint")["value"], 0)
+            self.assertEqual(find(result, name, "sham", "preservation")["value"], sham)
+            self.assertEqual(find(result, name + "_corr", "revision_minus_sham", "preservation")["value"], interaction)
         for event in ("revision", "sham"):
             for number in (1, 2, 3, 4):
                 for p in ("B", "C", "P_G", "P_H"):
@@ -110,6 +118,13 @@ class EstimandTests(unittest.TestCase):
         self.assertEqual(find(result, "eta")["value"], .5)
         self.assertEqual(find(result, "eta", endpoint="final_joint")["value"], 1)
         self.assertEqual(find(result, "eta", endpoint="accuracy", number=1)["range"], [-2, 2])
+        # This fixed Prefix edit leaves eligible U only in peers 0,1,2.
+        # The receipt gains in peer 3 contribute to exact accuracy, not U preservation.
+        for name, value in (("eta", 1/3), ("B_delta-B", 1/3), ("C_delta-C", -1/3), ("K_delta-K", 0),
+                            ("B-C", -1/3), ("B-K", -2/3), ("B_delta-C_delta", 1/3), ("B_delta-K_delta", -1/3)):
+            self.assertEqual(find(result, name, endpoint="preservation")["value"], value)
+            for number in (1, 2, 3, 4):
+                self.assertEqual(find(result, name, endpoint="preservation", number=number)["value"], value)
 
     def test_receipt_equal_large_benefits_have_zero_eta(self):
         result = self.run_case({("revision", p, 0): constant(v) for p, v in (
@@ -132,8 +147,11 @@ class EstimandTests(unittest.TestCase):
             self.assertEqual(find(result, name, event)["value"], .75 * expected)
             for number in (3, 4):
                 self.assertEqual(find(result, name, event, "accuracy", number)["value"], expected)
-            find(result, name, event, "preservation")
-            find(result, name, event, "preservation", 4)
+                self.assertEqual(find(result, name, event, "preservation", number)["value"], expected)
+            self.assertEqual(find(result, name, event, "preservation")["value"], .75 * expected)
+        for event, name, expected in (("revision", "Q_B-B", 0), ("revision", "Q_C-C", 0),
+                                    ("sham", "Q_B-B", 0), ("sham", "Q_C-C", 1)):
+            self.assertEqual(find(result, name, event, "final_joint")["value"], expected)
 
 
 class PopulationAndMissingnessTests(unittest.TestCase):
@@ -226,6 +244,15 @@ class PopulationAndMissingnessTests(unittest.TestCase):
                     for p in ("B", "C", "K"):
                         for endpoint in ("auc", "final_joint", "preservation"):
                             find(result, "preserving_cell_" + p, "preserving", endpoint)
+        worlds, branches = selection(Task.TOP_K, 3)
+        data = tables(worlds, branches, {(worlds[0].world_id, "preserving", p, 0): correct_rounds(n)
+            for p, n in (("B", 2), ("C", 4), ("K", 3))})
+        result = analyze_estimands(worlds, branches, data)
+        for p, mean, final in (("B", .5, 0), ("C", 1, 1), ("K", .75, 0)):
+            self.assertEqual(find(result, "preserving_cell_" + p, "preserving")["value"], mean)
+            self.assertEqual(find(result, "preserving_cell_" + p, "preserving", "preservation")["value"], mean)
+            self.assertEqual(find(result, "preserving_cell_" + p, "preserving", "final_joint")["value"], final)
+            self.assertEqual(find(result, "preserving_cell_" + p, "preserving", "preservation", 4)["value"], final)
 
     def test_missing_sibling_and_missing_family_are_explicit(self):
         worlds, branches = selection(Task.DIFFERENCE)
@@ -256,6 +283,9 @@ class PopulationAndMissingnessTests(unittest.TestCase):
         original = tables(worlds, branches)
         mutations = [lambda d: d["outcomes"].append(d["outcomes"][0]), lambda d: d["outcomes"].pop(),
             lambda d: d["outcomes"][0].update(seed=-1), lambda d: d["outcomes"][0].update(correct=True),
+            lambda d: d["outcomes"][0].update(prefix_call_id="another-prefix"),
+            lambda d: d["outcomes"][0].update(family=Task.SORT.value),
+            lambda d: d["peer_diagnostics"][0].update(branch_id="another-branch"),
             lambda d: d["peer_diagnostics"].clear(), lambda d: d["peer_diagnostics"].append(d["peer_diagnostics"][0])]
         for mutate in mutations:
             data = copy.deepcopy(original)
@@ -294,6 +324,8 @@ class RepeatabilityTests(unittest.TestCase):
         worlds, branches = selection(Task.DIFFERENCE, 1)
         data = tables(worlds, branches, {(worlds[0].world_id, "revision", "B", 0): correct_rounds(4),
             (worlds[0].world_id, "revision", "B", 1): correct_rounds(1)})
+        for row in data["trajectories"]:
+            row.update(category="stale_export", complete=False)
         result = analyze_estimands(worlds, branches, data)
         change = next(r for r in result["trajectory_changes"] if r["event"] == "revision" and r["policy"] == "B")
         self.assertEqual(change["replicate_zero_category"], "continuously_correct")

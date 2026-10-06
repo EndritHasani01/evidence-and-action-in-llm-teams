@@ -35,10 +35,16 @@ held prose and bounded retries. The fourteen-case
 reopened backups. **M4-T01 is implemented and verified:** exact offline outcomes,
 coordinate repair/preservation, trajectories and observable annotations reproduce
 sixteen retained table cases. The complete regression passes 278 checks, final
-core passes 108 and installed-library evaluation passes 27. M4-T02–T04 are ready;
+core passes 108 and installed-library evaluation passes 27. **M4-T02 is implemented
+and verified:** all prespecified contrasts, fixed/equal-family denominators,
+unknown components and separate conditional repeats reconstruct from original
+workers. The complete CPU regression passes 306 checks; core and installed
+analysis checks pass 134 and 54. Four retained contrast-table cases reproduce,
+including the full unknown main populations. M4-T03/T04 are ready;
 the full M4 analysis/report gate remains
 mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
 work. See
+[M4-T02 completion evidence](docs/todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff),
 [M4-T01 completion evidence](docs/todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff),
 [M3-T05 gate evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate),
 [M3-T04 evidence](docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence),
