@@ -99,6 +99,19 @@ class ReportRunTests(unittest.TestCase):
                 original = self.records[excerpt["generation_id"]]
                 self.assertEqual(excerpt["raw_reply"], json.loads(original["raw_json"]))
 
+    def test_repeat_one_contrasts_cannot_replace_original_case_card_joins(self):
+        from recovery.report import case_cards
+        tables = copy.deepcopy(self.result["tables"])
+        rows = tables["estimands"]["world_contrasts"]
+        repeated = copy.deepcopy(next(row for row in rows if row["estimand"] == "C-B"
+            and row["event"] == "revision" and row["endpoint"] == "auc" and row["replicate"] == 0))
+        repeated["replicate"] = 1
+        for component in repeated["components"]:
+            component["branch_id"] += "/repeat-one"
+        rows.append(repeated)
+        actual = case_cards(self.worlds, tables, self.result["traces"], self.result["report"]["selection"])
+        self.assertEqual(actual, self.result["report"]["cases"])
+
     def test_literal_trace_preserves_control_characters_unicode_and_raw_whitespace(self):
         records = copy.deepcopy(self.records)
         row = next(iter(records.values()))

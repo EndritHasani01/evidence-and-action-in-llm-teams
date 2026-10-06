@@ -99,3 +99,12 @@ seconds with local 9B metadata only; target/fallback bounds remain
 261,388/259,868 including reserve. `compileall` and `pip check` pass. Full source
 regression and final blocked-import original-worker reconstruction are running.
 
+Review additionally made the card join enforce replicate zero directly. The
+existing estimand export already separates repeated contrasts, so every retained
+case remains unchanged and uses only original trajectories. An independent
+fixture that appends a conflicting replicate-one contrast failed before the
+one-line join fix and passes afterward. The original-worker assertion now also
+requires all card trajectories to be replicate zero. Renewed focused checks
+pass 25 in 35.458 seconds; full source/core/installed and blocked-import
+reconstruction are restarted against this final code.
+

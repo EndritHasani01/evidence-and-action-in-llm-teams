@@ -24,6 +24,8 @@ class ReportArchiveTests(unittest.TestCase):
             self.assertEqual(len(case["report"]["exhibits"]), 7)
             self.assertLessEqual(len(case["report"]["cases"]), 6)
             self.assertIn("not model capability", case["report"]["kind"])
+            for card in case["report"]["cases"]:
+                self.assertTrue(all(row["replicate"] == 0 for row in card["trajectories"]))
             if (case["report"]["selection"]["fallback"] or {}).get("reason") == "all_zero_regression":
                 self.assertTrue(any(r["regression"] for r in case["report"]["cases"][0]["trajectories"]))
         for size, count, n, unknown in (("target", 60, 12, 15486), ("fallback", 40, 8, 10390)):

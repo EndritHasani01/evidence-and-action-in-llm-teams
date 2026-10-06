@@ -121,7 +121,8 @@ def case_cards(worlds, tables, traces, selection):
     by_world = {w.world_id: w for w in worlds}
     by_call = {r["call_id"]: r for r in tables["outcomes"]}
     trace = {r["call_id"]: r for r in traces["calls"]}
-    contrasts = {(r["world_id"], _case_key(r)): r for r in tables["estimands"]["world_contrasts"]}
+    contrasts = {(r["world_id"], _case_key(r)): r for r in tables["estimands"]["world_contrasts"]
+                 if r["replicate"] == 0}
     result = []
     for chosen in selection["selected"]:
         wid, reasons = chosen["world_id"], chosen["reasons"]
