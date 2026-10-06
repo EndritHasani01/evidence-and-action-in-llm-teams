@@ -28,7 +28,7 @@ CASE_RULE = {
     "selection": "Within each strict sign sort by exact rational effect then immutable world ID; take index (n-1)//2, the lower observed median.",
     "duplicates": "Merge worlds, retaining every selecting contrast and sign; at most six cards.",
     "fallback": "Only if every eligible observed contrast is zero: smallest-ID regression world, else smallest-ID complete world. No eligible complete world means unavailable.",
-    "excerpts": "For each selecting contrast use the earliest differing paired focal peer/round; ties use the edited owner at the first endpoint round. Include its actual prefix round-four reply, component replies and incoming prose first usable at that boundary, without alteration.",
+    "excerpts": "For each selecting contrast use the earliest differing paired focal peer/round; ties use the edited owner at the first endpoint round. Include its actual prefix round-four reply, component replies and incoming prose first usable at that boundary, without alteration. A zero-effect regression fallback also shows the smallest-ID regressing continuation and its earliest regressing peer/round.",
     "interpretation": "Cases illustrate behavior; full nonexclusive annotations establish prevalence. Prose and delivery paths do not establish semantic causation.",
 }
 
@@ -98,12 +98,22 @@ def trace_records(tables, records, inputs):
         request = None
         if saved:
             peer = outcome["peer"]
-            request = saved["requests"]["rendered"][0 if peer is None else peer]["content"]
+            rendered = saved["requests"]["rendered"]
+            request = (rendered if peer is None else rendered[peer])["content"]
         calls.append({k: outcome[k] for k in ("call_id", "generation_id", "replay_parent", "world_id",
             "branch_id", "peer", "round", "protocol_outcome", "worker_file")} |
             dict(request_text=request, raw_reply=raw, failure=json.loads(original["failure_json"])
                 if original and original.get("failure_json") else None))
-    return dict(kind=LABEL, calls=calls, deliveries=tables["costs"]["validated_deliveries"])
+    by_call = {r["call_id"]: r for r in calls}
+    deliveries = []
+    for row in tables["costs"]["validated_deliveries"]:
+        if row["text"] is not None:
+            call_id = row["message_id"].rsplit("/to", 1)[0]
+            if call_id not in by_call:
+                raise ValueError("prose delivery lacks its original scheduled sender call")
+            row = dict(row, call_id=call_id, branch_id=by_call[call_id]["branch_id"])
+        deliveries.append(row)
+    return dict(kind=LABEL, calls=calls, deliveries=deliveries)
 
 
 def case_cards(worlds, tables, traces, selection):
@@ -145,11 +155,24 @@ def case_cards(worlds, tables, traces, selection):
                     prefix = by_call[row["call_id"]]["prefix_call_id"]
                     if prefix:
                         excerpts.add(prefix)
+        if any(r.get("reason") == "all_zero_regression" for r in reasons):
+            regressed = min((r for r in tables["trajectories"] if r["world_id"] == wid
+                and r["phase"] == "continuation" and r["replicate"] == 0 and r["regression"] is True), key=lambda r: r["branch_id"])
+            bid = regressed["branch_id"]
+            bids.add(bid)
+            rows = [r for r in tables["outcomes"] if r["branch_id"] == bid]
+            row = min((r for r in rows if r["correct"] == 0 and any(p["peer"] == r["peer"]
+                and p["round"] < r["round"] and p["correct"] == 1 for p in rows)), key=lambda r: (r["round"], r["peer"]))
+            excerpts.update((row["call_id"], row["prefix_call_id"]))
+            excerpt_boundaries.add((bid, row["round"], row["peer"]))
         incoming = [d for d in traces["deliveries"] if d["text"] is not None and d["first_usable"] is not None
             and d["first_usable"]["phase"] == "recovery"
             and (d["branch_id"], d["first_usable"]["round_number"], d["recipient"]) in excerpt_boundaries]
         result.append(dict(world_id=wid, family=prepared.world.task.value, size=prepared.world.size.value,
-            reasons=reasons, edit=asdict(prepared.main_edit), partition=[list(g) for g in prepared.partition],
+            reasons=reasons, edit=dict(chosen=asdict(prepared.main_edit),
+                before=asdict(next(r for r in prepared.world.records if r.record_id == prepared.main_edit.record_id)),
+                after=asdict(next(r for r in prepared.event_world("revision").records if r.record_id == prepared.main_edit.record_id))),
+            partition=[list(g) for g in prepared.partition],
             trajectories=[r for r in tables["trajectories"] if r["branch_id"] in bids],
             availability=[{k: r[k] for k in ("call_id", "branch_id", "round", "peer", "correct",
                 "v2_available", "v2_reason", "v2_delivery_ids")} for r in tables["outcomes"] if r["branch_id"] in bids],
@@ -168,6 +191,7 @@ INTERPRETATIONS = (
     "Ceiling quality can coexist with cost or temporary damage; common failure with poor full-information controls is capability-limited.",
     "Broad intervals or unstable conditional repeats support an inconclusive account, not equivalence or a universal policy recommendation.",
     "Evidence inventory, preserved correct output and measured computation are separate: retained records may be unused and unchanged output may be recomputed.",
+    "Prompt length and scripted CPU attempt durations do not establish GPU runtime penalties. Policy computation, actual allocation and provider billing remain separate.",
     "Failures score zero; unexecuted calls stay unknown. Complete-case descriptions and missingness sensitivity never replace the frozen population.",
     "Four rounds define observed stability. No fifth failure round, successful-only time average, best-answer splicing or early-stop saving is used.",
     "These five fixed families, four synchronous peers, one announced edit and one future accepted model do not establish generality to other tasks, teams or models.",
@@ -218,7 +242,9 @@ def _quality_plot_rows(rows):
         pair = [value["lower"]["estimate"], value["upper"]["estimate"]]
         return pair if None not in pair else None
     for row in rows:
-        if row["level"] != "all_families" or row["population"] != "main" or row["event"] != "revision" or row["metric"] not in ("auc", "final_preservation"):
+        if (row["level"] != "all_families" or row["population"] != "main" or row["event"] != "revision"
+                or row["metric"] not in ("auc", "final_preservation")
+                or not (row["display"].startswith("policy_") or row["display"] == "boundary_rule")):
             continue
         cost = row["paired_cost"]
         result.append({k: row[k] for k in ("display", "metric", "eligible_worlds", "paired_observed_worlds", "unknown_worlds", "family_denominators", "world_ids")} | dict(
@@ -266,7 +292,7 @@ def assemble_report(worlds, branches, tables, traces, *, provenance=None):
             note="Four prefix rounds include unsuccessful worlds. Full-information original/revised controls are shown separately; rendered exposure does not prove model use."),
         dict(id="effects", title="Recovery policy effects", rows=len(effects),
             supports=["estimands.world_contrasts", "estimands.summaries", "uncertainty.summaries", "uncertainty.world_bounds"],
-            note="Theta is correction-specific; phi is the direct revised-world effect on retained collaborators. All prespecified AUC/final companions remain in the supporting tables."),
+            note="Theta is correction-specific; phi is the direct revised-world effect on retained collaborators. Filled markers show population intervals; hollow markers show complete cases. Dashed bounded-mean companions use that displayed cohort; sensitivity is separate from confidence. All prespecified AUC/final companions remain in the supporting tables."),
         dict(id="repair", title="Repair and preservation", rows=len(repair),
             supports=["coordinates", "peer_diagnostics", "diagnostic_summaries", "annotations", "annotation_counts"],
             note="Changed-coordinate repair, old-value persistence, preservation of previously correct U, collateral damage and repair of old U errors have distinct eligibility and denominators. Labels overlap."),
@@ -363,6 +389,14 @@ img{width:100%;height:auto}.scroll{overflow:auto}table{border-collapse:collapse;
 </style>"""+"<body><h1>"+escape(title)+"</h1><aside>"+escape(LABEL)+"</aside>"+body+"</body></html>\n"
 
 
+def _literal_html(text):
+    # JSON string notation is reversible even for invalid Unicode. Never repair
+    # the original raw reply or its protocol outcome to make a page encodable.
+    if any(0xD800 <= ord(char) <= 0xDFFF for char in text):
+        return "<p class='muted'>Non-scalar Unicode: this exact JSON string literal preserves the original text. The trace export retains the unaltered string.</p><pre>"+escape(json.dumps(text, ensure_ascii=True))+"</pre>"
+    return "<pre>"+escape(text)+"</pre>"
+
+
 def _cases_html(report):
     body = "<p><a href='report.html'>Report</a> · <a href='traces.json.gz'>Unaltered trace export</a></p>"
     body += "<p>"+escape(CASE_RULE["selection"]+" "+CASE_RULE["complete_world"])+"</p>"
@@ -378,9 +412,9 @@ def _cases_html(report):
         for row in card["excerpts"]:
             body += "<h3><a href='calls.html#"+quote(row["call_id"], safe="")+"'>"+escape(row["call_id"])+"</a></h3>"
             body += "<p>Original generation: <code>"+escape(row["generation_id"])+"</code>; "+escape(row["protocol_outcome"])+".</p>"
-            body += "<pre>"+escape(row["raw_reply"]["text"] if row["raw_reply"] else "No recorded raw reply; see the linked failure/unknown trace.")+"</pre>"
+            body += _literal_html(row["raw_reply"]["text"] if row["raw_reply"] else "No recorded raw reply; see the linked failure/unknown trace.")
         for row in card["incoming_prose"]:
-            body += "<p>Incoming message <a href='calls.html#"+quote(row["message_id"], safe="")+"'>"+escape(row["message_id"])+"</a>; delivery <code>"+escape(row["delivery_id"])+"</code>.</p><pre>"+escape(row["text"])+"</pre>"
+            body += "<p>Incoming message <a href='calls.html#"+quote(row["message_id"], safe="")+"'>"+escape(row["message_id"])+"</a>; delivery <code>"+escape(row["delivery_id"])+"</code>.</p>"+_literal_html(row["text"])
     return _page("Matched case cards", body)
 
 
@@ -389,8 +423,8 @@ def _calls_html(traces):
     for row in traces["calls"]:
         body += "<details id='"+escape(row["call_id"], quote=True)+"'><summary>"+escape(row["call_id"])+" — "+escape(row["protocol_outcome"])+"</summary>"
         body += _table([row], ("generation_id", "replay_parent", "worker_file", "failure"))
-        body += "<h3>Rendered request</h3><pre>"+escape(row["request_text"] if row["request_text"] is not None else "Unavailable")+"</pre><h3>Literal raw reply</h3><pre>"
-        body += escape(row["raw_reply"]["text"] if row["raw_reply"] else "Unavailable")+"</pre></details>"
+        body += "<h3>Rendered request</h3>"+_literal_html(row["request_text"] if row["request_text"] is not None else "Unavailable")+"<h3>Literal raw reply</h3>"
+        body += _literal_html(row["raw_reply"]["text"] if row["raw_reply"] else "Unavailable")+"</details>"
     seen_messages = set()
     for row in traces["deliveries"]:
         if row["text"] is not None:
@@ -398,7 +432,7 @@ def _calls_html(traces):
             message_anchor = " id='"+escape(row["message_id"], quote=True)+"'" if row["message_id"] not in seen_messages else ""
             seen_messages.add(row["message_id"])
             body += "<details id='"+escape(row["delivery_id"], quote=True)+"'><summary"+message_anchor+">"+escape(row["message_id"])+"</summary>"
-            body += _table([row], ("branch_id", "delivery_id", "first_usable", "recipient"))+"<pre>"+escape(row["text"])+"</pre></details>"
+            body += _table([row], ("branch_id", "delivery_id", "first_usable", "recipient"))+_literal_html(row["text"])+"</details>"
     return _page("Original call and message traces", body)
 
 

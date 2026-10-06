@@ -135,12 +135,15 @@ def render_figures(directory):
                     for n, ((family, event), values) in enumerate(sorted(grouped.items())):
                         if None not in values:
                             axes[2].barh(n, sum(values)/len(values), color=COLORS[n % len(COLORS)])
+                            axes[2].text(0.02, n, f"{sum(values)}/{len(values)} correct", va="center", fontsize=7,
+                                color="#182a39" if sum(values) == 0 else "white")
                         else:
                             axes[2].text(0.02, n, "N/A", va="center", color="#546575")
                     axes[2].set_yticks(range(len(grouped)), [f"{f} / {e}\nN={sum(v is not None for v in values)}/{len(values)}"
                         for (f, e), values in sorted(grouped.items())], fontsize=8)
                     axes[2].set_xlim(0, 1.05)
                     axes[2].set_title("Full-information capability controls")
+                    axes[2].set_xlabel("Fraction exact-correct; N is recorded / scheduled")
                     if not grouped:
                         _empty(axes[2])
                 elif eid == "effects":

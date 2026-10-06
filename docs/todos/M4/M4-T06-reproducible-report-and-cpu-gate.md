@@ -67,3 +67,23 @@ for rendering; the mandatory CPU/inference dependencies are unchanged.
 Original M3 reconstruction, final figure review, complete CPU/installed checks
 and the named coverage/category audit remain required before gate closure.
 
+Original-worker review reproduced all sixteen scopes twice in 704.395 seconds,
+including both complete five-family scopes, full frozen 60/40 main joins and
+stopped work. Every scientific table, case, plotting input and export byte
+matched; original worker bytes stayed unchanged. Real records exposed two
+schema details now covered independently: full-information controls store one
+rendered request, and prose deliveries derive their branch from the original
+sender call. Invalid non-scalar reply text is preserved in JSON and displayed
+with reversible JSON string notation in HTML, without repair.
+
+Final focused report checks pass 24 in 35.476 seconds. Visual review of all
+seven exhibits plus incomplete/stopped views separated paired policy
+differences from absolute quality/cost axes and clarified control counts;
+scientific tables are unchanged. The [portable bundle](../../../tests/fixtures/scripted_reports.zip)
+contains five reports, 35 SVG and 35 PNG exhibits. Its artifact check passes
+in 29.668 seconds, covering every local report link, JSON/table/plot join,
+case excerpt and figure file. The [CPU audit](../../validation/m4-cpu-gate.md)
+maps all 22 plan rows and seven specification check categories to named evidence.
+Final current-source reproduction, full regression and installed-package
+checks are still required; this task and M4's gate remain active/open.
+

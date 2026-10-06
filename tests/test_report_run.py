@@ -2,6 +2,7 @@
 
 import copy
 import gzip
+from html import unescape
 from html.parser import HTMLParser
 import json
 from pathlib import Path
@@ -91,6 +92,8 @@ class ReportRunTests(unittest.TestCase):
             self.assertTrue(card["trajectories"])
             self.assertTrue(card["availability"])
             self.assertTrue(card["preservation"])
+            self.assertEqual(card["edit"]["before"]["version"], 1)
+            self.assertEqual(card["edit"]["after"]["version"], 2)
             self.assertTrue(any("/prefix/" in r["call_id"] and "/r4/" in r["call_id"] for r in card["excerpts"]))
             for excerpt in card["excerpts"]:
                 original = self.records[excerpt["generation_id"]]
@@ -109,6 +112,43 @@ class ReportRunTests(unittest.TestCase):
         html = _calls_html(traces)
         self.assertIn("&lt;script&gt;", html)
         self.assertNotIn("<script>", html)
+
+    def test_full_information_control_uses_its_single_rendered_request(self):
+        tables = copy.deepcopy(self.result["tables"])
+        row = tables["outcomes"][0]
+        row["peer"] = None
+        tables["outcomes"] = [row]
+        inputs = {(row["branch_id"], row["round"]): {"requests": {"rendered": {"content": "literal control request\n"}}}}
+        actual = trace_records(tables, self.records, inputs)
+        self.assertEqual(actual["calls"][0]["request_text"], "literal control request\n")
+        self.assertEqual(actual["calls"][0]["peer"], None)
+
+    def test_non_scalar_raw_unicode_is_reversibly_displayed_without_repair(self):
+        from recovery.report import _literal_html
+        # Keep the two surrogates unpaired. JSON legitimately decodes an adjacent
+        # high/low pair into its scalar, as required by the protocol contract.
+        raw = "literal\r\n\ud800 | \udfff <script> \\ud800"
+        html = _literal_html(raw)
+        self.assertIn("Non-scalar Unicode", html)
+        self.assertNotIn("\ud800", html)
+        encoded = unescape(html.split("<pre>", 1)[1].split("</pre>", 1)[0])
+        self.assertEqual(json.loads(encoded), raw)
+
+    def test_branchless_prose_delivery_links_original_message_and_sender_call_ids(self):
+        tables = copy.deepcopy(self.result["tables"])
+        sender = tables["outcomes"][0]
+        message_id = sender["call_id"]+"/to1"
+        delivery = dict(message_id=message_id, delivery_id=message_id+"/text", text="literal\r\nprose",
+            recipient=1, first_usable=dict(phase="prefix", round_number=2))
+        tables["costs"]["validated_deliveries"] = [delivery]
+        actual = trace_records(tables, self.records, self.inputs)["deliveries"][0]
+        self.assertEqual(actual["call_id"], sender["call_id"])
+        self.assertEqual(actual["branch_id"], sender["branch_id"])
+        self.assertEqual(actual["message_id"], message_id)
+        self.assertEqual(actual["text"], delivery["text"])
+        tables["costs"]["validated_deliveries"][0]["message_id"] = "unscheduled/r1/p0/to1"
+        with self.assertRaisesRegex(ValueError, "original scheduled sender"):
+            trace_records(tables, self.records, self.inputs)
 
     def test_two_reconstructions_exports_and_plotting_inputs_match_exactly(self):
         repeated = report_run(self.worlds, self.branches, [self.worker], now=clock(400))
@@ -133,6 +173,18 @@ class ReportRunTests(unittest.TestCase):
         self.assertEqual((directory/"sentinel").read_text(), "original")
         with self.assertRaisesRegex(ValueError, "explicit zoned"):
             report_run(self.worlds, self.branches, [self.worker], now=None)
+
+    def test_absolute_quality_cost_axes_do_not_mix_in_paired_policy_differences(self):
+        from recovery.report import _quality_plot_rows
+        source = self.result["tables"]["uncertainty"]["policy_display_summaries"]
+        self.assertTrue(any(r["display"].startswith("boundary_rule-always_") for r in source))
+        plotted = _quality_plot_rows(source)
+        self.assertTrue(plotted)
+        self.assertFalse(any(r["display"].startswith("boundary_rule-always_") for r in plotted))
+        self.assertTrue(any(r["display"] == "boundary_rule" for r in plotted))
+        for row in plotted:
+            for field in ("cost_estimate", "complete_case_cost_estimate"):
+                self.assertTrue(row[field] is None or all(v >= 0 for v in row[field]))
 
     def test_missing_workers_stay_absent_and_cases_are_unavailable(self):
         missing = self.root/"missing.sqlite"
