@@ -64,3 +64,34 @@ conversion, tied-weight initialization, supported FP32 recurrent paths and
 per-call `DynamicCache`. Loading diagnostics and actual device/runtime behavior
 remain smoke gates. Backend, fixtures and allocation evidence are in progress.
 
+### Backend checkpoint
+
+The direct adapter and ordinary ledger evidence are implemented. The focused
+command `.venv/Scripts/python.exe -m unittest tests.test_inference_preparation tests.inference_checks -q`
+passes 25 checks in 6.175 seconds: maintained loader settings, language/tied-head
+diagnostics, no offload/splitting, exact suffix/terminal handling, valid cap-ending
+JSON, pre-generation request/overflow rejection, finite-score failure, fresh
+cache and CPU/CUDA seed assignment, failure cleanup, process ownership,
+two serial worker visibility, load/attempt evidence and exact reopened/backup
+reuse. A diagnosed nonfinite backend remains blocked with uncertain completion,
+with no retry or fabricated raw reply. Optional inference packages are absent
+from this CPU virtual environment; every generation is a labeled mock.
+
+The broader deterministic command adds `tests.durable_checks`,
+`tests.attempt_checks`, `tests.worker_checks`, `tests.accounting_checks` and
+passes all 97 checks in 391.026 seconds at the earlier 20-check adapter checkpoint.
+The final 25-check adapter run supersedes that adapter subset. Native 9B
+metadata-only `tests.tokenizer_inference` passes four checks in 0.137 seconds,
+covering all nine retained native suffix fixtures, actual template/request IDs,
+fresh generation defaults and empty independent hybrid caches.
+`tests.tokenizer_capacity` renews all eight checks and the unchanged complete
+target/fallback bounds, 261,388/259,868 including output reserve.
+
+The [candidate/allocation evidence](../../validation/m5-inference-preparation.md)
+records the proposed host, source review, exact template/EOS/PAD candidates,
+24-attempt smoke request matrix, unchanged pilot manifest, shared 8/2/2-hour
+reserves, two-device allocation convention, 120-second shutdown allowance,
+live/backup/off-host destinations and pending account/provider facts.
+Full current-source/core/installed regressions and final consistency review
+remain required before this task is done. No GPU or empirical gate is passed.
+

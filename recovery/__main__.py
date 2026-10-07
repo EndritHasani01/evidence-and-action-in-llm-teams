@@ -216,6 +216,7 @@ def main() -> int:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.worker_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.accounting_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.lifecycle_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.inference_checks"))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     return 0 if result.wasSuccessful() else 1
 

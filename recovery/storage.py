@@ -155,12 +155,15 @@ class WorkerStore:
                 ("termination_reason", "TEXT"), ("reason", "TEXT"),
                 ("recovered_at", "TEXT"), ("worker_pid", "INTEGER"),
                 ("peak_memory_bytes", "INTEGER"),
+                ("backend_json", "TEXT"),
             ):
                 if name not in columns:
                     self.connection.execute(f"ALTER TABLE attempts ADD COLUMN {name} {definition}")
             process_columns = {r[1] for r in self.connection.execute("PRAGMA table_info(provider_processes)")}
             if "device_visibility" not in process_columns:
                 self.connection.execute("ALTER TABLE provider_processes ADD COLUMN device_visibility TEXT")
+            if "backend_json" not in process_columns:
+                self.connection.execute("ALTER TABLE provider_processes ADD COLUMN backend_json TEXT")
 
     def close(self):
         self.connection.close()
@@ -360,8 +363,11 @@ class WorkerStore:
             return number
 
     def finish_attempt(self, call_id: str, response, elapsed_seconds: float, *, termination_reason=None,
-                       peak_memory_bytes=None):
+                       peak_memory_bytes=None, backend=None):
         elapsed_seconds = seconds(elapsed_seconds)
+        if backend is not None and type(backend) is not dict:
+            raise ValueError("backend evidence must be a JSON object or unavailable")
+        backend_json = None if backend is None else record_json(backend)
         if peak_memory_bytes is not None and (type(peak_memory_bytes) is not int or peak_memory_bytes < 0):
             raise ValueError("peak memory is measured nonnegative bytes or unavailable")
         if response is None:
@@ -381,10 +387,12 @@ class WorkerStore:
             self.connection.execute("UPDATE calls SET status=?,raw_json=?,failure_json=? WHERE call_id=?",
                                     (status, raw, failure, call_id))
             self.connection.execute("""UPDATE attempts SET status=?,finished_at=?,elapsed_seconds=?,
-                observed_seconds=?,termination_reason=?,reason=?,peak_memory_bytes=? WHERE call_id=? AND number=?""",
+                observed_seconds=?,termination_reason=?,reason=?,peak_memory_bytes=?,backend_json=?
+                WHERE call_id=? AND number=?""",
                 (status, utc_now(), elapsed_seconds, elapsed_seconds,
                  termination_reason or (response.termination if raw is not None else response.status),
-                 response.reason if failure is not None else None, peak_memory_bytes, call_id, attempt["number"]))
+                 response.reason if failure is not None else None, peak_memory_bytes, backend_json,
+                 call_id, attempt["number"]))
 
     def interrupt_attempt(self, call_id: str, reason: str, *, elapsed_seconds=None,
                           termination_reason="worker_interruption"):
@@ -454,10 +462,13 @@ class WorkerStore:
                 (call_id,number,pid,started_at,last_observed_at,device_visibility) VALUES (?,?,?,?,?,?)""",
                 (call_id, number, pid, now, now, os.environ.get("CUDA_VISIBLE_DEVICES")))
 
-    def process_ready(self, call_id: str, number: int):
+    def process_ready(self, call_id: str, number: int, *, backend=None):
+        if backend is not None and type(backend) is not dict:
+            raise ValueError("loading evidence must be a JSON object or unavailable")
         with self.connection:
-            self.connection.execute("UPDATE provider_processes SET ready_at=? WHERE call_id=? AND number=?",
-                                    (utc_now(), call_id, number))
+            self.connection.execute("""UPDATE provider_processes SET ready_at=?,backend_json=?
+                WHERE call_id=? AND number=?""",
+                (utc_now(), None if backend is None else record_json(backend), call_id, number))
 
     def observe_attempt(self, call_id: str, number: int, elapsed_seconds: float, pid: int):
         with self.connection:

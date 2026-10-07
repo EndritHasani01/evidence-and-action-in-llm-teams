@@ -713,6 +713,49 @@ peer metadata uses only `source_manifest(world.world)`. Evaluator truth/footprin
 remain separate. The retained [CPU fixtures](tests/fixtures/README.md#prepared-host-populations)
 are prepared inputs, not an accepted M5 freeze, pilot or empirical results.
 
+## M5 inference preparation
+
+The direct [inference adapter](recovery/inference.py) is prepared for CPU review
+and a separately authorized T4 smoke test. It uses the existing serial
+`ProcessProvider`/`LocalScheduler`, native Qwen text loading, explicit NF4/double
+quantization/FP16, fresh KV/recurrent state, saved seeds and strict raw decoding.
+Process/attempt diagnostics remain in the existing SQLite worker records.
+Candidates and the concrete proposed Kaggle allocation/storage/smoke matrix are
+in [M5 preparation evidence](docs/validation/m5-inference-preparation.md).
+The candidate environment is not a passing GPU lock or an accepted freeze.
+
+CPU checks, with no weights or GPU calls:
+
+```powershell
+.venv/Scripts/python.exe -m unittest tests.test_inference_preparation tests.inference_checks -q
+python -m tests.tokenizer_inference --tokenizer LOCAL_9B_METADATA
+python -m tests.tokenizer_capacity --tokenizer LOCAL_9B_METADATA
+```
+
+`LOCAL_9B_METADATA` is the directory containing the pinned tokenizer/config/template
+files. The native commands require the candidate Transformers stack; the mock
+checks run in the CPU virtual environment without torch. Candidate settings can
+be inspected from those metadata alone:
+
+```python
+from recovery.inference import TokenizerFactory, ModelFactory, candidate_settings
+
+tokenizer = TokenizerFactory(local_directory="LOCAL_9B_METADATA")()
+settings = candidate_settings(tokenizer)  # Includes the actual template string.
+factory = ModelFactory(cuda_visible_devices="0")  # Construction does not load.
+# Calling factory() loads weights/CUDA and requires separate authorization.
+```
+
+For later authorized execution, pass the model factory to the existing
+`ProcessProvider`, or one matching factory/device visibility per `WorkerSpec`.
+Use an importable guarded script under spawn. Keep the five existing development
+worlds and saved schedule; the first 90 capability slots precede recovery work.
+Raw generated IDs stay in `calls.raw_json`; `attempts.backend_json` also retains
+the exact generated suffix including transport, and the original process stores
+its loading inventory/configuration. Read-only old archives remain usable.
+M5-T02 must still pass actual loading, finite-output, worst-context memory,
+cache/RNG and host persistence checks within <=24 attempts/0.5 aggregate GPU-hour.
+
 ## Complete CPU schedules
 
 Enumerate and save every opportunity from an existing population without resampling:
