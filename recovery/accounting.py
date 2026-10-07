@@ -12,21 +12,13 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 
+from .costs import (FINAL, OVERHEAD_RULE, timestamp, _attempt_range, _allocation_resources, ledger_generation_costs,
+                    ledger_policy_costs, physical_costs)
 from .rounds import deserialize_state
 from .runner import WorkerReader, DurableRunner
 from .schedule import dependency_order
 from .storage import record_json, seconds, settings_json, utc_now, WorkerStore
 from .workers import scheduled_work
-
-
-FINAL = {"completed", "timeout", "infrastructure_failure", "replay"}
-
-
-def timestamp(value):
-    result = datetime.fromisoformat(value)
-    if result.tzinfo is None:
-        raise ValueError("resource clocks require an explicit timezone")
-    return result.timestamp()
 
 
 @dataclass(frozen=True)
@@ -61,99 +53,6 @@ class BudgetStop(RuntimeError):
 
 class _SnapshotChanged(ValueError):
     """A dependent worker committed after its parent's read snapshot opened."""
-
-
-def _attempt_range(attempt, now):
-    measured = attempt["elapsed_seconds"]
-    low = measured if measured is not None else attempt.get("observed_seconds", 0)
-    uncertain = measured is None or bool(attempt["uncertain_completion"])
-    if measured is None:
-        end = attempt.get("recovered_at") or now
-        high = max(low, timestamp(end) - timestamp(attempt["started_at"]))
-    else:
-        high = low
-    return low, high, uncertain
-
-
-def _union_length(intervals, start, end):
-    spans = sorted((max(start, a), min(end, b)) for a, b in intervals if b > start and a < end)
-    total, cursor = 0.0, start
-    for a, b in spans:
-        total += max(0, b - max(a, cursor))
-        cursor = max(cursor, b)
-    return total
-
-
-def _allocation_resources(allocations, attempts, processes, now, budget):
-    """Partition allocation once: setup, interruptions, attempts, idle.
-
-    Loading wins over attempt time, so it cannot also be added as setup. Known
-    attempt intervals use their recorded wall clocks; potential unobserved work
-    is separate. All uncovered time is still charged, including idle devices.
-    """
-    clock = timestamp(now)
-    totals = Counter()
-    reserve_used = Counter()
-    devices, active, billing, reasons = [], [], [], []
-    windows = defaultdict(list)
-    for allocation in allocations:
-        start = timestamp(allocation["started_at"])
-        end = timestamp(allocation["stopped_at"]) if allocation["stopped_at"] else clock
-        if end < start:
-            raise ValueError("allocation ends before it starts")
-        device = allocation["device"]
-        for a, b in windows[device]:
-            if min(end, b) > max(start, a):
-                raise ValueError("overlapping allocations charge the same device twice")
-        windows[device].append((start, end))
-        worker = allocation["worker"]
-        spans = defaultdict(list)
-        for process in processes:
-            if process["worker"] != worker:
-                continue
-            a = timestamp(process["started_at"])
-            b = timestamp(process["ready_at"] or process["stopped_at"] or process["recovered_at"] or now)
-            spans["setup" if process["ready_at"] else "uncertain_work"].append((a, b))
-        for attempt in attempts:
-            if attempt["worker"] != worker:
-                continue
-            a = timestamp(attempt["started_at"])
-            observed = a + attempt.get("observed_seconds", 0)
-            b = timestamp(attempt["finished_at"]) if attempt["finished_at"] else observed
-            category = "interruption" if attempt["status"] in ("interrupted", "blocked") else "attempt"
-            spans[category].append((a, b))
-            if attempt["finished_at"] is None:
-                spans["uncertain_work"].append((observed, timestamp(attempt.get("recovered_at") or now)))
-        # Subtract the union of higher-priority spans, rather than adding overlap.
-        used, partition = [], {}
-        for category in ("setup", "interruption", "attempt", "uncertain_work"):
-            before = _union_length(used, start, end)
-            used.extend(spans[category])
-            partition[category] = _union_length(used, start, end) - before
-        partition["idle"] = max(0, end - start - sum(partition.values()))
-        for k, v in partition.items():
-            totals[k] += v
-        reserve_used["setup"] += partition["setup"]
-        reserve_used["interruption"] += partition["interruption"] + partition["uncertain_work"]
-        if allocation["stage"] == "development":
-            reserve_used["development"] += partition["attempt"] + partition["idle"]
-        devices.append(dict(allocation, allocated_seconds=end - start, partition_seconds=partition))
-        if not allocation["stopped_at"]:
-            active.append(device)
-        if allocation["billing_json"]:
-            billing.append({"device": device, "record": json.loads(allocation["billing_json"])})
-        if allocation["stop_reason"]:
-            reasons.append(allocation["stop_reason"])
-    reserves = None
-    if budget is not None:
-        reserves = {name: max(0, getattr(budget, name + "_reserve_gpu_hours") - reserve_used[name] / 3600)
-                    for name in ("development", "setup", "interruption")}
-    allocated = sum(totals.values()) / 3600 if allocations else None
-    return {"allocation_mode": budget.allocation_mode if budget else "unclassified",
-            "allocated_gpu_hours": allocated, "partition_seconds": dict(totals),
-            "devices": devices, "active_devices": active, "provider_billing": billing,
-            "remaining_ceiling_gpu_hours": None if budget is None else budget.ceiling_gpu_hours - (allocated or 0),
-            "remaining_reserves_gpu_hours": reserves, "stop_reasons": sorted(set(reasons))}
 
 
 def _forecast(branches, calls, generations, devices, budget, history=()):
@@ -356,50 +255,20 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 raise ValueError("allocation budget bindings differ")
             if configurations:
                 budget = Budget(**json.loads(configurations.pop()))
-        by_attempt = defaultdict(list)
         for attempt in attempts:
             attempt["device"] = next((a["device"] for a in reversed(allocations)
                 if a["worker"] == attempt["worker"] and timestamp(a["started_at"]) <= timestamp(attempt["started_at"])
                 <= timestamp(a["stopped_at"] or now)), f"worker:{attempt['worker']}")
-            by_attempt[attempt["call_id"]].append(attempt)
-        generation_costs = {}
-        for call_id, (branch, call) in scheduled.items():
-            row = records.get(call_id)
-            if row is not None and tuple(row[k] for k in ("seed", "generation_id", "replay_parent", "round_number", "peer")) != (
-                    call.seed, call.generation_id, call.replay_parent, call.round_number, -1 if call.peer is None else call.peer):
-                raise ValueError("saved slot seed/scope/parent differs")
-            if row is not None and (row["status"] == "completed" and row["raw_json"] is None
-                    or row["status"] in ("timeout", "infrastructure_failure") and row["failure_json"] is None):
-                raise ValueError("finished slot lacks its exact raw outcome")
-            if call.replay_parent is not None:
-                if by_attempt[call_id]:
-                    raise ValueError("replay has physical attempts")
-                continue
-            request_tokens = row.get("request_tokens") if row else None
-            if row is not None and request_tokens is None:
-                # Read-only compatibility with a pre-T04 backup. The normal
-                # migrated path uses the existing call ledger's scalar count.
+        # Read-only compatibility with pre-T04 backups. Ordinary migrated
+        # calls already carry the scalar request count.
+        for row in records.values():
+            if row.get("request_tokens") is None:
                 reader = dict(readers)[row["worker"]]
-                request_tokens = reader.store.connection.execute("""SELECT json_array_length(requests_json,?)
+                row["request_tokens"] = reader.store.connection.execute("""SELECT json_array_length(requests_json,?)
                     FROM round_inputs WHERE branch_id=? AND round_number=?""",
-                    ("$.tokenized.input_ids" if call.peer is None else f"$.tokenized[{call.peer}].input_ids",
-                     branch.branch_id, call.round_number)).fetchone()[0]
-            measured = by_attempt[call_id]
-            ranges = [_attempt_range(a, now) for a in measured]
-            device = measured[-1]["device"] if measured else "unassigned"
-            raw = json.loads(row["raw_json"]) if row and row["raw_json"] else None
-            memory = [a.get("peak_memory_bytes") for a in measured if a.get("peak_memory_bytes") is not None]
-            generation_costs[call_id] = {"generation_id": call_id, "device": device, "attempts": len(measured),
-                "seconds": [sum(r[0] for r in ranges), sum(r[1] for r in ranges)],
-                "uncertain_attempts": sum(r[2] for r in ranges),
-                "unknown_duration_attempts": sum(a["elapsed_seconds"] is None for a in measured),
-                "request_tokens": request_tokens, "physical_request_tokens": (request_tokens or 0) * len(measured),
-                "output_tokens": len(raw["token_ids"]) if raw else None,
-                "unknown_output_attempts": len(measured) - int(raw is not None),
-                "peak_memory_bytes": max(memory) if memory else None}
-            generation_costs[call_id]["by_device_seconds"] = {
-                d: [sum(_attempt_range(a, now)[i] for a in measured if a["device"] == d) for i in (0, 1)]
-                for d in sorted({a["device"] for a in measured})}
+                    ("$.tokenized.input_ids" if row["peer"] == -1 else f"$.tokenized[{row['peer']}].input_ids",
+                     row["branch_id"], row["round_number"])).fetchone()[0]
+        generation_costs = ledger_generation_costs(branches, records, attempts, now)
         logical = []
         for branch in branches:
             for call in branch.calls:
@@ -438,24 +307,7 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
             if any(not records.get(c.call_id) or records[c.call_id]["status"] not in FINAL
                    or not records[c.call_id]["validation_json"] for c in branch.calls if c.round_number <= r):
                 raise ValueError("committed checkpoint has missing raw/validation records")
-        policy_costs = []
-        by_branch = {b.branch_id: b for b in branches}
-        for branch in branches:
-            used = tuple(branch.calls)
-            if branch.prefix_parent:
-                used = by_branch[branch.prefix_parent].calls + used
-            costs = [generation_costs[c.generation_id] for c in used]
-            policy_costs.append({"branch_id": branch.branch_id, "family": branch.task.value, "event": branch.event,
-                "policy": branch.policy, "replicate": branch.replicate, "logical_calls": len(used),
-                "finished_calls": sum(c.call_id in records and records[c.call_id]["status"] in FINAL for c in used),
-                "seconds": [sum(c["seconds"][i] for c in costs) for i in (0, 1)],
-                "unknown_calls": sum(c.call_id not in records or records[c.call_id]["status"] not in FINAL for c in used),
-                "request_tokens": sum(c["physical_request_tokens"] for c in costs),
-                "logical_request_tokens": sum(c["request_tokens"] or 0 for c in costs),
-                "output_tokens": sum(c["output_tokens"] or 0 for c in costs),
-                "unknown_request_calls": sum(c["request_tokens"] is None for c in costs),
-                "unknown_output_attempt_uses": sum(c["unknown_output_attempts"] for c in costs),
-                "uncertain_attempt_uses": sum(c["uncertain_attempts"] for c in costs)})
+        policy_costs = ledger_policy_costs(branches, records, generation_costs)
         resources = _allocation_resources(allocations, attempts, processes, now, budget)
         if history:
             all_devices = resources["devices"] + [a for h in history for a in h["resources"]["devices"]]
@@ -533,14 +385,7 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 "completed_worlds": sum(all(completed.get(b.branch_id) == (1 if b.phase == "control" else 4)
                                             for b in branches if b.world_id == w.world_id) for w in worlds)},
             "logical_slots": logical, "generations": list(generation_costs.values()), "policy_costs": policy_costs,
-            "physical": {"attempt_seconds": [sum(c["seconds"][i] for c in generation_costs.values()) for i in (0, 1)],
-                "request_tokens": sum(c["physical_request_tokens"] for c in generation_costs.values()),
-                "output_tokens": sum(c["output_tokens"] or 0 for c in generation_costs.values()),
-                "unknown_output_attempts": sum(c["unknown_output_attempts"] for c in generation_costs.values()),
-                "by_device_seconds": {d: [sum(_attempt_range(a, now)[i] for a in attempts if a["device"] == d)
-                                           for i in (0, 1)] for d in sorted({a["device"] for a in attempts})},
-                "peak_memory_bytes": max((c["peak_memory_bytes"] for c in generation_costs.values()
-                                          if c["peak_memory_bytes"] is not None), default=None)},
+            "physical": physical_costs(generation_costs, attempts, now),
             "validated_deliveries": list(deliveries.values()),
             "delivery_counts": {"source_attempts": sum(d["source"] is not None for d in deliveries.values()),
                                 "source_acquisitions": sum(d["acquired"] is True for d in deliveries.values()),
@@ -549,7 +394,7 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
             "work": work, "matched_comparisons": _comparisons(worlds, branches, completed),
             "resources": resources, "forecast": forecast,
             "prior_runs": [{"counts": h["counts"], "physical": h["physical"]} for h in history],
-            "overhead_rule": "original measured attempt costs include in-attempt loading/transport/termination; outside allocation overhead remains experiment overhead; allocation partition is not added to attempts"}
+            "overhead_rule": OVERHEAD_RULE}
     except _SnapshotChanged:
         if not _read_retries:
             raise

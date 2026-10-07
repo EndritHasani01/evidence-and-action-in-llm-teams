@@ -32,9 +32,42 @@ controller kills preserve exact resumed states/deliveries, cleared fields,
 held prose and bounded retries. The fourteen-case
 [ordinary scripted bundle](tests/fixtures/scripted_lifecycle_run.zip) reproduces
 4,340 logical slots and 384 exact replay uses, with offline reconstruction and
-reopened backups. M4-T01 is ready; the full M4 analysis/report gate remains
-mandatory before GPU use. Qwen3.5/T4 pilot and main experiments remain future
-work. See
+reopened backups. **M4-T01 is implemented and verified:** exact offline outcomes,
+coordinate repair/preservation, trajectories and observable annotations reproduce
+sixteen retained table cases. The complete regression passes 278 checks, final
+core passes 108 and installed-library evaluation passes 27. **M4-T02 is implemented
+and verified:** all prespecified contrasts, fixed/equal-family denominators,
+unknown components and separate conditional repeats reconstruct from original
+workers. The complete CPU regression passes 306 checks; core and installed
+analysis checks pass 134 and 54. Four retained contrast-table cases reproduce,
+including the full unknown main populations. **M4-T03 is implemented and
+verified:** information inventories, conservative source associations, receipt
+timing and deterministic work references reproduce six retained cases and 200
+native history counts. The complete integrated CPU regression passes 334
+checks; final core checks pass 160 with two optional skips, and installed-library
+verification passes 81. **M4-T04 is implemented and verified:** original measured
+costs and the frozen C/K coverage rule reproduce sixteen retained cases, with
+whole-branch costs, unknown selected branches and fixed denominators. Complete
+CPU regression passes 362 checks; final review passes 191 core checks (188
+passed, three optional skips) and 110 installed-library checks. **M4-T05 is
+implemented and verified:** paired world intervals, shared-response missingness,
+completion bounds and paired whole-policy displays reproduce sixteen retained
+cases. Complete CPU regression passes 396 checks; final focused checks pass 33,
+core checks run 225 (221 passed, four optional skips), and installed-library M4
+checks pass 144. **M4-T06 is implemented and verified; M4's CPU gate passes.**
+Seven grouped exhibits, exact cases and five portable complete/incomplete/stopped
+reports are retained. Full source regression passes all 424 checks, including
+all nine lifecycle checks. Focused/core/installed checks pass 25/252 (244 passed,
+eight optional skips)/166. All sixteen original-worker scopes reproduce twice
+with identical tables, cases, plotting inputs and export bytes. **M5-T01 is ready
+for CPU preparation.** Qwen3.5/T4 hardware, capability, resource admission,
+pilot and main experiments remain future work. See
+[M4-T06 completion evidence](docs/todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate),
+[M4-T05 completion evidence](docs/todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff),
+[M4-T04 completion evidence](docs/todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff),
+[M4-T03 completion evidence](docs/todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff),
+[M4-T02 completion evidence](docs/todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff),
+[M4-T01 completion evidence](docs/todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff),
 [M3-T05 gate evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate),
 [M3-T04 evidence](docs/todos/M3/M3-T04-accounting-progress-and-budget.md#validation-and-evidence),
 [M3-T03 evidence](docs/todos/M3/M3-T03-local-worker-scheduling.md#validation-and-evidence),
@@ -289,6 +322,314 @@ remain available for unknown-slot coverage. The offline preview demonstrates
 data availability and exact scoring/footprints; M4 owns the complete analyses
 and report. See [fixture reproduction](tests/fixtures/README.md#crash-safe-scripted-lifecycle-run-bundle)
 and [M3-T05 evidence](docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence).
+
+## Offline exact outcomes and trajectories
+
+[evaluate.py](recovery/evaluate.py) reads the full saved schedule and original
+call/attempt/pre-delivery records without importing the runner or model stack.
+Recorded invalid/failed replies score zero; unexecuted opportunities remain
+unknown. Exact answers preserve list order/multiplicity and every BFS node key.
+Coordinate diagnostics use the same peer's valid prefix-round-four candidate
+for preservation eligibility, with empty/unknown denominators explicit.
+World/family summaries average eligible peers, then worlds, then equal families.
+All four rounds remain present for AUC, joint completion, trajectory categories,
+regression, fragmentation and six overlapping observable annotations.
+
+```powershell
+python -S -m recovery analyze --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 --output outcomes.json.gz
+python -S -m tests.outcome_archive
+```
+
+`analyze` exclusively creates a derived JSON (or `.json.gz`) export containing
+`outcomes`, `coordinates`, `peer_diagnostics`, `diagnostic_summaries`, `rounds`,
+`trajectories`, `annotations`, `annotation_counts` and original `attempts`.
+Each outcome retains its world/event/policy/replicate/round/peer and original
+generation/replay/prefix joins. Supply each accepted worker once; duplicate
+backups are rejected and missing files are never created. Use `--stage development`
+for the saved pilot schedule or `--count 40` for the nested main population.
+No scoring is fed into execution or stopping decisions.
+
+```python
+from recovery.evaluate import evaluate_run, write_evaluation
+
+tables = evaluate_run(worlds, branches, worker_paths)  # Full intended schedule.
+write_evaluation("outcomes.json.gz", tables)          # Existing files protected.
+```
+
+The [retained table fixture](tests/fixtures/README.md#exact-offline-outcomes-and-trajectories)
+reproduces sixteen offline cases from the M3 bundle, including full population
+joins and the stopped unknown slots. Scripted outcomes are validation evidence.
+Information/work inventories, policy costs and uncertainty/missingness are
+described below. The completed [M4 CPU audit](docs/validation/m4-cpu-gate.md)
+records the report gate and remaining M5 requirements.
+
+## Offline contrasts and conditional repeats
+
+[analysis.py](recovery/analysis.py) adds every prespecified contrast to the
+full offline outcome join. Use the saved complete schedule and original workers:
+
+```powershell
+python -S -m recovery analyze --estimands --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 --output analysis.json.gz
+python -S -m tests.estimand_archive
+```
+
+The additional `estimands` block contains fixed `populations`, `world_contrasts`,
+equal-family `summaries`, separate `repeat_contrasts`/`repeatability`,
+`trajectory_changes` and observed/unknown `prose_activity`. θ uses revised minus
+sham C−B AUC; φ is `E_keep(revision)` over the same retained peers in rounds 2–4.
+Round one remains a construction reference. Receipt comparisons use Prefix/Sort;
+Q uses Sort/BFS; preserving edits use the original first eight Top-K/BFS worlds.
+All named secondary effects and accuracy/final/preservation companions are included.
+
+Each world row exposes its formula, coefficients, endpoint, eligible peers/rounds,
+original prefix/call/generation IDs, exact numerator/denominator and unknown
+components. `endpoint=preservation, round=null` is the four-round mean of eligible
+peer preservation rates; `round=4` is final preservation. Structural empty
+denominators are N/A; unknown prefix eligibility remains unknown. Intended
+population estimates require all eligible components. A separately labeled
+`complete_case_description` includes its own world/family denominators.
+
+Replicate zero supplies population estimates. The ten fixed repeated worlds retain
+their original prefix/partition and new continuation seeds. Repeat tables separate
+zero-effect ties, strict sign reversals and changes in complete trajectory categories;
+they assess conditional stability and supply no receipt/Q or new-prefix repeatability.
+Q activity never selects worlds: inactive and unobserved treatments stay included.
+These tables supply the original components/identities used by the uncertainty
+and missingness workflow below.
+
+```python
+from recovery.analysis import analyze_run
+from recovery.evaluate import write_evaluation
+
+tables = analyze_run(worlds, branches, worker_paths)
+write_evaluation("analysis.json.gz", tables)  # Exclusive derived export.
+```
+
+The [retained contrast tables](tests/fixtures/README.md#prespecified-estimates-and-conditional-repeatability)
+reconstruct directly from the original scripted lifecycle workers at both sizes,
+including all unknown worlds in the full main manifests. These are CPU validation
+artifacts; M4's complete analysis/report gate passes on CPU.
+
+## Offline information and retained work
+
+[information.py](recovery/information.py) adds the §7.2 inventories and CPU
+references to the original outcome export:
+
+```powershell
+.venv/Scripts/python.exe -m recovery analyze --diagnostics --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 --output information.json.gz
+.venv/Scripts/python.exe -m tests.information_archive
+```
+
+Combine `--diagnostics --estimands` to export both. The `information` block
+contains all four prefix rounds' old-gold correctness, source coverage and
+history/communication measurements; actual rendered owner-v1 exposure; L/B
+receipt timing with origins and censoring; C/F initial remote evidence and
+unique acquisitions versus repeated delivery attempts; source-bound receipt
+annotations, offline correctness strata, transport references and edit descriptors.
+The [rubric](docs/implementation-research/information-diagnostics.md) defines
+conservative associations and assumptions. Cleared candidates cannot supply
+receipt reconstruction. Wrong retained candidates remain literal, and missing
+last candidates never inherit an earlier answer.
+
+Committed checkpoints establish final-round acquisitions. Their public decoder
+requires the declared CPU dependencies, while the pure functions and missing-worker
+exports work with site packages disabled. Reads share the worker's application
+snapshot and invoke neither the saver nor the runner. Unobserved final delivery
+remains unknown. Existing exports and original worker files stay protected.
+
+For exact history-content token counts, supply `--tokenizer <local-metadata-directory>`
+in a tokenizer-enabled environment. It loads only local CPU metadata and requires
+exact reproduction of saved input IDs. Without it, nonempty history counts are
+unavailable; saved request-token counts remain visible. Content counts sum
+independently encoded retained items and exclude layout headers; they are not
+marginal prompt cost or GPU time. The [native fixture](tests/fixtures/information_tokens.json)
+checks both sizes and all five families.
+
+```python
+from recovery.information import information_run
+from recovery.evaluate import write_evaluation
+
+tables = information_run(worlds, branches, worker_paths, estimands=True)
+write_evaluation("information.json.gz", tables)
+```
+
+The [six retained cases](tests/fixtures/README.md#information-inventories-and-retained-work)
+include complete fixtures, full unknown main populations and a stopped prefix.
+The atlas witnesses establish sufficiency/ambiguity for named CPU views; none
+is a model finding, live intervention or source of correctness feedback.
+
+## Offline policy costs and the boundary rule
+
+`recovery analyze --costs` reads the existing call/attempt, allocation and
+checkpoint records. Add `--estimands` and/or `--diagnostics` for the other M4
+tables in the same read snapshots. `--as-of` supplies an explicit zoned clock
+for reproducible accounting bounds on interrupted/open work; it does not filter
+the saved records to a historical run. Missing workers remain unknown and
+exports exclusively create new JSON/JSON.gz files.
+
+```powershell
+python -m recovery analyze --costs --estimands --diagnostics `
+  --manifest tests/fixtures/population_target.json `
+  --schedule tests/fixtures/schedules_target.json --stage main --count 60 `
+  --worker worker-0.sqlite --worker worker-1.sqlite `
+  --as-of 2026-10-06T00:00:00+00:00 --output policy-costs.json.gz
+```
+
+The [cost implementation](recovery/costs.py) shares M3's original arithmetic
+with live status. Physical generations/attempts and allocated device time are
+charged once. Each hypothetical continuation includes its original sixteen-call
+prefix and all sixteen continuation calls, including F's abandoned prefix and
+original measured costs for replay. Unknown scheduled calls make the complete
+policy cost unavailable. Measured token/duration subtotals, missing output/memory
+measurements, failures and ambiguous attempts remain explicit. Allocation
+setup/interruption/attempt/idle partitions reconcile separately; outside overhead
+stays experiment overhead and is never added again to each policy. Provider
+billing is separate from allocation time.
+
+The frozen rule chooses C exactly when every peer initially holds all current
+ID/version pairs, including known tombstones and excluding pending replacements;
+otherwise it chooses K. Only recorded first-call input or a committed pre-call
+boundary can supply coverage. Later sources, gold, candidates and branch
+availability cannot change the choice. Incomplete/unscheduled selected branches
+remain unavailable. Whole-branch comparisons with always B/C/K retain common
+world/prefix/generation IDs and preservation denominators. Selection tables state
+when the rule is constant and retain unknown boundaries in their population.
+
+`retained_evidence`, `quality_preservation`, and measured `policy_costs` are
+separate views. Retained remote-record counts exclude the host-injected edited
+record; current-manifest completeness still includes it. `strategy_worlds` and `paired_comparisons` supply paired plotting
+and uncertainty inputs; shared generation costs cancel before forming duration
+differences. Oracle-recognized stable-completion cost is explicitly retrospective:
+the fixed schedule still runs all calls. No utility or accuracy-per-message score
+is calculated.
+
+```python
+from recovery.costs import costs_run
+from recovery.evaluate import write_evaluation
+
+tables = costs_run(worlds, branches, worker_paths, now="2026-10-06T00:00:00+00:00")
+write_evaluation("policy-costs.json.gz", tables)
+```
+
+The [sixteen retained cases](tests/fixtures/README.md#policy-costs-and-frozen-boundary-rule)
+reconcile with M3 and preserve full main/stopped unknowns. Pure record analysis
+runs without runtime/model dependencies; decoding real committed checkpoints
+requires the declared CPU serializer. This is CPU validation, not GPU timing or
+empirical policy evidence. The [M4 CPU audit](docs/validation/m4-cpu-gate.md)
+passes; actual GPU timing/resource admission remains M5 work.
+
+## Offline uncertainty and missingness
+
+[uncertainty.py](recovery/uncertainty.py) derives paired intervals, frozen-population
+sensitivity and completion coverage from the same original worker snapshots.
+`--uncertainty` includes estimands and costs; diagnostics remain optional:
+
+```powershell
+python -S -m recovery analyze --uncertainty --resampling-seed 20261006 --as-of 2026-10-06T00:00:00+00:00 --manifest population.json --schedule schedules.json --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 --output uncertainty.json.gz
+.venv/Scripts/python.exe -m tests.uncertainty_archive
+```
+
+Exactly 10,000 world draws within each eligible family use sorted world IDs,
+saved nonnegative family seeds, equal-family means and explicit linear type-7 quantiles.
+The two pooled primaries use 1.25/98.75 percentiles; family descriptions and
+secondaries use 2.5/97.5. Matching family/world cohorts reuse the same draws
+across events, policies, endpoints and overlapping displays. Repeats remain
+conditional comparisons of the same worlds and never increase independent N.
+Within-family constants also receive the specified weighted Hoeffding companion,
+with the formula's actual range. Family final-completion counts include exact
+two-sided binomial bounds; incomplete-population and complete-case bounds are
+separate. Approximate bootstrap coverage is not exact small-sample coverage.
+
+The `uncertainty` block contains `settings`, `populations`, `world_bounds`,
+`summaries`, `world_trajectories`, `family_completion`, `trajectory_summaries`,
+`policy_world_displays`, `policy_display_summaries` and `reporting_references`.
+World contrasts and family means remain in `estimands`. Recorded failures stay
+zero; unknown logical uses stay unexecuted even if their recorded originals
+constrain sensitivity. Shared response coefficients cancel before extrema.
+Small nonlinear completions are enumerated; larger expressions retain shared
+variables and conservative labels. Unknown prefix eligibility may leave
+preservation undefined. Empty eligible populations are N/A.
+
+Intended-population intervals require the full eligible outcome cohort;
+`complete_case_description` never replaces it. Incomplete trajectory categories
+and counts remain explicit, with no invented completion time. Policy quality
+and its cost axis share a cohort and draws; preservation's `paired_cost` uses
+its own eligible worlds. Ambiguous observed durations have percentile envelopes;
+unmeasured future policy costs have explicitly unbounded ends. The 0.10 and
+normal-approximation power/fallback references are reporting context, not
+equivalence margins or achieved-power claims.
+
+```python
+from recovery.uncertainty import uncertainty_run
+from recovery.evaluate import write_evaluation
+
+tables = uncertainty_run(worlds, branches, worker_paths,
+    seed=20261006, now="2026-10-06T00:00:00+00:00")
+write_evaluation("uncertainty.json.gz", tables)  # Exclusive derived export.
+```
+
+[Retained uncertainty evidence](tests/fixtures/README.md#paired-uncertainty-and-shared-response-missingness)
+reconstructs sixteen original-worker scopes, including both complete fixtures,
+full main manifests and stopped work. Scripted values validate analysis; they
+are not model findings. M4-T06's complete report gate passes on CPU; actual
+hardware/capability/resource admission remains M5 work.
+
+## Reproducible offline reports
+
+[report.py](recovery/report.py) assembles seven explicit exhibits from one
+read-only snapshot of the supplied authoritative workers. `--report` includes
+all outcomes, contrasts, diagnostics, costs and uncertainty without separate
+flags. An explicit zoned accounting clock is required; the output directory
+must be new. Every current report and figure is labeled **synthetic CPU
+validation**, with no model capability or empirical claim.
+
+```powershell
+python -m recovery analyze --manifest population.json --schedule schedules.json `
+  --worker worker-0.sqlite --worker worker-1.sqlite --stage main --count 60 `
+  --report --as-of '2026-10-06T00:00:00+00:00' --resampling-seed 20261006 `
+  --output report-new
+```
+
+Open `report-new/report.html` locally. It links seven exhibits, exact case cards,
+literal call/message traces, all scientific tables (`tables.json.gz`), original
+input selection (`inputs.json.gz`), provenance/settings (`report.json`), saved
+plotting inputs (`plotting.json`) and world/interval CSVs. Unknown slots and
+empty eligible populations remain unavailable; invalid/failed recorded slots
+keep their original outcomes. Non-scalar raw text uses reversible JSON string
+notation in HTML and remains unchanged in the trace JSON.
+
+Case medians use exact rational effects and immutable world IDs. They require
+every scheduled slot in the supplied world scope recorded, including failures,
+controls and scheduled repeats; selecting contrasts use replicate zero.
+Duplicate worlds merge their reasons, missing signs remain explicit, and
+all-zero regression/smallest-ID fallbacks are fixed. Case eligibility never
+changes an estimand population. The case/annotation rules, source-association
+assumptions, 10,000-draw settings and original generation settings are exported
+for the later M5 freeze.
+
+Data export imports no inference, execution or plotting module. Matplotlib is
+an optional extra, needed only to render figures. Saved plotting inputs suffice;
+rendering reads no workers and performs no analysis resampling.
+
+```powershell
+python -m pip install '.[report]'
+python -m recovery.figures --report report-new
+# Or add --figures to the original analyze --report command.
+```
+
+Rendering exclusively creates `figures/` with seven SVG/PNG pairs and a small
+plotting-environment record, then links them from the HTML. That record is
+separate from the accepted inference freeze. Existing reports/figure directories
+are protected. Prefix-policy computation, actual allocation and billing remain
+separate; CPU attempt durations do not measure GPU runtime penalties. Paired
+policy differences remain in the supporting tables and use their own axes;
+the quality/cost figure shows absolute whole-policy endpoints.
+
+[Retained report evidence](tests/fixtures/README.md#reproducible-synthetic-reports)
+includes sixteen repeated original-worker scopes and five portable complete,
+incomplete and stopped reports with all exhibits. The
+[coverage/category audit](docs/validation/m4-cpu-gate.md) records named CPU
+evidence and the remaining hardware, capability, host and resource gates.
 
 ## Protocol attainability and capacity
 

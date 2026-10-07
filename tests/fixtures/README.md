@@ -639,3 +639,345 @@ full schedules and reopens every accepted SQLite file. No weights, GPU, pilot or
 main inference is used. See [M3-T05](../../docs/todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#validation-and-evidence)
 for gate evidence and the Windows CPU environment; M4 remains mandatory before
 GPU use, and the eventual accepted host must repeat persistence checks in M5.
+
+## Exact offline outcomes and trajectories
+
+[exact_outcome_tables.json.gz](exact_outcome_tables.json.gz) contains derived
+M4-T01 validation tables from the authoritative manifests and accepted workers
+in [scripted_lifecycle_run.zip](scripted_lifecycle_run.zip). The original bundle
+is unchanged. These are scripted CPU outcomes, not model capability, a pilot,
+empirical findings or an accepted freeze. [outcome_archive.py](../outcome_archive.py)
+reads only ordinary JSON/application SQLite records; it imports no runner,
+checkpoint library, tokenizer or inference stack.
+
+Sixteen table cases cover the thirteen accepted worker selections, the stopped
+budget selection, and full target-60/fallback-40 main manifests. Backups,
+interrupted originals and baselines are never combined with accepted workers.
+Each complete five-world fixture has 2,170 recorded slots, 1,978 original
+physical attempts and 192 exact replay uses. The full joins retain all 17,656 /
+12,560 slots, including 15,486 / 10,390 unknowns outside recorded work. The
+stopped snapshot keeps sixteen unknown slots and its uncertain attempt.
+
+Each case contains these tidy JSON tables:
+
+- `outcomes`: exact whole-candidate correctness, execution/protocol status,
+  original call/generation/replay/attempt joins, prefix-round-four context and
+  usable v2 delivery IDs. BFS's saved canonical key/value pairs are decoded
+  before comparison with the full node dictionary; lists retain order and duplicates.
+- `coordinates`, `peer_diagnostics`: unique D/U coordinates and per-peer
+  changed accuracy, explicit old-gold persistence, other valid errors,
+  malformed/missing changed outputs, preservation, collateral damage and repair
+  of old U errors. Eligibility uses that peer's valid final-prefix candidate;
+  unknown eligibility and empty denominators have explicit reasons.
+- `diagnostic_summaries`: eligible peer means, then world means, then equal
+  eligible family means, with unique-coordinate/peer-copy counts. Unknown
+  eligible outcomes keep the summary unknown. Grouping preserves event, policy,
+  round and replicate; replicate zero remains primary.
+- `rounds`, `trajectories`: all four rounds, AUC over sixteen opportunities,
+  final joint correctness, first/stable joint times, regression, individual/joint
+  ever-correct indicators, fragmentation and the four complete categories.
+  Incomplete branches stay separate. Identical wrong agreement is N/A for
+  differently assigned Prefix/Sort segments.
+- `annotations`, `annotation_counts`: six nonexclusive observable labels,
+  original input/outcome/prefix/delivery provenance, applicable/observed/unknown
+  counts, inclusive pair intersections and exact overlap patterns (including
+  unknown/N/A labels). Their unit is a scheduled peer-round, not an independent
+  world or a partition of psychological causes.
+- `attempts`: the original physical attempt rows, including uncertain work;
+  replay never introduces another physical attempt or copied raw reply.
+
+[Hand-checked tests](../test_evaluate.py) include duplicate-sensitive answers,
+complete BFS dictionaries, valid/invalid/failed/unknown outcomes, empty D/U and
+old-prefix eligibility, collateral damage versus old-error repair, all trajectory
+categories and fragmentation. A rate fixture gives world means 1/2 and 0 in one
+family, and 1 in a second: the equal-family mean is 5/8, with 31 unique eligible
+coordinates and 32 peer copies. It must not become a pooled-coordinate ratio.
+[Archive checks](../test_outcome_archive.py) reproduce every retained table and
+verify full population coverage, original attempts and stopped unknowns.
+
+```powershell
+python -S -m unittest tests.test_evaluate -v
+$env:PYTHONHASHSEED = '37'
+python -S -m tests.outcome_archive
+```
+
+The latter compares every table with the retained export. `--write-fixture
+<new_tables.json.gz>` exclusively creates another derived export; ordinary
+reproduction preserves the fixture. The public `recovery analyze` command and
+API are documented in [README](../../README.md#offline-exact-outcomes-and-trajectories).
+Information/work inventories, cost analysis, uncertainty/missingness bounds and
+the full reproducible report remain later M4 tasks.
+
+## Prespecified estimates and conditional repeatability
+
+[estimand_tables.json.gz](estimand_tables.json.gz) contains four derived M4-T02
+cases from the original [scripted lifecycle bundle](scripted_lifecycle_run.zip):
+the complete five-family fixture at each size and the full target-60/fallback-40
+main joins. [estimand_archive.py](../estimand_archive.py) reads only the original
+accepted workers and saved manifests. All earlier fixtures remain unchanged.
+These tables validate CPU implementation; they are not model, pilot or empirical
+recovery results.
+
+- `populations` fixes the main, receipt, Q, preserving and repeat cohorts before
+  outcomes. Shared world IDs preserve overlapping subsets; original prefixes,
+  partitions and continuation seeds remain explicit. Preserving uses sixteen
+  worlds at both main counts; repeats use ten original worlds.
+- `world_contrasts` and `summaries` expose θ, its revised/sham components, φ
+  (`E_keep(revision)`), sham/correction-specific/E_clear and own-group effects,
+  all mask trajectories/mixed means, main secondary effects, six receipt cells,
+  η/direct/representation companions, Q effects and preserving B/C/K endpoints.
+  Accuracy, normalized AUC, final joint completion and preservation scopes are
+  named. World/family formulas and denominators never pool peer opportunities
+  or complete cases into the intended population.
+- Each component retains its coefficient, exact rational mean, peers/rounds,
+  eligibility, scheduled/observed calls and original call/generation/prefix IDs.
+  Linear atoms include exact weights; final joint completion retains its
+  all-four operator. Unknown components survive for M4-T05. Structural empty
+  preservation denominators are N/A; unknown old-prefix eligibility is distinct.
+- `repeat_contrasts`, `repeatability` and `trajectory_changes` retain replicate
+  zero as primary. Repeats use the same prefixes/partitions and new continuation
+  seeds; zero-effect ties are distinct from strict sign reversals. Incomplete
+  trajectory pairs are unknown. No receipt/Q/new-prefix repetition is implied.
+- `prose_activity` derives actual nonempty held texts from committed saved Q
+  states, preserving delivery IDs and counts before/after release. Empty text is
+  queued literally without prose exposure. Inactive/unobserved treatments remain
+  included; missing committed delivery evidence is unknown, not observed silence.
+
+Both complete fixtures have 2,170 recorded slots and θ=φ=0. Full main joins keep
+15,486 / 10,390 unknown slots. Their intended primary estimates are unknown,
+with five complete worlds and separately labeled complete-case values of zero.
+Q activity is observed in eight branches per size; the full main tables retain
+another 88 / 56 unobserved Q branches. Hand-calculated fixtures supply nonzero
+effects, inactive prose, sign reversals and category changes absent from these
+protocol-focused workers.
+
+```powershell
+python -S -m unittest tests.test_analysis tests.test_analysis_run tests.test_estimand_archive -q
+$env:PYTHONHASHSEED = '37'
+python -S -m tests.estimand_archive
+```
+
+Reconstruction compares every derived table with the retained export.
+`--write-fixture <new_tables.json.gz>` exclusively creates another export.
+The [CLI/API](../../README.md#offline-contrasts-and-conditional-repeats) reads
+ordinary saved runs without inference. Intervals, missingness bounds, cost and
+the full M4 report gate remain later work.
+
+## Information inventories and retained work
+
+[information_tables.json.gz](information_tables.json.gz) contains six derived
+M4-T03 cases reconstructed by [information_archive.py](../information_archive.py)
+from the accepted original workers in [scripted_lifecycle_run.zip](scripted_lifecycle_run.zip).
+Both five-family fixtures have 2,170 recorded slots. Full target-60/fallback-40
+joins retain 15,486/10,390 unknown slots; the stopped prefix retains sixteen
+unknown outcomes even though its already-rendered owner-v1 exposure is verified.
+No backup is combined with its original physical worker.
+
+Each case contains `prefix`, `owner_exposure`, `communication`, `delivery_attempts`,
+`receipt_timing`/`receipt_timing_counts`, `boundary_acquisition`,
+`receipt_information`/`receipt_strata`, `transport_references`, `edit_descriptors`
+and the information `atlas`. Call/branch/peer/round and original replay/prefix
+IDs join the existing outcomes. Original committed checkpoints, decoded with
+the public CPU serializer in the worker's read transaction, establish final
+source acquisitions. Repeated references remain separate attempts; only newly
+known ID/version pairs count as acquisitions. Unobserved commitment stays unknown.
+
+The [association and measurement rubric](../../docs/implementation-research/information-diagnostics.md)
+keeps numeric coincidence unresolved, identifies literal source-bound matches,
+and states every correct-candidate assumption. A cleared old candidate cannot
+supply receipt reconstruction. Prefix/Difference transport nevertheless remains
+a separately labeled offline reference on the actual valid last candidate,
+including its residual errors. Invalid/failed last candidates are unavailable.
+
+The included [independent atlas witnesses](../information_examples.py) demonstrate
+Max/Top-K discarded alternatives, local Prefix after-only ambiguity and
+before-value sufficiency, complete Difference with an unchanged anchor, local
+Sort boundary ambiguity/full-multiset sufficiency, and BFS alternative topology.
+These small named views are CPU illustrations; further communication can resolve
+their ambiguity. No historical archive script or output is changed.
+
+[information_tokens.json](information_tokens.json) retains 160 native prefix
+peer-round counts and 40 compact-boundary counts across all families and both
+sizes. [tokenizer_information.py](../tokenizer_information.py) uses the existing
+local pinned 9B metadata, validates full input-ID equality and compares independent
+backend encodings. Scripted M3 token IDs cannot be substituted for native counts.
+Counts describe independently encoded retained content, not marginal prompt cost
+or model/GPU timing; no weights are loaded.
+
+```powershell
+python -S -m unittest tests.test_information tests.test_information_run.InformationRunTests -q
+.venv/Scripts/python.exe -m unittest tests.test_information_run.InformationArchiveTests -q
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.information_archive
+python -m tests.tokenizer_information --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/9B"
+```
+
+Reconstruction compares complete table values; mismatches name the case/table/row
+without producing an enormous automatic dictionary diff. `--write-fixture`
+exclusively creates a new derived export. [CLI/API usage](../../README.md#offline-information-and-retained-work)
+accepts ordinary saved runs. These tables are validation evidence, not empirical
+recovery results. [Policy costs](#policy-costs-and-frozen-boundary-rule) are now
+available; uncertainty/missingness is supplied below and the complete report gate
+remains M4-T06.
+
+## Policy costs and frozen boundary rule
+
+[policy_cost_tables.json.gz](policy_cost_tables.json.gz) contains sixteen derived
+M4-T04 cases: thirteen original-worker selections from the existing M3 bundle,
+two complete main population joins and one stopped prefix. Reconstruction by
+[cost_archive.py](../cost_archive.py) reads evidence-named original workers only,
+at the saved accounting clock `2026-10-06T00:00:00+00:00`; no providers run.
+M3's exact subset-bound live snapshots independently reconcile physical and
+policy totals, allocation/overhead and committed delivery IDs. Adding the full
+manifest leaves physical work and known policy costs unchanged.
+
+Each case contains `physical`, `generations`, `policy_costs`, `resources`,
+`validated_deliveries`/`delivery_counts`, `retained_evidence`,
+`quality_preservation`, `boundary_selections`, `selection_frequencies`,
+`strategy_worlds` and `paired_comparisons`. Original call/generation/attempt,
+world/event/policy/replicate/prefix IDs join the existing exact outcome tables.
+Policy `seconds` and token fields reproduce M3's measured subtotals;
+`complete_policy_seconds` is unavailable with any unknown scheduled policy call.
+Output/memory measurement gaps and uncertain attempts are counted explicitly.
+Allocation partitions and provider billing remain separate. No duplicate store,
+new identity system, inference call or execution decision is added.
+Retained remote evidence excludes the host-injected edited record, matching
+M4-T03. The separate rule coverage requires every current record, including it.
+
+The [hand-calculated fixture](../cost_fixture.py) has 128 logical calls,
+116 original generations, 117 attempts, twelve replays, a three-second
+interruption/retry, and a recorded timeout. Every other attempt costs two seconds:
+physical cost is 235 seconds; B/P_G/Q_B cost 67 each, C/K/F/Q_C cost 64 each,
+including the 32-second shared prefix. Known physical request/output tokens are
+234/115, with two unknown output attempts. An ambiguous interruption gives
+[233,235] seconds physically and [65,67] for B/P_G/Q_B. A separate 400-second
+synthetic allocation partitions into one setup, three interruption, 231 attempt
+and 165 idle seconds; it is never added to 235 measured attempt seconds.
+
+Both complete five-family cases contain 2,170 logical outcomes, 1,978 physical
+attempts and 192 replays. All 22 ordinary B/C/K comparison choices select K;
+their frequency tables explicitly state that the rule is constant. Synthetic
+all-covered/tombstone fixtures select C; missing/pending/mixed coverage selects K.
+Unavailable C/K branches never trigger favorable fallback. Full target-60 and
+fallback-40 joins preserve 15,486/10,390 unknown outcome slots and 134/94 unknown
+choice boundaries. The stopped prefix retains sixteen unknown outcomes and one
+uncertain attempt. These are scripted protocol/cost fixtures, not model findings.
+
+```powershell
+python -S -m unittest tests.test_costs tests.test_costs_run -q
+.venv/Scripts/python.exe -m unittest tests.test_cost_archive -q
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.cost_archive
+.venv/Scripts/python.exe -m tests.accounting_archive
+```
+
+Reconstruction compares every table with the retained export and reconciles
+the unchanged M3 ledger. `--write-fixture` exclusively creates a new export.
+[CLI/API usage](../../README.md#offline-policy-costs-and-the-boundary-rule)
+supports ordinary saved runs. Uncertainty/bounds are supplied by M4-T05 below;
+complete report reproduction remains M4-T06.
+No GPU/model, pilot, main execution or accepted freeze is implied.
+
+## Paired uncertainty and shared-response missingness
+
+[uncertainty_tables.json.gz](uncertainty_tables.json.gz) records sixteen derived
+M4-T05 scopes reconstructed by [uncertainty_archive.py](../uncertainty_archive.py)
+from evidence-named original workers in the existing M3 bundle. Worker bytes
+are checked before/after every analysis. The saved accounting clock is
+`2026-10-06T00:00:00+00:00`, resampling seed 20261006, and family seeds are that
+seed plus the existing task-order index. Each family draws its observed world
+count with replacement 10,000 times. Sorted world IDs define the draw indices;
+identical cohorts share draws across endpoints. Quantiles use linear
+interpolation at `(B-1)*p`, type 7. Primaries use probabilities 0.0125/0.9875;
+descriptive secondaries use 0.025/0.975. Repeats are separate conditional displays.
+
+Each case contains all uncertainty settings, populations, original world/repeat
+components, world sensitivity, family/pooled intervals and separate complete
+cases, family completion counts, incomplete trajectory categories/marginals,
+paired whole-policy quality/preservation/cost views and reporting references.
+The complete five-family fixtures each have 2,170 recorded outcomes. Full target
+and fallback joins retain 15,486/10,390 unknown slots, original main family
+denominators 12/8, and only five observed worlds. Their primary point intervals
+are unavailable; complete-case descriptions are zero. Frozen θ sensitivity is
+[-1.8333333333333333,1.8333333333333333] for target and [-1.75,1.75] for fallback;
+φ sensitivity is [-0.9166666666666666,0.9166666666666666] and [-0.875,0.875]. These
+are bounds on scripted validation joins, not experimental estimates.
+
+[Independent focused fixtures](../test_uncertainty.py) check finite stratified
+resampling support, weighted/clipped Hoeffding intervals, exact binomial counts,
+shared linear cancellation, shared nonlinear feasible completions, fragmentation,
+conservative larger trajectories, unknown eligibility and paired cost cohorts.
+Unknown shared prefix costs cancel in differences; absolute future costs have
+no asserted finite upper bound. A recorded parent can constrain a missing
+logical use without changing its unknown execution status. Empty diagnostic
+populations stay unavailable. Larger nonlinear envelopes retain variable/term
+identities and warn that marginal extrema need not be jointly attainable.
+
+```powershell
+python -S -m unittest tests.test_uncertainty tests.test_uncertainty_run -q
+.venv/Scripts/python.exe -m unittest tests.test_uncertainty_archive -q
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.uncertainty_archive
+```
+
+Every retained table must reproduce. `--write-fixture` exclusively creates a
+new derived export; the original run and all prerequisite fixtures remain
+unchanged. [CLI/API usage](../../README.md#offline-uncertainty-and-missingness)
+works on ordinary saved runs without importing inference. The report and full
+M4 gate are recorded below; CPU evidence does not admit GPU or main execution.
+
+## Reproducible synthetic reports
+
+[report_tables.json.gz](report_tables.json.gz) retains sixteen M4-T06 reports
+from the original evidence-named M3 workers: thirteen ordinary selections,
+two full frozen 60/40 main joins and the stopped prefix. Each contains the
+seven exhibits, exact case selection, deterministic plotting inputs, settings,
+coverage, supporting table-row counts and repeated export/link evidence.
+The source workers remain authoritative; these records are derived validation.
+
+[scripted_reports.zip](scripted_reports.zip) is a portable companion with five
+reports: complete target/fallback, deliberately incomplete full-main
+target-60/fallback-40, and stopped work. Extract it and open `INDEX.md`, then
+the linked `report.html`. It includes 126 files: an index, five reports with
+all tables/input snapshots/traces, CSVs, cases, settings and plotting data,
+and 35 SVG plus 35 PNG exhibits with plotting-environment records. Every
+report/figure is labeled synthetic CPU validation. It contains no SQLite
+execution copy or second authoritative store.
+
+The complete fixtures have 2,170 recorded outcomes each. Full target/fallback
+joins preserve 15,486/10,390 unknown slots and denominators 60/40, with only
+five observed worlds. Intended primary estimates/intervals are unavailable;
+complete-case descriptions and shared-response sensitivity are distinct.
+The stopped prefix retains sixteen unknown slots and unavailable cases.
+Missing native history counts and empty preservation populations remain N/A.
+Cases retain exact replies, before/after edits, original call/message/delivery
+IDs, trajectories, availability and preservation denominators. Invalid
+non-scalar Unicode is displayed as a reversible JSON string literal without
+repairing its original raw reply.
+
+```powershell
+python -S -m unittest tests.test_report tests.test_report_run -q
+.venv/Scripts/python.exe -m unittest tests.test_report_figures -q
+.venv/Scripts/python.exe -m unittest tests.test_report_archive -q
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -m tests.report_archive --export new-report-reproduction
+# Optional plotting from those already-saved inputs:
+.venv/Scripts/python.exe -m recovery.figures --report new-report-reproduction/complete-target
+```
+
+[report_archive.py](../report_archive.py) reads only original M3 workers,
+analyzes every scope twice, compares every table/report/trace/input, checks
+worker bytes before/after, exports twice and compares compressed/HTML/CSV
+bytes. It checks exact scheduled/recorded/unknown counts and every local
+report link/anchor. The retained bundle check joins report/plot/table/case
+evidence and checks all SVG/PNG files. `--write-fixture` exclusively creates
+a new expected export; it never replaces original evidence. Optional
+Matplotlib rendering has its own deterministic-byte checks and was visually
+reviewed; it imports no inference and reads no workers.
+
+[CLI/API usage](../../README.md#reproducible-offline-reports),
+[task evidence](../../docs/todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#validation-and-evidence)
+and the [M1–M4 CPU audit](../../docs/validation/m4-cpu-gate.md) record the
+commands and limits. CPU report acceptance does not establish language-weight
+loading, finite GPU output, T4 headroom/timing, capability, accepted-host
+persistence, allocation feasibility, pilot results or main findings.
