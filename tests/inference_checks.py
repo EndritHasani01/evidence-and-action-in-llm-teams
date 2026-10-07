@@ -216,17 +216,22 @@ class BackendTests(unittest.TestCase):
 
 
 class LedgerIntegrationTests(unittest.TestCase):
-    def test_conflicting_factory_worker_visibility_fails_before_store_or_process_creation(self):
+    def test_conflicting_missing_or_duplicate_worker_visibility_fails_before_store_or_process_creation(self):
         from recovery.inference import ModelFactory
         from recovery.workers import LocalScheduler, WorkerSpec
         world = case_world(Task.PREFIX)
         with tempfile.TemporaryDirectory() as directory:
-            path = Path(directory) / "worker.sqlite"
-            worker = WorkerSpec(path, ModelFactory(cuda_visible_devices="0"), cuda_visible_devices="1")
-            with self.assertRaisesRegex(ValueError, "visibility"):
-                LocalScheduler([worker], [world], [prefix_branch(world)], Tokenizer,
-                    settings=candidate_settings(Tokenizer()))
-            self.assertFalse(path.exists())
+            paths = [Path(directory) / f"worker-{i}.sqlite" for i in range(2)]
+            cases = {
+                "conflicting": [WorkerSpec(paths[0], ModelFactory(), cuda_visible_devices="1")],
+                "missing": [WorkerSpec(paths[0], ModelFactory())],
+                "duplicate": [WorkerSpec(path, ModelFactory(), cuda_visible_devices="0") for path in paths],
+            }
+            for name, workers in cases.items():
+                with self.subTest(name=name), self.assertRaisesRegex(ValueError, "visibility"):
+                    LocalScheduler(workers, [world], [prefix_branch(world)], Tokenizer,
+                        settings=candidate_settings(Tokenizer()))
+                self.assertEqual(tuple(Path(directory).iterdir()), ())
 
     def test_diagnosed_nonfinite_generation_is_blocked_uncertain_and_cannot_retry(self):
         from tests.inference_mocks import process_nonfinite_backend
