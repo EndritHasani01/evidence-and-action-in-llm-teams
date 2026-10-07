@@ -203,8 +203,31 @@ class BackendTests(unittest.TestCase):
         self.assertEqual(self.backend.model.calls, [])
         self.assertIsNone(self.backend.torch.seed)
 
+    def test_numeric_type_changes_cannot_pass_exact_json_settings_or_tokenization_equality(self):
+        generation = dict(self.settings["generation"], top_k=20.0)
+        for kwargs in (dict(settings=dict(self.settings, generation=generation)),
+                       dict(settings=dict(self.settings, enable_thinking=0)),
+                       dict(tokenized=replace(self.tokenized, attention_mask=(True,) * len(self.tokenized.attention_mask))),
+                       dict(tokenized=replace(self.tokenized, input_ids=tuple(float(i) for i in self.tokenized.input_ids)))):
+            with self.assertRaises(ValueError):
+                self.call(**kwargs)
+        self.assertEqual(self.backend.model.calls, [])
+        self.assertIsNone(self.backend.torch.seed)
+
 
 class LedgerIntegrationTests(unittest.TestCase):
+    def test_conflicting_factory_worker_visibility_fails_before_store_or_process_creation(self):
+        from recovery.inference import ModelFactory
+        from recovery.workers import LocalScheduler, WorkerSpec
+        world = case_world(Task.PREFIX)
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "worker.sqlite"
+            worker = WorkerSpec(path, ModelFactory(cuda_visible_devices="0"), cuda_visible_devices="1")
+            with self.assertRaisesRegex(ValueError, "visibility"):
+                LocalScheduler([worker], [world], [prefix_branch(world)], Tokenizer,
+                    settings=candidate_settings(Tokenizer()))
+            self.assertFalse(path.exists())
+
     def test_diagnosed_nonfinite_generation_is_blocked_uncertain_and_cannot_retry(self):
         from tests.inference_mocks import process_nonfinite_backend
         from recovery.storage import UnresolvedAttempt

@@ -5,7 +5,7 @@ existing ProcessProvider owns attempts/termination and SQLite owns raw evidence.
 Only explicit permitted requests cross the generation boundary.
 """
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import os
 import sys
 
@@ -213,17 +213,18 @@ class TransformersBackend:
 
     def __call__(self, view, rendered, tokenized, *, seed, settings):
         from .attempts import MeasuredReply
+        from .storage import record_json, settings_json
         from transformers import DynamicCache, GenerationConfig, LogitsProcessorList
 
         if os.getpid() != self.pid or self.active:
             raise ValueError("the model and global RNG belong to one serial process")
         if type(seed) is not int or not 0 <= seed < 2**63:
             raise ValueError("use the saved nonnegative per-call seed")
-        if settings != self.settings:
+        if settings_json(settings) != settings_json(self.settings):
             raise ValueError("exact model/template/decoding settings differ")
         if (len(tokenized.input_ids) + MAX_OUTPUT_TOKENS > MAX_CONTEXT_TOKENS
                 or render_request(view) != rendered
-                or tokenize_request(rendered, self.tokenizer) != tokenized):
+                or record_json(asdict(tokenize_request(rendered, self.tokenizer))) != record_json(asdict(tokenized))):
             raise ValueError("exact permitted request/tokenization/capacity equality failed before generation")
         torch = self.torch
         self.active = True

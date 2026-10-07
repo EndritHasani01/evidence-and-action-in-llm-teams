@@ -95,3 +95,23 @@ live/backup/off-host destinations and pending account/provider facts.
 Full current-source/core/installed regressions and final consistency review
 remain required before this task is done. No GPU or empirical gate is passed.
 
+### Identity review checkpoint
+
+Final review replaced Python numeric equality with the existing canonical JSON
+representation for settings and token records. Changed booleans/integers/floats
+cannot pass exact identity. A factory/worker device conflict is rejected before
+creating a worker store or process, preventing two configured workers from
+silently selecting the same physical GPU. All 27 final focused checks pass in
+8.681 seconds. The noneditable installed package outside the checkout passes
+those 27 plus all 14 worker checks (41 total) in 139.913 seconds under hash seed
+37; all 28 installed module paths/bytes match the final source. The first
+non-isolated build probe lacked `bdist_wheel`; ordinary isolated pip building
+fixed it without modifying runtime dependencies or the project build contract.
+
+Core validation passes 260 checks in 221.223 seconds (252 passed, eight expected
+optional skips). Native tokenizer/config/cache/decoding checks pass four each
+for 9B/4B in 0.180/0.205 seconds. Both immutable revisions were reverified through
+the public Hub API; no weights were fetched. Full CPU regression and final
+artifact/status review are still running. Prior protected artifacts and all
+scientific schemas/inputs/rendering/analysis remain unchanged.
+

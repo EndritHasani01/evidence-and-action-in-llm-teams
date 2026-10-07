@@ -196,6 +196,10 @@ class LocalScheduler:
                 or not callable(tokenizer_factory) or min(self.bounds.values()) <= 0
                 or self.bounds["heartbeat_seconds"] > 60):
             raise ValueError("use distinct worker files, importable factories and positive bounded timeouts")
+        if any(w.cuda_visible_devices is not None and
+               getattr(w.provider_factory, "cuda_visible_devices", w.cuda_visible_devices) != w.cuda_visible_devices
+               for w in self.specs):
+            raise ValueError("model factory device visibility must match its worker before CUDA initialization")
         self.order = tuple(invocation_order)
         if (len(self.order) != 4 or set(self.order) != set(PEERS)
                 or any(type(p) is not int for p in self.order) or type(worker_rotation) is not int):
