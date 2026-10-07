@@ -70,6 +70,11 @@ No cache or conversation handle is a backend field. This instrumented API behavi
 is CPU/mock evidence; order/device changes may still produce different GPU tokens.
 Scientific reuse always consumes the existing exact persisted parent reply.
 
+Candidate factories require explicit matching worker visibility, and the
+scheduler rejects duplicate device assignments before creating stores/processes.
+Actual host UUID mapping still requires preflight verification; no second device
+registry is introduced.
+
 The existing `provider_processes.backend_json` stores loading evidence once per
 resident process. `attempts.backend_json` stores exact raw generated-suffix text,
 the removed transport ID if any, actual seeds, PID, cache observations, finite-score
@@ -91,8 +96,11 @@ or change this matrix for convenience.
 
 The proposed smoke matrix below is separate from those pilot slots. Each row
 names concrete development request origins and saved seed selection. Use
-smoke-local call IDs `smoke/01` through `smoke/24`, keeping their origin IDs in the
-ordinary request/settings records; do not write smoke output under a pilot call ID
+smoke-local call IDs `smoke/<configuration-run>/01` through
+`smoke/<configuration-run>/24`, using the existing artifact-directory label and
+keeping their development-origin correspondence in the matrix and existing
+host call/round-input records. Generation settings remain exactly
+`candidate_settings`; do not write smoke output under a pilot call ID
 or treat it as a capability observation. This is a request preparation matrix for
 T02, not another population/schedule authority or an executed run manifest.
 All counts are physical attempt ceilings: an infrastructure retry consumes another
@@ -106,8 +114,8 @@ all instrumentation calls use the same shared envelope; there are no extra warmu
 | 08 | After full-information control for development BFS. | Its saved after-control seed; complete node-key contract after the actual saved edit. |
 | 09–13 | Round-four development prefix views, peer zero, from the existing CPU local-view attainability witness for each of the five families. | Each `prefix_seed(4,0)`; acquired sources and useful legal forwarding. Recorded model sends are validated literally, never fabricated. |
 | 14–17 | Four first corrected-C continuation views for development Prefix, from that same drained CPU scripted prefix and saved revision. | `continuation_seed(0,1,peer)`; all four updated/reset sibling starts. Synthetic prefix construction is explicitly separate from natural pilot capability. |
-| 18–19 | B recovery-round-four maximal retained view and Q_B maximal released-prose view for development Prefix/Sort, using the existing native capacity construction and real renderer. | Their `continuation_seed(0,4,0)` values; admitted worst-context envelope, finite output, peak memory and >=1.5 GiB headroom. Do not shorten histories to fit T4. |
-| 20–23 | A, intervening B, A, then A after a confirmed process restart. A is slot 02's Prefix request/seed; B is slot 05's BFS request/seed. Prior slots also supply normal versus reversed family order. | Identical saved A request/settings/seed with fresh caches; log all outputs and stochastic differences, do not demand seed-based exact regeneration. Restart loading counts in setup and total allocation. |
+| 18–19 | Slot 18: peer-three B recovery-round-four maximal retained view for development Prefix. Slot 19: peer-three Q_B maximal released-prose view for development Sort. Use the existing native capacity construction and real renderer. | Their `continuation_seed(0,4,3)` values; admitted worst-context envelope, finite output, peak memory and >=1.5 GiB headroom. Do not shorten histories to fit T4. |
+| 20–23 | A, intervening B, A, then A after a confirmed process restart. A is slot 02's Prefix request/seed; B is slot 05's BFS request/seed. | Identical saved A request/settings/seed after different prior calls and a fresh process; log all outputs and stochastic differences, do not demand seed-based exact regeneration. Restart loading counts in setup and total allocation. |
 | 24 | Slot 01's Top-K request/seed with the existing test-controlled process hang/deadline interruption, while retaining the actual host process/device identity. | Exercise durable timeout-before-termination and confirmed exit. A test-injected hang is labeled infrastructure validation, not an observed model latency or capability failure. |
 
 Before reservation, T02 must materialize and review all 24 exact rendered/tokenized
@@ -131,6 +139,12 @@ work. Neither source proves this account's availability, remaining quota,
 session durability, release latency or monetary terms. Those facts are pending
 and must be recorded before an authorized reservation. No fixed weekly quota,
 price, GPU UUID or passing storage service is assumed.
+
+Run package/native checks and focused CPU checkpoint/crash/backup checks in
+the private notebook's CPU mode before GPU assignment, retaining its host lock
+and storage evidence. Compare that lock after selecting the GPU mode; any host
+change reopens affected checks. CPU verification while GPUs are allocated still
+counts as allocated idle time and must fit the same smoke ceiling.
 
 | Resource or convention | Concrete proposal / required observation |
 |---|---|

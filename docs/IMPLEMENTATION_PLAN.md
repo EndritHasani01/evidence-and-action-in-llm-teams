@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1–M4 are verified on CPU and all four gates pass. Twenty tasks are done; M5-T01 is ready for CPU preparation. M4 outcomes, contrasts, inventories, whole-policy costs, uncertainty and reports derive from original workers with full main/stopped unknowns preserved. Seven grouped exhibits, exact matched cases, all scientific tables/traces and five portable reports are retained. Full source regression passes 424 checks, including all nine lifecycle checks; final focused/core/installed checks pass 25/252 (244 passed, eight optional skips)/166. All sixteen original-worker report scopes reproduce twice, including installed hash-seed-37 validation with inference/execution/plotting imports blocked. The [CPU audit](validation/m4-cpu-gate.md) maps all 22 plan rows and seven specification categories to named checks. M5–M6, accepted inference environment, hardware/capability/resource gates and empirical results remain open. See the [living handoff](#10-living-handoff); CPU admission is not GPU feasibility or an empirical result.
+**Implementation status:** M1–M4 are verified on CPU and all four gates pass. Twenty-one tasks are done, including [M5-T01 CPU inference/allocation preparation](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff). The direct Qwen adapter and existing worker/attempt diagnostics are prepared with a [proposed Kaggle smoke packet](validation/m5-inference-preparation.md). Full regression passes 449 checks at the backend checkpoint; final identity review passes 27 focused and 41 installed checks, with 260 core checks (252 passed, eight optional skips). All sixteen original-worker report scopes reproduce twice with fixed main/stopped unknowns, seven exhibits and five portable reports. The [CPU audit](validation/m4-cpu-gate.md) maps all 22 plan rows and seven specification categories to named checks. M5-T02 remains blocked by execution authorization and actual provider/host preflight. Accepted inference, hardware/capability/resource gates and empirical results remain open. See the [living handoff](#10-living-handoff); CPU admission is not GPU feasibility or an empirical result.
 
 ## 1. Execution roadmap
 
@@ -319,13 +319,14 @@ Update these sections only when a capability is verified, a consequential decisi
 | M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
 | M3 | Verified on CPU (5/5 tasks done; gate passed) | [M3-T05 gate evidence](todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate): 18 durable, 22 attempt, 14 worker, 23 accounting and nine lifecycle checks; 253 source/installed and 81 core checks pass. Eleven real controller kills preserve raw reuse, branch-local effects, cleared fields and Q prose. Both complete fixtures reconcile 4,340 logical slots / 3,956 generations / 384 replays; full main/development schedules, synthetic budget stop/resume and supported backups pass. [Fourteen-case ordinary bundle](../tests/fixtures/scripted_lifecycle_run.zip) passes offline audit and fresh reproduction; all prior M3 CPU/native archives reproduce. |
 | M4 | Verified on CPU (6/6 tasks done; gate passed) | [T01](todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff), [T02](todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff), [T03](todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff), [T04](todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff) and [T05](todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff) establish exact outcomes, estimands, information/work, policy costs and paired uncertainty from original workers. [T06 completion](todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate) supplies reports, exact cases and the passed [coverage/category audit](validation/m4-cpu-gate.md). All 424 source checks pass; focused/core/installed checks pass 25/252 (244 passed, eight optional skips)/166. Sixteen report scopes reproduce every M4 output/export twice under current source and installed hash seed 37; five reports retain 35 SVG/PNG exhibit pairs. |
-| M5 | T01 active; operational gates open | M1–M4 CPU audit passes; backend/allocation preparation is next. No language-weight, hardware, finite-output, capability, accepted-host or measured allocation result exists. |
+| M5 | T01 verified on CPU (1/5 tasks done); operational gates open | [T01 completion](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) supplies the direct adapter, exact raw/seed/cache/worker diagnostics and [proposed Kaggle packet](validation/m5-inference-preparation.md). Final 27 focused / 41 installed checks pass, and the 449-check full regression passes at the backend checkpoint. T02 awaits execution authorization and actual provider/host preflight. No language-weight, hardware, finite-output, capability, accepted-host or measured allocation result exists. |
 | M6 | Not started | Requires accepted M5 freeze |
 
 ### Implementation decisions
 
 | Decision | Reason / reconsideration evidence |
 |---|---|
+| M5-T01 uses one explicit maintained text-only adapter and the existing process/attempt ledger | Native AutoModel text-config/prefix conversion and tied-head diagnostics avoid a conversion wrapper. A fresh GenerationConfig, empty DynamicCache, exact canonical settings/token JSON, saved seeds and explicit matching/distinct worker device assignments implement the stated inference boundaries. The full raw suffix stays in optional existing process/attempt evidence fields; only one verified terminal im_end is removed for parsing. Old read-only records need no migration, and no new identity, progress store, dependency or orchestration layer is added. Final CPU/static/mock checks pass 27 focused and 41 installed; native 9B/4B metadata checks pass four each. Actual weights, GPU behavior and the proposed two-T4 clock/storage plan still require T02 validation. |
 | M4-T06 uses the existing read snapshot and seven explicit report exhibits | Original workers supply every M4 table and exact unaltered excerpt together. Case medians use exact rational effects then immutable IDs; complete illustration worlds require all scheduled slots in the supplied scope recorded, including failures/controls/repeats. Both selection and card joins enforce replicate zero; absent signs and all-zero regression/smallest-ID fallbacks remain explicit. Raw invalid Unicode uses reversible JSON string notation in HTML, with original text unchanged. Absolute quality/cost axes exclude paired differences while retaining their scientific tables. Derived HTML/CSV/JSON and plotting inputs are exports, not another store. Optional Matplotlib reads saved plotting data only. Final 25 focused, 424 source, 252 core (eight optional skips) and 166 installed checks pass; all sixteen original-worker scopes reproduce twice. The M1–M4 CPU audit passes; M5 hardware/capability/resource gates remain separate. |
 | M4-T05 uses explicit standard-library world resampling and shared-response bounds | The existing world/component/generation joins suffice. Exactly 10,000 paired draws use saved nonnegative seed 20261006 plus each existing family index, sorted world IDs, equal-family means and type-7 linear quantiles. Matching family/world cohorts share draws; repeats remain conditional and do not increase population N. Constant within-family values have the prescribed weighted Hoeffding companion. Unknown logical copies can be constrained by recorded originals for sensitivity without becoming executed observations. Small shared nonlinear expressions are enumerated; larger ones retain shared terms with conservative labels. Preservation and its paired cost use the same eligible worlds. Whole-policy IDs remain schedule-checked; missing future costs remain unbounded. All sixteen original-worker cases reproduce; final focused/core/installed checks pass 33/225 (221 passed, four optional skips)/144, and complete CPU regression passes 396. [T05 evidence](todos/M4/M4-T05-uncertainty-and-missingness.md#validation-and-evidence) records independent binomial/quantile/bootstrap references and actual replay cancellation. |
 | M4-T04 shares original ledger arithmetic between status and offline cost views | Pure functions in `costs.py` preserve M3's attempt, policy and allocation arithmetic. Offline records/checkpoints/allocations are read in the existing worker snapshots, without saver setup or a new store. Hypothetical costs include every logical use and F's original prefix; outside overhead remains experiment overhead. Initial B/C/K ID/version coverage alone chooses one C/K branch. Unavailable selected branches remain unknown, and shared generation costs cancel in paired differences. Twenty-eight dependency-free focused checks and sixteen original-worker cost reconstructions pass. Complete source regression passes 362 checks; final inventory review passes 191 core checks (188 passed, three optional skips) and 110 installed checks. [T04 evidence](todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff) records commands and checkpoint scope. |
@@ -807,14 +808,43 @@ passes and names the remaining M5/M6 portions explicitly. Exact commands,
 environment, times and artifact links are in the
 [T06 completion](todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate).
 
-Progress is twenty done, one ready and eight blocked. M1–M4 CPU gates pass;
-M5-T01 is ready for CPU preparation. Case/annotation rules, analysis settings
-and assumptions are ready for M5's future accepted bundle. M6-T02 still requires
+At that T06 handoff, progress was twenty done, one ready and eight blocked.
+M1–M4 CPU gates passed and M5-T01 was ready for CPU preparation. Case/annotation
+rules, analysis settings and assumptions are ready for M5's future accepted bundle. M6-T02 still requires
 an actual-execution or documented terminal-feasibility handoff. Scientific
 specification/configuration, mandatory dependencies, execution/scoring modules,
 prerequisite task evidence and all prior fixtures remain unchanged. No GPU
 allocation, language weights, model inference, pilot, main experiment,
 accepted freeze or publication occurred.
+
+M5-T01 completes on 7 October 2026 on Windows/CPU. The direct native text-only
+adapter verifies every language weight/device/precision, retains exact raw
+suffix IDs/text, supplies fresh KV/recurrent state and saves per-call CPU/CUDA
+seeds. Loading evidence and call instrumentation use the existing process and
+attempt records. Final review rejects numerically equal but differently typed
+settings/token records and conflicting, missing or duplicate worker/factory
+devices before work.
+These are CPU/static/mock checks, not observed GPU loading or generation.
+
+The full 449-check regression passes at the backend checkpoint, including every
+prior archive, original-worker report reproduction and all nine lifecycle cases.
+Final focused and installed checks pass 27/41 after the identity review; core
+runs 260 (252 passed, eight optional skips), and native 9B/4B metadata checks pass
+four each. Eight renewed capacity checks retain 261,388/259,868 with reserve.
+The [task evidence](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff)
+states exact environments, commands, revision timing and verification limits.
+The specification, study configuration and all 26 prior data fixtures remain
+unchanged; no weights, GPU work, accepted freeze or empirical result exists.
+
+The user selected a [proposed private Kaggle T4-x2 plan](validation/m5-inference-preparation.md).
+At most 24 smoke attempts, loading, idle second GPU and shutdown are admitted
+under a 0.5 aggregate GPU-hour ceiling, with a 120-wall-second safe-stop allowance
+and the existing shared 8/2/2-hour reserves. Provider/account facts, exact request
+materialization, durable off-host export and confirmed release remain pending
+T02 preflight. Progress is twenty-one done and eight blocked, with no active or
+ready task. T02's preparation dependency is satisfied; execution authorization
+and the actual hardware/host gate remain required. M5's operational gate stays
+open; capability, complete pilot and measured whole-schedule admission follow.
 
 ### Unresolved issues
 
@@ -823,7 +853,7 @@ accepted freeze or publication occurred.
 | Persistence and crash safety in the accepted inference host | M3-T05 passes on Windows/CPU; repeat the checkpoint/SQLite/process/backup checks in M5's accepted host lock and actual storage environment before inference admission |
 | Passing model/runtime/timeout and device headroom at the revised context | M5 maintained-loader diagnostics and bounded smoke/pilot, including the complete admitted input envelope. Static full-attention FP16 KV alone is 8 GiB at 262,144; weights/activations/workspace and 1.5 GiB headroom are additional. CPU admission is not T4 feasibility. |
 | 9B/4B, target/fallback size, 60/40 worlds | M5 capability and complete-schedule allocation evidence, following the specified precedence and shared development limit |
-| Compute provider availability, persistence and allocation rules | Before GPU reservation, record actual devices, durable storage/backup location, allocation start/stop and billing rules; provider choice cannot alter experimental semantics |
+| Compute provider availability, persistence and allocation rules | [T01's proposed private Kaggle packet](validation/m5-inference-preparation.md) defines two-device charging, ceilings, shutdown allowance and local/off-host backup destinations. Before an authorized reservation, record actual availability/quota/monetary terms, device identities, accepted-host storage/export and the confirmed release mechanism. Provider choice cannot alter experimental semantics. |
 
 ### Final outcome / retrospective
 

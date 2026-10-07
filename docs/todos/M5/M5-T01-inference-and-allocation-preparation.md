@@ -1,6 +1,6 @@
 # M5-T01 — Inference backend and allocation preparation
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M4-T06](../M4/M4-T06-reproducible-report-and-cpu-gate.md). M1–M4 must have passed.
 M4-T06 completes on 6 October 2026 and the
@@ -62,7 +62,8 @@ CPU virtual environment deliberately has no torch. Maintained source review
 confirms native `AutoModelForCausalLM` text-config extraction, language-prefix
 conversion, tied-weight initialization, supported FP32 recurrent paths and
 per-call `DynamicCache`. Loading diagnostics and actual device/runtime behavior
-remain smoke gates. Backend, fixtures and allocation evidence are in progress.
+remain smoke gates. At this checkpoint, backend, fixtures and allocation
+evidence were in progress.
 
 ### Backend checkpoint
 
@@ -92,16 +93,16 @@ records the proposed host, source review, exact template/EOS/PAD candidates,
 24-attempt smoke request matrix, unchanged pilot manifest, shared 8/2/2-hour
 reserves, two-device allocation convention, 120-second shutdown allowance,
 live/backup/off-host destinations and pending account/provider facts.
-Full current-source/core/installed regressions and final consistency review
-remain required before this task is done. No GPU or empirical gate is passed.
+At this checkpoint, full current-source/core/installed regressions and final
+consistency review remained required. No GPU or empirical gate is passed.
 
 ### Identity review checkpoint
 
 Final review replaced Python numeric equality with the existing canonical JSON
 representation for settings and token records. Changed booleans/integers/floats
 cannot pass exact identity. A factory/worker device conflict is rejected before
-creating a worker store or process, preventing two configured workers from
-silently selecting the same physical GPU. All 27 final focused checks pass in
+creating a worker store or process, rejecting contradictory assignments.
+All 27 focused checks at this checkpoint pass in
 8.681 seconds. The noneditable installed package outside the checkout passes
 those 27 plus all 14 worker checks (41 total) in 139.913 seconds under hash seed
 37; all 28 installed module paths/bytes match the final source. The first
@@ -111,7 +112,64 @@ fixed it without modifying runtime dependencies or the project build contract.
 Core validation passes 260 checks in 221.223 seconds (252 passed, eight expected
 optional skips). Native tokenizer/config/cache/decoding checks pass four each
 for 9B/4B in 0.180/0.205 seconds. Both immutable revisions were reverified through
-the public Hub API; no weights were fetched. Full CPU regression and final
-artifact/status review are still running. Prior protected artifacts and all
-scientific schemas/inputs/rendering/analysis remain unchanged.
+the public Hub API; no weights were fetched. At this checkpoint, full CPU
+regression and final artifact/status review were still running. Prior protected
+artifacts and all scientific schemas/inputs/rendering/analysis remain unchanged.
+
+### Exclusive device review
+
+A CPU construction probe found that matching duplicate GPU assignments and an
+omitted worker visibility with a device-selecting factory were still accepted.
+The scheduler now requires explicit matching factory/worker visibility and
+distinct assigned devices before creating stores or processes. The existing
+regression covers conflicting, missing and duplicate assignments, with no
+files created. Final focused validation passes all 27 checks in 7.768 seconds.
+Actual physical UUID mapping remains host preflight work; no registry or GPU
+query is added to CPU scheduling. Renewed noneditable installed validation
+passes all 41 checks in 129.691 seconds under hash seed 37; all 28 installed
+module paths/bytes match final source.
+
+## Completion and handoff
+
+M5-T01 is implemented and verified on CPU on 7 October 2026. The direct
+text-only adapter, serial runner integration, raw decoding/ledger evidence and
+concrete proposed Kaggle preparation are complete. [M5-T02](M5-T02-hardware-smoke-and-host-validation.md)
+has its preparation dependency satisfied and remains blocked by execution
+authorization and actual host/provider preflight. M5's operational gate is open.
+
+Environment: Windows/CPU, Python 3.11.9, SQLite 3.45.1, Pydantic 2.13.5,
+LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1, LangChain Core 1.6.6.
+The separate native-metadata environment uses torch 2.11.0+cpu (CUDA build
+`None`, CUDA unavailable), Transformers 5.12.0 and the candidate versions listed
+in [allocation evidence](../../validation/m5-inference-preparation.md).
+No pretrained model was constructed and no weights, GPU allocation/inference, pilot,
+main execution, publication, paid compute or accepted freeze occurred.
+
+| Named validation | Executed result |
+|---|---|
+| Complete `.venv/Scripts/python.exe -m recovery validate` | All 449 checks passed in 2,571.482 seconds, including original-worker report reproduction twice, all nine lifecycle cases and the 25-check adapter checkpoint. This run began before the final JSON/device identity review; the final additions and changed guards are independently covered below. Unchanged analysis/renderer/oracle/archive checks were not repeated after those narrowly scoped guards. |
+| Final `.venv/Scripts/python.exe -m unittest tests.test_inference_preparation tests.inference_checks -q` | All 27 passed in 7.768 seconds. This includes regression fixtures that reject numerically equal but differently typed settings/IDs/masks and conflicting, missing or duplicate factory/worker device assignments before generation/store creation. |
+| `.venv/Scripts/python.exe -S -m recovery validate --core-only` | 260 run in 221.223 seconds: 252 passed, eight expected optional archive/renderer skips. |
+| Noneditable installed `tests.test_inference_preparation`, `tests.inference_checks`, `tests.worker_checks`, outside checkout, hash seed 37 | All 41 passed in 129.691 seconds after exclusive-device review. All 28 installed module paths/bytes match final source. Isolated pip build passed; CPU runtime dependencies were not changed. |
+| `python -m tests.tokenizer_inference --tokenizer LOCAL_9B_METADATA` / `LOCAL_4B_METADATA` | Four each passed in 0.180 / 0.205 seconds. All nine saved native suffix cases, actual templates/IDs, unmodified generation defaults and independent empty hybrid caches agree. Metadata only, no inference. |
+| `python -m tests.tokenizer_capacity --tokenizer LOCAL_9B_METADATA` | Eight passed in 1.694 seconds. Complete target/fallback upper bounds remain 261,388 / 259,868 with reserve under 262,144. |
+| `pip check`, `compileall`, `git diff --check` | Passed; no broken CPU requirements. |
+| Protected-file/data audit against `6fa32ac` | Specification, study configuration and all 26 prior data archives/fixtures unchanged; binary archives compared as bytes, text with Git line-ending normalization. Only the new suffix fixture and its index are added. |
+| Final local-link/status/resource audit | All 354 local links/anchors in seven changed Markdown files pass. All 29 task files match the index: 21 done / eight blocked, M5 1/5. Matrix rows cover smoke slots 01–24 exactly; two-device time/stop bounds reconcile, and saved pilot totals remain 1,114 distinct / 1,178 logical with 80 prefix plus ten controls first. |
+
+The final consistency audit passes for local links/anchors, task counts/statuses,
+the unchanged scientific artifacts and the exact 24-slot smoke / 1,114-distinct
+pilot envelope. The [preparation packet](../../validation/m5-inference-preparation.md)
+records the initial 9B/target candidate, actual template input candidates,
+process/attempt evidence fields, all planned instrumentation calls, two-device
+clock, shared 8/2/2-hour reserves, safe shutdown, provider facts and storage paths.
+Provider availability/quota/monetary terms, request materialization, durable
+off-host export and confirmed release remain T02 preflight requirements.
+
+Actual language weights, supported T4 runtime paths, finite model outputs,
+headroom, timeout adequacy, cache/RNG order/resume behavior, accepted-host
+persistence and capability are unverified. T03 still owns the first 90 slots,
+T04 the complete pilot and measured timing, and T05 the accepted single lock,
+whole-schedule forecast and freeze. Any candidate change repeats affected
+checks; no configuration mixing or seed-based exact regeneration is promised.
 

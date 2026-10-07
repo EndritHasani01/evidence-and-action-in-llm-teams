@@ -4,6 +4,16 @@
 
 **Dependencies:** [M5-T01](../M5/M5-T01-inference-and-allocation-preparation.md). M1–M4 must have passed. Explicit authorization covering the GPU/paid-compute scope is also required.
 
+M5-T01 completes on 7 October 2026 with its
+[CPU completion checks](M5-T01-inference-and-allocation-preparation.md#completion-and-handoff)
+and [proposed private Kaggle T4-x2 packet](../../validation/m5-inference-preparation.md).
+The preparation dependency is satisfied. Execution authorization is absent;
+actual account/quota/monetary terms, device/host/storage checks, all 24 exact
+smoke requests, durable off-host export and confirmed provider release remain
+preflight work. The proposed ceiling is 24 physical attempts / 0.5 aggregate
+GPU-hour (at most 900 wall seconds with two allocated T4s), including loading,
+idle GPU 1 and shutdown. No upload, reservation or model inference has occurred.
+
 ## References
 
 - [Repository contract/authorization](../../../AGENTS.md), [plan runtime validation](../../IMPLEMENTATION_PLAN.md#runtimeenvironment-validation), and [smoke/pilot gates](../../IMPLEMENTATION_PLAN.md#bounded-smoke-and-capability-pilot).
@@ -35,5 +45,7 @@ One candidate configuration passes actual T4 loading, finite-output, worst-conte
 
 Link every acceptance statement to load logs, actual requests/replies/token IDs, memory/device traces, cache instrumentation, host CPU/crash checks and cost rows. State accepted settings and limits, timeout observations, failed checks and any required fallback/reruns.
 
-**Evidence:** Not yet recorded. No GPU work or compute authorization has been supplied by creation of this task system.
+**Evidence:** CPU preparation is linked above; actual smoke/host acceptance
+evidence is not yet recorded. No GPU work or compute authorization has been
+supplied by completion of M5-T01.
 

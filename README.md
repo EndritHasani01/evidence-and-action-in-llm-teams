@@ -59,9 +59,14 @@ Seven grouped exhibits, exact cases and five portable complete/incomplete/stoppe
 reports are retained. Full source regression passes all 424 checks, including
 all nine lifecycle checks. Focused/core/installed checks pass 25/252 (244 passed,
 eight optional skips)/166. All sixteen original-worker scopes reproduce twice
-with identical tables, cases, plotting inputs and export bytes. **M5-T01 is ready
-for CPU preparation.** Qwen3.5/T4 hardware, capability, resource admission,
-pilot and main experiments remain future work. See
+with identical tables, cases, plotting inputs and export bytes. **M5-T01 is
+implemented and verified on CPU:** the direct text-only Qwen adapter, durable
+raw diagnostics and proposed Kaggle allocation are prepared. All 449 full-suite
+checks at the backend checkpoint passed; final identity review passes 27 focused
+and 41 installed-package checks. Qwen3.5/T4 hardware, capability, resource
+admission, pilot and main experiments remain future work. See
+[M5-T01 completion evidence](docs/todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff),
+[proposed inference/allocation packet](docs/validation/m5-inference-preparation.md),
 [M4-T06 completion evidence](docs/todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate),
 [M4-T05 completion evidence](docs/todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff),
 [M4-T04 completion evidence](docs/todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff),
@@ -715,8 +720,8 @@ are prepared inputs, not an accepted M5 freeze, pilot or empirical results.
 
 ## M5 inference preparation
 
-The direct [inference adapter](recovery/inference.py) is prepared for CPU review
-and a separately authorized T4 smoke test. It uses the existing serial
+The direct [inference adapter](recovery/inference.py) is implemented and verified
+with CPU checks, ready for a separately authorized T4 smoke test. It uses the existing serial
 `ProcessProvider`/`LocalScheduler`, native Qwen text loading, explicit NF4/double
 quantization/FP16, fresh KV/recurrent state, saved seeds and strict raw decoding.
 Process/attempt diagnostics remain in the existing SQLite worker records.
