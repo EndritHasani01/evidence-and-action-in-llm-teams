@@ -1,6 +1,6 @@
 # M5-T01 — Inference backend and allocation preparation
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M4-T06](../M4/M4-T06-reproducible-report-and-cpu-gate.md). M1–M4 must have passed.
 M4-T06 completes on 6 October 2026 and the
@@ -44,5 +44,23 @@ A CPU-reviewed direct inference backend and concrete allocation plan are ready f
 
 Use saved generated-token fixtures with internal special markers, invalid suffixes and exact cap endings; verify no normalization turns invalid output valid. Check backend-to-ledger fields and serial worker initialization with mocks. Review actual maintained loader/configuration sources and provider/storage facts; leave hardware-dependent claims for M5-T02.
 
-**Evidence:** Not yet recorded. Add CPU checks, candidate environment and concrete allocation preparation artifacts before marking done.
+### Preparation checkpoint
+
+Started 7 October 2026 on clean `feat/m5-inference-preparation`.
+Inspected the repository contract, this task, specification §§8–9, runtime
+plan, technical synthesis/loading investigation and M4-T06/CPU-audit handoff.
+`.venv/Scripts/python.exe -m unittest tests.test_schedules tests.test_schedule_manifests tests.test_peer_views -q`
+passes 36 checks in 31.804 seconds on Windows, Python 3.11.9. Existing saved
+schedules, identities, renderer, schemas and target/fallback sizes remain the
+preparation authority. No frozen scientific configuration is changed.
+
+The user selected a proposed Kaggle plan. No reservation, upload, weights,
+inference, compute authorization or GPU lock is implied. Local model-stack
+metadata identifies torch 2.11.0, Transformers 5.12.0, Accelerate 1.14.0,
+bitsandbytes 0.49.2, tokenizers 0.22.2 and huggingface-hub 1.19.0; the repository
+CPU virtual environment deliberately has no torch. Maintained source review
+confirms native `AutoModelForCausalLM` text-config extraction, language-prefix
+conversion, tied-weight initialization, supported FP32 recurrent paths and
+per-call `DynamicCache`. Loading diagnostics and actual device/runtime behavior
+remain smoke gates. Backend, fixtures and allocation evidence are in progress.
 
