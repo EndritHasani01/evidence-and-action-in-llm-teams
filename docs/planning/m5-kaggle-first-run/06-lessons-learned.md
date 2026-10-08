@@ -1,6 +1,6 @@
 # Lessons learned from M5 preparation and the first Kaggle run
 
-Recorded 8 October 2026. **Status: retrospective lessons and future validation requirements; implementation remains pending.**
+Recorded 8 October 2026. **Status: original first-run retrospective retained; implementation and actual run-3 lessons added below.** The original sections' missing-checkout/pending-implementation statements describe the planning checkpoint. User-authorized Git/root-file recovery and the locally validated [v3 bootstrap repair](../../validation/m5-kaggle-pip-bootstrap-repair.md) subsequently supersede them without upgrading candidate/model gates.
 
 This file records the lessons from preparing the notebook, reviewing the supplied first run, researching the platform and pinned runtime, and writing the implementation plan. It covers scientific evidence, source delivery, environments, storage, model feasibility, execution, resource accounting, validation and collaboration. The returned notebook and results remain the original evidence. This document does not implement the proposed repairs or upgrade any scientific gate.
 
@@ -232,3 +232,13 @@ The first run verified useful host facts, a small WAL/FULL/backup diagnostic and
 6. Verify process exit, backup retrieval and provider release as distinct obligations.
 7. Make the smallest supported change, reopen affected gates and keep original evidence intact.
 8. Report only checks actually run, with one actionable next step for the user.
+
+## Actual run-3 and bootstrap repair lessons
+
+The full-source upload verifies every original member, including compressed fixtures. The tiny canary's result became full-size acceptance only after actual run-3 evidence; the accepted dataset can now be reused without another upload. Source transport, Linux process cleanup, package bootstrap and scientific checks still have separate outcomes.
+
+A clean venv's implicit bootstrap is itself a deployment prerequisite. The run records an inner `ensurepip` failure without its lower-level traceback, so a distribution-specific explanation remains unknown. Creating the same plain venv without pip and installing the existing exact verified wheel offline is a narrow supported bypass. It preserves the reviewed candidate, avoids inherited kernel packages and needs no new bootstrap dependency. Real local success validates that primitive on Windows; Linux/Python 3.13 acceptance still belongs to the retry.
+
+Review harnesses need the actual receipt shape too. A wrong field name can fail a reviewer assertion after the notebook itself succeeded. Preserve that failure, correct the harness and validate the unchanged delivered artifact; keep harness defects distinct from notebook/provider failures.
+
+Recovery should preserve existing data before restoring metadata or missing files. A complete byte-verified backup and genuine Git history allowed restoration of all six missing tracked root files without replacing existing edits. Later logical commits now use the recovered main checkout, with the earlier isolated checkout and all returned evidence retained.

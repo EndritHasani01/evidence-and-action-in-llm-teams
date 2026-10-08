@@ -19,6 +19,22 @@ Only the small pinned pip wheel was downloaded in that real check. No CUDA packa
 
 ## Delivery and remaining gates
 
-The source implementation checkpoint precedes generation of a new v3 notebook. The accepted private `m5-kaggle-source-v2` dataset will be reused without a new upload; the original v2 notebook, run-3 evidence and canonical archive remain retained. Returned retry evidence belongs under `notebooks/run/4/`.
+The [v3 notebook](../../notebooks/recovery_m5_kaggle_preflight_v3.ipynb) is now delivered from source checkpoint `635a76b14f8b2cbf2b00bd325debb99c97769565`. Its six cells/three code cells have no saved outputs or execution counts. Helper/manifest/lock bindings and the helper's exact Git blob hash pass; [delivery audit](../../notebooks/validation/m5-pip-bootstrap-repair/delivery-audit.json). Notebook SHA-256 is `6c9237ee852afdf03271026141d9e3f2e81a38d138aa8ab836ae32b46ce438a6`. The accepted source/member manifest, all 88 candidate files and three build-tool records match v2 exactly; only operational helper/build identity changes.
+
+Real Jupyter executed every code cell with unchanged sources and counts 1–3 for both [complete source](../../notebooks/validation/m5-pip-bootstrap-kernel-v3/final/valid-source/executed.ipynb) and [missing source](../../notebooks/validation/m5-pip-bootstrap-kernel-v3/final/missing-source/executed.ipynb). The complete case admits all 143 members and correctly refuses the Windows host before candidate setup; the missing case reports `payload_missing`. Both exports pass ZIP receipt/CRC/member checks and off-host copied read-only/immutable SQLite integrity/row/write-refusal checks. [Kernel validation](../../notebooks/validation/m5-pip-bootstrap-kernel-v3/final/validation.json) records actual outcomes. The initial reviewer harness used the wrong source-receipt field; its [failure record](../../notebooks/validation/m5-pip-bootstrap-kernel-v3/initial-harness-failure.json) and first executed case remain preserved. Correcting that harness required no notebook/runtime change. The Windows event-loop adjustment belongs only to the local harness.
+
+The accepted private `m5-kaggle-source-v2` dataset is reused without a new upload. Original v2/run-3/canonical bytes and the pre-existing local preparation-document edit pass the [checkpoint audit](../../notebooks/validation/m5-pip-bootstrap-repair/preservation-checkpoint.json). The [final preservation audit](../../notebooks/validation/m5-pip-bootstrap-repair/final-preservation-audit.json) additionally verifies all 27 earlier tracked notebooks/returned artifacts against Git and confirms no scientific diff or validated-source changes. The [handoff audit](../../notebooks/validation/m5-pip-bootstrap-repair/handoff-audit.json) checks local links/anchors, restored root files and all 29 task statuses. Root authority/build files have already been restored from genuine Git bytes; new logical commits belong to the main workspace. No remote refs changed.
+
+1. Import **`recovery_m5_kaggle_preflight_v3.ipynb`** privately into Kaggle and attach the existing private **`m5-kaggle-source-v2`** dataset.
+2. Select **Accelerator: None** and **Internet: On**, then **Run All** without editing cells.
+3. Download `preflight-results.zip` and the executed notebook, including failure evidence if any. Stop the session and save both under **`notebooks/run/4/`** for review.
+
+Reproduction uses the unchanged canonical archive and existing target lock/tool metadata with new output paths:
+
+```text
+python -m scripts.build_kaggle_bundle --source-archive dist/m5-kaggle-preflight.zip --output-dir <new-output-directory> --build-commit 635a76b14f8b2cbf2b00bd325debb99c97769565 --candidate-pylock notebooks/validation/m5-full-preparation/pylock.linux313.toml --build-tools notebooks/validation/m5-full-preparation/build-tool-metadata.json --helper scripts/m5_kaggle_preflight.py --notebook <new-notebook-path>
+```
+
+The generated companion payload remains byte-identical to the accepted asset. It is an ignored local audit copy, with no new Kaggle upload required. The CPU workflow remains bounded to 45 minutes, including export reserve, and requests the existing roughly 4.07-GB package staging subject to capacity admission. Session scratch is disposable; later GPU preparation cannot assume this environment persists.
 
 Actual Kaggle bootstrap, the 88-package install/provenance and all 81 focused/16 native checks still require execution and review. T02 remains blocked by its host/model gates, T01 remains done and progress remains 21 done/eight blocked. Scientific code, fixtures, caps, decoding, attempt/replay semantics and allocation ceilings are unchanged.

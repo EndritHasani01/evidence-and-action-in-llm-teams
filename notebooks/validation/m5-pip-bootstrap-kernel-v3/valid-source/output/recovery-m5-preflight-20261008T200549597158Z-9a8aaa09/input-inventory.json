@@ -1,0 +1,13 @@
+{
+  "root": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-kernel-v3-3de381c48ead461db00ff363213fa029\\valid-source\\inputs",
+  "entries": [
+    {
+      "path": "m5-kaggle-source.payload",
+      "kind": "file",
+      "bytes": 109248341
+    }
+  ],
+  "limit": 2000,
+  "truncated": false,
+  "errors": []
+}

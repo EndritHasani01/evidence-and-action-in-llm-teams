@@ -126,3 +126,19 @@ while K4/K8/K9 acceptance remains open. A narrow pinned-pip bootstrap repair
 precedes the next CPU run; the already accepted dataset can be reused unchanged.
 T02 model/host gates and task statuses remain blocked as before.
 
+### Run-3 repair and v3 retry handoff
+
+The [pinned-pip bootstrap repair](../../validation/m5-kaggle-pip-bootstrap-repair.md)
+creates the clean venv without `ensurepip`, verifies the already pinned wheel in
+an owned bounded process and installs pip offline before the unchanged candidate
+pipeline. Twenty-five operational checks, a real local isolated pip installation
+and exact-v3 Jupyter valid/missing-source runs pass. Windows checks do not pass
+actual Linux installation or the 81/16 scientific checks, which remain pending.
+
+Import the [v3 notebook](../../../notebooks/recovery_m5_kaggle_preflight_v3.ipynb),
+reuse the accepted private `m5-kaggle-source-v2` dataset and run **Accelerator None /
+Internet On**. Return the executed notebook and ZIP under `notebooks/run/4/`
+after stopping the session. No repeat upload is required; earlier artifacts and
+scientific/package/resource semantics are preserved. T02 remains blocked and
+the existing GPU authorization remains recorded.
+

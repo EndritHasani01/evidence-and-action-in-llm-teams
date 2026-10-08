@@ -1,6 +1,6 @@
 # M5 CPU-only Kaggle upload canary
 
-Prepared and locally verified 8 October 2026. **The returned Kaggle CPU canary passes all five stages.** The [run-2 review](m5-kaggle-upload-canary-run-2.md) verifies the actual upload, original-dataset inventory and off-host snapshots. This implements K0 provenance and the bounded R1/R2 experiment in the [ordered repair plan](../planning/m5-kaggle-first-run/05-implementation-and-validation.md). The [full-source CPU preparation packet](m5-kaggle-full-preparation.md) is now implemented and locally validated; actual Linux/Kaggle preparation and M5-T02 model acceptance remain pending.
+Prepared and locally verified 8 October 2026. **The returned Kaggle CPU canary passes all five stages.** The [run-2 review](m5-kaggle-upload-canary-run-2.md) verifies the actual upload, original-dataset inventory and off-host snapshots. This implements K0 provenance and the bounded R1/R2 experiment in the [ordered repair plan](../planning/m5-kaggle-first-run/05-implementation-and-validation.md). The [actual full-source run 3](m5-kaggle-full-preparation-run-3.md) subsequently accepts every original member and Linux cleanup, but fails inside `ensurepip` before candidate installation. Use the [locally validated repair and v3 handoff](m5-kaggle-pip-bootstrap-repair.md) with the already accepted dataset; actual candidate and M5-T02 model acceptance remain open. No repeat canary is required.
 
 ## Files to use
 
@@ -10,7 +10,7 @@ Prepared and locally verified 8 October 2026. **The returned Kaggle CPU canary p
 | [m5-source-canary.payload](../../dist/m5-kaggle-upload-canary/m5-source-canary.payload) | Upload this single 1,173-byte file as a private dataset, preserving its name and extension. |
 | [canary-manifest.json](../../dist/m5-kaggle-upload-canary/canary-manifest.json) | Local audit manifest. Its expectations are embedded in the notebook; no separate upload needed. |
 
-The payload is a tiny synthetic ZIP under a `.payload` suffix. It contains a synthetic source marker, gzip and nested ZIP with a synthetic report and SQLite row. It contains no study worlds, weights, credentials or actual worker data. The suffix passed this actual tiny upload; complete-source preservation still needs verification. The [platform research](../planning/m5-kaggle-first-run/02-platform-research-and-decisions.md#bounded-remaining-research) defines this acceptance question.
+The payload is a tiny synthetic ZIP under a `.payload` suffix. It contains a synthetic source marker, gzip and nested ZIP with a synthetic report and SQLite row. It contains no study worlds, weights, credentials or actual worker data. The suffix passed this actual tiny upload; complete-source preservation subsequently passes in run 3 for the accepted asset. The [platform research](../planning/m5-kaggle-first-run/02-platform-research-and-decisions.md#bounded-remaining-research) defines this acceptance question.
 
 ## CPU test procedure (completed in run 2)
 

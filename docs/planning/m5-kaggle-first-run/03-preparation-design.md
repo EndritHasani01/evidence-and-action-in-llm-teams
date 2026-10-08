@@ -1,8 +1,10 @@
 # Proposed preparation design
 
-**Implementation status: CPU preparation delivered and locally validated; actual Linux/Kaggle acceptance pending.** The [implementation evidence and v2 handoff](../../validation/m5-kaggle-full-preparation.md) record the 23 checks, exact-source audit and real Jupyter runs. The design below preserves its original rationale; [model smoke](04-model-feasibility-and-smoke.md) remains a later gated action.
+**Implementation status: actual full-source delivery and Linux cleanup pass in run 3; candidate bootstrap failed.** The [narrow repair and v3 handoff](../../validation/m5-kaggle-pip-bootstrap-repair.md) record 25 operational checks, a real isolated local pip installation and exact-v3 Jupyter runs. Actual Linux candidate acceptance remains open. The design below preserves its original rationale; [model smoke](04-model-feasibility-and-smoke.md) remains a later gated action.
 
 Two delivery details became concrete: the notebook uses a new `v2` filename to preserve the original, and embeds the one reviewed helper with its build-commit checksum so missing input can still be diagnosed. It verifies the complete canonical payload/member manifest before installation; the unchanged baseline archive does not acquire an operational helper under its historical source marker. The 88-package Linux/Python 3.13 lock selects exact wheel URLs/hashes/sizes, uses scratch, and replaces its pre-download expansion forecast with actual wheel entry sizes before installation. Linux cleanup is explicitly tested by a synthetic owned-process timeout stage before any package download. These are implementation choices within the design, not changes to scientific semantics or proof of model feasibility.
+
+Actual run 3 passes that source/cleanup contract and then fails inside `ensurepip`. V3 preserves v2 and creates the same plain isolated venv with `--without-pip`, downloads the existing pinned pip wheel through a bounded standard-library subprocess, verifies its receipt and bytes, and installs it offline. No candidate versions, scientific source or existing dataset bytes change. The reviewed run's inner failure cause remains unknown; Windows bootstrap checks do not establish Linux installation.
 
 ## First principles
 

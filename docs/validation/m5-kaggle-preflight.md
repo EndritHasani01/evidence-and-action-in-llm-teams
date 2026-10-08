@@ -5,23 +5,26 @@ The [T01 adapter and CPU evidence](../todos/M5/M5-T01-inference-and-allocation-p
 are complete. The user authorized GPU-host preparation and reported available
 quota. The first run supplied two-T4/CUDA inspection but failed source admission;
 the [actual CPU canary](m5-kaggle-upload-canary-run-2.md) then passed transport checks.
-The next run prepares the full source and candidate on CPU; actual model/host
-acceptance remains unexecuted. The existing [smoke packet](m5-inference-preparation.md)
+The [actual full-source run 3](m5-kaggle-full-preparation-run-3.md) then verified
+all 143 members and Linux process cleanup, but failed inside `ensurepip` before
+installation/tests. The next CPU run validates the repaired bootstrap and candidate;
+actual model/host acceptance remains unexecuted. The existing [smoke packet](m5-inference-preparation.md)
 and scientific resource limits still apply across accounts and configurations.
 
 ## Recommended notebook
 
-Use [recovery_m5_kaggle_preflight_v2.ipynb](../../notebooks/recovery_m5_kaggle_preflight_v2.ipynb)
-and upload only [m5-kaggle-source.payload](../../dist/m5-kaggle-source-v2/m5-kaggle-source.payload)
-as a new private dataset named `m5-kaggle-source-v2`. Import the notebook privately,
+Use [recovery_m5_kaggle_preflight_v3.ipynb](../../notebooks/recovery_m5_kaggle_preflight_v3.ipynb)
+and reuse the accepted private dataset `m5-kaggle-source-v2` with its unchanged
+`m5-kaggle-source.payload`. No new upload is needed. Import the notebook privately,
 attach that dataset, select **Accelerator: None**, enable **Internet**, and Run All.
 Download `preflight-results.zip` and the executed notebook, stop the session, and
-return both under `notebooks/run/3/`. Fixed defaults need no cell edits.
+return both under `notebooks/run/4/`. Fixed defaults need no cell edits.
 
-The [full preparation evidence and handoff](m5-kaggle-full-preparation.md)
-record 23 passing operational checks and real local Jupyter valid/missing-source
-exports. The full source arrives unchanged; the notebook installs the 88-package
-candidate into scratch and requests 81 focused plus 16 native checks on Linux.
+The [bootstrap repair evidence and handoff](m5-kaggle-pip-bootstrap-repair.md)
+record 25 passing operational checks, a real isolated pinned-pip installation,
+and exact-v3 local Jupyter valid/missing-source exports. The notebook uses a clean
+venv without `ensurepip`, verifies the pinned pip wheel, then requests the unchanged
+88-package candidate install and 81 focused plus 16 native checks on Linux.
 Actual Kaggle installation and model acceptance remain pending. The original
 notebook and ZIP are retained as first-run evidence; the manual GPU inspection
 cell below is historical and is not the next preparation action.

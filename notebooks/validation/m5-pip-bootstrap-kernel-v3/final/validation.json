@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "notebook_sha256": "6c9237ee852afdf03271026141d9e3f2e81a38d138aa8ab836ae32b46ce438a6",
+  "build_commit": "635a76b14f8b2cbf2b00bd325debb99c97769565",
+  "helper_sha256": "76f0fd7166852897e8e0176ee497d0b31207393c44fbeb0d04abd1f4dedab5ea",
+  "scope": "Real local Windows Jupyter entrypoint; candidate host is correctly refused",
+  "linux_candidate_acceptance": null,
+  "model_generations": 0,
+  "cases": {
+    "valid-source": {
+      "executed": true,
+      "execution_counts": [
+        1,
+        2,
+        3
+      ],
+      "cell_sources_unchanged": true,
+      "root_blocker": "ValueError: candidate_host_requires_linux_x86_64_python313",
+      "zip_path": "notebooks/validation/m5-pip-bootstrap-kernel-v3/final/valid-source/output/recovery-m5-preflight-20261008T200636831830Z-048d8ea1/preflight-results.zip",
+      "zip_sha256": "6c5ca0731d62febd5392b24bc41d617ad66a01b6c76694d2a8da4f69185ccf13",
+      "zip_members": 10,
+      "tests_passed": 0,
+      "snapshot_sha256": {
+        "filesystem.sqlite": "554c5c739e9b6a71e47f618c861104efb8a2cb12f5ef72012692365a9880cd86",
+        "filesystem-backup.sqlite": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584"
+      },
+      "snapshot_integrity": "ok",
+      "read_only_enforced": true,
+      "model_generations": 0
+    },
+    "missing-source": {
+      "executed": true,
+      "execution_counts": [
+        1,
+        2,
+        3
+      ],
+      "cell_sources_unchanged": true,
+      "root_blocker": "ValueError: payload_missing",
+      "zip_path": "notebooks/validation/m5-pip-bootstrap-kernel-v3/final/missing-source/output/recovery-m5-preflight-20261008T200642867886Z-f01f0d1a/preflight-results.zip",
+      "zip_sha256": "e26a195bab92f12bedcf71c4fd38a02f186f725cc4fef921a7a032bb95b9ba9f",
+      "zip_members": 8,
+      "tests_passed": 0,
+      "snapshot_sha256": {
+        "filesystem.sqlite": "554c5c739e9b6a71e47f618c861104efb8a2cb12f5ef72012692365a9880cd86",
+        "filesystem-backup.sqlite": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584"
+      },
+      "snapshot_integrity": "ok",
+      "read_only_enforced": true,
+      "model_generations": 0
+    }
+  }
+}

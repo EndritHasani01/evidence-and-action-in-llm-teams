@@ -2,7 +2,9 @@
 
 Implementation started 8 October 2026 after the [actual upload canary passed](m5-kaggle-upload-canary-run-2.md). The [ordered repair contract](../planning/m5-kaggle-first-run/05-implementation-and-validation.md) governs this work. Scientific code/configuration, the original archive and returned notebooks/results remain unchanged. T01 stays done and T02 stays blocked until actual host/model gates pass.
 
-**Latest actual run:** [returned run 3](m5-kaggle-full-preparation-run-3.md) verifies the full source on Kaggle, Linux process cleanup and synthetic off-host backups. It fails at `venv`'s internal `ensurepip` step, before package installation or tests. The narrow pinned-pip bootstrap repair is the next implementation dependency; full preparation/model acceptance remains open. The original v2 delivery/checkpoint evidence below is historical.
+**Current action:** import the [v3 notebook](../../notebooks/recovery_m5_kaggle_preflight_v3.ipynb), reuse the accepted private `m5-kaggle-source-v2` dataset, select **Accelerator None / Internet On**, and return the executed notebook/ZIP under `notebooks/run/4/`. The [bootstrap repair](m5-kaggle-pip-bootstrap-repair.md) passes 25 operational checks, a real local isolated pip install and exact-notebook Jupyter checks. Full Linux candidate/model acceptance remains open.
+
+**Latest actual run:** [returned run 3](m5-kaggle-full-preparation-run-3.md) verifies the full source on Kaggle, Linux process cleanup and synthetic off-host backups. It fails at `venv`'s internal `ensurepip` step, before package installation or tests. The original v2 delivery/checkpoint evidence below is historical; it records the earlier missing root files and isolated-checkout workflow, superseded by the user-authorized recovery noted at the end.
 
 ## Source delivery checkpoint
 
@@ -32,7 +34,7 @@ The build tools are separately pinned to pip 26.2.1, setuptools 84.0.0 and wheel
 
 To avoid downloading packages implicitly during a remote dry-run, the notebook uses the already selected wheel URLs/sizes/hashes for admission and download, then performs pip's actual dry-run resolution against verified local wheels. Before download it records a conservative four-times package-expansion forecast plus a one-GiB build reserve. After download it replaces that forecast with exact wheel ZIP entry sizes before installation. Filesystems sharing a device form one capacity pool with an explicit 256-MiB evidence reserve; observed pool free space remains distinct from quota and model-asset admission. Shared-pool admission uses the smallest observed capacity, including different quota views of the same device; the added deterministic case verifies refusal before downloads.
 
-Full-size Kaggle upload, actual Linux/Python 3.13 installation/import/native checks and GPU/model acceptance remain unverified. Docker's Linux engine is unavailable locally; no Linux success is inferred from Windows or cross-platform resolution. The final delivery and local Jupyter evidence follow.
+At the v2 local checkpoint, full-size Kaggle upload, actual Linux/Python 3.13 installation/import/native checks and GPU/model acceptance were unverified. Actual run 3 subsequently passes upload/Linux cleanup, while candidate/model acceptance remains open. Docker's Linux engine is unavailable locally; no Linux installation success is inferred from Windows or cross-platform resolution. The historical v2 delivery and local Jupyter evidence follow.
 
 ## Final notebook validation
 
@@ -49,13 +51,15 @@ Both cases pass ZIP member/CRC checks and synthetic WAL/FULL backup checks. Copi
 
 The [preservation audit](../../notebooks/validation/m5-full-preparation/preservation-audit.json) confirms an empty scientific Git diff, 57 unchanged source/configuration/fixture files, matching ASTs for all 28 scientific modules and unchanged raw bytes for 16 earlier committed notebooks/returned artifacts. First-run result files already moved in the supplied workspace to `run/1` are recorded at their current paths; their content is unchanged. The [handoff audit](../../notebooks/validation/m5-full-preparation/handoff-audit.json) checks local references and all 29 task statuses against the index. Missing root authority/build files remain missing, and their historical references remain explicitly recorded rather than restored.
 
-## Files and next user action
+## Historical v2 files and completed run-3 procedure
 
 | File | Use |
 |---|---|
 | [recovery_m5_kaggle_preflight_v2.ipynb](../../notebooks/recovery_m5_kaggle_preflight_v2.ipynb) | Import this new notebook into Kaggle. It preserves the original failed notebook. |
 | [m5-kaggle-source.payload](../../dist/m5-kaggle-source-v2/m5-kaggle-source.payload) | Upload this one unchanged file to a new private dataset named `m5-kaggle-source-v2`. |
 | [source-manifest.json](../../dist/m5-kaggle-source-v2/source-manifest.json) | Local audit copy; already embedded in the notebook, so no separate upload is required. |
+
+The following v2 procedure was delivered before run 3. Use the current v3 action at the top for the retry.
 
 1. Create the private dataset above with only `m5-kaggle-source.payload`, preserving its filename and extension.
 2. Import the v2 notebook privately, attach that dataset, choose **Accelerator: None** and **Internet: On**.
