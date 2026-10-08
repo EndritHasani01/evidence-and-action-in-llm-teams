@@ -1,0 +1,29 @@
+{
+  "name": "install-source",
+  "args": [
+    "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7/venv/bin/python",
+    "-m",
+    "pip",
+    "--isolated",
+    "--disable-pip-version-check",
+    "install",
+    "--no-deps",
+    "--no-index",
+    "--no-compile",
+    "--report",
+    "/kaggle/working/recovery-m5-preflight-20261008T211102264915Z-c5a493f7/source-install.json",
+    "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7/built/evidence_and_action_in_llm_teams-0.1.0-py3-none-any.whl"
+  ],
+  "cwd": "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7",
+  "started_utc": "2026-10-08T21:15:33.400680+00:00",
+  "timeout_seconds": 60,
+  "stdout": "logs/install-source.stdout.txt",
+  "stderr": "logs/install-source.stderr.txt",
+  "status": "passed",
+  "leader_exited": true,
+  "tree_confirmation": "exited",
+  "pid": 300,
+  "exit_code": 0,
+  "ended_utc": "2026-10-08T21:15:34.067245+00:00",
+  "elapsed_seconds": 0.6664790070001345
+}

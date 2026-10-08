@@ -1,0 +1,8 @@
+Collecting setuptools==84.0.0 (from -r /tmp/recovery-m5/20261008T211102264915Z-c5a493f7/build-tools.lock (line 1))
+  Downloading setuptools-84.0.0-py3-none-any.whl (818 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 818.2/818.2 kB 15.6 MB/s  0:00:00
+Collecting wheel==0.48.0 (from -r /tmp/recovery-m5/20261008T211102264915Z-c5a493f7/build-tools.lock (line 2))
+  Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+Saved ./wheels/setuptools-84.0.0-py3-none-any.whl
+Saved ./wheels/wheel-0.48.0-py3-none-any.whl
+Successfully downloaded setuptools wheel
