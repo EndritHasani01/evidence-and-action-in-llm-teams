@@ -4,7 +4,7 @@
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
 
-**Implementation status:** M1–M4 are verified on CPU and all four gates pass. Twenty-one tasks are done, including [M5-T01 CPU inference/allocation preparation](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff). The direct Qwen adapter and existing worker/attempt diagnostics are prepared with a [proposed Kaggle smoke packet](validation/m5-inference-preparation.md). Full regression passes 449 checks at the backend checkpoint; final identity review passes 27 focused and 41 installed checks, with 260 core checks (252 passed, eight optional skips). All sixteen original-worker report scopes reproduce twice with fixed main/stopped unknowns, seven exhibits and five portable reports. The [CPU audit](validation/m4-cpu-gate.md) maps all 22 plan rows and seven specification categories to named checks. M5-T02 remains blocked by execution authorization and actual provider/host preflight. Accepted inference, hardware/capability/resource gates and empirical results remain open. See the [living handoff](#10-living-handoff); CPU admission is not GPU feasibility or an empirical result.
+**Implementation status:** M1–M4 are verified on CPU and all four gates pass. Twenty-one tasks are done, including [M5-T01 CPU inference/allocation preparation](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff). The direct Qwen adapter and existing worker/attempt diagnostics are prepared with a [proposed Kaggle smoke packet](validation/m5-inference-preparation.md). Full regression passes 449 checks at the backend checkpoint; final identity review passes 27 focused and 41 installed checks, with 260 core checks (252 passed, eight optional skips). All sixteen original-worker report scopes reproduce twice with fixed main/stopped unknowns, seven exhibits and five portable reports. The [CPU audit](validation/m4-cpu-gate.md) maps all 22 plan rows and seven specification categories to named checks. M5-T02 remains blocked by actual provider/host preflight and smoke preparation. Accepted inference, hardware/capability/resource gates and empirical results remain open. See the [living handoff](#10-living-handoff); CPU admission is not GPU feasibility or an empirical result.
 
 ## 1. Execution roadmap
 
@@ -319,7 +319,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
 | M3 | Verified on CPU (5/5 tasks done; gate passed) | [M3-T05 gate evidence](todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate): 18 durable, 22 attempt, 14 worker, 23 accounting and nine lifecycle checks; 253 source/installed and 81 core checks pass. Eleven real controller kills preserve raw reuse, branch-local effects, cleared fields and Q prose. Both complete fixtures reconcile 4,340 logical slots / 3,956 generations / 384 replays; full main/development schedules, synthetic budget stop/resume and supported backups pass. [Fourteen-case ordinary bundle](../tests/fixtures/scripted_lifecycle_run.zip) passes offline audit and fresh reproduction; all prior M3 CPU/native archives reproduce. |
 | M4 | Verified on CPU (6/6 tasks done; gate passed) | [T01](todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff), [T02](todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff), [T03](todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff), [T04](todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff) and [T05](todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff) establish exact outcomes, estimands, information/work, policy costs and paired uncertainty from original workers. [T06 completion](todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate) supplies reports, exact cases and the passed [coverage/category audit](validation/m4-cpu-gate.md). All 424 source checks pass; focused/core/installed checks pass 25/252 (244 passed, eight optional skips)/166. Sixteen report scopes reproduce every M4 output/export twice under current source and installed hash seed 37; five reports retain 35 SVG/PNG exhibit pairs. |
-| M5 | T01 verified on CPU (1/5 tasks done); operational gates open | [T01 completion](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) supplies the direct adapter, exact raw/seed/cache/worker diagnostics and [proposed Kaggle packet](validation/m5-inference-preparation.md). Final 27 focused / 41 installed checks pass, and the 449-check full regression passes at the backend checkpoint. T02 awaits execution authorization and actual provider/host preflight. No language-weight, hardware, finite-output, capability, accepted-host or measured allocation result exists. |
+| M5 | T01 verified on CPU (1/5 tasks done); operational gates open | [T01 completion](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) supplies the direct adapter, exact raw/seed/cache/worker diagnostics and [proposed Kaggle packet](validation/m5-inference-preparation.md). Final 27 focused / 41 installed checks pass, and the 449-check full regression passes at the backend checkpoint. The first Kaggle run supplies device/CUDA inspection but rejects source. The [CPU upload canary](validation/m5-kaggle-upload-canary.md) is locally verified and awaits actual upload evidence. Language-weight, finite-output, capability, accepted-host and reconciled allocation results remain pending. |
 | M6 | Not started | Requires accepted M5 freeze |
 
 ### Implementation decisions
@@ -842,9 +842,44 @@ under a 0.5 aggregate GPU-hour ceiling, with a 120-wall-second safe-stop allowan
 and the existing shared 8/2/2-hour reserves. Provider/account facts, exact request
 materialization, durable off-host export and confirmed release remain pending
 T02 preflight. Progress is twenty-one done and eight blocked, with no active or
-ready task. T02's preparation dependency is satisfied; execution authorization
-and the actual hardware/host gate remain required. M5's operational gate stays
+ready task. T02's preparation dependency is satisfied; the actual hardware/host
+gate and prepared scope for model execution remain required. M5's operational gate stays
 open; capability, complete pilot and measured whole-schedule admission follow.
+
+On 8 October the user supplied CPU notebook metadata (Python 3.13, CPU-only
+torch, missing bitsandbytes/SQLite saver, 19.5 GiB free disk) and chose GPU-host
+preparation with available quota. The [follow-up](validation/m5-kaggle-preflight.md)
+provides a portable source/tokenizer export and a brief device/package/disk cell
+before CUDA selection. The GPU image may differ from the reported CPU image.
+Hardware inspection can precede exact smoke request preparation; all allocated
+inspection and host checks remain inside the existing smoke/development limits.
+The required exact requests and candidate host checks still precede model loading.
+Actual GPU output, accepted storage and measured smoke remain pending; T02 stays blocked.
+
+The user then requested the actual notebook and detailed preparation planning.
+The [Kaggle notebook](../notebooks/recovery_m5_kaggle_preflight.ipynb) supplies
+fixed defaults, private-input discovery, isolated candidate installation,
+device/loader/protocol/SQLite/storage checks and one recoverable results ZIP.
+The [notebook plan/evidence](validation/m5-kaggle-notebook-plan.md#completion-evidence)
+records 22 controlled workflow checks, a real nine-cell Windows/CPU Jupyter
+execution and 81 focused plus 16 native checks from its source export. The
+focused setup-command bound is 360 seconds after a measured 258.460-second
+Windows run; model timeout/settings and the common workflow/smoke limits are
+unchanged. The current checkout lacks usable Git metadata and four top-level
+project files; the supplied committed ZIP remains the source snapshot. No
+recovery/scientific code changed, no missing files were restored, and no Kaggle
+execution or model admission is claimed.
+
+On return of the executed notebook, the [first-run review](planning/m5-kaggle-first-run/01-first-run-evidence.md)
+confirmed two T4s/CUDA-enabled Torch and one source-admission failure. Candidate
+installation and native tests skipped; weights and model calls remain unexecuted.
+The authorized [CPU upload canary](validation/m5-kaggle-upload-canary.md) now
+implements the small R1/R2 diagnostic. Twelve focused checks and actual local
+Jupyter valid/missing-input cases pass, with readable exports. A verified
+isolated sparse checkout supports logical commits while preserving original
+workspace metadata and evidence. Actual Kaggle transport and full corrected
+preparation remain pending, followed by T02 model acceptance and later gates.
+No scientific code/configuration or task counts change.
 
 ### Unresolved issues
 
@@ -853,7 +888,7 @@ open; capability, complete pilot and measured whole-schedule admission follow.
 | Persistence and crash safety in the accepted inference host | M3-T05 passes on Windows/CPU; repeat the checkpoint/SQLite/process/backup checks in M5's accepted host lock and actual storage environment before inference admission |
 | Passing model/runtime/timeout and device headroom at the revised context | M5 maintained-loader diagnostics and bounded smoke/pilot, including the complete admitted input envelope. Static full-attention FP16 KV alone is 8 GiB at 262,144; weights/activations/workspace and 1.5 GiB headroom are additional. CPU admission is not T4 feasibility. |
 | 9B/4B, target/fallback size, 60/40 worlds | M5 capability and complete-schedule allocation evidence, following the specified precedence and shared development limit |
-| Compute provider availability, persistence and allocation rules | [T01's proposed private Kaggle packet](validation/m5-inference-preparation.md) defines two-device charging, ceilings, shutdown allowance and local/off-host backup destinations. Before an authorized reservation, record actual availability/quota/monetary terms, device identities, accepted-host storage/export and the confirmed release mechanism. Provider choice cannot alter experimental semantics. |
+| Compute provider availability, persistence and allocation rules | [T01's proposed private Kaggle packet](validation/m5-inference-preparation.md) defines two-device charging, ceilings, shutdown allowance and local/off-host backup destinations. Record actual account terms before assignment, then capture device identities in the brief host inspection. Accepted-host storage/export and the confirmed release mechanism must pass before model loading. Provider choice cannot alter experimental semantics. |
 
 ### Final outcome / retrospective
 

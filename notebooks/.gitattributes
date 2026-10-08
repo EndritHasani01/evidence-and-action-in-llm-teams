@@ -1,3 +1,4 @@
 # Preserve the supplied and generated notebooks and returned evidence byte for byte.
-*.ipynb -text
-run/** -text
+*.ipynb -text whitespace=cr-at-eol
+run/** -text whitespace=cr-at-eol
+validation/** -text whitespace=cr-at-eol

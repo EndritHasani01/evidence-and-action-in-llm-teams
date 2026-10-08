@@ -7,7 +7,7 @@
 M5-T01 completes on 7 October 2026 with its
 [CPU completion checks](M5-T01-inference-and-allocation-preparation.md#completion-and-handoff)
 and [proposed private Kaggle T4-x2 packet](../../validation/m5-inference-preparation.md).
-The preparation dependency is satisfied. Execution authorization is absent;
+The preparation dependency is satisfied. At the T01 handoff, execution authorization was absent;
 actual account/quota/monetary terms, device/host/storage checks, all 24 exact
 smoke requests, durable off-host export and confirmed provider release remain
 preflight work. The proposed ceiling is 24 physical attempts / 0.5 aggregate
@@ -48,4 +48,44 @@ Link every acceptance statement to load logs, actual requests/replies/token IDs,
 **Evidence:** CPU preparation is linked above; actual smoke/host acceptance
 evidence is not yet recorded. No GPU work or compute authorization has been
 supplied by completion of M5-T01.
+
+### 8 October GPU-host preparation follow-up
+
+The user supplied a CPU notebook package/disk report and chose GPU-host
+preparation, reporting available quota and willingness to use it. The
+[host follow-up and first inspection cell](../../validation/m5-kaggle-preflight.md)
+record those facts and provide the next concrete step. Brief device/package/disk
+inspection precedes CUDA selection and exact request preparation, with all
+allocated time charged under the existing limits. Actual GPU-host output,
+storage admission, the candidate environment checks and measured model smoke
+are still pending. This task remains blocked by these execution prerequisites;
+no model/host acceptance or empirical result is claimed.
+
+At the user's request, the next preparation action is now the
+[ready Kaggle preflight notebook](../../../notebooks/recovery_m5_kaggle_preflight.ipynb),
+with a companion private input ZIP and fixed package defaults. Its
+[planning and local evidence](../../validation/m5-kaggle-notebook-plan.md#completion-evidence)
+include 22 controlled workflows, actual local CPU Jupyter execution and the
+81-focused/16-native check commands. It reports installation/storage failures
+and exports diagnostics before any model download or generation. Actual Kaggle
+execution and the exact bounded smoke remain pending; this does not complete T02.
+
+### First-run review and CPU transport canary
+
+The supplied [first Kaggle run](../../planning/m5-kaggle-first-run/01-first-run-evidence.md)
+records two T4s and CUDA-enabled Torch, then rejects a missing compressed source
+fixture. Installation and native checks skipped; no language weights or model
+generations ran. The original failed run and snapshots remain unchanged. These
+observations supersede earlier pending-inspection statements without passing
+candidate-host or model acceptance.
+
+The separately authorized [CPU upload canary](../../validation/m5-kaggle-upload-canary.md)
+is implemented: 12 focused standard-library checks pass; the exact shipped
+notebook executes in real local Jupyter for valid/missing input and exports
+readable diagnostics in both cases. Verified checkout provenance and logical
+commits are available in the isolated review checkout. Actual Kaggle byte
+preservation and optional original-dataset inventory remain pending. The next
+user action is the private tiny payload/notebook with Accelerator None and
+Internet Off. Full preparation follows verified transport; T02 model smoke and
+all dependent gates remain blocked.
 

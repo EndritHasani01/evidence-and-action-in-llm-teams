@@ -1,10 +1,10 @@
 # M5 Kaggle first-run review and implementation plan
 
-Prepared 8 October 2026. **Status: planning complete; changes proposed, not implemented.**
+Prepared 8 October 2026. **Status: planning complete; CPU upload canary implemented and locally verified; actual transport acceptance and full preparation repair pending.**
 
 The first run detected two T4s and CUDA-enabled Torch, then stopped at the source-input contract. The uploaded archive contains the missing compressed fixture. The immediate repair belongs to input delivery and validation. A reliable next run also needs explicit environment isolation, separate scratch/output storage, useful failure reports, and allocation accounting. Passing those preparation checks will still leave physical model acceptance open.
 
-This package responds to the request to inspect the executed notebook and plan all necessary changes before implementation. It changes only Markdown. The delivered notebook, executed notebook, result ZIP, extracted results, source ZIP, scientific configuration and Python implementation are retained unchanged.
+This package responds to the request to inspect the executed notebook and plan all necessary changes before implementation. The original planning phase changed only Markdown. The subsequently authorized [CPU upload canary](../../validation/m5-kaggle-upload-canary.md) is now implemented separately. The original delivered notebook, executed notebook, result ZIP, extracted results, source ZIP, scientific configuration and scientific Python implementation are retained unchanged.
 
 ## Reading order
 
@@ -60,4 +60,8 @@ This planning package was checked against the supplied JSON/logs, original archi
 
 The original six-document planning audit passes: six Markdown files, 26 local links/anchors, exact capacity/memory/storage arithmetic, and all six shard sizes/LFS hashes checked against their pinned metadata. Checksums of 156 existing notebooks, returned artifacts, source/archive, implementation/test/configuration files and earlier Markdown documents remain unchanged. These are planning/provenance checks, not the future candidate-host or model tests. The subsequently appended lessons file records the retrospective without changing the proposed implementation scope.
 
-`git status` currently fails because `.git` contains only `upstream-checkouts`, with no usable repository metadata. Logical commits cannot be made in this workspace. Document 05 records the intended checkpoints for a verified checkout; this plan does not invent a commit, initialize a replacement repository or overwrite evidence.
+`git status` in the original workspace fails because `.git` contains only `upstream-checkouts`, with no usable repository metadata. The authorized canary implementation uses a verified sparse checkout at `build/m5-kaggle-canary-review`, based on the genuine M5 commit. Planning/evidence and implementation checkpoints are committed there on local branch `feat/m5-kaggle-upload-canary`. Original metadata and user evidence remain untouched; no remote branch changed. See the [canary handoff](../../validation/m5-kaggle-upload-canary.md#artifact-and-commit-provenance).
+
+## Current implementation handoff
+
+K0 has verified checkout provenance. K1's executable CPU test is ready: import the [canary notebook](../../../notebooks/recovery_m5_kaggle_upload_canary.ipynb), attach its [tiny payload](../../../dist/m5-kaggle-upload-canary/m5-source-canary.payload), and return the result ZIP. Twelve focused checks and real local Jupyter success/failure executions pass. R1 is conditional on attaching the original dataset; R2 still needs actual Kaggle upload evidence. K2–K15 retain their documented dependencies.
