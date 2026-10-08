@@ -220,6 +220,15 @@ class PreflightTests(unittest.TestCase):
         self.assertIn('output_evidence_reserve',result['summary']['root_blocker'])
         self.assertFalse(any(n=='download-candidate' for n,_,_ in self.command_calls));self.assert_export(result)
 
+    def test_shared_pool_admission_uses_the_smallest_observed_capacity(self):
+        self.scratch.mkdir();self.output.mkdir()
+        def usage(path):
+            free=4*2**30 if Path(path)==self.scratch else 512*2**20
+            return shutil._ntuple_diskusage(8*2**30,8*2**30-free,free)
+        with patch.object(preflight.shutil,'disk_usage',side_effect=usage):
+            with self.assertRaisesRegex(ValueError,'scratch_capacity'):
+                preflight.require_space(self.scratch,self.output,2**30)
+
     def test_inventory_limit_symlinks_and_gpu_refusal(self):
         listing=preflight.inventory(self.inputs,limit=0)
         self.assertTrue(listing['truncated'])

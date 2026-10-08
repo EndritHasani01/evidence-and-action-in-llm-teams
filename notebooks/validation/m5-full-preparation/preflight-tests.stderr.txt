@@ -17,9 +17,10 @@ test_complete_member_hash_rejects_same_marker_with_changed_fixture (tests.test_k
 test_deadline_and_interruption_preserve_readable_evidence (tests.test_kaggle_preflight.PreflightTests.test_deadline_and_interruption_preserve_readable_evidence) ... ok
 test_inventory_limit_symlinks_and_gpu_refusal (tests.test_kaggle_preflight.PreflightTests.test_inventory_limit_symlinks_and_gpu_refusal) ... ok
 test_observed_transformed_input_exports_root_diagnosis (tests.test_kaggle_preflight.PreflightTests.test_observed_transformed_input_exports_root_diagnosis) ... ok
+test_shared_pool_admission_uses_the_smallest_observed_capacity (tests.test_kaggle_preflight.PreflightTests.test_shared_pool_admission_uses_the_smallest_observed_capacity) ... ok
 test_shared_pool_and_storage_failure_prevent_download (tests.test_kaggle_preflight.PreflightTests.test_shared_pool_and_storage_failure_prevent_download) ... ok
 
 ----------------------------------------------------------------------
-Ran 20 tests in 9.312s
+Ran 21 tests in 10.254s
 
 OK

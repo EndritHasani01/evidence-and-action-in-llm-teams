@@ -180,7 +180,8 @@ def require_space(scratch: Path, output: Path, additional_scratch: int) -> dict:
     if shutil.disk_usage(output).free < OUTPUT_RESERVE:
         raise ValueError("output_evidence_reserve")
     required = additional_scratch + (OUTPUT_RESERVE if same else 0)
-    if shutil.disk_usage(scratch).free < required:
+    scratch_pool=facts['locations']['scratch']['pool']
+    if facts['pools'][scratch_pool]['free_bytes'] < required:
         raise ValueError(f"scratch_capacity: additional_required={required}")
     facts.update(additional_scratch_bytes=additional_scratch, output_reserve_bytes=OUTPUT_RESERVE)
     return facts
