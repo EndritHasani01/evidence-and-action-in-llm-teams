@@ -902,6 +902,13 @@ and task counts are unchanged at twenty-one done/eight blocked. User-authorized
 Git/root-file recovery is complete with verified preservation; new logical
 commits use the main workspace, while the earlier isolated checkout is retained.
 
+The subsequent [manual Kaggle bootstrap result](validation/m5-kaggle-pip-bootstrap-repair.md)
+reports pip 26.2.1 successfully installed inside the new venv on Python 3.13.
+Its unlocated `sitecustomize`/missing-`wrapt` warning is retained alongside that
+success. This checks the narrow bypass on the actual host; the complete v3
+candidate install/provenance and 81/16 checks remain unexecuted, with unchanged
+package pins, scientific gates and task statuses.
+
 ### Unresolved issues
 
 | Issue | Smallest resolving step / decision evidence |

@@ -142,3 +142,11 @@ after stopping the session. No repeat upload is required; earlier artifacts and
 scientific/package/resource semantics are preserved. T02 remains blocked and
 the existing GPU authorization remains recorded.
 
+The user subsequently reports successful isolated pip 26.2.1 installation on
+Kaggle/Python 3.13 from the standalone manual cell. The retained
+[console output and review](../../validation/m5-kaggle-pip-bootstrap-repair.md)
+also record a `sitecustomize`/missing-`wrapt` warning of unlocated origin, which
+did not prevent that reported bootstrap result. Full v3 candidate installation,
+provenance, scientific checks and model acceptance remain pending. This narrow
+manual evidence requires no package-pin or scientific-status change.
+
