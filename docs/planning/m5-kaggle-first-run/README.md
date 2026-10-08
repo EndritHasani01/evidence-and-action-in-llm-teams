@@ -1,6 +1,6 @@
 # M5 Kaggle first-run review and implementation plan
 
-Prepared 8 October 2026. **Status: planning complete; CPU upload canary implemented and locally verified; actual transport acceptance and full preparation repair pending.**
+Prepared 8 October 2026. **Status: planning complete; actual Kaggle CPU canary passes; full-source transport and preparation repair pending.**
 
 The first run detected two T4s and CUDA-enabled Torch, then stopped at the source-input contract. The uploaded archive contains the missing compressed fixture. The immediate repair belongs to input delivery and validation. A reliable next run also needs explicit environment isolation, separate scratch/output storage, useful failure reports, and allocation accounting. Passing those preparation checks will still leave physical model acceptance open.
 
@@ -31,7 +31,7 @@ This package supersedes the earlier [notebook plan's](../../validation/m5-kaggle
 
 | Decision | Recommendation | Boundary |
 |---|---|---|
-| Source delivery | Preserve the original archive as one transport payload; verify its bytes and every extracted required member before setup. | Confirm the platform preserves the payload in a CPU canary before relying on it. Do not skip or regenerate scientific fixtures. |
+| Source delivery | Preserve the original archive as one raw `.payload`; verify its bytes and every extracted required member before setup. | The tiny actual canary passes. Verify the complete source upload too; do not skip or regenerate scientific fixtures. |
 | Input diagnostics | Capture the actual attached-file inventory, sizes, missing paths, likely transformed names and validation reason. | Diagnose before copying a potentially expanded tree. |
 | Package environment | Prefer a clean venv and the observed CUDA 12.8 candidate build. Resolve and record the full dependency closure. | No blanket inheritance of Kaggle packages or unqualified latest-version installation. Candidate acceptance still requires the actual host. |
 | Storage | Keep environments, downloads and temporary source work on verified scratch; retain reports and worker backups under `/kaggle/working`. | Observed scratch free space is not a provider quota or durability guarantee. |
@@ -64,4 +64,4 @@ The original six-document planning audit passes: six Markdown files, 26 local li
 
 ## Current implementation handoff
 
-K0 has verified checkout provenance. K1's executable CPU test is ready: import the [canary notebook](../../../notebooks/recovery_m5_kaggle_upload_canary.ipynb), attach its [tiny payload](../../../dist/m5-kaggle-upload-canary/m5-source-canary.payload), and return the result ZIP. Twelve focused checks and real local Jupyter success/failure executions pass. R1 is conditional on attaching the original dataset; R2 still needs actual Kaggle upload evidence. K2–K15 retain their documented dependencies.
+K0 has verified checkout provenance. The user completed K1's actual CPU upload test: the [run-2 review](../../validation/m5-kaggle-upload-canary-run-2.md) records five passing stages, exact tiny payload/member bytes and independently readable SQLite snapshots. The original dataset inventory shows all 14 gzip and two nested ZIP paths absent with expanded counterparts, explaining the first failure. R1's observed-path question is resolved and R2 passes for this upload; exact dataset version identifiers remain unavailable. Select raw `.payload` delivery for K2 and verify the entire canonical source on its actual upload. K2–K15 retain their remaining dependencies; no additional user canary run is needed.

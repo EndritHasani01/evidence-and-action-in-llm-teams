@@ -83,9 +83,15 @@ The separately authorized [CPU upload canary](../../validation/m5-kaggle-upload-
 is implemented: 12 focused standard-library checks pass; the exact shipped
 notebook executes in real local Jupyter for valid/missing input and exports
 readable diagnostics in both cases. Verified checkout provenance and logical
-commits are available in the isolated review checkout. Actual Kaggle byte
-preservation and optional original-dataset inventory remain pending. The next
-user action is the private tiny payload/notebook with Accelerator None and
-Internet Off. Full preparation follows verified transport; T02 model smoke and
-all dependent gates remain blocked.
+commits are available in the isolated review checkout.
+
+The user returned the [actual Kaggle run-2 notebook and ZIP](../../validation/m5-kaggle-upload-canary-run-2.md).
+All five canary stages pass; notebook source/manifest and export receipt match,
+and all three synthetic databases reopen independently off-host. The original
+dataset inventory shows all 14 gzip paths and two nested ZIP paths absent, with
+exposed counterparts. This explains the first source rejection and selects raw
+`.payload` transport for the next full-source packet. Exact dataset version and
+provider release remain unrecorded. Full-source upload verification and K2–K9
+preparation repair follow; no repeat canary is requested. T02 model smoke and
+all dependent gates remain blocked, with zero model generations in this run.
 

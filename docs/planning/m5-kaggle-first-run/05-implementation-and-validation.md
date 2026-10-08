@@ -1,6 +1,6 @@
 # Ordered implementation and validation contract
 
-**Status: proposed work; no notebook or Python changes made in this planning turn.** Implement the immediate preparation repair first. The model work below is conditional on actual evidence and belongs to M5-T02, not an automatic continuation of Run All.
+**Status: K0 provenance verified; K1's actual CPU canary passes; K2–K15 retain remaining work.** The original planning phase made no notebook or Python changes. Implement the immediate preparation repair first. The model work below is conditional on actual evidence and belongs to M5-T02, not an automatic continuation of Run All.
 
 ## Work items and logical checkpoints
 
@@ -25,7 +25,7 @@
 
 At planning completion, K0 was blocked for commits because the original workspace was not a usable repository. The authorized canary implementation now uses a verified sparse checkout at `build/m5-kaggle-canary-review`, from the genuine M5 baseline, on local branch `feat/m5-kaggle-upload-canary`. Original metadata and missing top-level files remain untouched. Planning/evidence and implementation checkpoints are committed there; see the [handoff](../../validation/m5-kaggle-upload-canary.md#artifact-and-commit-provenance). No replacement history was manufactured.
 
-**Current work-item status:** K0 provenance verified; K1 CPU canary implemented and locally verified, with actual R1/R2 Kaggle evidence pending. K2 cannot select a passing production transport until that evidence arrives. K3–K15 remain subsequent work. The original preflight notebook is unchanged.
+**Current work-item status:** K0 provenance verified. K1's [actual run-2 CPU canary](../../validation/m5-kaggle-upload-canary-run-2.md) passes all five stages; the original inventory resolves R1's observed-path question and R2 passes for the tiny payload. Mount references are retained; exact dataset version identifiers remain unavailable. Select raw `.payload` delivery for K2, with full-source byte/closure acceptance still required. K2–K15 remain subsequent work. The original preflight notebook is unchanged; no repeat user canary is needed.
 
 Build the companion artifact after approved source changes. Embed the resulting payload reference in the shipped notebook; avoid hashing an archive that contains its own generated checksum field. A member manifest and an external archive checksum can have distinct roles without circular provenance. Record actual source/build commit separately from the old baseline marker. Preserve earlier bundle versions; do not overwrite the user's returned evidence.
 

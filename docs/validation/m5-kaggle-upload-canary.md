@@ -1,6 +1,6 @@
 # M5 CPU-only Kaggle upload canary
 
-Prepared and locally verified 8 October 2026. **Ready for the user's CPU upload test; actual Kaggle transport acceptance remains pending.** This implements K0 provenance and the executable R1/R2 preparation in the [ordered repair plan](../planning/m5-kaggle-first-run/05-implementation-and-validation.md). The corrected full preflight and M5-T02 model acceptance remain subsequent work.
+Prepared and locally verified 8 October 2026. **The returned Kaggle CPU canary passes all five stages.** The [run-2 review](m5-kaggle-upload-canary-run-2.md) verifies the actual upload, original-dataset inventory and off-host snapshots. This implements K0 provenance and the bounded R1/R2 experiment in the [ordered repair plan](../planning/m5-kaggle-first-run/05-implementation-and-validation.md). The corrected full preflight and M5-T02 model acceptance remain subsequent work.
 
 ## Files to use
 
@@ -10,9 +10,11 @@ Prepared and locally verified 8 October 2026. **Ready for the user's CPU upload 
 | [m5-source-canary.payload](../../dist/m5-kaggle-upload-canary/m5-source-canary.payload) | Upload this single 1,173-byte file as a private dataset, preserving its name and extension. |
 | [canary-manifest.json](../../dist/m5-kaggle-upload-canary/canary-manifest.json) | Local audit manifest. Its expectations are embedded in the notebook; no separate upload needed. |
 
-The payload is a tiny synthetic ZIP under a `.payload` suffix. It contains a synthetic source marker, gzip and nested ZIP with a synthetic report and SQLite row. It contains no study worlds, weights, credentials or actual worker data. A suffix change is a candidate to test, not an assumed platform guarantee. The [platform research](../planning/m5-kaggle-first-run/02-platform-research-and-decisions.md#bounded-remaining-research) defines this acceptance question.
+The payload is a tiny synthetic ZIP under a `.payload` suffix. It contains a synthetic source marker, gzip and nested ZIP with a synthetic report and SQLite row. It contains no study worlds, weights, credentials or actual worker data. The suffix passed this actual tiny upload; complete-source preservation still needs verification. The [platform research](../planning/m5-kaggle-first-run/02-platform-research-and-decisions.md#bounded-remaining-research) defines this acceptance question.
 
-## Your next action
+## CPU test procedure (completed in run 2)
+
+The user completed this procedure and returned both artifacts under `notebooks/run/2`. The next dependency is implementation of the full-source preparation packet; no repeat canary or GPU run is required by this review. The procedure remains here for reproduction.
 
 1. Create a **private Kaggle dataset** named `m5-source-canary`. Upload only `m5-source-canary.payload`, unchanged.
 2. Import `recovery_m5_kaggle_upload_canary.ipynb` as a **private notebook**. Set **Accelerator: None** and **Internet: Off**.
@@ -55,7 +57,7 @@ Focused cases cover repeatable builds, unchanged inputs, separate runs, missing/
 
 The first release harness completed both cases but emitted a Windows ZeroMQ teardown assertion. The subsequent real-kernel check used `WindowsSelectorEventLoopPolicy` and completed cleanly: [selector validation record](../../notebooks/validation/m5-upload-canary-selector/validation.json). This changed the local harness, not the delivered notebook.
 
-The final artifact/link audit checks 53 local references and confirms all 186 prior files outside five intended progress/planning updates remain unchanged. The shipped payload passes its exact manifest. Git whitespace checks recognize preserved artifact CRLF bytes; scientific source, configuration, fixtures and the user's original notebook/results are untouched.
+At delivery, the final artifact/link audit checked 53 local references and confirmed all 186 prior files outside five intended progress/planning updates remained unchanged. The shipped payload passed its exact manifest. Git whitespace checks recognize preserved artifact CRLF bytes; scientific source, configuration, fixtures and the user's original notebook/results are untouched.
 
 ## Artifact and commit provenance
 
@@ -79,8 +81,8 @@ The manifest records build Python/SQLite versions. Synthetic SQLite/gzip bytes c
 
 ## Acceptance and next dependency
 
-Returned Kaggle CPU evidence must show unique input, exact outer/member bytes, preserved gzip/nested ZIP, completed checks and readable snapshots. Retain the dataset reference/version available in the workflow and inspect failures as well as green summaries. Local success leaves R2 pending.
+The [returned run-2 evidence](m5-kaggle-upload-canary-run-2.md) shows unique input, exact outer/member bytes, preserved gzip/nested ZIP, five passing stages and independently readable snapshots. It also shows all 14 original gzip paths and two nested ZIP paths absent, with exposed counterparts. R1's observed-path question is resolved and R2 passes for the tiny raw payload. Dataset mount references are recorded; exact version identifiers and provider release remain unavailable.
 
-After a passing real result, implement K2–K9: complete canonical source delivery, early admission, clean candidate environment, scratch/output layout, bounded commands, corrected preflight and actual preparation evidence. Verify the tested transport on the full source payload too; a tiny canary cannot prove large-file limits or complete closure.
+Now implement K2–K9: complete canonical source delivery, early admission, clean candidate environment, scratch/output layout, bounded commands, corrected preflight and actual preparation evidence. Verify the tested transport on the full source payload too; a tiny canary cannot prove large-file limits or complete closure.
 
 Assets, full-envelope headroom, actual attention dispatch, smoke requests, allocation/release reconciliation and T02 model acceptance remain later work. T01 stays done; T02/dependent tasks retain their blocked statuses. Scientific settings, outcomes, populations, attempt/replay rules and resource ceilings remain unchanged.

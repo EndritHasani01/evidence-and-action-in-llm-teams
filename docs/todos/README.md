@@ -48,8 +48,12 @@ capacity status; each prerequisite task links that renewal.
 The first Kaggle preparation run now supplies actual two-T4/CUDA inspection,
 then fails the compressed-source contract; candidate installation/tests and
 model work did not execute. The [CPU upload canary](../validation/m5-kaggle-upload-canary.md)
-is implemented and locally verified with 12 focused checks and real Jupyter
-success/failure exports. Actual upload preservation is the next user check.
+passes 12 local focused checks and real Jupyter success/failure exports. The
+[actual Kaggle run 2](../validation/m5-kaggle-upload-canary-run-2.md) now passes
+all five stages, with exact tiny payload/member bytes, the original compressed
+path diagnosis and independently readable off-host snapshots. Raw `.payload`
+delivery is selected for the next full-source preparation packet, whose actual
+upload, candidate environment and model gates still require validation.
 Task counts and scientific gates above are unchanged; T02 remains blocked.
 
 ## Selecting and updating a task
