@@ -18,6 +18,7 @@ import zipfile
 
 from scripts.build_kaggle_bundle import BASELINE_COMMIT, archive_manifest
 from scripts import m5_kaggle_preflight as preflight
+from scripts.m5_kaggle_continue import continue_preflight
 
 
 def zip_bytes(members):
@@ -97,9 +98,12 @@ class PreflightTests(unittest.TestCase):
                     n:hashlib.sha256(b).hexdigest() for n,b in self.members.items()
                     if n.startswith('recovery/') and n.endswith('.py')},
                     'qwen_text_class':'Qwen3_5ForCausalLM','torch_cuda_build':'12.8','model_generations':0}
-            stdout.write_text(json.dumps(result))
-            if self.fault=='malformed-probe': stdout.write_text('warning before JSON\n{}')
-            if self.fault=='empty-probe': stdout.write_text('{}')
+            stdout.write_text('[ERROR] controlled third-party documentation diagnostic\n')
+            machine=output/'installed-probe-result.json'
+            machine.write_text(json.dumps(result))
+            if self.fault=='malformed-probe': machine.write_text('warning before JSON\n{}')
+            if self.fault=='empty-probe': machine.write_text('{}')
+            if self.fault=='missing-probe': machine.unlink()
         elif name=='pip-list': stdout.write_text('[]')
         elif name in {'focused-checks','native-9b','native-4b','native-capacity'}:
             count={'focused-checks':81,'native-9b':4,'native-4b':4,'native-capacity':8}[name]
@@ -210,7 +214,7 @@ class PreflightTests(unittest.TestCase):
     def test_candidate_failures_and_bad_machine_output_export(self):
         for fault in ['create-venv','download-pip-wheel','empty-pip-receipt','corrupt-pip-wheel',
                       'bootstrap-pip','download-candidate','install-candidate','build-source','pip-check',
-                      'malformed-probe','empty-probe','focused-checks','skipped-checks','native-9b']:
+                      'malformed-probe','empty-probe','missing-probe','focused-checks','skipped-checks','native-9b']:
             with self.subTest(fault=fault):
                 self.fault=fault
                 self.command_calls.clear()
@@ -224,6 +228,62 @@ class PreflightTests(unittest.TestCase):
                                          for n,_,_ in self.command_calls))
                     with zipfile.ZipFile(result['zip_path']) as archive:
                         self.assertNotIn('pip-bootstrap-wheel.json',archive.namelist())
+
+    def test_same_session_continuation_uses_existing_environment_and_keeps_failed_export(self):
+        self.fault='malformed-probe'
+        prior=self.controlled_run()
+        original_hash=preflight.sha256_file(Path(prior['zip_path']))
+        self.assertEqual(prior['summary']['tests_passed'],0)
+        scratch=Path(prior['report']['scratch_directory'])
+        interpreter=scratch/'venv'/('Scripts/python.exe' if os.name=='nt' else 'bin/python')
+        interpreter.parent.mkdir(exist_ok=True);interpreter.touch()
+        self.fault=None;self.command_calls.clear()
+        with patch.object(preflight.platform,'system',return_value='Linux'), \
+             patch.object(preflight.sys,'version_info',(3,13,15,'final',0)), \
+             patch.object(preflight,'command',side_effect=self.controlled_command):
+            result=continue_preflight(preflight.__dict__,prior,self.expected)
+        self.assertTrue(result['summary']['continuation_checks_passed'])
+        self.assertEqual(result['summary']['tests_passed'],97)
+        self.assertEqual(result['summary']['model_generations'],0)
+        self.assertEqual(preflight.sha256_file(Path(prior['zip_path'])),original_hash)
+        self.assertFalse(any(n.startswith(('download-','install-','create-venv')) for n,_,_ in self.command_calls))
+        self.assert_export(result)
+        self.command_calls.clear()
+        (scratch/'source/tests/fixtures/capacity_report.json.gz').write_bytes(b'changed')
+        result=continue_preflight(preflight.__dict__,prior,self.expected)
+        self.assertFalse(result['summary']['continuation_checks_passed'])
+        self.assertEqual(result['report']['stages']['source_recheck']['status'],'failed')
+        self.assertEqual(result['summary']['tests_passed'],0)
+        self.assertEqual(self.command_calls,[]);self.assert_export(result)
+
+    def test_generated_probe_writes_machine_file_in_real_noisy_subprocess(self):
+        # Control unavailable external imports; exercise the complete producer and
+        # actual subprocess/file/stdout transport rather than fabricating its file.
+        prefix=self.root/'fake-venv';package=prefix/'recovery';package.mkdir(parents=True)
+        (package/'__init__.py').write_bytes(self.members['recovery/__init__.py'])
+        self.output.mkdir()
+        machine=self.output/'installed-probe-result.json'
+        program=preflight.installed_probe_script(self.expected,preflight.PINNED,machine)
+        setup='\n'.join([
+            'import importlib.metadata,sys,types',
+            f'sys.prefix={str(prefix)!r}',
+            f'wanted={preflight.PINNED!r}',
+            'importlib.metadata.version=lambda name:wanted[name]',
+            "for name in ['recovery','recovery.inference','recovery.runner','langgraph','langgraph.checkpoint','langgraph.checkpoint.sqlite','transformers','torch']:",
+            "    module=types.ModuleType(name);module.__path__=[];sys.modules[name]=module",
+            f"sys.modules['recovery'].__file__={str(package/'__init__.py')!r}",
+            "sys.modules['langgraph.checkpoint.sqlite'].SqliteSaver=object",
+            "sys.modules['transformers'].Qwen3_5ForCausalLM=type('Qwen3_5ForCausalLM',(),{})",
+            "sys.modules['torch'].__version__='2.11.0+cu128'",
+            "sys.modules['torch'].version=types.SimpleNamespace(cuda='12.8')",
+            "print('[ERROR] controlled third-party documentation diagnostic')",''])
+        record=preflight.command(self.output,'probe-output',[sys.executable,'-I','-c',setup+program],
+            deadline=time.monotonic()+180,timeout=30,cwd=self.root,env=preflight.candidate_environment(self.root))
+        result=preflight.installed_provenance(machine,self.expected,preflight.PINNED)
+        self.assertEqual(result['versions'],preflight.PINNED)
+        self.assertEqual(result['model_generations'],0)
+        self.assertIn('[ERROR]',(self.output/record['stdout']).read_text())
+        with self.assertRaises(json.JSONDecodeError):preflight.json_stdout(self.output,record)
 
     def test_pinned_pip_download_verifies_bytes_before_publish(self):
         metadata=self.expected['build_tools']['pip']['wheels'][0]

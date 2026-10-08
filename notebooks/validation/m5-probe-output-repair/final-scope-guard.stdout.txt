@@ -1,0 +1,49 @@
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+Running pip-check ...
+Running installed-probe ...
+Running pip-list ...
+Running pip-freeze ...
+Running focused-checks ...
+focused_checks: passed
+Running native-9b ...
+native_9b: passed
+Running native-4b ...
+native_4b: passed
+Running native-capacity ...
+native_capacity: passed
+{
+  "continuation_checks_passed": true,
+  "tests_passed": 97,
+  "root_blocker": null,
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.0940000000409782
+}
+Result ZIP SHA-256: 66dfca7728b2997a3425981e85a1a98c813d0aafdd9cbe331ae45365a320c08e
+{
+  "continuation_checks_passed": false,
+  "tests_passed": 0,
+  "root_blocker": "AssertionError: ",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.0470000000204891
+}
+Result ZIP SHA-256: e7152cf9bb316afec8e879bcdf5494cd41c682fab5e5b2e3b8f5a70007640327

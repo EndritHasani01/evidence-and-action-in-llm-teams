@@ -1,0 +1,6 @@
+test_same_session_continuation_uses_existing_environment_and_keeps_failed_export (tests.test_kaggle_preflight.PreflightTests.test_same_session_continuation_uses_existing_environment_and_keeps_failed_export) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.777s
+
+OK

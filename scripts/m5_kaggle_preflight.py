@@ -392,7 +392,7 @@ def pip_wheel_download_script(metadata: dict, destination: Path) -> str:
         "print(json.dumps(dict(expected,verified=True)))", ""])
 
 
-def installed_probe_script(expected: dict, versions: dict) -> str:
+def installed_probe_script(expected: dict, versions: dict, result_path: Path) -> str:
     hashes = {n: item["sha256"] for n, item in expected["members"].items()
               if n.startswith("recovery/") and n.endswith(".py")}
     return "\n".join([
@@ -408,10 +408,25 @@ def installed_probe_script(expected: dict, versions: dict) -> str:
         "observed={'recovery/'+p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in package.glob('*.py')}",
         "assert observed==expected, 'source-to-installed module bytes differ'",
         "assert package.is_relative_to(Path(sys.prefix).resolve()), 'base/source import contamination'",
-        "print(json.dumps({'versions':actual,'executable':sys.executable,'prefix':sys.prefix,",
+        f"Path({str(result_path)!r}).write_text(json.dumps({{'versions':actual,'executable':sys.executable,'prefix':sys.prefix,",
         "'sys_path':sys.path,'module_root':str(package),'verified_module_hashes':observed,",
         "'qwen_text_class':Qwen3_5ForCausalLM.__name__,'torch_cuda_build':torch.version.cuda,",
-        "'gpu_native_diagnostics':None,'model_generations':0}))", ""])
+        "'gpu_native_diagnostics':None,'model_generations':0}),encoding='utf-8')", ""])
+
+
+def installed_provenance(result_path: Path, expected: dict, versions: dict) -> dict:
+    # Third-party imports may print diagnostics; machine evidence has its own file.
+    if result_path.stat().st_size > 2*2**20:
+        raise ValueError('installed_probe_result_too_large')
+    result = json.loads(result_path.read_text(encoding='utf-8'))
+    wanted_hashes = {n:p['sha256'] for n,p in expected['members'].items()
+                     if n.startswith('recovery/') and n.endswith('.py')}
+    if (not isinstance(result,dict) or result.get('versions')!=versions
+            or result.get('verified_module_hashes')!=wanted_hashes
+            or result.get('qwen_text_class')!='Qwen3_5ForCausalLM'
+            or result.get('torch_cuda_build')!='12.8' or result.get('model_generations')!=0):
+        raise ValueError('installed_probe_schema_or_provenance')
+    return result
 
 
 def export_evidence(output: Path) -> dict:
@@ -622,16 +637,10 @@ def run_preflight(input_root: Path, output_root: Path, scratch_root: Path, expec
         invoke("pip-check", [interpreter,"-m","pip","--isolated","check"],30)
         probe = scratch/"installed_probe.py"
         versions = report['stages']['environment']['result']['versions']
-        probe.write_text(installed_probe_script(expected,versions),encoding='utf-8')
-        record = invoke("installed-probe", [interpreter,"-I",probe],90)
-        result = json_stdout(output,record)
-        wanted_hashes = {n:p['sha256'] for n,p in expected['members'].items()
-                         if n.startswith('recovery/') and n.endswith('.py')}
-        if (not isinstance(result,dict) or result.get('versions')!=versions
-                or result.get('verified_module_hashes')!=wanted_hashes
-                or result.get('qwen_text_class')!='Qwen3_5ForCausalLM'
-                or result.get('torch_cuda_build')!='12.8' or result.get('model_generations')!=0):
-            raise ValueError('installed_probe_schema_or_provenance')
+        result_path = output/'installed-probe-result.json'
+        probe.write_text(installed_probe_script(expected,versions,result_path),encoding='utf-8')
+        invoke("installed-probe", [interpreter,"-I",probe],90)
+        result = installed_provenance(result_path,expected,versions)
         save_json(output/"installed-provenance.json",result)
         record = invoke("pip-list", [interpreter,"-m","pip","--isolated","list","--format=json"],30)
         save_json(output/"installed-packages.json",json_stdout(output,record))
