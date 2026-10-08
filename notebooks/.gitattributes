@@ -1,0 +1,3 @@
+# Preserve the supplied and generated notebooks and returned evidence byte for byte.
+*.ipynb -text
+run/** -text
