@@ -3,6 +3,7 @@
 import gzip
 import hashlib
 import io
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -10,6 +11,8 @@ import warnings
 import zipfile
 
 from scripts.build_kaggle_bundle import BASELINE_COMMIT, PAYLOAD_NAME, archive_manifest, build
+from scripts.build_kaggle_bundle import candidate_files, candidate_lock
+from unittest.mock import patch, MagicMock
 
 
 class BundleTests(unittest.TestCase):
@@ -84,6 +87,51 @@ class BundleTests(unittest.TestCase):
             archive.writestr(entry, b"outside")
         with self.assertRaisesRegex(ValueError, "unsafe_source_member"):
             archive_manifest(self.source)
+
+    def test_target_wheel_selection_pins_one_compatible_file_and_byte_range_total(self):
+        pylock=self.root/'pylock.toml'
+        pylock.write_text('''lock-version="1.0"
+[[packages]]
+name="probe"
+version="1.0"
+wheels=[{url="https://files.pythonhosted.org/probe-1.0-py3-none-any.whl",size=9,hashes={sha256="SHA_A"}},
+        {url="https://files.pythonhosted.org/probe-1.0-cp313-cp313-manylinux_2_28_x86_64.whl",hashes={sha256="SHA_B"}}]
+'''.replace('SHA_A','a'*64).replace('SHA_B','b'*64))
+        response=MagicMock()
+        response.headers={'Content-Length':'1','Content-Range':'bytes 0-0/17'}
+        with patch('scripts.build_kaggle_bundle.urlopen') as open_url:
+            open_url.return_value.__enter__.return_value=response
+            files=candidate_files(pylock)
+        self.assertEqual(files[0]['bytes'],17)
+        self.assertIn('-cp313-',files[0]['filename'])
+        self.assertEqual(candidate_lock(files),'probe==1.0 --hash=sha256:'+'b'*64+'\n')
+
+    def test_target_metadata_refuses_untrusted_origin_or_missing_wheel(self):
+        path=self.root/'pylock.toml'
+        for wheels in ['[]','[{url="https://unreviewed.invalid/probe.whl",size=1,hashes={sha256="abc"}}]']:
+            path.write_text('lock-version="1.0"\n[[packages]]\nname="probe"\nversion="1.0"\nwheels='+wheels+'\n')
+            with self.assertRaises(ValueError):candidate_files(path)
+
+    def test_notebook_bootstrap_binds_the_delivered_helper_manifest_and_lock(self):
+        helper=self.root/'helper.py'
+        helper.write_text("marker='reviewed helper'\n",encoding='utf-8')
+        notebook=self.root/'prepared.ipynb'
+        output=self.root/'prepared'
+        files=[{'name':'probe','version':'1.0','bytes':7,'sha256':'a'*64}]
+        manifest=build(self.source,output,'a'*40,expected_source_hash=hashlib.sha256(self.source.read_bytes()).hexdigest(),
+                       candidate_wheels=files,build_tools={'pip':{}},helper=helper,notebook=notebook)
+        document=json.loads(notebook.read_text(encoding='utf-8'))
+        code=[c for c in document['cells'] if c['cell_type']=='code']
+        self.assertEqual(len(document['cells']),6);self.assertEqual(len(code),3)
+        for cell in code:
+            self.assertEqual(cell['outputs'],[]);self.assertIsNone(cell['execution_count'])
+            compile(''.join(cell['source']),'notebook-cell','exec')
+        namespace={};exec(''.join(code[0]['source']),namespace)
+        self.assertEqual(namespace['preflight_namespace']['marker'],'reviewed helper')
+        self.assertEqual(namespace['EXPECTED'],manifest)
+        with self.assertRaises(FileExistsError):
+            build(self.source,self.root/'not-created',notebook=notebook)
+        self.assertFalse((self.root/'not-created').exists())
 
 
 if __name__ == "__main__":
