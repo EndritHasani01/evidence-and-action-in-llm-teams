@@ -1,0 +1,160 @@
+{
+  "schema_version": 2,
+  "kind": "cpu-canonical-source-preparation",
+  "started_utc": "2026-10-08T19:44:59.225417+00:00",
+  "output_directory": "/kaggle/working/recovery-m5-preflight-20261008T194459225087Z-3e63b0ff",
+  "scratch_directory": "/tmp/recovery-m5/20261008T194459225087Z-3e63b0ff",
+  "cpu_workflow_limit_seconds": 2700,
+  "export_reserve_seconds": 90,
+  "stages": {
+    "input_inventory": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T19:44:59.229096+00:00",
+      "result": {
+        "selected_payload": "/kaggle/input/datasets/endrithasani/m5-kaggle-source-v2/m5-kaggle-source.payload",
+        "entries": 4
+      },
+      "ended_utc": "2026-10-08T19:44:59.236088+00:00",
+      "elapsed_seconds": 0.00701729900001169
+    },
+    "source": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [
+        "input_inventory"
+      ],
+      "started_utc": "2026-10-08T19:44:59.237681+00:00",
+      "result": {
+        "payload": "/kaggle/input/datasets/endrithasani/m5-kaggle-source-v2/m5-kaggle-source.payload",
+        "archive_sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f",
+        "verified_members": 143,
+        "expanded_bytes": 165002177,
+        "baseline_commit": "ca46bcd55486b38bb453f5294e01f943bc7f7752",
+        "build_commit": "42fb405e09d879c1bd4594e9250cfbe53ad3e373",
+        "dataset_version": null,
+        "dataset_reference": "/kaggle/input/datasets/endrithasani/m5-kaggle-source-v2",
+        "closure": "Every canonical archive member, including unchanged compressed fixtures."
+      },
+      "ended_utc": "2026-10-08T19:45:04.181989+00:00",
+      "elapsed_seconds": 4.944335971000015
+    },
+    "cpu_host": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T19:45:04.183266+00:00",
+      "result": {
+        "python": "3.13.15",
+        "os": "Linux-6.18.48+-x86_64-with-glibc2.39",
+        "sqlite": "3.45.1",
+        "visible_driver_gpu_entries": [],
+        "cuda_initialized_by_kernel": false
+      },
+      "ended_utc": "2026-10-08T19:45:04.184542+00:00",
+      "elapsed_seconds": 0.0012956599999824903
+    },
+    "command_cleanup": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [
+        "source",
+        "cpu_host"
+      ],
+      "started_utc": "2026-10-08T19:45:04.185789+00:00",
+      "result": {
+        "expected_timeout": true,
+        "leader_exited": true,
+        "tree_confirmation": "exited",
+        "grandchild_stopped": true,
+        "scope": "Synthetic CPU process diagnostic; no model or GPU initialization."
+      },
+      "ended_utc": "2026-10-08T19:45:06.442695+00:00",
+      "elapsed_seconds": 2.2569371820000015
+    },
+    "environment": {
+      "status": "failed",
+      "reason": "RuntimeError: command_failed: create-venv, exit=1, reason=None; see logs/create-venv.stderr.txt",
+      "prerequisites": [
+        "source",
+        "cpu_host",
+        "command_cleanup"
+      ],
+      "started_utc": "2026-10-08T19:45:06.444180+00:00",
+      "ended_utc": "2026-10-08T19:45:06.662442+00:00",
+      "elapsed_seconds": 0.21827922299999614
+    },
+    "installed_packages": {
+      "status": "blocked",
+      "reason": "prerequisites: environment",
+      "prerequisites": [
+        "environment"
+      ]
+    },
+    "focused_checks": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_9b": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_4b": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_capacity": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "filesystem_backup": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T19:45:06.670666+00:00",
+      "result": {
+        "journal_mode": "wal",
+        "synchronous": 2,
+        "integrity": "ok",
+        "rows": [
+          [
+            7
+          ]
+        ],
+        "read_only_enforced": true,
+        "backup_sha256": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584",
+        "scope": "Small synthetic diagnostic; actual worker/crash checks are separate."
+      },
+      "ended_utc": "2026-10-08T19:45:06.714192+00:00",
+      "elapsed_seconds": 0.04354970399998592
+    }
+  },
+  "root_blocker": "RuntimeError: command_failed: create-venv, exit=1, reason=None; see logs/create-venv.stderr.txt",
+  "summary": {
+    "preparation_checks_passed": false,
+    "root_blocker": "RuntimeError: command_failed: create-venv, exit=1, reason=None; see logs/create-venv.stderr.txt",
+    "tests_passed": 0,
+    "model_generations": 0,
+    "model_smoke_ready": false,
+    "gpu_native_diagnostics": null,
+    "model_assets_verified": null,
+    "model_smoke": null,
+    "provider_assignment_utc": null,
+    "provider_release_utc": null,
+    "observed_cpu_wall_seconds": 7.490306856999979,
+    "next_action": "Download the ZIP and stop the session. Return the root-blocker evidence for review; do not rerun or repair fixtures."
+  }
+}

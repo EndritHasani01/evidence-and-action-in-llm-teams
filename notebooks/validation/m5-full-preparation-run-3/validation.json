@@ -1,0 +1,62 @@
+{
+  "artifacts": {
+    "notebook-exec.ipynb": {
+      "bytes": 111733,
+      "sha256": "efe476ada4fde533f85f316c0c0130689196a0bd9f7dfae608193f6cfb0e087a"
+    },
+    "preflight-results.zip": {
+      "bytes": 29776,
+      "sha256": "d135f6749b9e206a3c8a9f797f2a987f4c0bddabeffbda124d3b3a1e3c939e2a"
+    }
+  },
+  "notebook_source_cells_match": true,
+  "executed_code_counts": [
+    1,
+    2,
+    3
+  ],
+  "notebook_error_outputs": 0,
+  "receipt_matches_zip": true,
+  "zip_members": 17,
+  "zip_crc": "passed",
+  "embedded_manifest_matches_delivery": true,
+  "candidate_lock_hash_matches": true,
+  "full_source_verified_members": 143,
+  "stage_statuses": {
+    "input_inventory": "passed",
+    "source": "passed",
+    "cpu_host": "passed",
+    "command_cleanup": "passed",
+    "environment": "failed",
+    "installed_packages": "blocked",
+    "focused_checks": "blocked",
+    "native_9b": "blocked",
+    "native_4b": "blocked",
+    "native_capacity": "blocked",
+    "filesystem_backup": "passed"
+  },
+  "root_blocker": "RuntimeError: command_failed: create-venv, exit=1, reason=None; see logs/create-venv.stderr.txt",
+  "observed_cpu_wall_seconds": 7.490306856999979,
+  "sqlite_off_host": [
+    {
+      "name": "filesystem.sqlite",
+      "sha256": "554c5c739e9b6a71e47f618c861104efb8a2cb12f5ef72012692365a9880cd86",
+      "integrity": "ok",
+      "row": 7,
+      "read_only_enforced": true
+    },
+    {
+      "name": "filesystem-backup.sqlite",
+      "sha256": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584",
+      "integrity": "ok",
+      "row": 7,
+      "read_only_enforced": true
+    }
+  ],
+  "original_artifacts_unchanged": true,
+  "tests_passed": 0,
+  "model_generations": 0,
+  "provider_release_utc": null,
+  "review_status": "passed",
+  "preparation_acceptance": "blocked at ensurepip invoked by venv; inner cause unavailable"
+}

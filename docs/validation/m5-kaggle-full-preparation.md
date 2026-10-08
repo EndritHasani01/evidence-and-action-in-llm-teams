@@ -2,6 +2,8 @@
 
 Implementation started 8 October 2026 after the [actual upload canary passed](m5-kaggle-upload-canary-run-2.md). The [ordered repair contract](../planning/m5-kaggle-first-run/05-implementation-and-validation.md) governs this work. Scientific code/configuration, the original archive and returned notebooks/results remain unchanged. T01 stays done and T02 stays blocked until actual host/model gates pass.
 
+**Latest actual run:** [returned run 3](m5-kaggle-full-preparation-run-3.md) verifies the full source on Kaggle, Linux process cleanup and synthetic off-host backups. It fails at `venv`'s internal `ensurepip` step, before package installation or tests. The narrow pinned-pip bootstrap repair is the next implementation dependency; full preparation/model acceptance remains open. The original v2 delivery/checkpoint evidence below is historical.
+
 ## Source delivery checkpoint
 
 [build_kaggle_bundle.py](../../scripts/build_kaggle_bundle.py) copies the canonical original ZIP unchanged to `m5-kaggle-source.payload` and emits a complete member manifest. It records the scientific baseline separately from the actual operational build commit. Existing output directories are refused; no scientific fixtures are regenerated or recompressed.
@@ -78,3 +80,11 @@ python -m scripts.build_kaggle_bundle --source-archive dist/m5-kaggle-preflight.
 ```
 
 K2–K7 implementation and local validation are delivered; K9's interim handoff is updated. K4's actual candidate-host criteria and K8/K9 acceptance depend on the returned full-source Kaggle run. Full-envelope coverage, T4 native/attention diagnostics, model staging, bounded exact smoke, allocation/release reconciliation, capability/pilot/freeze and main execution remain separate later gates. T01 stays done; T02 remains blocked; progress stays 21 done/eight blocked.
+
+## Actual run-3 review checkpoint
+
+The [run-3 review](m5-kaggle-full-preparation-run-3.md) accepts complete raw source delivery: all 143 members, including the 14 gzip/two nested ZIP members, survived the actual upload. Linux/Python 3.13, owned-process timeout cleanup and synthetic SQLite/export checks also pass. Five preparation stages pass, one environment stage fails and five dependents are blocked. No candidate packages or 97 focused/native checks ran; model generations remain zero.
+
+The returned six notebook cell sources and manifest match the delivered v2 packet, the printed receipt matches the 17-member ZIP, and both snapshots reopen independently read-only off-host. Original artifact bytes are preserved. The reported inner `ensurepip` failure has no lower-level traceback, so no particular distribution cause is asserted. Fix bootstrap using the already reviewed pip wheel in a venv created without pip; the scientific source, 88-package candidate and accepted dataset remain unchanged.
+
+After user-authorized Git recovery, the main workspace is again a usable checkout on the same branch/history, and all six missing root files have been restored byte for byte. The earlier isolated checkout remains preserved; new review/repair commits now use the main workspace. The pre-existing local preparation-document edit remains outside these commits.

@@ -114,3 +114,15 @@ Existing GPU authorization persists. Scientific caps/settings/attempt/replay
 semantics and allocation ceilings are unchanged; T02 stays blocked by actual
 host/model gates, with all dependent task statuses unchanged.
 
+### Returned full-source run 3
+
+The [actual run-3 review](../../validation/m5-kaggle-full-preparation-run-3.md)
+accepts complete canonical source upload, Linux/Python 3.13 CPU inspection,
+owned-process timeout cleanup and synthetic WAL/FULL/off-host snapshots.
+Candidate setup fails when `venv` invokes `ensurepip`; its lower-level cause
+is not captured. Package installation, provenance and all 97 focused/native
+checks are blocked, with zero model generations. K8 has partial actual evidence,
+while K4/K8/K9 acceptance remains open. A narrow pinned-pip bootstrap repair
+precedes the next CPU run; the already accepted dataset can be reused unchanged.
+T02 model/host gates and task statuses remain blocked as before.
+
