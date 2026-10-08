@@ -2,23 +2,29 @@
 
 Recorded 8 October 2026 for [M5-T02](../todos/M5/M5-T02-hardware-smoke-and-host-validation.md).
 The [T01 adapter and CPU evidence](../todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff)
-are complete. The user prefers GPU-host preparation and reports that GPU quota
-is available. This selects a brief hardware inspection; actual model/host
+are complete. The user authorized GPU-host preparation and reported available
+quota. The first run supplied two-T4/CUDA inspection but failed source admission;
+the [actual CPU canary](m5-kaggle-upload-canary-run-2.md) then passed transport checks.
+The next run prepares the full source and candidate on CPU; actual model/host
 acceptance remains unexecuted. The existing [smoke packet](m5-inference-preparation.md)
 and scientific resource limits still apply across accounts and configurations.
 
 ## Recommended notebook
 
-Use [recovery_m5_kaggle_preflight.ipynb](../../notebooks/recovery_m5_kaggle_preflight.ipynb)
-for the next action. Import it into a private Kaggle notebook, attach
-dist/m5-kaggle-preflight.zip as a private dataset input, select GPU T4 x2 and
-Internet, then Run All. The notebook chooses the reviewed versions and exports
-m5-kaggle-preflight-results.zip; its first cell contains the full instructions.
-The [design and executed local checks](m5-kaggle-notebook-plan.md#completion-evidence)
-record its 22 controlled workflow cases, real nine-cell CPU Jupyter execution,
-81 focused checks and 16 native checks. Physical Kaggle setup/model acceptance
-still requires actual host results. The manual inspection cell below remains
-available for a smaller hardware-only report.
+Use [recovery_m5_kaggle_preflight_v2.ipynb](../../notebooks/recovery_m5_kaggle_preflight_v2.ipynb)
+and upload only [m5-kaggle-source.payload](../../dist/m5-kaggle-source-v2/m5-kaggle-source.payload)
+as a new private dataset named `m5-kaggle-source-v2`. Import the notebook privately,
+attach that dataset, select **Accelerator: None**, enable **Internet**, and Run All.
+Download `preflight-results.zip` and the executed notebook, stop the session, and
+return both under `notebooks/run/3/`. Fixed defaults need no cell edits.
+
+The [full preparation evidence and handoff](m5-kaggle-full-preparation.md)
+record 23 passing operational checks and real local Jupyter valid/missing-source
+exports. The full source arrives unchanged; the notebook installs the 88-package
+candidate into scratch and requests 81 focused plus 16 native checks on Linux.
+Actual Kaggle installation and model acceptance remain pending. The original
+notebook and ZIP are retained as first-run evidence; the manual GPU inspection
+cell below is historical and is not the next preparation action.
 
 ## Reported CPU notebook
 
@@ -140,7 +146,8 @@ materialization, disk/download strategy and measured T4 smoke remain pending.
 
 ## Local handoff verification
 
-The export is 109,248,341 bytes (104.2 MiB), with 143 entries. Its source revision
+This original export verification is retained as historical evidence. The
+export is 109,248,341 bytes (104.2 MiB), with 143 entries. Its source revision
 is `ca46bcd55486b38bb453f5294e01f943bc7f7752`; the current follow-up changes only
 documentation. `ZipFile.testzip()` passed, all 132 exported source files equal
 `git archive` bytes, and all ten copied metadata files equal the reviewed local

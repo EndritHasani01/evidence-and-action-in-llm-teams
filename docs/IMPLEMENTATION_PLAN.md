@@ -319,7 +319,7 @@ Update these sections only when a capability is verified, a consequential decisi
 | M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
 | M3 | Verified on CPU (5/5 tasks done; gate passed) | [M3-T05 gate evidence](todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate): 18 durable, 22 attempt, 14 worker, 23 accounting and nine lifecycle checks; 253 source/installed and 81 core checks pass. Eleven real controller kills preserve raw reuse, branch-local effects, cleared fields and Q prose. Both complete fixtures reconcile 4,340 logical slots / 3,956 generations / 384 replays; full main/development schedules, synthetic budget stop/resume and supported backups pass. [Fourteen-case ordinary bundle](../tests/fixtures/scripted_lifecycle_run.zip) passes offline audit and fresh reproduction; all prior M3 CPU/native archives reproduce. |
 | M4 | Verified on CPU (6/6 tasks done; gate passed) | [T01](todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff), [T02](todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff), [T03](todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff), [T04](todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff) and [T05](todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff) establish exact outcomes, estimands, information/work, policy costs and paired uncertainty from original workers. [T06 completion](todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate) supplies reports, exact cases and the passed [coverage/category audit](validation/m4-cpu-gate.md). All 424 source checks pass; focused/core/installed checks pass 25/252 (244 passed, eight optional skips)/166. Sixteen report scopes reproduce every M4 output/export twice under current source and installed hash seed 37; five reports retain 35 SVG/PNG exhibit pairs. |
-| M5 | T01 verified on CPU (1/5 tasks done); operational gates open | [T01 completion](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) supplies the direct adapter, exact raw/seed/cache/worker diagnostics and [proposed Kaggle packet](validation/m5-inference-preparation.md). Final 27 focused / 41 installed checks pass, and the 449-check full regression passes at the backend checkpoint. The first Kaggle run supplies device/CUDA inspection but rejects source. The [actual CPU canary](validation/m5-kaggle-upload-canary-run-2.md) passes tiny raw payload/member checks and off-host snapshots. Full-source preparation, language-weight, finite-output, capability, accepted-host and reconciled allocation results remain pending. |
+| M5 | T01 verified on CPU (1/5 tasks done); operational gates open | [T01 completion](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) supplies the direct adapter, exact raw/seed/cache/worker diagnostics and [proposed Kaggle packet](validation/m5-inference-preparation.md). Final 27 focused / 41 installed checks pass, and the 449-check full regression passes at the backend checkpoint. The first Kaggle run supplies device/CUDA inspection but rejects source. The [actual CPU canary](validation/m5-kaggle-upload-canary-run-2.md) passes tiny raw payload/member checks and off-host snapshots. The [v2 CPU preparation packet](validation/m5-kaggle-full-preparation.md) passes 23 operational checks and real local Jupyter source/failure exports; actual full-source Kaggle upload, Linux candidate installation/native checks, model smoke, capability, accepted-host and allocation reconciliation remain pending. |
 | M6 | Not started | Requires accepted M5 freeze |
 
 ### Implementation decisions
@@ -881,9 +881,21 @@ workspace metadata and evidence. The [returned actual Kaggle CPU canary](validat
 now passes all five stages and off-host SQLite checks. Its original-dataset
 inventory finds all 14 gzip and two nested ZIP paths absent with exposed
 counterparts, explaining the first failure. Raw `.payload` transport is selected
-for K2, pending full-source byte/closure acceptance and corrected preparation.
-Dataset version and release timestamps remain unavailable; T02 model acceptance
-and later gates remain open. No scientific code/configuration or task counts change.
+for full-source delivery; dataset version and release timestamps remain unavailable.
+
+K2–K7 implementation is now delivered in the [v2 CPU preparation packet](validation/m5-kaggle-full-preparation.md).
+Twenty-three operational checks pass, the eleven pinned roots resolve to 88
+target packages, and real Jupyter executes the exact shipped notebook for valid
+and missing input. The valid local case verifies all 143 canonical members;
+both cases export readable ZIPs and independently reopened synthetic backups.
+Linux/Python 3.13 installation and process cleanup remain unexecuted locally;
+controlled candidate outcomes are labeled. K9's interim handoff points to K8's
+next actual Kaggle CPU run: new private raw payload, new v2 notebook,
+Accelerator None, Internet On, then return notebook/ZIP under `notebooks/run/3/`
+after stopping the session. This stage prepares packages without downloading
+language weights or executing model calls. T02 host/model acceptance and later
+gates remain open; scientific code/configuration, resource ceilings and task
+counts are unchanged at twenty-one done/eight blocked.
 
 ### Unresolved issues
 

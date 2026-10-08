@@ -30,4 +30,51 @@ The build tools are separately pinned to pip 26.2.1, setuptools 84.0.0 and wheel
 
 To avoid downloading packages implicitly during a remote dry-run, the notebook uses the already selected wheel URLs/sizes/hashes for admission and download, then performs pip's actual dry-run resolution against verified local wheels. Before download it records a conservative four-times package-expansion forecast plus a one-GiB build reserve. After download it replaces that forecast with exact wheel ZIP entry sizes before installation. Filesystems sharing a device form one capacity pool with an explicit 256-MiB evidence reserve; observed pool free space remains distinct from quota and model-asset admission. Shared-pool admission uses the smallest observed capacity, including different quota views of the same device; the added deterministic case verifies refusal before downloads.
 
-Full-size upload, actual Linux/Python 3.13 installation/import/native checks and GPU/model acceptance remain unverified. Docker's Linux engine is unavailable locally; no Linux success is inferred from Windows or cross-platform resolution. The corrected notebook delivery and actual Jupyter entry-point checks are the next checkpoint.
+Full-size Kaggle upload, actual Linux/Python 3.13 installation/import/native checks and GPU/model acceptance remain unverified. Docker's Linux engine is unavailable locally; no Linux success is inferred from Windows or cross-platform resolution. The final delivery and local Jupyter evidence follow.
+
+## Final notebook validation
+
+The exact shipped [v2 notebook](../../notebooks/recovery_m5_kaggle_preflight_v2.ipynb) has six cells, three code cells and no saved outputs or execution counts. Notebook schema, code compilation, helper/lock/manifest bindings and the helper's exact Git blob hash pass; [delivery audit](../../notebooks/validation/m5-full-preparation/delivery-audit.json). The payload is the canonical 109,248,341-byte archive unchanged, containing all 143 original members. Its full checksum remains `57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f`.
+
+Real Jupyter executed all three code cells, with counts 1–3 and no error outputs, in two cases using the exact final notebook. Original cell sources remain identical:
+
+| Case | Actually verified | Pending work |
+|---|---|---|
+| [Full canonical input](../../notebooks/validation/m5-full-preparation-kernel-final/valid-source/executed.ipynb) | All 143 source members admitted/extracted/verified; Linux/Python 3.13 gate correctly refuses local Windows; handled failure exports. | Candidate installation, Linux process cleanup and focused/native commands did not run. |
+| [Missing input](../../notebooks/validation/m5-full-preparation-kernel-final/missing-source/executed.ipynb) | `payload_missing` root diagnosis; dependent setup/checks blocked; export remains available. | No source/candidate/model work is inferred. |
+
+Both cases pass ZIP member/CRC checks and synthetic WAL/FULL backup checks. Copies outside their run directories reopen independently with read-only/immutable SQLite, `integrity_check=ok`, row `7` and rejected writes. [Final kernel validation](../../notebooks/validation/m5-full-preparation-kernel-final/validation.json) records ZIP hashes and artifact paths. The Windows selector event-loop setting belongs only to the local harness. Earlier preliminary kernel evidence is retained separately. Zero model generations, no local CUDA wheel installation and no actual GPU acceptance are reported.
+
+The [preservation audit](../../notebooks/validation/m5-full-preparation/preservation-audit.json) confirms an empty scientific Git diff, 57 unchanged source/configuration/fixture files, matching ASTs for all 28 scientific modules and unchanged raw bytes for 16 earlier committed notebooks/returned artifacts. First-run result files already moved in the supplied workspace to `run/1` are recorded at their current paths; their content is unchanged. The [handoff audit](../../notebooks/validation/m5-full-preparation/handoff-audit.json) checks local references and all 29 task statuses against the index. Missing root authority/build files remain missing, and their historical references remain explicitly recorded rather than restored.
+
+## Files and next user action
+
+| File | Use |
+|---|---|
+| [recovery_m5_kaggle_preflight_v2.ipynb](../../notebooks/recovery_m5_kaggle_preflight_v2.ipynb) | Import this new notebook into Kaggle. It preserves the original failed notebook. |
+| [m5-kaggle-source.payload](../../dist/m5-kaggle-source-v2/m5-kaggle-source.payload) | Upload this one unchanged file to a new private dataset named `m5-kaggle-source-v2`. |
+| [source-manifest.json](../../dist/m5-kaggle-source-v2/source-manifest.json) | Local audit copy; already embedded in the notebook, so no separate upload is required. |
+
+1. Create the private dataset above with only `m5-kaggle-source.payload`, preserving its filename and extension.
+2. Import the v2 notebook privately, attach that dataset, choose **Accelerator: None** and **Internet: On**.
+3. Choose **Run All** without editing cells. The source check precedes a synthetic process cleanup check, pinned package download/install, installed provenance, 81 focused and 16 native checks, and filesystem/export diagnostics.
+4. Download `preflight-results.zip` and the executed notebook, stop the session, and save both under `notebooks/run/3/` for review. Return failure evidence too; its root blocker determines the correction.
+
+The notebook's CPU workflow is bounded to 45 minutes, including an export reserve. It stages about 4.07 GB of pinned package wheels on scratch, subject to conservative capacity admission and later exact expansion checks. The running Kaggle kernel is unchanged. It downloads no language weights and does not launch GPU diagnostics or model smoke. The CPU venv/wheel directory is disposable session scratch: later GPU preparation must recreate or verifiably stage the accepted environment/assets; their persistence is not assumed. GPU quota authorization already exists, while actual candidate/model/resource gates remain open.
+
+## Artifact and commit provenance
+
+The scientific source baseline is `ca46bcd55486b38bb453f5294e01f943bc7f7752`. Operational source checkpoints on local branch `feat/m5-kaggle-upload-canary` in `build/m5-kaggle-canary-review` are:
+
+- `d26c6f9`: preserve canonical input bytes and member closure.
+- `8c094f5`: isolate and validate full-source preparation and the target candidate.
+- `14b460b`: use the smallest observed capacity of shared storage pools.
+- `42fb405e09d879c1bd4594e9250cfbe53ad3e373`: require owned-process cleanup before installation. This is the build commit embedded in the final packet.
+
+The [delivery audit](../../notebooks/validation/m5-full-preparation/delivery-audit.json) records notebook SHA-256 `0765be21eeba5de8b0afa25b76e69ba67cc8dac4d2bed1d7e77347aa0992cac3`, helper/lock hashes and candidate/package byte totals. Commit history lives in the verified isolated checkout and task files are mirrored to the original workspace. No remote branch was changed and no missing root authority/build files were restored. The distribution folder remains ignored; the complete manifest is embedded in the committed notebook. Reproduction requires the retained canonical original ZIP, committed helper/builder and target lock/tool metadata. Use new output paths because existing artifacts are refused:
+
+```text
+python -m scripts.build_kaggle_bundle --source-archive dist/m5-kaggle-preflight.zip --output-dir <new-output-directory> --build-commit 42fb405e09d879c1bd4594e9250cfbe53ad3e373 --candidate-pylock notebooks/validation/m5-full-preparation/pylock.linux313.toml --build-tools notebooks/validation/m5-full-preparation/build-tool-metadata.json --helper scripts/m5_kaggle_preflight.py --notebook <new-notebook-path>
+```
+
+K2–K7 implementation and local validation are delivered; K9's interim handoff is updated. K4's actual candidate-host criteria and K8/K9 acceptance depend on the returned full-source Kaggle run. Full-envelope coverage, T4 native/attention diagnostics, model staging, bounded exact smoke, allocation/release reconciliation, capability/pilot/freeze and main execution remain separate later gates. T01 stays done; T02 remains blocked; progress stays 21 done/eight blocked.

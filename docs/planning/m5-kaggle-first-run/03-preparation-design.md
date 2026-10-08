@@ -1,6 +1,8 @@
 # Proposed preparation design
 
-**Implementation status: proposed only.** This design repairs operational contracts while preserving the existing renderer, protocol, mathematical worlds, seeds, caps, generation settings, attempt semantics and ledger ownership. It implements the next preparation run; [model smoke](04-model-feasibility-and-smoke.md) is a later gated action.
+**Implementation status: CPU preparation delivered and locally validated; actual Linux/Kaggle acceptance pending.** The [implementation evidence and v2 handoff](../../validation/m5-kaggle-full-preparation.md) record the 23 checks, exact-source audit and real Jupyter runs. The design below preserves its original rationale; [model smoke](04-model-feasibility-and-smoke.md) remains a later gated action.
+
+Two delivery details became concrete: the notebook uses a new `v2` filename to preserve the original, and embeds the one reviewed helper with its build-commit checksum so missing input can still be diagnosed. It verifies the complete canonical payload/member manifest before installation; the unchanged baseline archive does not acquire an operational helper under its historical source marker. The 88-package Linux/Python 3.13 lock selects exact wheel URLs/hashes/sizes, uses scratch, and replaces its pre-download expansion forecast with actual wheel entry sizes before installation. Linux cleanup is explicitly tested by a synthetic owned-process timeout stage before any package download. These are implementation choices within the design, not changes to scientific semantics or proof of model feasibility.
 
 ## First principles
 
@@ -34,7 +36,7 @@ For the next implementation, start from the verified baseline archive or a verif
 
 ## D2 — Small orchestration boundary
 
-Keep the notebook kernel on standard-library setup and display. Move reusable preparation stages into one ordinary helper, proposed `scripts/m5_kaggle_preflight.py`, so subprocess and storage behavior can be tested on Linux without running an entire notebook for every case. The notebook needs only a small, reviewed payload-verification/bootstrap step before loading that helper; the complete archive-path and member checks belong to the tested helper. Bootstrap must verify the helper's canonical member bytes before importing it.
+Keep the notebook kernel on standard-library setup and display. Reusable preparation stages live in one ordinary helper, `scripts/m5_kaggle_preflight.py`, so subprocess and storage behavior can be tested without running an entire notebook for every case. The builder embeds that reviewed helper and its checksum separately from the unchanged scientific archive; bootstrap verifies the embedded bytes before executing it. Complete archive-path and member checks belong to this tested helper and run before candidate installation or scientific imports. This permits missing-payload diagnosis without trusting executable code from an attached dataset.
 
 Use explicit sequential functions for source, environment, checks, filesystem/storage and export. No LangGraph bootstrap workflow, plugin layer, new scheduler, generic task engine or second experiment state store is needed. Existing LangGraph code is exercised only after its dependencies are installed. The notebook defaults remain preparation-only; it must not construct `ModelFactory`, download weights, or continue into smoke when a check turns green.
 

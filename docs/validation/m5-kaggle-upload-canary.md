@@ -1,6 +1,6 @@
 # M5 CPU-only Kaggle upload canary
 
-Prepared and locally verified 8 October 2026. **The returned Kaggle CPU canary passes all five stages.** The [run-2 review](m5-kaggle-upload-canary-run-2.md) verifies the actual upload, original-dataset inventory and off-host snapshots. This implements K0 provenance and the bounded R1/R2 experiment in the [ordered repair plan](../planning/m5-kaggle-first-run/05-implementation-and-validation.md). The corrected full preflight and M5-T02 model acceptance remain subsequent work.
+Prepared and locally verified 8 October 2026. **The returned Kaggle CPU canary passes all five stages.** The [run-2 review](m5-kaggle-upload-canary-run-2.md) verifies the actual upload, original-dataset inventory and off-host snapshots. This implements K0 provenance and the bounded R1/R2 experiment in the [ordered repair plan](../planning/m5-kaggle-first-run/05-implementation-and-validation.md). The [full-source CPU preparation packet](m5-kaggle-full-preparation.md) is now implemented and locally validated; actual Linux/Kaggle preparation and M5-T02 model acceptance remain pending.
 
 ## Files to use
 
@@ -14,7 +14,7 @@ The payload is a tiny synthetic ZIP under a `.payload` suffix. It contains a syn
 
 ## CPU test procedure (completed in run 2)
 
-The user completed this procedure and returned both artifacts under `notebooks/run/2`. The next dependency is implementation of the full-source preparation packet; no repeat canary or GPU run is required by this review. The procedure remains here for reproduction.
+The user completed this procedure and returned both artifacts under `notebooks/run/2`. Next run the [full-source CPU preparation packet](m5-kaggle-full-preparation.md); no repeat canary or GPU run is required by this review. The procedure remains here for reproduction.
 
 1. Create a **private Kaggle dataset** named `m5-source-canary`. Upload only `m5-source-canary.payload`, unchanged.
 2. Import `recovery_m5_kaggle_upload_canary.ipynb` as a **private notebook**. Set **Accelerator: None** and **Internet: Off**.
@@ -83,6 +83,6 @@ The manifest records build Python/SQLite versions. Synthetic SQLite/gzip bytes c
 
 The [returned run-2 evidence](m5-kaggle-upload-canary-run-2.md) shows unique input, exact outer/member bytes, preserved gzip/nested ZIP, five passing stages and independently readable snapshots. It also shows all 14 original gzip paths and two nested ZIP paths absent, with exposed counterparts. R1's observed-path question is resolved and R2 passes for the tiny raw payload. Dataset mount references are recorded; exact version identifiers and provider release remain unavailable.
 
-Now implement K2–K9: complete canonical source delivery, early admission, clean candidate environment, scratch/output layout, bounded commands, corrected preflight and actual preparation evidence. Verify the tested transport on the full source payload too; a tiny canary cannot prove large-file limits or complete closure.
+K2–K7 implementation is delivered in the [full-source CPU packet](m5-kaggle-full-preparation.md), with 23 passing operational checks and real local Jupyter evidence. Next execute K8's full preparation on Kaggle and review its evidence for K4/K8/K9 acceptance. This verifies the tested transport on the full payload and the actual Linux candidate; the tiny canary alone cannot prove large-file limits or complete closure.
 
 Assets, full-envelope headroom, actual attention dispatch, smoke requests, allocation/release reconciliation and T02 model acceptance remain later work. T01 stays done; T02/dependent tasks retain their blocked statuses. Scientific settings, outcomes, populations, attempt/replay rules and resource ceilings remain unchanged.

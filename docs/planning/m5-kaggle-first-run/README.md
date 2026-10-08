@@ -1,6 +1,6 @@
 # M5 Kaggle first-run review and implementation plan
 
-Prepared 8 October 2026. **Status: planning complete; actual Kaggle CPU canary passes; full-source transport and preparation repair pending.**
+Prepared 8 October 2026. **Status: planning complete; actual Kaggle CPU canary passes; full-source preparation implementation and local validation delivered. Actual Linux/Kaggle preparation remains pending.**
 
 The first run detected two T4s and CUDA-enabled Torch, then stopped at the source-input contract. The uploaded archive contains the missing compressed fixture. The immediate repair belongs to input delivery and validation. A reliable next run also needs explicit environment isolation, separate scratch/output storage, useful failure reports, and allocation accounting. Passing those preparation checks will still leave physical model acceptance open.
 
@@ -64,4 +64,6 @@ The original six-document planning audit passes: six Markdown files, 26 local li
 
 ## Current implementation handoff
 
-K0 has verified checkout provenance. The user completed K1's actual CPU upload test: the [run-2 review](../../validation/m5-kaggle-upload-canary-run-2.md) records five passing stages, exact tiny payload/member bytes and independently readable SQLite snapshots. The original dataset inventory shows all 14 gzip and two nested ZIP paths absent with expanded counterparts, explaining the first failure. R1's observed-path question is resolved and R2 passes for this upload; exact dataset version identifiers remain unavailable. Select raw `.payload` delivery for K2 and verify the entire canonical source on its actual upload. K2–K15 retain their remaining dependencies; no additional user canary run is needed.
+K0 has verified checkout provenance. The user completed K1's actual CPU upload test: the [run-2 review](../../validation/m5-kaggle-upload-canary-run-2.md) records five passing stages, exact tiny payload/member bytes and independently readable SQLite snapshots. The original dataset inventory shows all 14 gzip and two nested ZIP paths absent with expanded counterparts, explaining the first failure. R1's observed-path question is resolved and R2 passes for this upload; exact dataset version identifiers remain unavailable.
+
+K2–K7 implementation is delivered in the [v2 CPU preparation packet](../../validation/m5-kaggle-full-preparation.md): 23 operational checks pass; the exact notebook executes in real local Jupyter for full-source and missing-source cases, exporting readable evidence. All 143 canonical members match locally. Candidate resolution covers 88 packages; actual Linux installation/import/native acceptance is still pending, including K4's host criteria. K9's interim handoff is updated. Next execute K8 on Kaggle with the new raw payload, Accelerator None and Internet On, returning the executed notebook and ZIP under `notebooks/run/3/`. K8/K9 acceptance and K10–K15 model/pilot gates remain dependent on actual evidence; no repeat tiny canary is needed.

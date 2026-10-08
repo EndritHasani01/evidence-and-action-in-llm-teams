@@ -91,7 +91,26 @@ and all three synthetic databases reopen independently off-host. The original
 dataset inventory shows all 14 gzip paths and two nested ZIP paths absent, with
 exposed counterparts. This explains the first source rejection and selects raw
 `.payload` transport for the next full-source packet. Exact dataset version and
-provider release remain unrecorded. Full-source upload verification and K2–K9
-preparation repair follow; no repeat canary is requested. T02 model smoke and
+provider release remain unrecorded. Full-source upload verification and actual
+candidate preparation remain required; no repeat canary is requested. T02 model smoke and
 all dependent gates remain blocked, with zero model generations in this run.
+
+### Full-source CPU preparation delivery
+
+The [v2 preparation packet](../../validation/m5-kaggle-full-preparation.md) now
+implements K2–K7, with 23 passing operational checks, an 88-package target
+resolution and real local Jupyter valid/missing-source execution. The valid
+case verifies all 143 canonical source members; both cases export readable
+diagnostics and independently reopened synthetic SQLite backups. The actual
+Linux/Python 3.13 installation, owned-process cleanup and 81 focused/16 native
+checks remain unexecuted. Controlled candidate outcomes are not host evidence.
+
+Next import the new v2 notebook, upload its single raw source payload as a new
+private dataset, and run **Accelerator None / Internet On**. Return its executed
+notebook and ZIP under `notebooks/run/3/` after stopping the session. This is K8's
+full-source/candidate-host preparation and K9's interim handoff; it does not
+construct models or claim T4 library, memory, finite-output or smoke acceptance.
+Existing GPU authorization persists. Scientific caps/settings/attempt/replay
+semantics and allocation ceilings are unchanged; T02 stays blocked by actual
+host/model gates, with all dependent task statuses unchanged.
 
