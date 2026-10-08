@@ -6,6 +6,7 @@ test_rejects_unsafe_duplicates_symlinks_and_path_conflicts (tests.test_kaggle_bu
 test_target_metadata_refuses_untrusted_origin_or_missing_wheel (tests.test_kaggle_bundle.BundleTests.test_target_metadata_refuses_untrusted_origin_or_missing_wheel) ... ok
 test_target_wheel_selection_pins_one_compatible_file_and_byte_range_total (tests.test_kaggle_bundle.BundleTests.test_target_wheel_selection_pins_one_compatible_file_and_byte_range_total) ... ok
 test_real_interruption_and_machine_schema_failure (tests.test_kaggle_preflight.CommandTests.test_real_interruption_and_machine_schema_failure) ... ok
+test_real_preinstallation_process_diagnostic (tests.test_kaggle_preflight.CommandTests.test_real_preinstallation_process_diagnostic) ... ok
 test_real_stdout_stderr_exit_and_deadline (tests.test_kaggle_preflight.CommandTests.test_real_stdout_stderr_exit_and_deadline) ... ok
 test_real_timeout_reaps_owned_child_tree_and_keeps_partial_logs (tests.test_kaggle_preflight.CommandTests.test_real_timeout_reaps_owned_child_tree_and_keeps_partial_logs) ... ok
 test_ambiguous_and_corrupt_payload_stop_before_environment (tests.test_kaggle_preflight.PreflightTests.test_ambiguous_and_corrupt_payload_stop_before_environment) ... ok
@@ -16,11 +17,12 @@ test_complete_controlled_workflow_preserves_inputs_and_isolates_modes (tests.tes
 test_complete_member_hash_rejects_same_marker_with_changed_fixture (tests.test_kaggle_preflight.PreflightTests.test_complete_member_hash_rejects_same_marker_with_changed_fixture) ... ok
 test_deadline_and_interruption_preserve_readable_evidence (tests.test_kaggle_preflight.PreflightTests.test_deadline_and_interruption_preserve_readable_evidence) ... ok
 test_inventory_limit_symlinks_and_gpu_refusal (tests.test_kaggle_preflight.PreflightTests.test_inventory_limit_symlinks_and_gpu_refusal) ... ok
+test_linux_group_inspection_distinguishes_live_members_from_exited_zombies (tests.test_kaggle_preflight.PreflightTests.test_linux_group_inspection_distinguishes_live_members_from_exited_zombies) ... ok
 test_observed_transformed_input_exports_root_diagnosis (tests.test_kaggle_preflight.PreflightTests.test_observed_transformed_input_exports_root_diagnosis) ... ok
 test_shared_pool_admission_uses_the_smallest_observed_capacity (tests.test_kaggle_preflight.PreflightTests.test_shared_pool_admission_uses_the_smallest_observed_capacity) ... ok
 test_shared_pool_and_storage_failure_prevent_download (tests.test_kaggle_preflight.PreflightTests.test_shared_pool_and_storage_failure_prevent_download) ... ok
 
 ----------------------------------------------------------------------
-Ran 21 tests in 10.254s
+Ran 23 tests in 12.551s
 
 OK

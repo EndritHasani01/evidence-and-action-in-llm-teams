@@ -34,7 +34,7 @@ EXPORT_SECONDS = 90
 INVENTORY_LIMIT = 2000
 FOCUSED = ["tests.test_inference_preparation", "tests.inference_checks", "tests.durable_checks",
            "tests.attempt_checks", "tests.worker_checks"]
-STAGES = ["input_inventory", "source", "cpu_host", "environment", "installed_packages",
+STAGES = ["input_inventory", "source", "cpu_host", "command_cleanup", "environment", "installed_packages",
           "focused_checks", "native_9b", "native_4b", "native_capacity", "filesystem_backup"]
 MODEL_SELECTED_BYTES = {"9B": 19319226111, "4B": 9332739901}
 
@@ -187,12 +187,25 @@ def require_space(scratch: Path, output: Path, additional_scratch: int) -> dict:
     return facts
 
 
-def _group_exists(pid: int) -> bool:
+def _group_exists(pid: int, proc_root: Path = Path('/proc')) -> bool:
     try:
         os.killpg(pid, 0)
-        return True
     except ProcessLookupError:
         return False
+    if not proc_root.is_dir():
+        return True  # Presence is known; live membership cannot be inspected.
+    for path in proc_root.iterdir():
+        if not path.name.isdigit():
+            continue
+        try:
+            fields=(path/'stat').read_text().rsplit(')',1)[1].split()
+            if int(fields[2])==pid and fields[0] not in {'Z','X'}:
+                return True
+        except FileNotFoundError:
+            continue  # Process exited during the read.
+        except (OSError,ValueError,IndexError):
+            return True  # Never claim cleanup from an incomplete inspection.
+    return False  # Zombies have exited and hold no executable/CUDA state.
 
 
 def _stop_owned(process: subprocess.Popen) -> dict:
@@ -272,6 +285,29 @@ def json_stdout(output: Path, record: dict) -> object:
     if path.stat().st_size > 2 * 2**20:
         raise ValueError(f"machine_stdout_too_large: {record['name']}")
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def process_tree_diagnostic(output: Path, scratch: Path, deadline: float, env: dict) -> dict:
+    ticker=scratch/'process-tree-ticks'
+    grandchild="import pathlib,time;p=pathlib.Path("+repr(str(ticker))+");[(p.write_text(str(n)),time.sleep(.05)) for n in range(600)]"
+    child="import subprocess,sys,time;subprocess.Popen([sys.executable,'-c',"+repr(grandchild)+"]);time.sleep(30)"
+    parent="import subprocess,sys,time;subprocess.Popen([sys.executable,'-c',"+repr(child)+"]);print('owned-tree-started',flush=True);time.sleep(30)"
+    try:
+        command(output,'owned-process-timeout',[sys.executable,'-c',parent],deadline=deadline,
+                timeout=2,cwd=scratch,env=env)
+    except subprocess.TimeoutExpired:
+        record=json.loads((output/'logs/owned-process-timeout.json').read_text())
+    else:
+        raise ValueError('owned_tree_expected_timeout_missing')
+    confirmation='taskkill' if os.name=='nt' else 'exited'
+    if not record.get('leader_exited') or record.get('tree_confirmation')!=confirmation or not ticker.is_file():
+        raise ValueError('owned_tree_cleanup_unconfirmed')
+    before=ticker.read_text()
+    time.sleep(.2)
+    if ticker.read_text()!=before:
+        raise ValueError('owned_grandchild_still_running')
+    return {'expected_timeout':True,'leader_exited':True,'tree_confirmation':confirmation,
+            'grandchild_stopped':True,'scope':'Synthetic CPU process diagnostic; no model or GPU initialization.'}
 
 
 def test_result(output: Path, record: dict, expected_count: int) -> dict:
@@ -568,7 +604,8 @@ def run_preflight(input_root: Path, output_root: Path, scratch_root: Path, expec
         stage("input_inventory",[],input_stage)
         stage("source",["input_inventory"],source_stage)
         stage("cpu_host",[],host_stage)
-        stage("environment",["source","cpu_host"],environment_stage)
+        stage("command_cleanup",["source","cpu_host"],lambda:process_tree_diagnostic(output,scratch,deadline,candidate_environment(scratch)))
+        stage("environment",["source","cpu_host","command_cleanup"],environment_stage)
         stage("installed_packages",["environment"],packages_stage)
         stage("focused_checks",["installed_packages"],lambda:tests_stage("focused-checks",["-m","unittest",*FOCUSED,"-q"],81,360))
         stage("native_9b",["installed_packages"],lambda:tests_stage("native-9b",["-m","tests.tokenizer_inference","--tokenizer","metadata/9B"],4,60))

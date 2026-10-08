@@ -105,7 +105,8 @@ class PreflightTests(unittest.TestCase):
         with patch.object(preflight.platform,'system',return_value='Linux'), \
              patch.object(preflight.platform,'machine',return_value='x86_64'), \
              patch.object(preflight.sys,'version_info',(3,13,15,'final',0)), \
-             patch.object(preflight,'command',side_effect=self.controlled_command):
+             patch.object(preflight,'command',side_effect=self.controlled_command), \
+             patch.object(preflight,'process_tree_diagnostic',return_value={'scope':'controlled Linux process diagnostic'}):
             return preflight.run_preflight(self.inputs,self.output,self.scratch,self.expected,self.lock)
 
     def assert_export(self,result):
@@ -252,6 +253,19 @@ class PreflightTests(unittest.TestCase):
         self.assertIsNone(result['zip_path']);self.assertIn('controlled unwritable ZIP',result['report']['export_error'])
         self.assertTrue((Path(result['run_directory'])/'summary.json').is_file())
 
+    def test_linux_group_inspection_distinguishes_live_members_from_exited_zombies(self):
+        proc=self.root/'proc';proc.mkdir()
+        own=proc/'123';own.mkdir()
+        other=proc/'456';other.mkdir()
+        (other/'stat').write_text('456 (other task) S 1 456 456 0')
+        with patch.object(preflight.os,'killpg',return_value=None,create=True):
+            (own/'stat').write_text('123 (owned task) Z 1 123 123 0')
+            self.assertFalse(preflight._group_exists(123,proc))
+            (own/'stat').write_text('123 (owned task) S 1 123 123 0')
+            self.assertTrue(preflight._group_exists(123,proc))
+            (own/'stat').write_text('malformed')
+            self.assertTrue(preflight._group_exists(123,proc))
+
 
 class CommandTests(unittest.TestCase):
     def setUp(self):
@@ -298,6 +312,10 @@ class CommandTests(unittest.TestCase):
         record=json.loads((self.root/'logs/interrupt.json').read_text());self.assertTrue(record['leader_exited'])
         record=self.command('malformed',"print('not JSON')")
         with self.assertRaises(json.JSONDecodeError):preflight.json_stdout(self.root,record)
+
+    def test_real_preinstallation_process_diagnostic(self):
+        result=preflight.process_tree_diagnostic(self.root,self.root,time.monotonic()+120,os.environ.copy())
+        self.assertTrue(result['expected_timeout']);self.assertTrue(result['grandchild_stopped'])
 
 
 if __name__=='__main__':

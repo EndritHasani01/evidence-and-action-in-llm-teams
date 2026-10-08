@@ -1,7 +1,8 @@
 input_inventory: failed — ValueError: payload_ambiguous
 source: blocked — prerequisites: input_inventory
 cpu_host: passed
-environment: blocked — prerequisites: source
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
 native_9b: blocked — prerequisites: installed_packages
@@ -11,7 +12,8 @@ filesystem_backup: passed
 input_inventory: passed
 source: failed — ValueError: payload_size_mismatch
 cpu_host: passed
-environment: blocked — prerequisites: source
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
 native_9b: blocked — prerequisites: installed_packages
@@ -21,7 +23,8 @@ filesystem_backup: passed
 input_inventory: passed
 source: failed — ValueError: payload_hash_mismatch
 cpu_host: passed
-environment: blocked — prerequisites: source
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
 native_9b: blocked — prerequisites: installed_packages
@@ -31,6 +34,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: passed
 focused_checks: passed
@@ -41,6 +45,7 @@ filesystem_backup: failed — ValueError: controlled SQLite failure
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: passed
 focused_checks: passed
@@ -51,6 +56,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: failed — RuntimeError: controlled create-venv failure
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
@@ -61,6 +67,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: failed — RuntimeError: controlled download-candidate failure
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
@@ -71,6 +78,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: failed — RuntimeError: controlled install-candidate failure
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
@@ -81,6 +89,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: failed — RuntimeError: controlled build-source failure
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
@@ -91,6 +100,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: failed — RuntimeError: controlled pip-check failure
 focused_checks: blocked — prerequisites: installed_packages
@@ -101,6 +111,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 focused_checks: blocked — prerequisites: installed_packages
@@ -111,6 +122,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: failed — ValueError: installed_probe_schema_or_provenance
 focused_checks: blocked — prerequisites: installed_packages
@@ -121,6 +133,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: passed
 focused_checks: failed — RuntimeError: controlled focused-checks failure
@@ -131,6 +144,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: passed
 focused_checks: failed — ValueError: test_count_or_skip: focused-checks, expected=81
@@ -141,6 +155,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: passed
 focused_checks: passed
@@ -151,6 +166,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: passed
 focused_checks: passed
@@ -161,6 +177,7 @@ filesystem_backup: passed
 input_inventory: passed
 source: passed
 cpu_host: passed
+command_cleanup: passed
 environment: passed
 installed_packages: passed
 focused_checks: passed
@@ -171,7 +188,8 @@ filesystem_backup: passed
 input_inventory: blocked — cpu_deadline_before_stage
 source: blocked — prerequisites: input_inventory
 cpu_host: blocked — cpu_deadline_before_stage
-environment: blocked — prerequisites: source, cpu_host
+command_cleanup: blocked — prerequisites: source, cpu_host
+environment: blocked — prerequisites: source, cpu_host, command_cleanup
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
 native_9b: blocked — prerequisites: installed_packages
@@ -181,7 +199,8 @@ filesystem_backup: blocked — cpu_deadline_before_stage
 input_inventory: passed
 source: passed
 cpu_host: failed — ValueError: cpu_stage_gpu_visible: stop session and select Accelerator None
-environment: blocked — prerequisites: cpu_host
+command_cleanup: blocked — prerequisites: cpu_host
+environment: blocked — prerequisites: cpu_host, command_cleanup
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
 native_9b: blocked — prerequisites: installed_packages
@@ -191,7 +210,8 @@ filesystem_backup: passed
 input_inventory: failed — ValueError: payload_missing
 source: blocked — prerequisites: input_inventory
 cpu_host: passed
-environment: blocked — prerequisites: source
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
 native_9b: blocked — prerequisites: installed_packages
@@ -201,7 +221,8 @@ filesystem_backup: passed
 input_inventory: passed
 source: failed — ValueError: output_evidence_reserve
 cpu_host: passed
-environment: blocked — prerequisites: source
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
 installed_packages: blocked — prerequisites: environment
 focused_checks: blocked — prerequisites: installed_packages
 native_9b: blocked — prerequisites: installed_packages
