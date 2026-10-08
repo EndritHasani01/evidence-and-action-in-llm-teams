@@ -1,5 +1,6 @@
 """Real source/SQLite/export/process tests with named external outcomes controlled."""
 
+from contextlib import redirect_stdout
 import hashlib
 import io
 import json
@@ -72,6 +73,13 @@ class PreflightTests(unittest.TestCase):
         if name=='create-venv':
             directory=Path(args[-1]);directory.mkdir()
             (directory/'pyvenv.cfg').write_text('include-system-site-packages = false\n')
+        elif name=='download-pip-wheel':
+            wanted=self.expected['build_tools']['pip']['wheels'][0]
+            directory=scratch/'pip-bootstrap'
+            (directory/wanted['filename']).write_bytes(self.wheel_bytes[wanted['filename']])
+            stdout.write_text(json.dumps(dict(wanted,verified=True)))
+            if self.fault=='empty-pip-receipt': stdout.write_text('{}')
+            if self.fault=='corrupt-pip-wheel': (directory/wanted['filename']).write_bytes(b'corrupt')
         elif name in {'download-candidate','download-build-tools'}:
             destination=Path(args[args.index('--dest')+1])
             wanted=self.expected['candidate_wheels'] if name=='download-candidate' else [
@@ -128,6 +136,11 @@ class PreflightTests(unittest.TestCase):
         self.assertEqual(self.payload.read_bytes(),original)
         self.assert_export(result)
         for name,args,kwargs in self.command_calls:
+            if name=='create-venv': self.assertIn('--without-pip',args)
+            if name=='bootstrap-pip':
+                self.assertIn('-I',args);self.assertIn('--no-index',args)
+                self.assertNotIn('--index-url',args)
+                self.assertIn(preflight.PIP_WHEEL_RUNNER,args)
             if name=='installed-probe':
                 self.assertIn('-I',args);self.assertNotIn('PYTHONPATH',kwargs['env'])
                 self.assertNotEqual(kwargs['cwd'].name,'source')
@@ -195,14 +208,55 @@ class PreflightTests(unittest.TestCase):
                 with self.assertRaises(ValueError):preflight.safe_members(archive,{})
 
     def test_candidate_failures_and_bad_machine_output_export(self):
-        for fault in ['create-venv','download-candidate','install-candidate','build-source','pip-check',
+        for fault in ['create-venv','download-pip-wheel','empty-pip-receipt','corrupt-pip-wheel',
+                      'bootstrap-pip','download-candidate','install-candidate','build-source','pip-check',
                       'malformed-probe','empty-probe','focused-checks','skipped-checks','native-9b']:
             with self.subTest(fault=fault):
                 self.fault=fault
+                self.command_calls.clear()
                 result=self.controlled_run()
                 self.assertFalse(result['summary']['preparation_checks_passed'])
                 self.assertIsNotNone(result['summary']['root_blocker']);self.assert_export(result)
                 self.assertEqual(result['report']['stages']['filesystem_backup']['status'],'passed')
+                if fault in {'download-pip-wheel','empty-pip-receipt','corrupt-pip-wheel'}:
+                    # This failure must stop before any bootstrap or bulk download.
+                    self.assertFalse(any(n in {'bootstrap-pip','download-candidate'}
+                                         for n,_,_ in self.command_calls))
+                    with zipfile.ZipFile(result['zip_path']) as archive:
+                        self.assertNotIn('pip-bootstrap-wheel.json',archive.namelist())
+
+    def test_pinned_pip_download_verifies_bytes_before_publish(self):
+        metadata=self.expected['build_tools']['pip']['wheels'][0]
+        content=self.wheel_bytes[metadata['filename']]
+        destination=self.root/metadata['filename']
+        response=io.BytesIO(content);response.geturl=lambda:metadata['url']
+        stdout=io.StringIO()
+        with patch('urllib.request.urlopen',return_value=response) as fetch, redirect_stdout(stdout):
+            exec(preflight.pip_wheel_download_script(metadata,destination),{})
+        fetch.assert_called_once_with(metadata['url'],timeout=30)
+        self.assertEqual(destination.read_bytes(),content)
+        self.assertEqual(json.loads(stdout.getvalue()),dict(metadata,verified=True))
+        self.assertFalse(destination.with_suffix('.whl.partial').exists())
+
+    def test_pinned_pip_download_refuses_bad_bytes_and_origins(self):
+        metadata=self.expected['build_tools']['pip']['wheels'][0]
+        content=self.wheel_bytes[metadata['filename']]
+        cases=[('short',content[:-1],metadata,metadata['url'],'pip_bootstrap_size'),
+               ('long',content+b'x',metadata,metadata['url'],'pip_bootstrap_size'),
+               ('hash',b'x'*len(content),metadata,metadata['url'],'pip_bootstrap_hash'),
+               ('redirect',content,metadata,'https://unreviewed.invalid/pip.whl','pip_bootstrap_origin'),
+               ('origin',content,dict(metadata,url='http://files.pythonhosted.org/pip.whl'),
+                metadata['url'],'pip_bootstrap_origin')]
+        for name,data,wanted,final_url,error in cases:
+            with self.subTest(name=name):
+                directory=self.root/name;directory.mkdir()
+                destination=directory/metadata['filename']
+                response=io.BytesIO(data);response.geturl=lambda:final_url
+                with patch('urllib.request.urlopen',return_value=response) as fetch:
+                    with self.assertRaisesRegex(ValueError,error):
+                        exec(preflight.pip_wheel_download_script(wanted,destination),{})
+                self.assertFalse(destination.exists())
+                if name=='origin': fetch.assert_not_called()
 
     def test_deadline_and_interruption_preserve_readable_evidence(self):
         result=preflight.run_preflight(self.inputs,self.output,self.scratch,self.expected,self.lock,workflow_seconds=0)

@@ -37,6 +37,8 @@ FOCUSED = ["tests.test_inference_preparation", "tests.inference_checks", "tests.
 STAGES = ["input_inventory", "source", "cpu_host", "command_cleanup", "environment", "installed_packages",
           "focused_checks", "native_9b", "native_4b", "native_capacity", "filesystem_backup"]
 MODEL_SELECTED_BYTES = {"9B": 19319226111, "4B": 9332739901}
+PIP_WHEEL_RUNNER = ("import runpy,sys;sys.path.insert(0,sys.argv.pop(1));"
+                    "runpy.run_module('pip',run_name='__main__',alter_sys=True)")
 
 
 def utc() -> str:
@@ -360,6 +362,36 @@ def candidate_environment(scratch: Path) -> dict:
     return env
 
 
+def pip_wheel_download_script(metadata: dict, destination: Path) -> str:
+    """One pinned bootstrap wheel, downloaded by an owned, bounded stdlib process."""
+    return "\n".join([
+        "import hashlib,json", "from pathlib import Path",
+        "from urllib.parse import urlsplit", "from urllib.request import urlopen",
+        f"expected={metadata!r}", f"destination=Path({str(destination)!r})",
+        "def checked_origin(url):",
+        "    parts=urlsplit(url)",
+        "    if (parts.scheme!='https' or parts.hostname!='files.pythonhosted.org'",
+        "            or parts.port not in (None,443) or parts.username or parts.password):",
+        "        raise ValueError('pip_bootstrap_origin')",
+        "checked_origin(expected['url'])",
+        "if destination.name!=expected['filename'] or expected['bytes']<=0:",
+        "    raise ValueError('pip_bootstrap_metadata')",
+        "if destination.exists(): raise FileExistsError(destination)",
+        "partial=destination.with_suffix(destination.suffix+'.partial')",
+        "digest=hashlib.sha256();size=0",
+        "with urlopen(expected['url'],timeout=30) as response:",
+        "    checked_origin(response.geturl())",
+        "    with partial.open('xb') as stream:",
+        "        while data:=response.read(1024*1024):",
+        "            size+=len(data)",
+        "            if size>expected['bytes']: raise ValueError('pip_bootstrap_size')",
+        "            digest.update(data);stream.write(data)",
+        "if size!=expected['bytes']: raise ValueError('pip_bootstrap_size')",
+        "if digest.hexdigest()!=expected['sha256']: raise ValueError('pip_bootstrap_hash')",
+        "partial.replace(destination)",
+        "print(json.dumps(dict(expected,verified=True)))", ""])
+
+
 def installed_probe_script(expected: dict, versions: dict) -> str:
     hashes = {n: item["sha256"] for n, item in expected["members"].items()
               if n.startswith("recovery/") and n.endswith(".py")}
@@ -500,7 +532,8 @@ def run_preflight(input_root: Path, output_root: Path, scratch_root: Path, expec
         versions = dict(re.findall(r"^([\w.-]+)==([^\s\\]+)", lock_text, flags=re.MULTILINE))
         if any(versions.get(n) != v for n,v in PINNED.items()):
             raise ValueError("candidate_roots_changed")
-        invoke("create-venv", [sys.executable, "-m", "venv", candidate], 60)
+        # Run 3 failed inside ensurepip; create the same plain venv without invoking it.
+        invoke("create-venv", [sys.executable, "-m", "venv", "--without-pip", candidate], 60)
         configuration = (candidate/"pyvenv.cfg").read_text().lower()
         if "include-system-site-packages = false" not in configuration:
             raise ValueError("candidate_inherits_base_packages")
@@ -516,10 +549,22 @@ def run_preflight(input_root: Path, output_root: Path, scratch_root: Path, expec
         save_json(output/"wheel-files.json", files)
         bootstrap = scratch/"pip-bootstrap.lock"
         p = tools["pip"]
-        bootstrap.write_text(f"pip=={p['version']} --hash=sha256:{p['wheels'][0]['sha256']}\n")
-        invoke("bootstrap-pip", [interpreter,"-m","pip","--isolated","install","--no-cache-dir",
+        pip_metadata = p['wheels'][0]
+        pip_directory = scratch/'pip-bootstrap'
+        pip_directory.mkdir()
+        pip_wheel = pip_directory/pip_metadata['filename']
+        downloaded = json_stdout(output, invoke('download-pip-wheel', [interpreter,'-I','-c',
+                     pip_wheel_download_script(pip_metadata,pip_wheel)], 60))
+        if (downloaded != dict(pip_metadata,verified=True) or not pip_wheel.is_file()
+                or pip_wheel.stat().st_size != pip_metadata['bytes']
+                or sha256_file(pip_wheel) != pip_metadata['sha256']):
+            raise ValueError('pip_bootstrap_unverified_wheel')
+        save_json(output/'pip-bootstrap-wheel.json', downloaded)
+        bootstrap.write_text(f"pip=={p['version']} --hash=sha256:{pip_metadata['sha256']}\n")
+        invoke("bootstrap-pip", [interpreter,"-I","-c",PIP_WHEEL_RUNNER,pip_wheel,
+               "--isolated","--disable-pip-version-check","install","--no-cache-dir",
                "--no-deps","--require-hashes","--report",output/"pip-bootstrap.json",
-               "--index-url","https://pypi.org/simple","-r",bootstrap], 120)
+               "--no-index","--find-links",pip_directory,"-r",bootstrap], 120)
         pip = [interpreter,"-m","pip","--isolated","--disable-pip-version-check"]
         common = ["--no-cache-dir","--only-binary=:all:","--require-hashes","-r",lock]
         wheels = scratch/"wheels"

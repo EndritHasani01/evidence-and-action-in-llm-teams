@@ -141,15 +141,15 @@ def preparation_notebook(program: str, expected: dict, lock_text: str) -> dict:
         return result
     instructions='''# M5 corrected source and environment preparation — CPU
 
-1. Create a **private Kaggle dataset** named `m5-kaggle-source-v2`. Upload only
-   **`m5-kaggle-source.payload`**, preserving that filename and extension.
+1. Reuse the **private Kaggle dataset** `m5-kaggle-source-v2` accepted in run 3.
+   Its unchanged **`m5-kaggle-source.payload`** needs no new upload.
 2. Import this notebook as a **private notebook**. Set **Accelerator: None** and
-   **Internet: On**. Use Add Input to attach the new dataset. The older dataset
+   **Internet: On**. Use Add Input to attach that dataset. The older dataset
    is unnecessary; keeping it attached is supported for input diagnosis.
 3. Select **Run All**. Defaults need no cell edits. Installation and checks may
    take several minutes; the CPU workflow has a 45-minute limit.
 4. Download `preflight-results.zip` from the final cell and the executed notebook.
-   Stop the session. Save both files under your local `notebooks/run/3/` and return them.
+   Stop the session. Save both files under your local `notebooks/run/4/` and return them.
 
 This verifies every canonical source member, stages WHEEL_GB GB of pinned CUDA wheels
 on disposable scratch, creates a clean candidate venv, checks installed package
