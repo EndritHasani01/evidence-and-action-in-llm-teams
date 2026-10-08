@@ -1,6 +1,8 @@
 # First-run evidence and failure analysis
 
-Inspection date: 8 October 2026. Inputs: the [executed notebook](../../../notebooks/run/recovery-m5-preflight-first-run.ipynb), [result ZIP](../../../notebooks/run/m5-kaggle-preflight-results.zip), [extracted report](../../../notebooks/run/m5-kaggle-preflight-results/preflight-report.json), [host record](../../../notebooks/run/m5-kaggle-preflight-results/host.json), [storage record](../../../notebooks/run/m5-kaggle-preflight-results/storage-plan.json), and [summary](../../../notebooks/run/m5-kaggle-preflight-results/summary.json).
+Inspection date: 8 October 2026. Inputs: the [executed notebook](../../../notebooks/run/recovery-m5-preflight-first-run.ipynb), [result ZIP](../../../notebooks/run/1/m5-kaggle-preflight-results.zip), [extracted report](../../../notebooks/run/1/m5-kaggle-preflight-results/preflight-report.json), [host record](../../../notebooks/run/1/m5-kaggle-preflight-results/host.json), [storage record](../../../notebooks/run/1/m5-kaggle-preflight-results/storage-plan.json), and [summary](../../../notebooks/run/1/m5-kaggle-preflight-results/summary.json).
+
+The result ZIP and extracted files are now located under `notebooks/run/1/` in the supplied workspace; their raw bytes still match the retained first-run checkpoint. The executed notebook remains at its original path. Links reflect this arrangement without rewriting evidence.
 
 ## What ran
 
