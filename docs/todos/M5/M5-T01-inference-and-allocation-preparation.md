@@ -173,3 +173,16 @@ T04 the complete pilot and measured timing, and T05 the accepted single lock,
 whole-schedule forecast and freeze. Any candidate change repeats affected
 checks; no configuration mixing or seed-based exact regeneration is promised.
 
+### Actual Kaggle CPU preparation follow-up, 8–9 October
+
+[Run 4](../../validation/m5-kaggle-full-preparation-run-4.md) verifies complete
+canonical source, Linux cleanup and the 88-package candidate/project installation.
+Its probe-output parsing failure remains retained. The [actual run-5 continuation](../../validation/m5-kaggle-full-preparation-run-5.md)
+passes all 97 CPU checks with zero skips, all 28 installed module hashes, eight
+clean command exits and independent off-host snapshot reopening, in 319.030 CPU
+seconds without repeated installation. The CPU preparation contract now passes
+on the real Linux/Python 3.13.15 candidate; no repeat CPU preflight is requested.
+T01 remains done. Existing GPU authorization is recorded in T02, which remains
+blocked by actual GPU/model requirements; no language weights or model
+generations ran. Candidate/scientific settings and task counts are unchanged.
+

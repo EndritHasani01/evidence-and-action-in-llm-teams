@@ -2,7 +2,7 @@
 
 Recorded 8 October 2026. The [actual run-3 review](m5-kaggle-full-preparation-run-3.md) accepts all 143 canonical source members and Linux owned-process cleanup, but records a failure inside `venv`'s `ensurepip`. Its inner traceback is unavailable. This repair bypasses that bootstrap dependency without assigning an unobserved distribution-specific cause or changing the candidate.
 
-**Later evidence:** [actual run 4](m5-kaggle-full-preparation-run-4.md) passes the complete bootstrap/package install/build, then encounters a separate installed-probe stdout parsing failure. Use the [same-session output repair and continuation](m5-kaggle-probe-output-repair.md) as the current action; the v3 delivery below is retained history.
+**Later evidence:** [actual run 4](m5-kaggle-full-preparation-run-4.md) passes the complete bootstrap/package install/build, then encounters a separate installed-probe stdout parsing failure. The [actual run-5 continuation](m5-kaggle-full-preparation-run-5.md) passes the dedicated-output repair and all 97 CPU checks, with zero skips and no repeated installation. CPU preparation is accepted; no bootstrap/preflight retry is requested. GPU/model gates remain open. The v3 delivery instructions below are retained history.
 
 ## Implementation and checks
 

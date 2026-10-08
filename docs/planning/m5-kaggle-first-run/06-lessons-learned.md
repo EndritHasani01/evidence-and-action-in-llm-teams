@@ -250,3 +250,13 @@ A third-party import can exit successfully and emit documentation diagnostics on
 Preserve useful work in a still-open session. After verifying the admitted source and environment again, an explicit continuation can run the remaining CPU checks without repeating a 4-GB package download. Keep the failed run immutable and export the continuation separately; this needs neither a generic resume service nor changes to experiment ledgers. Source drift or a lost session still stops admission.
 
 Short setup summaries should identify long commands starting. The quiet interval in run 4 contained successful package download, resolution and installation, not a hang. CPU setup timing and installed Torch CUDA-build metadata remain separate from measured T4/model feasibility.
+
+## Actual run-5 acceptance lessons, 8–9 October
+
+The [returned continuation](../../validation/m5-kaggle-full-preparation-run-5.md) turns the locally tested repair into actual Linux/Python 3.13 evidence: all 97 checks pass with zero skips, while the dedicated receipt verifies all 88 candidate versions and 28 installed module hashes. Review the exact delivered cell, original prior report, new ZIP receipt, command cleanup and off-host snapshots together. Preserve the old parser failure and its receipt; successful continuation adds evidence rather than revising an earlier outcome.
+
+A warning's effect needs an executed result. Missing-`wrapt` startup diagnostics and the Transformers documentation messages persist, but all eight commands and all prescribed checks pass. The deliberate native overflow warning also accompanies a passing rejection test. Keep those messages and their unresolved origins visible; they do not justify adding an unreviewed dependency or weakening the scientific checks.
+
+Stop repeating accepted preparation work once its evidence passes. The same-session continuation completes the remaining checks in 319.030 CPU seconds without another package download or install. Actual unittest durations, whole-command durations, whole-workflow time and intervening session idle time are different measurements; none records confirmed provider release or actual GPU feasibility.
+
+Accepted CPU scratch is disposable. A new session or accelerator image must verify environment/model staging and its own GPU-host behavior; CPU provenance does not establish T4 kernels, full-envelope headroom, language loading or finite outputs. The next work is the already identified complete-envelope and tiny T4 compatibility gate. Keep T02 blocked and model generations at zero until actual model criteria pass, while retaining the user's existing authorization and unchanged resource ceilings.

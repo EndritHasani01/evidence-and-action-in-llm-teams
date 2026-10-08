@@ -32,7 +32,7 @@ capacity status; each prerequisite task links that renewal.
 - [M4-T04](M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff) is done: shared original ledger costs, allocation/overhead reconciliation and the initial-coverage-only C/K rule preserve whole branches, fixed populations and unavailable selected costs. Complete CPU regression passes 362 checks, including all nine lifecycle checks. Final review passes 28 focused, 191 core (188 passed, three optional skips) and 110 installed-library checks. All sixteen cost cases and the unchanged nine-case M3 accounting archive reproduce. That handoff made M4-T05 ready.
 - [M4-T05](M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff) is done: paired world-cluster intervals, weighted Hoeffding companions, exact completion bounds and shared-response sensitivity preserve fixed populations, conditional repeats and incomplete trajectories. Whole-policy quality/preservation/cost displays share eligible paired cohorts; missing future costs remain unbounded. All sixteen uncertainty cases reproduce from original read-only workers. Complete CPU regression passes 396 checks; final focused/core/installed-library checks pass 33/225 (221 passed, four optional skips)/144. That handoff made M4-T06 ready.
 - [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate) is done: seven explicit exhibits, exact rational median cases, literal ID-linked traces and all M4 tables/assumptions reproduce from every original-worker scope twice. Five portable complete/incomplete/stopped reports retain 35 SVG/PNG exhibit pairs. All 424 source checks pass, including all nine lifecycle checks; final focused/core/installed checks pass 25/252 (244 passed, eight optional skips)/166. The 22-row/seven-category CPU audit passes. That handoff closed M1–M4 CPU gates and made M5-T01 ready for CPU preparation; actual hardware/capability/host/resource admission remains M5 work.
-- [M5-T01](M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) is done: direct maintained text-only loading, exact suffix decoding, fresh cache/seed/process ownership and existing worker/attempt evidence pass CPU/static/mock checks. Full regression passes 449 checks at the backend checkpoint; final identity guards pass 27 focused and 41 installed checks, core runs 260 (252 passed, eight optional skips), and native 9B/4B metadata checks pass four each. The unchanged native capacity passes eight checks. The [proposed Kaggle packet](../validation/m5-inference-preparation.md) fixes the 24-attempt/0.5 aggregate GPU-hour smoke envelope and pending provider/storage facts. M5-T02's preparation dependency is satisfied; it remains blocked by actual host preflight and prepared smoke execution. The [run-4 continuation handoff](../validation/m5-kaggle-probe-output-repair.md) follows actual candidate installation and its recorded probe-output parsing failure. No GPU gate is passed.
+- [M5-T01](M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) is done: direct maintained text-only loading, exact suffix decoding, fresh cache/seed/process ownership and existing worker/attempt evidence pass CPU/static/mock checks. Full regression passes 449 checks at the backend checkpoint; final identity guards pass 27 focused and 41 installed checks, core runs 260 (252 passed, eight optional skips), and native 9B/4B metadata checks pass four each. The unchanged native capacity passes eight checks. The [proposed Kaggle packet](../validation/m5-inference-preparation.md) fixes the 24-attempt/0.5 aggregate GPU-hour smoke envelope and pending provider/storage facts. [Actual Kaggle run 5](../validation/m5-kaggle-full-preparation-run-5.md) now passes all 97 CPU preparation checks with zero skips and independently reopened exports, following run 4's verified source/install/build. No repeat CPU preflight is requested. M5-T02 remains blocked by actual GPU-host/model gates and prepared smoke execution; existing GPU authorization persists. No GPU gate is passed.
 - Other blocked tasks await their listed prerequisites; dependency-blocked is distinct from a failed gate.
 - No GPU run, main experiment, scientific/frozen-configuration change or publication is authorized by creation of this task system.
 
@@ -55,15 +55,14 @@ path diagnosis and independently readable off-host snapshots. Raw `.payload`
 delivery is selected for the [full-source preparation packet](../validation/m5-kaggle-full-preparation.md).
 The [actual run 4](../validation/m5-kaggle-full-preparation-run-4.md) verifies
 all 143 source members, Linux cleanup, the 88-package installation and project
-build. The installed probe exits zero and independently verifies all module
-hashes/versions, but stdout diagnostics cause JSON parsing to fail before any
-of the 97 focused/native checks. The [output-channel repair and continuation](../validation/m5-kaggle-probe-output-repair.md)
-pass 27 focused checks and real local Jupyter wiring with controlled candidate
-outcomes. The same Kaggle session is still open: paste its continuation file
-into one new code cell, keep Accelerator None and run only that cell. Return
-new ZIP/notebook evidence under `notebooks/run/4/continuation/`. Existing source,
-packages and failed-run artifacts are reused unchanged. Actual continuation,
-GPU/model and later gates remain pending.
+build. Its failed stdout parser remains recorded. The [actual run-5 continuation](../validation/m5-kaggle-full-preparation-run-5.md)
+passes the dedicated provenance file and all 97 focused/native checks with zero
+skips, eight clean command exits and independently reopened snapshots. Returned
+artifacts are retained under `notebooks/run/5/`; no repeated download/install or
+further CPU preflight is requested. The CPU portion of K4/K8 and K9's CPU review
+pass. GPU-specific host/attention/full-envelope checks and model smoke remain
+open under the [next-gate plan](../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md).
+Original failed results and scientific/package/resource semantics are preserved.
 Task counts and scientific gates above are unchanged; T02 remains blocked.
 
 ## Selecting and updating a task

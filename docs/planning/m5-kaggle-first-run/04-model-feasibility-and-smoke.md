@@ -2,6 +2,8 @@
 
 **Status: static planning; physical model acceptance unexecuted.** The source-input failure supplies no reason to alter the model, mathematical design, output cap or protocol. This document identifies the separate issues that must be resolved before a successful preparation run can become M5-T02 evidence.
 
+[Actual run 5](../../validation/m5-kaggle-full-preparation-run-5.md) now completes the unchanged candidate's CPU preparation with all 97 checks passed and zero skips. No repeat CPU preflight is requested. R7 complete-envelope coverage and R8's tiny admitted T4 attention/library probe are the next unresolved gates; the physical model-smoke notebook remains unprepared. A new GPU session/accelerator image needs verified environment staging and its own host checks, with all assigned time charged under the existing budgets.
+
 ## Scientific invariants
 
 Retain Qwen3.5-9B first and the specified 4B hardware/runtime fallback, one full replica per physical T4, serial batch-one calls, NF4/double quantization, FP16 compute and supported sensitive FP32 paths. No CPU/disk offload, cross-device model splitting, custom kernels, alternative quantizers or serving stack are part of the proposed repair.

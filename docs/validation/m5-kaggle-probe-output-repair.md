@@ -2,6 +2,8 @@
 
 Recorded 8 October 2026 after [actual run 4](m5-kaggle-full-preparation-run-4.md). The installed candidate and project build pass; the probe exits zero but upstream documentation messages precede its JSON on stdout. Strict whole-stream parsing fails before the remaining 97 checks. The original run and all package/scientific inputs remain unchanged.
 
+**Actual acceptance, reviewed 8–9 October:** [run 5](m5-kaggle-full-preparation-run-5.md) executes the exact delivered continuation, passes all 97 checks with zero skips and verifies installed provenance through the dedicated machine file. Eight commands exit cleanly; both exported SQLite copies independently reopen. CPU preparation passes without another installation. Model/GPU acceptance remains open.
+
 ## Narrow repair and local evidence
 
 [m5_kaggle_preflight.py](../../scripts/m5_kaggle_preflight.py) writes the installed probe's receipt to a dedicated JSON file. The reader retains the size bound and exact dictionary/version/module-hash/class/CUDA-build/model-count validation. stdout and stderr remain separately retained, including upstream diagnostics. Generic `json_stdout` remains strict for other machine commands; no arbitrary warning lines or malformed receipts are accepted.
@@ -17,16 +19,12 @@ Actually executed on Windows/Python 3.11.9:
 
 The initial new test misclassified the command name `installed-probe` as an installation command. Its [failed log](../../notebooks/validation/m5-probe-output-repair/focused-tests.stderr.txt) remains retained. Correcting that assertion required no installation behavior change. Malformed, empty and absent machine files remain explicit failures with exportable evidence.
 
-## Current handoff
+## Continuation delivery and actual acceptance
 
 The [pasteable continuation cell](../../notebooks/recovery_m5_kaggle_continue_run4.py) is delivered from source checkpoint `9bf7983c3d5d6873d4c852ff89c79527048ddf80`. Its [binding record](../../notebooks/validation/m5-probe-output-repair/cell-delivery.json) verifies the exact three reviewed function bodies and SHA-256 `b07299f523e2cd08dba9d9e5366df9ec75695ed5ca01abf6f4a3d7ad4163aaa2`. The cell checks the original embedded helper identity, copies its namespace and installs the repaired functions only into that copy.
 
-Real local Jupyter executes the exact shipped cell with counts 1–4 and no error outputs, using real source/archive/filesystem/export work and explicitly controlled candidate/import/test outcomes. It preserves the original failed ZIP and original helper functions, performs no package download/install and exports the controlled 97-count continuation. [Executed harness notebook](../../notebooks/validation/m5-probe-output-repair/executed-cell.ipynb), [kernel validation](../../notebooks/validation/m5-probe-output-repair/kernel-validation.json) and [harness](../../notebooks/validation/m5-probe-output-repair/verify_cell.py) retain this wiring evidence. Controlled counts remain separate from actual Kaggle checks, which have not yet run.
+Real local Jupyter executes the exact shipped cell with counts 1–4 and no error outputs, using real source/archive/filesystem/export work and explicitly controlled candidate/import/test outcomes. It preserves the original failed ZIP and original helper functions, performs no package download/install and exports the controlled 97-count continuation. [Executed harness notebook](../../notebooks/validation/m5-probe-output-repair/executed-cell.ipynb), [kernel validation](../../notebooks/validation/m5-probe-output-repair/kernel-validation.json) and [harness](../../notebooks/validation/m5-probe-output-repair/verify_cell.py) retain this wiring evidence. Those controlled counts remain separate from the subsequently returned actual Kaggle run-5 checks.
 
-The user confirms the original Kaggle session is still open. The next action is:
+The user returned the executed continuation and ZIP under **`notebooks/run/5/`**, preserving the original run-4 files. The new cell's source matches the delivered file byte for byte, its new receipt matches the ZIP and its retained prior report matches run 4 exactly. The repaired receipt passes despite the retained upstream stdout messages. All 81 focused and 4/4/8 native checks actually pass on Linux/Python 3.13.15; continuation wall time is 319.030 seconds. [Independent audit](../../notebooks/validation/m5-full-preparation-run-5/validation.json) records the binding, counts, command cleanup and off-host reopen checks.
 
-1. Open the linked `.py` file locally and copy its complete contents.
-2. Paste into one new code cell in the **existing v3 Kaggle notebook/session**, keeping **Accelerator None**. Run **only that cell**; it reuses the installed environment and prints each command starting.
-3. Download the new ZIP and updated executed notebook, stop the session, and save both under **`notebooks/run/4/continuation/`**. Original run-4 files stay at their existing paths.
-
-This is CPU preparation, with actual continuation/check outcomes pending. T02 remains blocked by remaining host/model gates, T01 remains done and progress remains 21 done/eight blocked. The original v3 notebook is preserved as the delivered failed-run artifact; no fresh-session rerun is requested while this admitted session remains available.
+No repeat CPU preflight is requested. The [next gate](../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md) covers complete-envelope/T4 attention compatibility before staged assets and bounded model smoke. T02 remains blocked by actual GPU/model requirements, T01 remains done and progress remains 21 done/eight blocked. The original v3 notebook and failed outputs are preserved; the successful continuation adds evidence without rewriting them.

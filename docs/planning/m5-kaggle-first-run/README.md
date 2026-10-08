@@ -1,6 +1,6 @@
 # M5 Kaggle first-run review and implementation plan
 
-Prepared 8 October 2026. **Status: run 4 passes full-source upload, Linux cleanup and candidate installation/build; stdout diagnostics block probe parsing and the 97 checks. The locally validated continuation reuses the still-open session; actual check/model acceptance remains pending.**
+Prepared 8 October 2026; actual acceptance reviewed 8–9 October. **Status: run 4 plus run 5 pass CPU preparation, including all 97 focused/native checks with zero skips, installed provenance and off-host snapshots. No repeat CPU preflight is requested. GPU-specific compatibility, complete-envelope memory and model smoke remain open.**
 
 The first run detected two T4s and CUDA-enabled Torch, then stopped at the source-input contract. The uploaded archive contains the missing compressed fixture. The immediate repair belongs to input delivery and validation. A reliable next run also needs explicit environment isolation, separate scratch/output storage, useful failure reports, and allocation accounting. Passing those preparation checks will still leave physical model acceptance open.
 
@@ -33,9 +33,9 @@ This package supersedes the earlier [notebook plan's](../../validation/m5-kaggle
 |---|---|---|
 | Source delivery | Preserve the original archive as one raw `.payload`; verify its bytes and every extracted required member before setup. | The tiny canary and full run-3 upload pass. Reuse the accepted dataset; retain admission checks and original scientific fixtures. |
 | Input diagnostics | Capture the actual attached-file inventory, sizes, missing paths, likely transformed names and validation reason. | Diagnose before copying a potentially expanded tree. |
-| Package environment | Prefer a clean venv and the observed CUDA 12.8 candidate build. Resolve and record the full dependency closure. | No blanket inheritance of Kaggle packages or unqualified latest-version installation. Candidate acceptance still requires the actual host. |
+| Package environment | Prefer a clean venv and the observed CUDA 12.8 candidate build. Resolve and record the full dependency closure. | Actual CPU closure/provenance/checks pass in runs 4/5. GPU libraries/kernel paths remain unverified; no passing scientific lock is inferred. |
 | Storage | Keep environments, downloads and temporary source work on verified scratch; retain reports and worker backups under `/kaggle/working`. | Observed scratch free space is not a provider quota or durability guarantee. |
-| Next user run | An updated preparation-only notebook with fixed defaults and one next-action summary. | No automatic weight download, smoke, fallback, pilot or main execution. |
+| Next user run | Prepare the tiny T4 compatibility check after complete-envelope review; CPU preparation already passes. | That follow-up is not yet delivered. No repeat CPU run, automatic weights, smoke, fallback, pilot or main execution is requested. |
 | Model feasibility | Resolve the complete-envelope memory question before promising 9B acceptance. | A 33k-token fixture and a 261k-token bound are different claims. |
 | Attention dispatch | Probe the reviewed SDPA/GQA math-fallback risk using tiny tensors before model loading. | A requested `sdpa` setting is not a measured efficient kernel; 4B shares the same head geometry. |
 | Timing | Account from provider/session assignment, include both GPUs and setup, and check time before starting each operation. | The first cell's timestamp is only a lower bound on allocation. |
@@ -50,7 +50,7 @@ This package supersedes the earlier [notebook plan's](../../validation/m5-kaggle
 5. Resolve the live worst-context coverage, SDPA dispatch and model-source staging questions; materialize the 24 exact smoke requests offline.
 6. Execute only a separately prepared, bounded model smoke after its prerequisites and allocation admission pass. Then follow the existing 90-slot capability, full-pilot and freeze sequence.
 
-Steps 1–4 are the next implementation scope. Steps 5–6 are a concrete conditional continuation, not permission for this planning turn to execute models.
+Steps 1–4 now pass within the admitted CPU scope; [actual run-5 review](../../validation/m5-kaggle-full-preparation-run-5.md) records their acceptance and the remaining GPU-host obligations. Steps 5–6 are the conditional continuation, with physical model/pilot gates unchanged. Existing GPU authorization persists; it does not substitute for those gates or resource admission.
 
 ## Completion and review standard
 

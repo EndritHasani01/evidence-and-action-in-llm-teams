@@ -2,9 +2,12 @@
 
 **Historical first-notebook plan and local evidence.** Its extracted-tree and
 GPU installation workflow was superseded after the returned source failure and
-passing CPU transport canary. Use the [v2 CPU preparation handoff](m5-kaggle-full-preparation.md)
-for the current notebook, payload and instructions. The original notebook and
-all evidence below remain unchanged for provenance.
+passing CPU transport canary. [Actual run 5](m5-kaggle-full-preparation-run-5.md)
+now passes all 97 CPU preparation checks with zero skips, following the verified
+source/install work in run 4. No repeat CPU preflight is requested. The
+[current handoff](m5-kaggle-full-preparation.md) keeps GPU/model acceptance open.
+The original notebook and all evidence below remain unchanged for provenance;
+the restored root AGENTS.md and specification govern current work.
 
 Prepared 8 October 2026 at the user's request to plan and create the notebook
 they should use. The earlier AGENTS.md instructions were revoked by the user;

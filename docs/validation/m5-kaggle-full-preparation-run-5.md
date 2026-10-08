@@ -1,6 +1,6 @@
 # Actual Kaggle CPU continuation run 5
 
-Reviewed 8 October 2026. The supplied [executed notebook](../../notebooks/run/5/notebook-exec.ipynb) and [results ZIP](../../notebooks/run/5/preflight-results.zip) complete the same-session continuation of [run 4](m5-kaggle-full-preparation-run-4.md). **All 97 CPU checks pass, with zero skips.** Run 4's original parsing failure remains retained; run 5 supplies the successful provenance and previously blocked checks. No repeat CPU preflight is required for this unchanged candidate.
+Reviewed 8–9 October 2026. The supplied [executed notebook](../../notebooks/run/5/notebook-exec.ipynb) and [results ZIP](../../notebooks/run/5/preflight-results.zip) complete the same-session continuation of [run 4](m5-kaggle-full-preparation-run-4.md). **All 97 CPU checks pass, with zero skips.** Run 4's original parsing failure remains retained; run 5 supplies the successful provenance and previously blocked checks. No repeat CPU preflight is required for this unchanged candidate.
 
 The [independent audit](../../notebooks/validation/m5-full-preparation-run-5/validation.json) and [review script](../../notebooks/validation/m5-full-preparation-run-5/review_run.py) verify the notebook/cell binding, ZIP receipt/member safety/CRC, prior-report identity, package/module provenance, actual command logs/counts and off-host SQLite copies. The review never executes the supplied notebook or changes either original artifact.
 
@@ -33,6 +33,8 @@ The missing-`wrapt` `sitecustomize` warning persists, including in successful ch
 - Independent database copies: [filesystem](../../notebooks/validation/m5-full-preparation-run-5/reopened-filesystem.sqlite), SHA-256 `554c5c739e9b6a71e47f618c861104efb8a2cb12f5ef72012692365a9880cd86`; [backup](../../notebooks/validation/m5-full-preparation-run-5/reopened-filesystem-backup.sqlite), SHA-256 `79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584`.
 
 Actual local verification: `python -X utf8 notebooks/validation/m5-full-preparation-run-5/review_run.py` passes on Windows/Python 3.11.9. This is an independent artifact audit; the 97 scientific checks were executed on Kaggle, not rerun or simulated locally. [Supplied-artifact hashes](../../notebooks/validation/m5-full-preparation-run-5/original-artifact-audit.json) retain the original runs and the pre-existing local document edit.
+
+The [final handoff audit](../../notebooks/validation/m5-full-preparation-run-5/handoff-validation.json) checks local links/anchors and all 29 task statuses, preserves 34 earlier notebook/returned artifacts and all 20 supplied-run files, and confirms an empty protected scientific diff. The pre-existing edit to `m5-inference-preparation.md` remains untouched and outside these commits.
 
 ## Acceptance and next gate
 

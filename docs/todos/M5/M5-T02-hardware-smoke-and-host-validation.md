@@ -169,3 +169,24 @@ without downloading/installing packages. Return its ZIP/updated notebook under
 `notebooks/run/4/continuation/`. Original results and scientific/package/resource
 semantics are unchanged; actual continuation/model acceptance and T02 remain open.
 
+### Actual run 5 CPU acceptance, reviewed 8–9 October
+
+The [returned continuation review](../../validation/m5-kaggle-full-preparation-run-5.md)
+accepts all 97 actual CPU checks with zero skips: 81 focused inference/durable/
+attempt/worker checks and 4/4/8 native metadata/capacity checks. Installed
+provenance matches all 88 candidate versions and 28 scientific module hashes.
+All eight commands exit zero with confirmed process-group cleanup; both closed
+SQLite copies reopen independently off-host with integrity `ok`, row `7` and
+rejected writes. The exact delivered cell reuses run 4's unchanged source and
+venv; no download/install or model generation occurs. CPU wall time is 319.030
+seconds. Supplied files remain under `notebooks/run/5/`; original run 4 stays intact.
+
+The CPU portion of K4/K8 and K9's CPU review pass. No further CPU preflight is
+requested. [K10's complete-envelope and tiny T4 attention/runtime checks](../../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md)
+come next, followed by verified asset staging, exact smoke requests and attempt/
+allocation admission. The model-smoke notebook is not yet ready. GPU-specific
+host/library/headroom, physical language loading/finite outputs/state behavior,
+provider release and all model/pilot/freeze acceptance remain unknown. This task
+therefore stays **blocked**; existing GPU authorization persists and all shared
+resource limits, candidate/scientific settings and task statuses are unchanged.
+

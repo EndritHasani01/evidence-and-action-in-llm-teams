@@ -5,29 +5,29 @@ The [T01 adapter and CPU evidence](../todos/M5/M5-T01-inference-and-allocation-p
 are complete. The user authorized GPU-host preparation and reported available
 quota. The first run supplied two-T4/CUDA inspection but failed source admission;
 the [actual CPU canary](m5-kaggle-upload-canary-run-2.md) then passed transport checks.
-The [actual full-source run 4](m5-kaggle-full-preparation-run-4.md) then verified
-all 143 members, Linux cleanup, the 88-package install and project build. The
-probe exits zero but its stdout diagnostics cause JSON parsing to fail before
-the 97 scientific checks. The same-session continuation fixes that output channel;
-actual model/host acceptance remains unexecuted. The existing [smoke packet](m5-inference-preparation.md)
+The [actual full-source run 4](m5-kaggle-full-preparation-run-4.md) verifies
+all 143 members, Linux cleanup, the 88-package install and project build.
+Its probe-output failure is preserved. The [actual run-5 continuation](m5-kaggle-full-preparation-run-5.md)
+passes the repaired provenance channel and all 97 CPU checks, with zero skips.
+CPU preparation is accepted; actual GPU/model acceptance remains unexecuted.
+The existing [smoke packet](m5-inference-preparation.md)
 and scientific resource limits still apply across accounts and configurations.
 
-## Recommended next cell in the still-open session
+## Next gate after accepted CPU preparation
 
-Copy the complete [continuation cell file](../../notebooks/recovery_m5_kaggle_continue_run4.py)
-into one new code cell in the **existing v3 notebook/session**. Keep **Accelerator
-None** and run **only that new cell**. It reuses the existing candidate, verifies
-source/package provenance and runs the remaining 81 focused/16 native checks.
-Download its new ZIP and updated notebook, stop the session, and return both
-under `notebooks/run/4/continuation/`, preserving the original run-4 files.
+The continuation has already run successfully and its notebook/ZIP are retained
+under `notebooks/run/5/`. No further CPU preflight or package retry is requested.
+Stop the CPU session if still open after retaining its artifacts; confirmed
+provider release remains unrecorded.
 
-The [output-channel repair evidence and handoff](m5-kaggle-probe-output-repair.md)
-record 27 passing focused checks and exact-cell real local Jupyter wiring with
-explicitly controlled candidate/import/test outcomes. Actual run-4 installation
-is accepted within its scope; actual continuation checks and model acceptance
-remain pending. The original
-notebook and ZIP are retained as first-run evidence; the manual GPU inspection
-cell below is historical and is not the next preparation action.
+Next prepare [K10's complete-envelope and tiny T4 compatibility checks](../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md).
+Actual attention/kernel geometry, GPU host/device facts and full-envelope
+headroom remain open before model smoke. A CPU scratch environment cannot be
+assumed to survive a new session or accelerator change; verified staging and
+candidate GPU-host checks are required. The model-smoke notebook is not yet
+ready. Existing GPU authorization persists, with all assigned time charged to
+the unchanged budgets. The manual inspection cell below is historical;
+the [current evidence review](m5-kaggle-full-preparation-run-5.md) governs the handoff.
 
 ## Reported CPU notebook
 
