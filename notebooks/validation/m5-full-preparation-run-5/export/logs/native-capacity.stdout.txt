@@ -1,0 +1,13 @@
+target: former overflow uses 2280 input + 384 output = 2664 / 262144
+fallback: former overflow uses 2025 input + 384 output = 2409 / 262144
+target top_k: complete input + reserve upper 261203 / 262144
+target prefix_sum: complete input + reserve upper 261301 / 262144
+target difference_array: complete input + reserve upper 261388 / 262144
+target distributed_sort: complete input + reserve upper 261341 / 262144
+target bfs_distance: complete input + reserve upper 258218 / 262144
+fallback top_k: complete input + reserve upper 259739 / 262144
+fallback prefix_sum: complete input + reserve upper 259831 / 262144
+fallback difference_array: complete input + reserve upper 259868 / 262144
+fallback distributed_sort: complete input + reserve upper 259863 / 262144
+fallback bfs_distance: complete input + reserve upper 257452 / 262144
+Capacity admitted sizes: target, fallback; final size selection remains M5.

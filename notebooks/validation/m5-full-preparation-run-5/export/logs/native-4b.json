@@ -1,0 +1,22 @@
+{
+  "name": "native-4b",
+  "args": [
+    "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7/venv/bin/python",
+    "-m",
+    "tests.tokenizer_inference",
+    "--tokenizer",
+    "metadata/4B"
+  ],
+  "cwd": "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7/source",
+  "started_utc": "2026-10-08T21:49:35.428205+00:00",
+  "timeout_seconds": 60,
+  "stdout": "logs/native-4b.stdout.txt",
+  "stderr": "logs/native-4b.stderr.txt",
+  "status": "passed",
+  "leader_exited": true,
+  "tree_confirmation": "exited",
+  "pid": 3372,
+  "exit_code": 0,
+  "ended_utc": "2026-10-08T21:49:43.020355+00:00",
+  "elapsed_seconds": 7.591867385999649
+}

@@ -1,0 +1,2 @@
+[ERROR] `loss` is part of Qwen3_5CausalLMOutputWithPast.__init__'s signature, but not documented. Make sure to add it to the docstring of the function in /tmp/recovery-m5/20261008T211102264915Z-c5a493f7/venv/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py.
+[ERROR] `logits` is part of Qwen3_5CausalLMOutputWithPast.__init__'s signature, but not documented. Make sure to add it to the docstring of the function in /tmp/recovery-m5/20261008T211102264915Z-c5a493f7/venv/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py.
