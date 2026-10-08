@@ -5,27 +5,27 @@ The [T01 adapter and CPU evidence](../todos/M5/M5-T01-inference-and-allocation-p
 are complete. The user authorized GPU-host preparation and reported available
 quota. The first run supplied two-T4/CUDA inspection but failed source admission;
 the [actual CPU canary](m5-kaggle-upload-canary-run-2.md) then passed transport checks.
-The [actual full-source run 3](m5-kaggle-full-preparation-run-3.md) then verified
-all 143 members and Linux process cleanup, but failed inside `ensurepip` before
-installation/tests. The next CPU run validates the repaired bootstrap and candidate;
+The [actual full-source run 4](m5-kaggle-full-preparation-run-4.md) then verified
+all 143 members, Linux cleanup, the 88-package install and project build. The
+probe exits zero but its stdout diagnostics cause JSON parsing to fail before
+the 97 scientific checks. The same-session continuation fixes that output channel;
 actual model/host acceptance remains unexecuted. The existing [smoke packet](m5-inference-preparation.md)
 and scientific resource limits still apply across accounts and configurations.
 
-## Recommended notebook
+## Recommended next cell in the still-open session
 
-Use [recovery_m5_kaggle_preflight_v3.ipynb](../../notebooks/recovery_m5_kaggle_preflight_v3.ipynb)
-and reuse the accepted private dataset `m5-kaggle-source-v2` with its unchanged
-`m5-kaggle-source.payload`. No new upload is needed. Import the notebook privately,
-attach that dataset, select **Accelerator: None**, enable **Internet**, and Run All.
-Download `preflight-results.zip` and the executed notebook, stop the session, and
-return both under `notebooks/run/4/`. Fixed defaults need no cell edits.
+Copy the complete [continuation cell file](../../notebooks/recovery_m5_kaggle_continue_run4.py)
+into one new code cell in the **existing v3 notebook/session**. Keep **Accelerator
+None** and run **only that new cell**. It reuses the existing candidate, verifies
+source/package provenance and runs the remaining 81 focused/16 native checks.
+Download its new ZIP and updated notebook, stop the session, and return both
+under `notebooks/run/4/continuation/`, preserving the original run-4 files.
 
-The [bootstrap repair evidence and handoff](m5-kaggle-pip-bootstrap-repair.md)
-record 25 passing operational checks, a real isolated pinned-pip installation,
-and exact-v3 local Jupyter valid/missing-source exports. The notebook uses a clean
-venv without `ensurepip`, verifies the pinned pip wheel, then requests the unchanged
-88-package candidate install and 81 focused plus 16 native checks on Linux.
-Actual Kaggle installation and model acceptance remain pending. The original
+The [output-channel repair evidence and handoff](m5-kaggle-probe-output-repair.md)
+record 27 passing focused checks and exact-cell real local Jupyter wiring with
+explicitly controlled candidate/import/test outcomes. Actual run-4 installation
+is accepted within its scope; actual continuation checks and model acceptance
+remain pending. The original
 notebook and ZIP are retained as first-run evidence; the manual GPU inspection
 cell below is historical and is not the next preparation action.
 

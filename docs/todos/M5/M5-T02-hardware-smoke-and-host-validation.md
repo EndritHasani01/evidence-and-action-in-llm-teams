@@ -150,3 +150,22 @@ did not prevent that reported bootstrap result. Full v3 candidate installation,
 provenance, scientific checks and model acceptance remain pending. This narrow
 manual evidence requires no package-pin or scientific-status change.
 
+### Actual run 4 and same-session continuation
+
+The [returned run-4 review](../../validation/m5-kaggle-full-preparation-run-4.md)
+verifies source/cleanup, all 88 candidate package versions/wheel hashes, isolated
+project build/install and independently reopened snapshots. The installed probe
+exits zero and its receipt verifies all 28 scientific modules, but documentation
+messages on stdout cause strict JSON parsing to fail. All 97 focused/native
+checks remain unexecuted; six preparation stages pass, one fails and four block.
+
+The [dedicated JSON output repair and continuation](../../validation/m5-kaggle-probe-output-repair.md)
+pass 27 focused checks and real local Jupyter wiring with controlled candidate
+outcomes. The user confirms the original session is still open. Paste the
+[continuation cell](../../../notebooks/recovery_m5_kaggle_continue_run4.py) into
+one new cell in that existing notebook, keep Accelerator None and run only the
+new cell. It verifies the existing source/venv and executes the remaining checks
+without downloading/installing packages. Return its ZIP/updated notebook under
+`notebooks/run/4/continuation/`. Original results and scientific/package/resource
+semantics are unchanged; actual continuation/model acceptance and T02 remain open.
+

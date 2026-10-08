@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "kind": "canonical-m5-source",
+  "transport": "raw_payload",
+  "payload_filename": "m5-kaggle-source.payload",
+  "source_baseline_commit": "ca46bcd55486b38bb453f5294e01f943bc7f7752",
+  "archive_bytes": 640,
+  "archive_sha256": "27f401ed0953c7b38059d3b84e23747ed61b31459d2d8315c1f2646b6a074e72",
+  "expanded_bytes": 136,
+  "members": {
+    "SOURCE_COMMIT.txt": {
+      "bytes": 41,
+      "sha256": "1cb45ab2ff376f81b6238f99c8a22ca5d35abb9a095f52200c6d34ba7922954f"
+    },
+    "pyproject.toml": {
+      "bytes": 43,
+      "sha256": "3994dd6b8ad59cc5a1de4e06808349e466e9f189ef310f904f3c72503c7a16db"
+    },
+    "recovery/__init__.py": {
+      "bytes": 25,
+      "sha256": "63a4a14c67585083390ba36815bbf99c7929cfd8dd52548bcce20f85b7bcfdbd"
+    },
+    "tests/fixtures/capacity_report.json.gz": {
+      "bytes": 27,
+      "sha256": "d15a6593859835127c5ee7fa93f7b1edc0f830bd063238e79939f833402ac1dc"
+    }
+  },
+  "candidate_lock_sha256": "a8122254268d5fc7f5baea44b822e0ad559ffcdd2c5952c6e7bc31de25071b45",
+  "candidate_wheels": [
+    {
+      "name": "torch",
+      "version": "2.11.0+cu128",
+      "filename": "torch-2.11.0+cu128-py3-none-any.whl",
+      "bytes": 115,
+      "sha256": "12c547f7047ae86be8b5fa27836154157cdd18240c431c896d1ed3cbd319c8f7",
+      "url": "https://files.pythonhosted.org/torch-2.11.0+cu128-py3-none-any.whl"
+    },
+    {
+      "name": "pydantic",
+      "version": "2.13.5",
+      "filename": "pydantic-2.13.5-py3-none-any.whl",
+      "bytes": 118,
+      "sha256": "d9b6f5efd99bd09318ab2aad966fce6e94cdeb3cffae0e4bb1a6523f31f7ff48",
+      "url": "https://files.pythonhosted.org/pydantic-2.13.5-py3-none-any.whl"
+    },
+    {
+      "name": "langgraph",
+      "version": "1.2.12",
+      "filename": "langgraph-1.2.12-py3-none-any.whl",
+      "bytes": 119,
+      "sha256": "fac2656d0e6dd74e77781257c47b4a177064255bc4a10c0d4e14fc617b3bbda3",
+      "url": "https://files.pythonhosted.org/langgraph-1.2.12-py3-none-any.whl"
+    },
+    {
+      "name": "langgraph-checkpoint",
+      "version": "4.2.0",
+      "filename": "langgraph_checkpoint-4.2.0-py3-none-any.whl",
+      "bytes": 130,
+      "sha256": "69dfd67164856629aa4a5b7ecefcef2810cf125a7c5cf62b92422eccfc932cd8",
+      "url": "https://files.pythonhosted.org/langgraph_checkpoint-4.2.0-py3-none-any.whl"
+    },
+    {
+      "name": "langgraph-checkpoint-sqlite",
+      "version": "3.1.1",
+      "filename": "langgraph_checkpoint_sqlite-3.1.1-py3-none-any.whl",
+      "bytes": 137,
+      "sha256": "6acbb604f6f771ea274c4f3b4fce239404a78301e23821cc1361bde489dd2150",
+      "url": "https://files.pythonhosted.org/langgraph_checkpoint_sqlite-3.1.1-py3-none-any.whl"
+    },
+    {
+      "name": "langchain-core",
+      "version": "1.6.6",
+      "filename": "langchain_core-1.6.6-py3-none-any.whl",
+      "bytes": 124,
+      "sha256": "e6a44e07c27a5d856f08ca27491e10e8fe2a6ad970c3352c53a1beaf775e9fe0",
+      "url": "https://files.pythonhosted.org/langchain_core-1.6.6-py3-none-any.whl"
+    },
+    {
+      "name": "transformers",
+      "version": "5.12.0",
+      "filename": "transformers-5.12.0-py3-none-any.whl",
+      "bytes": 122,
+      "sha256": "6a10f850f9084befc3fb6f4f14078a83c7198c087b77a846c3d630ac3e526d38",
+      "url": "https://files.pythonhosted.org/transformers-5.12.0-py3-none-any.whl"
+    },
+    {
+      "name": "accelerate",
+      "version": "1.14.0",
+      "filename": "accelerate-1.14.0-py3-none-any.whl",
+      "bytes": 120,
+      "sha256": "972117346957cbb3348817afd3662e607301331b1f21922b38c0a28737655856",
+      "url": "https://files.pythonhosted.org/accelerate-1.14.0-py3-none-any.whl"
+    },
+    {
+      "name": "bitsandbytes",
+      "version": "0.49.2",
+      "filename": "bitsandbytes-0.49.2-py3-none-any.whl",
+      "bytes": 122,
+      "sha256": "127dca917463402db10098752a6bd876237421ad52eaea18fafb285340287460",
+      "url": "https://files.pythonhosted.org/bitsandbytes-0.49.2-py3-none-any.whl"
+    },
+    {
+      "name": "tokenizers",
+      "version": "0.22.2",
+      "filename": "tokenizers-0.22.2-py3-none-any.whl",
+      "bytes": 120,
+      "sha256": "fea9c6c171872ece6733e0fa8ea48e735cd56593024a1530c72a2006dd4e0081",
+      "url": "https://files.pythonhosted.org/tokenizers-0.22.2-py3-none-any.whl"
+    },
+    {
+      "name": "huggingface-hub",
+      "version": "1.19.0",
+      "filename": "huggingface_hub-1.19.0-py3-none-any.whl",
+      "bytes": 125,
+      "sha256": "2f7d7669c9238afbed11680a942ce99b3af9c0db49debe2dfb7030fc2cbcb4f2",
+      "url": "https://files.pythonhosted.org/huggingface_hub-1.19.0-py3-none-any.whl"
+    }
+  ],
+  "build_tools": {
+    "pip": {
+      "version": "26.2.1",
+      "wheels": [
+        {
+          "filename": "pip-26.2.1-py3-none-any.whl",
+          "bytes": 113,
+          "sha256": "2756d937c1e756848d18e5c1ae2f750aa247454c579b65a2be62b520069a0df3",
+          "url": "https://files.pythonhosted.org/pip-26.2.1-py3-none-any.whl"
+        }
+      ]
+    },
+    "setuptools": {
+      "version": "84.0.0",
+      "wheels": [
+        {
+          "filename": "setuptools-84.0.0-py3-none-any.whl",
+          "bytes": 120,
+          "sha256": "a7e9c4bcb7f4ce7597009f18fe27e64ccd675dd8ccb719ddd9ef1db25eacfff3",
+          "url": "https://files.pythonhosted.org/setuptools-84.0.0-py3-none-any.whl"
+        }
+      ]
+    },
+    "wheel": {
+      "version": "0.48.0",
+      "wheels": [
+        {
+          "filename": "wheel-0.48.0-py3-none-any.whl",
+          "bytes": 115,
+          "sha256": "8bc6b57a14962c2accf3915b90bd53b9fa1a8042eca11013cc58dbe2b9dfd21b",
+          "url": "https://files.pythonhosted.org/wheel-0.48.0-py3-none-any.whl"
+        }
+      ]
+    }
+  },
+  "build_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "helper_sha256": "76f0fd7166852897e8e0176ee497d0b31207393c44fbeb0d04abd1f4dedab5ea"
+}

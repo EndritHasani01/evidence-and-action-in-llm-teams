@@ -36,3 +36,5 @@ Missing-`wrapt` startup warnings remain in stderr for some successful commands, 
 The narrow correction is a dedicated machine JSON file for the installed probe, with unchanged strict schema/version/module-hash checks and preserved stdout/stderr. Do not make a generic parser ignore arbitrary noise or weaken package/scientific acceptance.
 
 The user confirms the same Kaggle session is still open. Prepare a continuation cell that reuses its admitted source/venv, rechecks installed provenance through the corrected output channel and runs the remaining 97 checks with existing bounded command/test/export helpers. No package download/install or scientific/model run is needed for this continuation. Its original failed report remains immutable; the new CPU diagnostics will be reviewed separately. K4/K8/K9 acceptance and T02 remain open until the remaining actual checks and later model gates pass. T01 remains done; progress remains 21 done/eight blocked.
+
+The subsequent [implemented correction and validated continuation cell](m5-kaggle-probe-output-repair.md) are now delivered. Use that cell in the same session; the original run-4 outcomes above remain unchanged.

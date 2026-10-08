@@ -242,3 +242,11 @@ A clean venv's implicit bootstrap is itself a deployment prerequisite. The run r
 Review harnesses need the actual receipt shape too. A wrong field name can fail a reviewer assertion after the notebook itself succeeded. Preserve that failure, correct the harness and validate the unchanged delivered artifact; keep harness defects distinct from notebook/provider failures.
 
 Recovery should preserve existing data before restoring metadata or missing files. A complete byte-verified backup and genuine Git history allowed restoration of all six missing tracked root files without replacing existing edits. Later logical commits now use the recovered main checkout, with the earlier isolated checkout and all returned evidence retained.
+
+## Actual run-4 output and continuation lessons
+
+A third-party import can exit successfully and emit documentation diagnostics on stdout. Run 4's strict whole-stream parser rejected those messages before the valid receipt. Give machine results a dedicated file and keep their size/schema/version/module-hash checks strict; retain human stdout/stderr separately. A parser failure and a package/import failure are different observed boundaries.
+
+Preserve useful work in a still-open session. After verifying the admitted source and environment again, an explicit continuation can run the remaining CPU checks without repeating a 4-GB package download. Keep the failed run immutable and export the continuation separately; this needs neither a generic resume service nor changes to experiment ledgers. Source drift or a lost session still stops admission.
+
+Short setup summaries should identify long commands starting. The quiet interval in run 4 contained successful package download, resolution and installation, not a hang. CPU setup timing and installed Torch CUDA-build metadata remain separate from measured T4/model feasibility.

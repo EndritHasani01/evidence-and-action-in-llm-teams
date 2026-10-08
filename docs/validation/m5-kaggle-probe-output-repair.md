@@ -19,4 +19,14 @@ The initial new test misclassified the command name `installed-probe` as an inst
 
 ## Current handoff
 
-The user confirms the original Kaggle session is still open. Deliver a pasteable cell bound to this repaired source checkpoint, reusing the original notebook namespace through a copy. Run only that new cell; preserve original globals, the failed report and earlier artifacts. Returned new evidence belongs under `notebooks/run/4/continuation/`. This is CPU preparation, with actual continuation/check outcomes pending. T02 remains blocked by remaining host/model gates, T01 remains done and progress remains 21 done/eight blocked.
+The [pasteable continuation cell](../../notebooks/recovery_m5_kaggle_continue_run4.py) is delivered from source checkpoint `9bf7983c3d5d6873d4c852ff89c79527048ddf80`. Its [binding record](../../notebooks/validation/m5-probe-output-repair/cell-delivery.json) verifies the exact three reviewed function bodies and SHA-256 `b07299f523e2cd08dba9d9e5366df9ec75695ed5ca01abf6f4a3d7ad4163aaa2`. The cell checks the original embedded helper identity, copies its namespace and installs the repaired functions only into that copy.
+
+Real local Jupyter executes the exact shipped cell with counts 1–4 and no error outputs, using real source/archive/filesystem/export work and explicitly controlled candidate/import/test outcomes. It preserves the original failed ZIP and original helper functions, performs no package download/install and exports the controlled 97-count continuation. [Executed harness notebook](../../notebooks/validation/m5-probe-output-repair/executed-cell.ipynb), [kernel validation](../../notebooks/validation/m5-probe-output-repair/kernel-validation.json) and [harness](../../notebooks/validation/m5-probe-output-repair/verify_cell.py) retain this wiring evidence. Controlled counts remain separate from actual Kaggle checks, which have not yet run.
+
+The user confirms the original Kaggle session is still open. The next action is:
+
+1. Open the linked `.py` file locally and copy its complete contents.
+2. Paste into one new code cell in the **existing v3 Kaggle notebook/session**, keeping **Accelerator None**. Run **only that cell**; it reuses the installed environment and prints each command starting.
+3. Download the new ZIP and updated executed notebook, stop the session, and save both under **`notebooks/run/4/continuation/`**. Original run-4 files stay at their existing paths.
+
+This is CPU preparation, with actual continuation/check outcomes pending. T02 remains blocked by remaining host/model gates, T01 remains done and progress remains 21 done/eight blocked. The original v3 notebook is preserved as the delivered failed-run artifact; no fresh-session rerun is requested while this admitted session remains available.

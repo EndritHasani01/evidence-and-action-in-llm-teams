@@ -2,6 +2,8 @@
 
 Recorded 8 October 2026. The [actual run-3 review](m5-kaggle-full-preparation-run-3.md) accepts all 143 canonical source members and Linux owned-process cleanup, but records a failure inside `venv`'s `ensurepip`. Its inner traceback is unavailable. This repair bypasses that bootstrap dependency without assigning an unobserved distribution-specific cause or changing the candidate.
 
+**Later evidence:** [actual run 4](m5-kaggle-full-preparation-run-4.md) passes the complete bootstrap/package install/build, then encounters a separate installed-probe stdout parsing failure. Use the [same-session output repair and continuation](m5-kaggle-probe-output-repair.md) as the current action; the v3 delivery below is retained history.
+
 ## Implementation and checks
 
 [m5_kaggle_preflight.py](../../scripts/m5_kaggle_preflight.py) now creates the same isolated venv with `--without-pip`. One owned standard-library subprocess downloads the already reviewed pip wheel from its fixed HTTPS URL, with a 60-second total bound, a 30-second network operation timeout, an exact byte ceiling and SHA-256 verification before publication. The parent independently verifies both the receipt and file before any pip or bulk-package work. Reports/logs remain in the existing preparation export.
