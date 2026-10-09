@@ -1,6 +1,6 @@
 # Tiny T4 compatibility notebook: preparation and local verification
 
-Delivered 9 October 2026 for [M5-T02 preparation](../todos/M5/M5-T02-hardware-smoke-and-host-validation.md). The [next-step plan](../planning/m5-kaggle-first-run/07-t4-compatibility.md) is implemented in the [ready notebook](../../notebooks/recovery_m5_kaggle_t4_compatibility.ipynb). Actual run 5's 97 CPU checks already pass; no repeat CPU preflight is requested. **Actual T4 results are pending.** T02 remains blocked by its GPU/model/resource criteria; progress remains 21 done/eight blocked.
+Delivered 9 October 2026 for [M5-T02 preparation](../todos/M5/M5-T02-hardware-smoke-and-host-validation.md). The [next-step plan](../planning/m5-kaggle-first-run/07-t4-compatibility.md) is implemented in the [delivered notebook](../../notebooks/recovery_m5_kaggle_t4_compatibility.ipynb). **[Actual run 6](m5-t4-compatibility-run-6.md) passes the standalone library diagnostic on both T4s: 14 attention cases, four NF4 matmuls, six stages and four clean command exits.** CPU run 5's 97 checks remain accepted. No repeat CPU or tiny-GPU run is requested. T02 remains blocked by full-candidate/model/resource criteria; progress remains 21 done/eight blocked.
 
 ## What this step answers
 
@@ -12,7 +12,9 @@ This is a standalone library environment: require host Linux x86-64/Python 3.13 
 
 This does not establish the full scientific model lock, actual Qwen attention/recurrent behavior, full-envelope headroom or model smoke. The later model environment must repeat affected GPU checks. No attention adapter, backend selection, fallback selection, cap, package pin, scientific source or frozen configuration changes here. R7 remains unresolved; this implements the small-operator portion of R8.
 
-## Exact user action
+## Delivered procedure, completed in run 6
+
+These are the original run-6 instructions, retained for provenance. The returned notebook/results are accepted and the user reports the GPU session is stopped. Exact allocation duration remains unknown. The current action is offline attention-integration and R7 review; no further user execution is requested.
 
 1. Import [recovery_m5_kaggle_t4_compatibility.ipynb](../../notebooks/recovery_m5_kaggle_t4_compatibility.ipynb) into a **new private Kaggle notebook**. Attach no dataset.
 2. Select **Internet On / GPU T4 x2** when ready; start **Run All within one minute** of GPU assignment. If already allocated longer, stop and report that interval before running.
@@ -45,4 +47,4 @@ Probe source SHA-256 `ae6f5f945f4df06a5f23b7274f4c0670afe90a9bc001251004740fdd86
 
 The [handoff audit](../../notebooks/validation/m5-t4-compatibility/handoff-validation.json) passes **319 local references in 11 documents**, all **29 task states**, exact bytes for **388 earlier notebook/evidence files including 20 supplied-run files**, unchanged shared-helper/root files and an empty protected scientific diff. Both canonical payload versions match the original archive; the existing user edit retains SHA-256 `c071fbb83438a9831b073fd80da4d60f92eed3d5945674d2f84fbd8348b55dca` and remains unstaged. The reviewer's initial operational-helper checkpoint and payload-path assertions were corrected; their failed JSON records remain as `initial-handoff-validation.json` and `payload-path-handoff-failure.json`. These are reviewer errors, not notebook or scientific failures.
 
-Earlier notebooks/returned results, canonical source payload and important root files are retained. Local commits do not publish or run the notebook. After returned run 6, review its actual library/provenance/allocation observations; resolve R7 and any attention change before K11–K14 asset staging, exact smoke requests, admission and model execution.
+Earlier notebooks/returned results, canonical source payload and important root files are retained. Local commits do not publish or run the notebook. The [actual run-6 review](m5-t4-compatibility-run-6.md) accepts the tiny observations: native GQA selects math; repeated K/V selects efficient SM75 kernels with reference-matched outputs. This does not implement a model adapter or establish long-context fit. Resolve supported attention integration and R7, using the observed 14.562-GiB native total and accounting for repeated-K/V temporaries, before K11–K14 asset staging, exact smoke requests, admission and model execution. Full candidate GPU checks remain required; original package/scientific settings are unchanged.

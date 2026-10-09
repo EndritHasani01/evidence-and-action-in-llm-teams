@@ -2,6 +2,13 @@
 
 **Status:** blocked
 
+**Current evidence, 9 October:** runs 4/5 accept CPU preparation and
+[run 6](../../validation/m5-t4-compatibility-run-6.md) accepts the standalone
+tiny T4 attention/NF4 diagnostic. No repeat CPU or tiny-GPU run is requested.
+Supported model attention integration, complete-envelope memory, full-candidate
+GPU checks and actual model smoke still block this task. The user reports the
+GPU session stopped; its exact allocation interval remains unknown.
+
 **Dependencies:** [M5-T01](../M5/M5-T01-inference-and-allocation-preparation.md). M1–M4 must have passed. Explicit authorization covering the GPU/paid-compute scope is also required.
 
 M5-T01 completes on 7 October 2026 with its
@@ -190,7 +197,7 @@ provider release and all model/pilot/freeze acceptance remain unknown. This task
 therefore stays **blocked**; existing GPU authorization persists and all shared
 resource limits, candidate/scientific settings and task statuses are unchanged.
 
-### Tiny T4 compatibility delivery, 9 October
+### Tiny T4 compatibility delivery, 9 October, completed by run 6
 
 The [next-step plan](../../planning/m5-kaggle-first-run/07-t4-compatibility.md)
 and [standalone library notebook](../../../notebooks/recovery_m5_kaggle_t4_compatibility.ipynb)
@@ -215,4 +222,30 @@ Actual T4 kernels/native NF4, R7 complete-envelope memory, full-candidate GPU
 provenance, Qwen loading/recurrent/isolation, bounded exact smoke and release
 reconciliation remain pending. Zero model generations run here. This task stays
 **blocked**, with existing authorization and all dependent task statuses unchanged.
+
+### Actual run 6 standalone GPU acceptance, 9 October
+
+The [returned notebook and ZIP review](../../validation/m5-t4-compatibility-run-6.md)
+accepts all six stages, four clean command exits, 14 attention cases and four
+NF4/double-quantized matmuls on two distinct physical T4s. Original cell sources,
+all 85 staged wheel files, UUID/library origins, profiled backend/CUDA traces,
+numerical comparisons and ZIP receipts verify. Both closed SQLite snapshots
+independently reopen read-only off-host. Native GQA uses math; explicit repeated
+K/V uses efficient SM75 kernels at the tested shapes. Zero pretrained weights
+or model generations ran; all original supplied artifacts remain unchanged.
+
+This accepts R8's small-operator portion for the standalone host-Torch/private-
+wheel environment, not the complete candidate lock (33 host-package differences)
+or Qwen paths. Torch reports 14.562 GiB usable total per T4; fully materialized
+repeated K/V adds a separate conditional 4-GiB temporary at the cap. Next review
+supported model attention integration and sound R7 memory coverage offline
+before K11 assets, K12/K13 exact requests/admission and K14 actual model smoke.
+No backend, package, model/fallback, cap or frozen setting changes in this review.
+
+The observed workflow lasts 38.664 seconds. The user reports the GPU session
+stopped and offers a rerun, which is unnecessary. Exact allocation duration,
+provider assignment/release timestamps and earlier spending remain unknown;
+the conditional 0.3-hour ceiling is not verified spending. Retain uncertainty
+within unchanged shared limits. No further user run is requested now. This task
+stays **blocked**, with T01 done and progress at 21 done/eight blocked.
 

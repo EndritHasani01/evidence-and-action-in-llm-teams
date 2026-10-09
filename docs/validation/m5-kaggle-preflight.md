@@ -9,30 +9,35 @@ The [actual full-source run 4](m5-kaggle-full-preparation-run-4.md) verifies
 all 143 members, Linux cleanup, the 88-package install and project build.
 Its probe-output failure is preserved. The [actual run-5 continuation](m5-kaggle-full-preparation-run-5.md)
 passes the repaired provenance channel and all 97 CPU checks, with zero skips.
-CPU preparation is accepted; actual GPU/model acceptance remains unexecuted.
+CPU preparation is accepted. [Actual run 6](m5-t4-compatibility-run-6.md) also passes
+the standalone tiny T4 attention/NF4 diagnostic; full-candidate GPU and model
+acceptance remain unexecuted.
 The existing [smoke packet](m5-inference-preparation.md)
 and scientific resource limits still apply across accounts and configurations.
 
-## Next gate after accepted CPU preparation
+## Next gate after accepted CPU and tiny-library preparation
 
 The continuation has already run successfully and its notebook/ZIP are retained
 under `notebooks/run/5/`. No further CPU preflight or package retry is requested.
 Stop the CPU session if still open after retaining its artifacts; confirmed
 provider release remains unrecorded.
 
-The [tiny T4 compatibility notebook](../../notebooks/recovery_m5_kaggle_t4_compatibility.ipynb)
-is now delivered with [planning/local evidence and exact instructions](m5-t4-compatibility.md).
-Import it as a new private notebook, attach no dataset, select Internet On /
-GPU T4 x2 and Run All once within one minute of assignment. Download its ZIP
-and executed notebook, stop the GPU session immediately and return both under
-`notebooks/run/6/` with the displayed allocation duration. It stages only the
-verified 60.7-MB bitsandbytes wheel, requires matching host Torch and changes no
-base packages. Actual T4 dispatch/NF4 observations are pending; this standalone
-library check does not pass the model lock or [K10's complete-envelope gate](../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md).
-Verified full-candidate staging/host checks and model smoke remain later work.
-Existing authorization persists and all assigned time counts under the unchanged
-budgets. The manual inspection cell below is historical; the new delivery and
-[run-5 acceptance](m5-kaggle-full-preparation-run-5.md) govern the current handoff.
+The [actual run-6 review](m5-t4-compatibility-run-6.md) independently accepts all
+14 attention cases, four NF4 matmuls, source/wheel provenance, command cleanup
+and both off-host snapshots. It observes math for native GQA and efficient SM75
+kernels for repeated K/V. No repeated compatibility run is needed. The user
+reports the GPU session is stopped; exact allocation duration and provider
+assignment/release timestamps remain unknown. The 38.664-second workflow is
+only an observed lower bound on allocated time, not its total.
+
+Next complete offline review of supported model attention integration and
+[K10's complete-envelope memory gate](../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md).
+The tiny repeated-K/V path is not a model fix or long-context memory proof.
+Verified full-candidate staging/host checks, assets, exact requests and admission
+must precede model smoke; no model notebook or further user run is requested
+now. Existing authorization persists and all assigned time counts under the
+unchanged budgets. The manual inspection cell below is historical; runs 5/6
+govern the current handoff.
 
 ## Reported CPU notebook
 
@@ -64,6 +69,8 @@ downloads. Inspect the actual GPU host's writable filesystems before fetching
 weights; no storage or 9B/4B feasibility decision has been made.
 
 ## First GPU cell
+
+This inspection procedure is historical; actual runs 5/6 now provide the accepted CPU/tiny-library evidence. No repeat inspection is requested. The heading is retained for existing smoke-packet links.
 
 Keep the notebook private. Select Settings -> Accelerator -> GPU T4 x2 as in
 [NVIDIA's Kaggle instructions](https://docs.nvidia.com/datascience/deployment/latest/platforms/kaggle/).

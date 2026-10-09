@@ -2,7 +2,7 @@
 
 **Status: static planning; physical model acceptance unexecuted.** The source-input failure supplies no reason to alter the model, mathematical design, output cap or protocol. This document identifies the separate issues that must be resolved before a successful preparation run can become M5-T02 evidence.
 
-[Actual run 5](../../validation/m5-kaggle-full-preparation-run-5.md) now completes the unchanged candidate's CPU preparation with all 97 checks passed and zero skips. No repeat CPU preflight is requested. The small-operator portion of R8 is [implemented and locally verified](../../validation/m5-t4-compatibility.md), with actual T4 results pending. Its standalone matching-Torch/library environment does not accept the full model lock; later candidate GPU checks must repeat affected behavior. R7 complete-envelope coverage remains unresolved and the physical model-smoke notebook remains unprepared. A new GPU session/accelerator image needs verified environment staging and its own host checks, with all assigned time charged under the existing budgets.
+[Actual run 5](../../validation/m5-kaggle-full-preparation-run-5.md) completes the unchanged candidate's CPU preparation with all 97 checks passed and zero skips. [Actual run 6](../../validation/m5-t4-compatibility-run-6.md) accepts R8's small-operator portion: 14 attention cases and four NF4 matmuls on both T4s. No repeat CPU or tiny-GPU preflight is requested. Its standalone matching-Torch/library environment does not accept the full model lock; later candidate GPU checks must repeat affected behavior. Supported model attention integration and R7 complete-envelope coverage remain unresolved; the physical model-smoke notebook remains unprepared. Next perform those reviews offline. A later GPU session needs verified environment staging and its own host checks, with all assigned time charged under the existing budgets.
 
 ## Scientific invariants
 
@@ -16,7 +16,7 @@ Use the existing five development worlds, prescribed local-view witness, schedul
 
 The [platform research](02-platform-research-and-decisions.md) gives exact original selected file sizes: 17.9924 GiB for 9B and 8.6918 GiB for 4B. They must be staged outside the run's 15.5397-GiB remaining working pool. Loading those shards into NF4 does not reduce their on-disk size.
 
-For VRAM, this T4 reports 15 GiB total, not a combined 30-GiB model pool. Each replica needs its own weights, KV/recurrent state, activations, workspaces, CUDA context and the required 1.5-GiB free headroom. Device 1 being idle does not improve device 0's memory.
+For VRAM, `nvidia-smi` reports 15 GiB per T4. Actual run 6's Torch native properties report **14.56219482421875 GiB** usable total per device (15,636,037,632 bytes), and post-probe free memory is **14.39727783203125 GiB**. Retain both inventory/native measurements without inferring a cause for their difference. Each replica needs its own weights, KV/recurrent state, activations, workspaces, CUDA context and the required 1.5-GiB free headroom; two devices do not form a combined model pool. Tiny peaks are not model peaks.
 
 ### Static KV arithmetic
 
@@ -39,9 +39,15 @@ Assume FP16 embeddings/output heads and ideally packed four-bit MLP weights. Exc
 | FP16 full-attention KV at 262,144 tokens | 8.0000000 GiB | 8.0000000 GiB |
 | Subtotal, excluding all other memory | 14.0390625 GiB | 10.2387695 GiB |
 
-On an otherwise empty 15-GiB T4, the required headroom leaves 13.5 GiB for everything. Under these stated assumptions, 9B already exceeds that amount at the full context cap. Its subtotal reaches 13.5 GiB at 244,480 tokens, before omitted allocations. Sensitive FP32 parameters and existing CUDA overhead only increase the requirement. A nearly full context therefore deserves a static feasibility decision before spending scarce smoke time.
+The earlier 15-GiB inventory calculation leaves 13.5 GiB after headroom; 9B's conditional subtotal reaches that amount at 244,480 tokens, before omitted allocations. Actual run 6's **native total leaves only 13.06219482421875 GiB** after the required headroom, before existing occupancy. Use the relevant native/free measurements for actual admission. Sensitive FP32 parameters and CUDA overhead are additional; neither inventory arithmetic nor a tiny probe establishes full-model feasibility.
 
-This does **not** prove this run's 9B model failed, that every legal view reaches 244k tokens, or that the conservative bound is attainable. No weights were loaded. Actual shapes/dtypes, ties and native cache paths must match the assumptions. It does show why an assertion that “262k fits because 9B is four-bit” is unsupported. 4B's lower subtotal is promising but also not acceptance evidence.
+This does **not** prove this run's 9B model failed, that every legal view reaches 244k tokens, or that the conservative bound is attainable. No weights were loaded. Actual shapes/dtypes, ties and native cache paths must match the assumptions. It does show why an assertion that “262k fits because 9B is four-bit” is unsupported. 4B's lower subtotal is also not acceptance evidence.
+
+### Repeated-K/V memory must remain explicit
+
+Run 6 observes efficient dispatch after explicit repetition from four KV heads to 16 heads. A **fully materialized** repeated K/V temporary for one active full-attention layer is `2 × 16 × 256 × 2 × S` bytes, **4 GiB at 262,144 resident tokens**, in addition to the original eight-layer KV cache. Under that implementation and the table's assumptions, conditional 9B/4B subtotals become **18.0390625 / 14.23876953125 GiB**, before omitted memory, versus the native total minus headroom of **13.06219482421875 GiB**. A tiny efficient kernel does not remove this term.
+
+This is a conditional implementation-memory calculation, not empirical failure or proof that a legal view reaches the cap. It rules out using the tiny repeated-K/V operation alone as the full-envelope memory argument. Review the maintained/public model route's actual cache, causal/mask and temporary-allocation behavior together with R7. No adapter, cap reduction or fallback is selected here.
 
 ## The complete-envelope evidence gap
 
@@ -74,7 +80,9 @@ A dense attention-score tensor for 16 heads at 33,106 tokens contains `16 × S²
 
 Both model candidates share this head geometry. Switching to 4B or reducing mathematical size does not automatically solve this dispatch problem. Transformers 5.16.1's inspected helper also permits GQA for mask-free equal K/V dimensions <=256, so the observed newer Kaggle version is not demonstrated to fix it. [5.16.1 SDPA helper](https://github.com/huggingface/transformers/blob/v5.16.1/src/transformers/integrations/sdpa_attention.py).
 
-Resolve this cheaply before model loading:
+The [actual run-6 review](../../validation/m5-t4-compatibility-run-6.md) now observes the predicted native-GQA math dispatch for tiny causal prefill and single-query decode. Repeated-K/V automatic, forced-efficient and masked cases use an efficient SM75 kernel and match CPU FP32 references on both T4s. NF4/double-quantized synthetic matmuls also pass. No actual Qwen call or full candidate import was made; actual model mask/recurrent/cache behavior stays unobserved. No repeated tiny probe is requested.
+
+The original cheap diagnostic sequence below has completed its standalone small-operator portion. Next review the supported model integration and complete-envelope memory argument offline, then renew affected GPU behavior in the eventual full candidate:
 
 1. On the actual candidate T4, use tiny synthetic Q/K/V tensors with 16/4/4 heads, dimension 256, FP16, causal prefill and no mask. Record public backend-eligibility reasons and actual dispatch; do not allocate a 33k dense score matrix to discover this known risk.
 2. Compare the maintained explicit K/V-expansion path on the same small tensors. Verify finite outputs and toleranced mathematical equivalence, plus the actual efficient-backend eligibility/dispatch. Also test decode shape and relevant mask behavior.

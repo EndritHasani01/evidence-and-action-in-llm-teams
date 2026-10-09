@@ -2,6 +2,8 @@
 
 Planned 9 October 2026 after [actual run 5](../../validation/m5-kaggle-full-preparation-run-5.md) passes the unchanged candidate's 97 CPU checks. The user explicitly requests planning and implementation of the next compatibility notebook. Existing GPU authorization persists. [AGENTS.md](../../../AGENTS.md), specification [§8](../../../PROJECT_SPECIFICATION.md#8-inference-configuration-and-feasible-allocation) and [§9](../../../PROJECT_SPECIFICATION.md#9-implementation-and-consistency-requirements) govern this work; this document makes no scientific change.
 
+**Current status, after returned run 6:** [actual two-T4 evidence](../../validation/m5-t4-compatibility-run-6.md) accepts the standalone small-operator diagnostic. Fourteen attention cases, four NF4 matmuls, all six stages/four commands and off-host copies pass. The original plan/delivery checkpoints below remain historical; no repeat GPU run is requested. Supported model attention integration, R7 and full candidate/model acceptance remain open.
+
 ## Scope and decision
 
 Resolve the **small-operator portion of R8** before any pretrained weights. The pinned [Transformers 5.12 SDPA helper](https://github.com/huggingface/transformers/blob/v5.12.0/src/transformers/integrations/sdpa_attention.py) selects native GQA without a mask and explicit K/V repetition otherwise. [Torch 2.11](https://docs.pytorch.org/docs/2.11/generated/torch.nn.functional.scaled_dot_product_attention.html) documents fused-backend limitations, public backend selection, FP32 math intermediates and restricted GQA support. Tiny tensors can identify this risk without allocating a long quadratic score matrix.
@@ -48,7 +50,7 @@ Count actual compatibility/setup/idle/shutdown spending within existing shared b
 | Delivery | `notebooks/recovery_m5_kaggle_t4_compatibility.ipynb`; valid schema/syntax, empty outputs/counts, exact source/checkpoint binding. Real Jupyter refusal plus controlled complete workflow must exercise the shipped cells/export, preserving originals. |
 | Handoff | Actual local evidence in `notebooks/validation/m5-t4-compatibility/`, linked validation/task/progress updates and logical commits. User runs **T4 x2 / Internet On**, downloads ZIP/executed notebook, stops the session and returns them under `notebooks/run/6/`. |
 
-Actual T4 dispatch/NF4 observations remain pending until that returned run. An efficient repeated-K/V observation may motivate a separately reviewed public attention-interface change; it is not already selected. Model assets, exact 24-slot requests, admission guards, full model smoke, pilot and freeze remain the later K11–K15 gates.
+At the planning checkpoint, actual T4 dispatch/NF4 observations were pending until the returned run. Run 6 now supplies them. Efficient repeated-K/V observations motivate review of a supported model integration and its additional memory, but no adapter is selected. Model assets, exact 24-slot requests, admission guards, full model smoke, pilot and freeze remain the later K11–K15 gates.
 
 ## Controller/probe checkpoint, 9 October
 
@@ -56,4 +58,12 @@ The controller, standalone probe and immutable builder are implemented. [Named l
 
 The first arithmetic test had an incorrect expected 4B literal; a later test incorrectly required Linux process-group status from a normally exited Windows child. Both test assertions are corrected, their original failed logs are retained, and the complete 42-test suite passes. Neither required changing scientific settings or the existing operational helper. The installed CPU Torch 2.11.0/bitsandbytes 0.49.2 APIs produce finite matched SDPA/NF4 results; their retained deprecation warnings are not T4 kernel evidence. [Actual canonical-config arithmetic](../../../notebooks/validation/m5-t4-compatibility/static-envelope.json) reproduces the conditional estimates above with acceptance unknown.
 
-The source checkpoint is `79ae116`. The [notebook and delivery evidence](../../validation/m5-t4-compatibility.md) are now delivered: exact-cell real Jupyter host refusal and controlled complete workflow pass, including real 85-file wheel extraction, safe ZIP receipts, four independent read-only SQLite reopens and repeated-cell protection. Shipped outputs/counts are empty. User run 6 is the next actual execution; T4 and all model gates remain pending.
+The source checkpoint is `79ae116`. The [notebook and delivery evidence](../../validation/m5-t4-compatibility.md) are delivered: exact-cell real Jupyter host refusal and controlled complete workflow pass, including real 85-file wheel extraction, safe ZIP receipts, four independent read-only SQLite reopens and repeated-cell protection. Shipped outputs/counts are empty. The user subsequently completed run 6; no repeat is requested.
+
+## Actual run-6 checkpoint, 9 October
+
+The [independent artifact review](../../validation/m5-t4-compatibility-run-6.md) binds the exact delivered cell sources and wheel bytes to `79ae116`, both physical UUIDs to their isolated children, each CUDA/backend trace to its reference comparison and the printed ZIP receipt to both off-host SQLite snapshots. All 14 attention cases/four NF4 matmuls pass on Torch 2.11.0+cu128/CUDA 12.8, capability 7.5, with no pretrained loading or language attempts. Native GQA uses math; repeated-K/V prefill, mask and decode use the efficient SM75 kernel. The 33 host-package differences remain explicit: this is not full model-candidate acceptance.
+
+Observed workflow time is 38.664 seconds; the user reports GPU allocation stopped. Actual duration/assignment/release timestamps stay unknown, so the conditional 1,080-GPU-second bound is unverified. A rerun cannot recover that prior interval. Retain uncertainty within shared accounting.
+
+Native Torch total is 14.56219482421875 GiB per T4, distinct from the 15-GiB inventory. The conditional full-cap repeated-K/V temporary is another 4 GiB for one active layer. Review supported model attention/cache semantics and R7 memory coverage offline before later candidate/model work. No package, backend, cap, retention, fallback or frozen setting changes; T02 stays blocked with 21 done/eight blocked.
