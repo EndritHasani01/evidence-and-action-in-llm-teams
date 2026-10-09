@@ -13,6 +13,7 @@ from unittest.mock import patch
 
 from recovery.attempts import MeasuredReply, ProcessProvider, ProviderDefect
 from recovery.inference import (PAD_ID, TRANSPORT_ID, candidate_settings, decode_suffix)
+from recovery.t4_attention import T4_ATTENTION, PREFILL_CHUNK_SIZE
 from recovery.prompts import MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, render_request, tokenize_request
 from recovery.protocol import validate_reply
 from recovery.runner import DurableRunner
@@ -93,6 +94,23 @@ class BackendTests(unittest.TestCase):
     def call(self, *, seed=31, **kwargs):
         return self.backend(kwargs.get("view", self.view), kwargs.get("rendered", self.rendered),
             kwargs.get("tokenized", self.tokenized), seed=seed, settings=kwargs.get("settings", self.settings))
+
+    def test_opt_in_settings_cannot_reuse_baseline_and_retain_fresh_call_cache(self):
+        from recovery.inference import QWEN_9B, TransformersBackend
+        baseline_settings = candidate_settings(self.tokenizer)
+        candidate = replace(QWEN_9B, attention=T4_ATTENTION)
+        alternate = TransformersBackend(self.backend.torch, self.backend.model, self.tokenizer, candidate, {})
+        with self.assertRaisesRegex(ValueError, "exact model/template/decoding settings differ"):
+            alternate(self.view, self.rendered, self.tokenized, seed=31, settings=baseline_settings)
+        self.assertFalse(alternate.active)
+        self.assertEqual(alternate.model.calls, [])
+        for seed in (31, 32):
+            measured = alternate(self.view, self.rendered, self.tokenized, seed=seed, settings=alternate.settings)
+            self.assertEqual(measured.backend["cache"]["initial_empty"], True)
+            self.assertEqual(measured.backend["cache"]["disposed_after_call"], True)
+            self.assertEqual(alternate.model.calls[-1]["config"]["prefill_chunk_size"], PREFILL_CHUNK_SIZE)
+            self.assertIsNone(alternate.model.calls[-1]["cache"]())
+        self.assertEqual(candidate_settings(self.tokenizer), baseline_settings)
 
     def test_one_exact_unpadded_prompt_fresh_cache_and_saved_cpu_cuda_seed(self):
         measured = self.call()

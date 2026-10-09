@@ -1,6 +1,7 @@
 """Candidate/loading contracts are CPU checks, independent of inference packages."""
 
 import json
+from dataclasses import replace
 import subprocess
 import sys
 import unittest
@@ -9,6 +10,7 @@ from unittest.mock import patch
 from recovery.inference import (Candidate, ModelFactory, QWEN_9B, QWEN_4B,
                                 audit_language_load, candidate_settings)
 from tests.inference_mocks import GenerationConfig, LOADING_INFO, Qwen3_5ForCausalLM, Tensor, Tokenizer, Torch
+from recovery.t4_attention import PREFILL_CHUNK_SIZE, T4_ATTENTION
 
 
 class InferencePreparationTests(unittest.TestCase):
@@ -114,6 +116,55 @@ class InferencePreparationTests(unittest.TestCase):
                 torch.cuda.get_device_name = lambda device: "P100"
             with patch.dict(sys.modules, torch=torch, transformers=None), self.assertRaises(ValueError):
                 ModelFactory()()
+
+    def test_opt_in_factory_registers_and_records_exact_chunk_backend_before_loading(self):
+        import os
+        from types import SimpleNamespace
+        torch = Torch()
+        torch.__version__ = "2.11.0+cu128"
+        torch.version.cuda = "12.8"
+        torch.cuda.get_device_capability = lambda device: (7, 5)
+        model = Qwen3_5ForCausalLM()
+        model.config._attn_implementation = T4_ATTENTION
+        seen = []
+        loader = unittest.mock.Mock(side_effect=lambda *args, **kwargs: seen.append("load") or (model, LOADING_INFO))
+        transformers = SimpleNamespace(AutoModelForCausalLM=SimpleNamespace(from_pretrained=loader),
+            BitsAndBytesConfig=unittest.mock.Mock(),
+            AutoTokenizer=SimpleNamespace(from_pretrained=lambda *args, **kwargs: Tokenizer()),
+            GenerationConfig=GenerationConfig)
+        candidate = replace(QWEN_9B, attention=T4_ATTENTION)
+        with patch.dict(os.environ), patch.dict(sys.modules, torch=torch, transformers=transformers), \
+                patch("importlib.metadata.version", return_value="CPU mock"), \
+                patch("recovery.t4_attention.register_t4_attention", side_effect=lambda: seen.append("register")):
+            result = ModelFactory(candidate)()
+            self.assertEqual(seen, ["register", "load"])
+            self.assertEqual(loader.call_args.kwargs["attn_implementation"], T4_ATTENTION)
+            self.assertEqual(result.settings["generation"]["prefill_chunk_size"], PREFILL_CHUNK_SIZE)
+            self.assertEqual(result.load_report["generation_config"]["prefill_chunk_size"], PREFILL_CHUNK_SIZE)
+            self.assertEqual(result.load_report["attention"], T4_ATTENTION)
+            model.config._attn_implementation = "sdpa"
+            with self.assertRaisesRegex(ValueError, "loaded attention differs"):
+                ModelFactory(candidate)()
+
+    def test_opt_in_rejects_unreviewed_stack_before_any_model_load(self):
+        import os
+        for version, cuda, capability in [("2.10.0+cu128", "12.8", (7, 5)),
+                                         ("2.11.0+cu128", "12.6", (7, 5)),
+                                         ("2.11.0+cu128", "12.8", (8, 0))]:
+            torch = Torch()
+            torch.__version__ = version
+            torch.version.cuda = cuda
+            torch.cuda.get_device_capability = lambda device: capability
+            with self.subTest(version=version, cuda=cuda, capability=capability), patch.dict(os.environ), \
+                    patch.dict(sys.modules, torch=torch), patch("recovery.t4_attention.register_t4_attention") as register, \
+                    self.assertRaisesRegex(ValueError, "before loading"):
+                ModelFactory(replace(QWEN_9B, attention=T4_ATTENTION))()
+            register.assert_not_called()
+
+    def test_unknown_attention_is_not_a_candidate_or_silent_fallback(self):
+        for attention in ("flash_attention_2", "eager", None, 1):
+            with self.subTest(attention=attention), self.assertRaises(ValueError):
+                replace(QWEN_9B, attention=attention)
         with self.assertRaises(ValueError):
             ModelFactory(cuda_visible_devices="0,1")()
 

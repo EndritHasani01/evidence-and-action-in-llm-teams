@@ -10,12 +10,14 @@ import os
 import sys
 
 from .prompts import MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, render_request, tokenize_request
+from .t4_attention import PREFILL_CHUNK_SIZE, T4_ATTENTION
 
 
 @dataclass(frozen=True)
 class Candidate:
     model: str = "Qwen/Qwen3.5-9B"
     revision: str = "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
+    attention: str = "sdpa"
 
     def __post_init__(self):
         if (self.model, self.revision) not in (
@@ -23,6 +25,8 @@ class Candidate:
             ("Qwen/Qwen3.5-4B", "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a"),
         ):
             raise ValueError("use the reviewed 9B candidate or prescribed 4B fallback revision")
+        if type(self.attention) is not str or self.attention not in ("sdpa", T4_ATTENTION):
+            raise ValueError("use baseline SDPA or the explicit unaccepted T4 attention candidate")
 
 
 QWEN_9B = Candidate()
@@ -41,13 +45,13 @@ def candidate_settings(tokenizer, candidate=QWEN_9B):
             or tokenizer.convert_ids_to_tokens(PAD_ID) != "<|endoftext|>"
             or type(tokenizer.chat_template) is not str or not tokenizer.chat_template):
         raise ValueError("candidate tokenizer/template/framing differs; reopen affected CPU checks")
-    return {
+    settings = {
         "model": candidate.model, "revision": candidate.revision,
         "chat_template": tokenizer.chat_template, "enable_thinking": False,
         "max_context_tokens": MAX_CONTEXT_TOKENS,
         "quantization": {"load_in_4bit": True, "bnb_4bit_quant_type": "nf4",
                          "bnb_4bit_use_double_quant": True, "bnb_4bit_compute_dtype": "float16"},
-        "dtype": "float16", "attention": "sdpa", "batch_size": 1,
+        "dtype": "float16", "attention": candidate.attention, "batch_size": 1,
         "generation": {
             "do_sample": True, "temperature": 0.7, "top_p": 0.8, "top_k": 20,
             "min_p": 0.0, "repetition_penalty": 1.0, "num_beams": 1,
@@ -58,6 +62,9 @@ def candidate_settings(tokenizer, candidate=QWEN_9B):
         },
         "terminal_transport_id": TRANSPORT_ID,
     }
+    if candidate.attention == T4_ATTENTION:
+        settings["generation"]["prefill_chunk_size"] = PREFILL_CHUNK_SIZE
+    return settings
 
 
 def decode_suffix(tokenizer, token_ids):
@@ -159,6 +166,12 @@ class ModelFactory:
             raise ValueError("one available CUDA device is required; never offload to CPU")
         if "T4" not in torch.cuda.get_device_name(0):
             raise ValueError("the candidate execution path requires an actual T4")
+        if self.candidate.attention == T4_ATTENTION:
+            if (str(torch.__version__) != "2.11.0+cu128" or torch.version.cuda != "12.8"
+                    or torch.cuda.get_device_capability(0) != (7, 5)):
+                raise ValueError("reviewed Torch/CUDA/T4 attention candidate required before loading")
+            from .t4_attention import register_t4_attention
+            register_t4_attention()
         from transformers import AutoModelForCausalLM, BitsAndBytesConfig
         tokenizer = TokenizerFactory(self.candidate)()
         quantization = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
@@ -166,8 +179,11 @@ class ModelFactory:
         model, info = AutoModelForCausalLM.from_pretrained(self.candidate.model,
             revision=self.candidate.revision, trust_remote_code=False,
             quantization_config=quantization, dtype=torch.float16,
-            device_map={"": 0}, attn_implementation="sdpa", output_loading_info=True)
+            device_map={"": 0}, attn_implementation=self.candidate.attention, output_loading_info=True)
         model.eval()
+        if (self.candidate.attention == T4_ATTENTION
+                and getattr(model.config, "_attn_implementation", None) != T4_ATTENTION):
+            raise ValueError("loaded attention differs from the explicit T4 candidate")
         if not getattr(model, "is_loaded_in_4bit", False):
             raise ValueError("the language replica must actually be loaded in 4-bit NF4")
         actual_quantization = model.hf_quantizer.quantization_config
