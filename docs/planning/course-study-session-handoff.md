@@ -7,9 +7,12 @@ design/resource adoption after preparation at `ef4c3f6` and the earlier pending
 handoff at `387b06a`. The [approved scientific clause](../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
 and [course living handoff](../IMPLEMENTATION_PLAN.md#11-course-living-handoff)
 are applied; [reuse/adoption evidence](../validation/course-m1-contract-and-reuse.md)
-records the decision and validation. Current status/counts belong to the course
-index. The completed contract audit makes course/M1-T02 the next ready task;
-thesis runtime defaults and all original todos/evidence remain unchanged.
+records the decision and validation. Course/M1-T02 now passes the
+[input/schedule CPU gate](../validation/course-m1-inputs-and-schedules.md),
+with saved course artifacts at master seed `20261009` and 534 full CPU tests
+passing without skips. Current status/counts belong to the course index;
+course/M2-T01 is the next ready task. Thesis runtime defaults and all original
+todos/evidence remain unchanged.
 
 ## Start in the actual checkout
 
@@ -31,12 +34,13 @@ Read in this order:
 3. The [course index](../todos/course/README.md), then one selected course task and its prerequisite evidence. Qualify IDs as `course/M2-T01`: the [thesis tree](../todos/README.md) uses the same short ID format for different tasks.
 4. The [course proposal](abs-iis-course-study-proposal.md) for proposed scope, and the [research synthesis](../implementation-research/SYNTHESIS.md) plus only the investigations relevant to that task.
 
-The next engineering task is [course/M1-T02](../todos/course/M1/M1-T02-course-inputs-and-schedules.md), following verified [course/M1-T01](../todos/course/M1/M1-T01-course-contract-and-reuse-boundary.md) adoption. The task index owns current readiness and counts; this document does not duplicate them.
+The next engineering task is [course/M2-T01](../todos/course/M2/M2-T01-course-protocol-and-limits.md), following verified [course/M1-T02](../todos/course/M1/M1-T02-course-inputs-and-schedules.md) inputs/schedules. Read its linked prerequisite evidence before carrying 256/64 limits through the protocol. The task index owns current readiness and counts; this document does not duplicate them.
 
 ## Reuse evidence within its actual scope
 
 | Verified or observed record | Lesson for a new session |
 |---|---|
+| [Course M1 input/schedule gate](../validation/course-m1-inputs-and-schedules.md): complete main/development bundles and independent seed/count audit | Reuse the saved actual inputs and original-prefix/replay parents. This accepts CPU preparation; it does not accept course rendering, runtime/analysis consumers, model capability or a scientific freeze. |
 | [M1–M4 CPU acceptance](../validation/m4-cpu-gate.md) | Generators/truth, protocol, interventions, durable workers/accounting and offline analysis already exist. Audit reuse and renew affected course checks; do not rebuild the project or repeat every unchanged suite. |
 | [Kaggle run 5](../validation/m5-kaggle-full-preparation-run-5.md): 97 CPU checks pass, zero skips, installed provenance and off-host snapshots checked | The earlier unchanged CPU preparation is accepted. Course/source/environment changes need relevant new checks; they do not invalidate unrelated evidence or justify another generic preflight by default. |
 | [Kaggle run 6](../validation/m5-t4-compatibility-run-6.md): standalone attention/NF4 diagnostic passes on both T4s | This is actual library evidence, with a host environment different from the full candidate. It contains no pretrained-model generation and does not establish full candidate, language loading, state, memory or capability acceptance. |

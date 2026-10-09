@@ -1,6 +1,6 @@
 # Course M2-T01 — Course protocol and limits
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M1-T02](../M1/M1-T02-course-inputs-and-schedules.md).
 
@@ -31,3 +31,11 @@ The existing lossless renderer and strict validator consistently apply accepted 
 Exercise all candidate shapes and malformed-message whole-reply failures, special-looking/trailing-whitespace archive text, feedback leakage, permission/limit edges and cap-complete versus truncated output. Confirm old thesis fixtures/settings remain intact. Record native-tokenizer and dependency-free checks separately with actual environment and retained artifacts.
 
 **Evidence:** Not yet recorded. Existing protocol/rendering is verified under the thesis regime; course limits are not.
+
+**Prerequisite handoff, 9 October 2026:** Course/M1-T02 passes the
+[input/schedule CPU gate](../../../validation/course-m1-inputs-and-schedules.md#completion-and-handoff),
+with saved 20-main/five-development inputs, balanced cohorts, disjoint streams
+and complete 5,752/6,280 main and 1,114/1,178 development schedules. Safe protocol
+implementation may begin. The input-only course TOML supplies mathematical size;
+256/64 rendering, validation, reservation and exact settings still belong to
+this task. The handoff admits no model, GPU, pilot, freeze or main execution.

@@ -107,6 +107,13 @@ course subceiling. Its [course tasks](docs/todos/course/README.md) and
 track the remaining adaptations and acceptance. Thesis defaults and evidence
 remain intact; course adoption supplies no model or execution acceptance.
 
+Course [M1 input/schedule evidence](docs/validation/course-m1-inputs-and-schedules.md)
+now passes on CPU: the separate saved bundle has 20 main/five development worlds,
+5,752 new/6,280 logical main slots and 1,114/1,178 development slots. Preparation
+requires `--regime course --config configs/course-inputs.toml`; see the
+[fixture commands](tests/fixtures/README.md) for reproducible preparation.
+Course protocol limits and later runtime/model gates remain open.
+
 ## CPU installation and validation
 
 Use Python 3.11. Strict reply validation requires Pydantic 2, declared as a CPU

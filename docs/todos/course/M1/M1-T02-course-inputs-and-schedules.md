@@ -1,6 +1,6 @@
 # Course M1-T02 — Course inputs and schedules
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M1-T01](M1-T01-course-contract-and-reuse-boundary.md).
 
@@ -30,48 +30,38 @@ Existing mathematical generation/truth and schedule preparation support one repr
 
 Run affected mathematical/manifest/schedule checks, including duplicate cutoffs, endpoints/shard boundaries, rank crossings, alternatives/disconnection, D empty/nonempty, legal edit sampling and exhausted rejection. Reuse unchanged solver evidence rather than rebuilding solvers. Record commands/environment, course input/schedule locations and independent count/seed comparisons. No inference.
 
-**Population checkpoint, 9 October 2026:** The authority, course handoff and
-M1-T01 adoption evidence were inspected. The unchanged 60-test M1/CPU-entrypoint
-baseline passes on Windows/CPython 3.11.9 with site packages disabled. Explicit
-course population scope now reuses the fallback mathematics and existing
-records/seed slots, with 20 main/five development worlds, one owner block and
-exactly five extra continuation seed sets. Six new independent population checks
-pass, and the combined 66-test M1/CLI/population regression passes with zero skips,
-including actual thesis/course/development seed separation, edit truth,
-reversed preparation, explicit rejection exhaustion and saved-file adversaries.
-Thesis JSON bytes/default scope remain unchanged. Complete course schedules,
-CLI preparation, retained inputs and the M1 course gate remain underway.
+The authority, course handoff, referenced plan/specification and M1-T01
+[adoption/reuse evidence](../../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
+were inspected before implementation. Meaningful checkpoints are `105c327`
+(populations; 66 focused regression checks), `5521961` (saved schedule/CPU CLI;
+13 course checks) and `913da21` (explicit native-test discovery boundary).
 
-**Prerequisite handoff, 9 October 2026:** M1-T01's explicit scientific/resource
-adoption and [contract/reuse audit](../../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
-pass. This task is ready for safe CPU implementation under the adopted clause;
-no course inputs, schedules, seed assignments or M1 course gate are completed by
-that contract handoff.
+## Completion and handoff
 
-**Schedule/CLI checkpoint, 9 October 2026:** The complete course
+**Passed 9 October 2026 on Windows/CPython 3.11.9.** The complete course
 [population](../../../../tests/fixtures/population_course.json) and
 [schedule](../../../../tests/fixtures/schedules_course.json) were prepared with
 master seed `20261009` using explicit `--regime course` and the new
-[input-only size config](../../../../configs/course-inputs.toml). Thirteen focused
-course checks pass with zero skips, independently reconciling all component
-counts, exact cohorts, all replay parents/round barriers, new-repeat identities,
-matched sibling seeds and mutation/overwrite/configuration rejection. Two fresh
-process hash seeds reproduce both canonical artifacts with all optional model
-imports forbidden. Existing thesis fixtures/defaults are preserved. Full CPU
-and final documentation/preservation audits remain underway;
-no inference or M1 gate completion is claimed by this checkpoint.
+[input-only size config](../../../../configs/course-inputs.toml). They contain
+20 main/five development worlds, balanced owners, exact eight-world focal cohorts
+and five extra continuation replicates. Independent enumeration reconciles
+**5,752 new / 6,280 logical / 528 replay main slots** and
+**1,114 / 1,178 / 64 development slots**, with the initial 90 capability slots.
 
-**Validation correction checkpoint, 9 October 2026:** Installed-package M1/course
-validation passes 73 checks with zero skips, outside the checkout with all 29
-installed module bytes matching source. Fourteen installed course checks also
-pass under hash seed 37, including the new native-test discovery boundary.
-The broad core command initially failed on two optional Torch integration
-classes; those tests explicitly belong to native-stack runs. A standard unittest
-`load_tests` hook now preserves explicit native execution while keeping them out
-of CPU package discovery. The corrected dependency-free CLI passes 342 checks
-(334 passed, eight existing checkpoint-library skips). The older full run was
-stopped after this diagnosis and its partial log retained; the corrected full
-CPU run remains underway. The independent input checkpoint audit passes all
-components/cohorts/seed domains, both original size/count schedules, 577 local
-references/266 fragments and 1,148 byte-identical protected baseline files,
-including the pre-existing unstaged M5 edit.
+The corrected full CPU CLI passes **534 tests, zero skips**; dependency-free
+core validation passes **342 tests (334 passed, six checkpoint-library and two
+optional-renderer skips)**. Installed M1/course validation passes 73 tests, and
+all fourteen installed course tests pass separately under hash seed 37, with
+zero skips and no source-path injection. Fresh hash seeds 1/3981 also reproduce
+both canonical artifacts with optional imports blocked. Exact commands, logs,
+the retained initial discovery failure/fix, independent component/seed/parent
+checks, link/status checks and protected-file audit are in
+[M1 input/schedule evidence](../../../validation/course-m1-inputs-and-schedules.md).
+Both original sizes and 60/40 counts/defaults remain correct; 1,148 protected
+baseline files, including the pre-existing unstaged M5 edit, remain byte-identical.
+
+The course M1 input/schedule gate is passed. [Course/M2-T01](../M2/M2-T01-course-protocol-and-limits.md)
+is ready to carry the adopted 256/64 limits through the real protocol. Later
+intervention/capacity, runtime/analysis, CPU, model/resource, pilot, freeze and
+execution gates remain open. No model generation, GPU allocation, freeze or
+empirical execution was performed or authorized by this handoff.
