@@ -1024,6 +1024,14 @@ CPU gate, GPU/model acceptance, an empirical result or execution authorization.
   no runtime settings. Thirteen independent course checks pass for saved
   5,752/6,280 main and 1,114/1,178 development slots, cohorts, seeds, parents,
   mutation rejection and hash-independent CPU CLI. Broader audits remain open.
+- Broad CPU discovery exposed an existing boundary defect: the explicitly
+  invoked native Torch/Transformers attention checks were discovered even by
+  `--core-only`. Their standard unittest `load_tests` hook now excludes automatic
+  discovery while preserving explicit native runs and every original test body.
+  The corrected dependency-free CLI passes 342 checks (334 passed, eight
+  checkpoint-library skips); 73 installed M1/course checks and 14 installed
+  hash-seed-37 course checks pass with no skips. Independent input/preservation
+  audit passes; final full CPU regression and completion handoff remain open.
 - Carry the adopted course limits through the existing renderer, parser,
   native tokenizer and exact inference/settings records. Keep four rounds,
   literal boundaries, exact replay and synchronous visibility; no runtime fork,

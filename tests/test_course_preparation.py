@@ -17,6 +17,13 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class CoursePreparationTests(unittest.TestCase):
+    def test_cpu_discovery_keeps_native_stack_checks_explicitly_available(self):
+        discovered = unittest.TestLoader().discover(str(ROOT / "tests"),
+            pattern="test_t4_attention.py", top_level_dir=str(ROOT))
+        self.assertEqual(discovered.countTestCases(), 0)
+        explicit = unittest.TestLoader().loadTestsFromName("tests.test_t4_attention")
+        self.assertGreater(explicit.countTestCases(), 0)
+
     def test_actual_cpu_cli_prepares_saved_inputs_and_schedule_and_refuses_scope_drift(self):
         p = prepare_population(COURSE_SEED, Size.FALLBACK, regime="course")
         with tempfile.TemporaryDirectory() as directory:

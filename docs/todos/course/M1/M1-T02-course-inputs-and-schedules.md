@@ -57,6 +57,21 @@ course checks pass with zero skips, independently reconciling all component
 counts, exact cohorts, all replay parents/round barriers, new-repeat identities,
 matched sibling seeds and mutation/overwrite/configuration rejection. Two fresh
 process hash seeds reproduce both canonical artifacts with all optional model
-imports forbidden. Existing thesis fixtures/defaults are preserved. Broader CPU,
-installed-package and final documentation/preservation audits remain underway;
+imports forbidden. Existing thesis fixtures/defaults are preserved. Full CPU
+and final documentation/preservation audits remain underway;
 no inference or M1 gate completion is claimed by this checkpoint.
+
+**Validation correction checkpoint, 9 October 2026:** Installed-package M1/course
+validation passes 73 checks with zero skips, outside the checkout with all 29
+installed module bytes matching source. Fourteen installed course checks also
+pass under hash seed 37, including the new native-test discovery boundary.
+The broad core command initially failed on two optional Torch integration
+classes; those tests explicitly belong to native-stack runs. A standard unittest
+`load_tests` hook now preserves explicit native execution while keeping them out
+of CPU package discovery. The corrected dependency-free CLI passes 342 checks
+(334 passed, eight existing checkpoint-library skips). The older full run was
+stopped after this diagnosis and its partial log retained; the corrected full
+CPU run remains underway. The independent input checkpoint audit passes all
+components/cohorts/seed domains, both original size/count schedules, 577 local
+references/266 fragments and 1,148 byte-identical protected baseline files,
+including the pre-existing unstaged M5 edit.
