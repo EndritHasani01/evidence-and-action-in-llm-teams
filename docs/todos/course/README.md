@@ -36,7 +36,7 @@ The next safe task is [course/M2-T01](M2/M2-T01-course-protocol-and-limits.md), 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
-| M2 | 0/3 | 0 | 1 | 2 | Lawful views, literal interventions, exact replay, legal witness and complete course token bound |
+| M2 | 0/3 | 1 | 0 | 2 | Lawful views, literal interventions, exact replay, legal witness and complete course token bound |
 | M3 | 0/2 | 0 | 0 | 2 | Durable workers, bounded failures, honest accounting and crash-safe lifecycle |
 | M4 | 0/4 | 0 | 0 | 4 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
 | M5 | 0/5 | 0 | 0 | 5 | Actual-host smoke, capability, complete pilot, conservative resources and authorized course freeze |
@@ -50,7 +50,7 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 |---|---|---|
 | [M1-T01 — Course contract and reuse boundary](M1/M1-T01-course-contract-and-reuse-boundary.md) | done | Scientific/resource adoption and contract/reuse audit passed |
 | [M1-T02 — Course inputs and schedules](M1/M1-T02-course-inputs-and-schedules.md) | done | M1-T01 |
-| [M2-T01 — Course protocol and limits](M2/M2-T01-course-protocol-and-limits.md) | ready | M1-T02 |
+| [M2-T01 — Course protocol and limits](M2/M2-T01-course-protocol-and-limits.md) | active | M1-T02 |
 | [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | blocked | M2-T01 |
 | [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | blocked | M2-T02 |
 | [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | blocked | M2-T03 |

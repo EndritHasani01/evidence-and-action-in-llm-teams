@@ -1,6 +1,6 @@
 # Course M2-T01 — Course protocol and limits
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M1-T02](../M1/M1-T02-course-inputs-and-schedules.md).
 
@@ -30,7 +30,22 @@ The existing lossless renderer and strict validator consistently apply accepted 
 
 Exercise all candidate shapes and malformed-message whole-reply failures, special-looking/trailing-whitespace archive text, feedback leakage, permission/limit edges and cap-complete versus truncated output. Confirm old thesis fixtures/settings remain intact. Record native-tokenizer and dependency-free checks separately with actual environment and retained artifacts.
 
-**Evidence:** Not yet recorded. Existing protocol/rendering is verified under the thesis regime; course limits are not.
+**Evidence:** Implementation started 9 October 2026 from `58890ad` on
+`feat/course-m1-contract-and-inputs`. The adopted Section 11 limits and course M1
+input/schedule gate were inspected. The existing renderer, validator and exact
+settings will receive explicit course limits while thesis defaults and retained
+archives stay intact. Preparation records are retained in
+[course-m2-protocol](../../../../notebooks/validation/course-m2-protocol/).
+Course protocol acceptance is pending; no GPU/model, pilot, freeze, main run or
+publication is authorized by this work. The pre-existing thesis M5 evidence edit
+is preserved and excluded from task commits.
+
+The prerequisite renderer/protocol/inference and course M1 regression passes
+80 checks in the repository `.venv` (CPython 3.11.9, Pydantic 2.13.5,
+LangGraph 1.2.12, SQLite saver 3.1.1); `pip check` passes. The initial global
+interpreter attempt failed because its SQLite saver dependency is missing;
+both logs are retained. Native-tokenizer verification uses a separate
+environment and remains pending for this task.
 
 **Prerequisite handoff, 9 October 2026:** Course/M1-T02 passes the
 [input/schedule CPU gate](../../../validation/course-m1-inputs-and-schedules.md#completion-and-handoff),
