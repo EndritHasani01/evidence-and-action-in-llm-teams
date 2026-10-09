@@ -1,0 +1,499 @@
+static_envelope: passed
+Running gpu-inventory ...
+host_inventory: passed
+Running download-bitsandbytes-wheel ...
+wheel_staging: passed
+Running device_0 ...
+device_0: passed
+Running device_1 ...
+device_1: passed
+{
+  "library_checks_completed": true,
+  "root_blocker": null,
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 0.2190000000409782,
+  "observed_gpu_seconds_lower_bound": 0.4380000000819564,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {
+      "prefill-gqa": {
+        "status": "passed",
+        "backend": "math"
+      },
+      "prefill-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "prefill-expanded-efficient": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "prefill-mask-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "decode-gqa": {
+        "status": "passed",
+        "backend": "math"
+      },
+      "decode-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "decode-expanded-efficient": {
+        "status": "passed",
+        "backend": "efficient"
+      }
+    },
+    "device_1": {
+      "prefill-gqa": {
+        "status": "passed",
+        "backend": "math"
+      },
+      "prefill-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "prefill-expanded-efficient": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "prefill-mask-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "decode-gqa": {
+        "status": "passed",
+        "backend": "math"
+      },
+      "decode-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "decode-expanded-efficient": {
+        "status": "passed",
+        "backend": "efficient"
+      }
+    }
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}
+static_envelope: passed
+Running gpu-inventory ...
+host_inventory: failed - TimeoutError: deadline_before_command: gpu-inventory, remaining=-90.0, bound=10
+{
+  "library_checks_completed": false,
+  "root_blocker": "TimeoutError: deadline_before_command: gpu-inventory, remaining=-90.0, bound=10",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 360.06199999991804,
+  "observed_gpu_seconds_lower_bound": null,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {},
+    "device_1": {}
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}
+Already executed in this kernel; showing the retained result without another run.
+static_envelope: passed
+Running gpu-inventory ...
+host_inventory: passed
+Running download-bitsandbytes-wheel ...
+wheel_staging: passed
+Running device_0 ...
+device_0: failed - RuntimeError: controlled cleanup failure
+{
+  "library_checks_completed": false,
+  "root_blocker": "RuntimeError: controlled cleanup failure",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 0.125,
+  "observed_gpu_seconds_lower_bound": 0.25,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {},
+    "device_1": {}
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}
+static_envelope: passed
+host_inventory: failed - ValueError: host_torch_differs_from_reviewed_build
+{
+  "library_checks_completed": false,
+  "root_blocker": "ValueError: host_torch_differs_from_reviewed_build",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 0.046999999904073775,
+  "observed_gpu_seconds_lower_bound": null,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {},
+    "device_1": {}
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}
+input_inventory: failed — ValueError: payload_ambiguous
+source: blocked — prerequisites: input_inventory
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: failed — ValueError: payload_size_mismatch
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: failed — ValueError: payload_hash_mismatch
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: failed — ValueError: controlled SQLite failure
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled create-venv failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled download-pip-wheel failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — ValueError: pip_bootstrap_unverified_wheel
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — ValueError: pip_bootstrap_unverified_wheel
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled bootstrap-pip failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled download-candidate failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled install-candidate failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled build-source failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — RuntimeError: controlled pip-check failure
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — ValueError: installed_probe_schema_or_provenance
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmpztwrqeej\\output\\recovery-m5-preflight-20261009T091459789689Z-f23d21a3\\installed-probe-result.json'
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: failed — RuntimeError: controlled focused-checks failure
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: failed — ValueError: test_count_or_skip: focused-checks, expected=81
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: failed — RuntimeError: controlled native-9b failure
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: blocked — cpu_deadline_before_stage
+source: blocked — prerequisites: input_inventory
+cpu_host: blocked — cpu_deadline_before_stage
+command_cleanup: blocked — prerequisites: source, cpu_host
+environment: blocked — prerequisites: source, cpu_host, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: blocked — cpu_deadline_before_stage
+input_inventory: passed
+source: passed
+cpu_host: failed — ValueError: cpu_stage_gpu_visible: stop session and select Accelerator None
+command_cleanup: blocked — prerequisites: cpu_host
+environment: blocked — prerequisites: cpu_host, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: failed — ValueError: payload_missing
+source: blocked — prerequisites: input_inventory
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+Running pip-check ...
+Running installed-probe ...
+Running pip-list ...
+Running pip-freeze ...
+Running focused-checks ...
+focused_checks: passed
+Running native-9b ...
+native_9b: passed
+Running native-4b ...
+native_4b: passed
+Running native-capacity ...
+native_capacity: passed
+{
+  "continuation_checks_passed": true,
+  "tests_passed": 97,
+  "root_blocker": null,
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.10899999993853271
+}
+Result ZIP SHA-256: 87bd5038b1228101000efb2ed9c83ddeb742b5950ecea1d2935e003d03f5d5be
+{
+  "continuation_checks_passed": false,
+  "tests_passed": 0,
+  "root_blocker": "AssertionError: ",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.06299999996554106
+}
+Result ZIP SHA-256: f0bf2ea1451e2ff1e9938e8323f62ac904e09de3966eb6e9886817f8637d4bee
+input_inventory: passed
+source: failed — ValueError: output_evidence_reserve
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed

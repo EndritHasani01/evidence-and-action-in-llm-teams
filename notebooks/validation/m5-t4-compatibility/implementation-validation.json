@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "environment": {
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "os": "Windows-10-10.0.26200-SP0",
+    "torch": "2.11.0",
+    "bitsandbytes": "0.49.2"
+  },
+  "checks": [
+    {
+      "command": "python -X utf8 -S -m unittest tests.test_t4_compatibility tests.test_kaggle_preflight tests.test_kaggle_bundle -v",
+      "passed": 42,
+      "skipped": 0,
+      "stderr": "verified-tests.stderr.txt",
+      "stdout": "verified-tests.stdout.txt"
+    },
+    {
+      "command": "python -X utf8 -m unittest tests.t4_cpu_operators -v",
+      "passed": 4,
+      "skipped": 0,
+      "stderr": "verified-cpu-operators.stderr.txt",
+      "stdout": "verified-cpu-operators.stdout.txt"
+    }
+  ],
+  "earlier_failed_checks": [
+    {
+      "stderr": "initial-tests.stderr.txt",
+      "failure": "Incorrect expected 4B subtotal literal; corrected to 10993795072 bytes."
+    },
+    {
+      "stderr": "implementation-tests.stderr.txt",
+      "failure": "Test required Linux tree_confirmation from normal Windows child; check actual passed/leader exit instead."
+    }
+  ],
+  "isolated_imports": {
+    "real_child_count": 2,
+    "flags": [
+      "-I",
+      "-B"
+    ],
+    "file_set_and_bytes_unchanged": true,
+    "scope": "Fixture Python package; no GPU or native Linux library."
+  },
+  "canonical_arithmetic": "static-envelope.json",
+  "wheel_audit": "wheel-audit.json",
+  "actual_t4_execution": false,
+  "full_candidate_gpu_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "model_generations": 0
+}

@@ -1,0 +1,474 @@
+"""Bounded standalone Torch/NF4 diagnostics; no pretrained models or generation."""
+
+from __future__ import annotations
+
+import argparse
+from contextlib import nullcontext
+import csv
+import hashlib
+from importlib import metadata
+import io
+import json
+import os
+from pathlib import Path, PurePosixPath
+import platform
+import re
+import shutil
+import stat
+import sys
+import time
+import uuid
+import warnings
+import zipfile
+
+WORKFLOW_SECONDS = 360
+PRESTART_SECONDS = 60
+STOP_SECONDS = 120
+GPU_COUNT = 2
+TORCH_VERSION = "2.11.0+cu128"
+ATTENTION_CASES = (
+    ("prefill-gqa", "prefill", False, False, False),
+    ("prefill-expanded", "prefill", True, False, False),
+    ("prefill-expanded-efficient", "prefill", True, False, True),
+    ("prefill-mask-expanded", "prefill", True, True, False),
+    ("decode-gqa", "decode", False, False, False),
+    ("decode-expanded", "decode", True, False, False),
+    ("decode-expanded-efficient", "decode", True, False, True),
+)
+
+
+def read_machine(path: Path) -> dict:
+    if path.stat().st_size > 2 * 2**20:
+        raise ValueError("machine_result_too_large")
+    result = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(result, dict):
+        raise ValueError("machine_result_not_object")
+    return result
+
+
+def envelope_assessment(configs: dict) -> dict:
+    models = {}
+    for name, item in configs.items():
+        raw = item["text"].encode("utf-8")
+        if hashlib.sha256(raw).hexdigest() != item["sha256"]:
+            raise ValueError("model_config_hash: " + name)
+        outer = json.loads(raw)
+        c = outer["text_config"]
+        layers = c["layer_types"]
+        if (c["num_attention_heads"], c["num_key_value_heads"], c["head_dim"],
+                c["num_hidden_layers"], len(layers), layers.count("full_attention")) != (16, 4, 256, 32, 32, 8):
+            raise ValueError("reviewed_attention_geometry_changed")
+        tied = c.get("tie_word_embeddings", outer["tie_word_embeddings"])
+        if type(tied) is not bool:
+            raise ValueError("invalid_tie_setting")
+        kv = 2 * layers.count("full_attention") * c["num_key_value_heads"] * c["head_dim"] * 2
+        embeddings = c["vocab_size"] * c["hidden_size"] * 2 * (1 if tied else 2)
+        mlp = 3 * c["hidden_size"] * c["intermediate_size"] * c["num_hidden_layers"] // 2
+        resident = 262144
+        models[name] = {
+            "config_sha256": item["sha256"], "tie_word_embeddings": tied,
+            "kv_bytes_per_token": kv, "resident_token_assumption": resident,
+            "fp16_kv_bytes_at_cap": kv * resident,
+            "conditional_embedding_head_bytes": embeddings,
+            "ideal_packed_mlp_bytes": mlp,
+            "conditional_subtotal_bytes_at_cap": embeddings + mlp + kv * resident,
+            "repeated_kv_one_layer_additional_bytes_at_cap": 2 * c["num_attention_heads"] * c["head_dim"] * 2 * resident,
+            "dense_score_fp32_bytes_at_cap": c["num_attention_heads"] * resident * resident * 4,
+            "full_envelope_memory_acceptance": None,
+        }
+    if set(models) != {"9B", "4B"}:
+        raise ValueError("expected_both_pinned_configs")
+    return {"models": models, "full_envelope_memory_acceptance": None,
+            "scope": "Conditional arithmetic; excludes other weights/scales/activations/workspaces. Legal attainability and actual model memory remain unknown."}
+
+
+def parse_inventory(text: str) -> list[dict]:
+    devices = []
+    for row in csv.reader(io.StringIO(text)):
+        if len(row) != 7:
+            raise ValueError("nvidia_inventory_columns")
+        index, identity, name, pci, driver, total, free = [v.strip() for v in row]
+        if not re.fullmatch(r"GPU-[0-9a-fA-F-]{36}", identity) or not name.endswith("T4"):
+            raise ValueError("expected_physical_T4_uuid")
+        uuid.UUID(identity[4:])
+        devices.append({"index": int(index), "uuid": identity, "name": name, "pci_bus_id": pci,
+                        "driver_version": driver, "total_bytes": int(total) * 2**20,
+                        "free_bytes": int(free) * 2**20})
+    if len(devices) != GPU_COUNT or len({d["uuid"].lower() for d in devices}) != GPU_COUNT or len({d["index"] for d in devices}) != GPU_COUNT:
+        raise ValueError("expected_two_distinct_T4s")
+    if any(d["free_bytes"] < 1536 * 2**20 or d["total_bytes"] < d["free_bytes"] for d in devices):
+        raise ValueError("insufficient_free_memory_for_tiny_probe")
+    return sorted(devices, key=lambda d: d["index"])
+
+
+def unpack_wheel(wheel: Path, destination: Path, expected: dict, ops: dict, output: Path) -> dict:
+    if wheel.stat().st_size != expected["bytes"] or ops["sha256_file"](wheel) != expected["sha256"]:
+        raise ValueError("bitsandbytes_wheel_bytes")
+    with zipfile.ZipFile(wheel) as archive:
+        infos = archive.infolist()
+        if len({m.filename.casefold() for m in infos}) != len(infos):
+            raise ValueError("wheel_duplicate_paths")
+        expanded = sum(m.file_size for m in infos)
+        if expanded != expected["expanded_bytes"] or len(infos) != expected["members"] or archive.testzip() is not None:
+            raise ValueError("wheel_expansion_or_crc")
+        for member in infos:
+            path = PurePosixPath(member.filename)
+            if (member.orig_filename != member.filename or path.is_absolute() or
+                    any(p in {".", ".."} for p in path.parts) or "\\" in member.filename or
+                    ":" in member.filename or any(ord(c) < 32 for c in member.filename) or
+                    stat.S_ISLNK(member.external_attr >> 16) or
+                    path.parts[0] not in {"bitsandbytes", "bitsandbytes-0.49.2.dist-info"}):
+                raise ValueError("unsafe_wheel_path: " + member.filename)
+        ops["require_space"](wheel.parent, output, expanded + 2**20)
+        destination.mkdir(exist_ok=False)
+        files = {}
+        for member in infos:
+            path = destination / member.filename
+            if not path.resolve().is_relative_to(destination.resolve()):
+                raise ValueError("wheel_path_escape")
+            if member.is_dir():
+                path.mkdir(parents=True, exist_ok=True)
+                continue
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with archive.open(member) as incoming, path.open("xb") as outgoing:
+                shutil.copyfileobj(incoming, outgoing, 2**20)
+            files[member.filename] = {"bytes": path.stat().st_size, "sha256": ops["sha256_file"](path)}
+    return {"wheel": expected, "files": files, "expanded_bytes": expanded}
+
+
+def backend_name(operators: list[str]) -> str | None:
+    names = {backend for backend, marker in {
+        "math": "aten::_scaled_dot_product_attention_math",
+        "efficient": "aten::_scaled_dot_product_efficient_attention",
+        "flash": "aten::_scaled_dot_product_flash_attention",
+        "cudnn": "aten::_scaled_dot_product_cudnn_attention",
+    }.items() if marker in operators}
+    return next(iter(names)) if len(names) == 1 else None
+
+
+def attention_inputs(torch, phase: str):
+    if phase not in {"prefill", "decode"}:
+        raise ValueError("unknown_diagnostic_phase")
+    generator = torch.Generator(device="cpu").manual_seed(813)
+    query = torch.randn(1, 16, 32 if phase == "prefill" else 1, 256, generator=generator) * 0.25
+    key = torch.randn(1, 4, 32, 256, generator=generator) * 0.25
+    value = torch.randn(1, 4, 32, 256, generator=generator) * 0.25
+    return query, key, value
+
+
+def sdpa_comparison(torch, device, case: tuple) -> dict:
+    from torch.nn.attention import SDPBackend, sdpa_kernel
+    from torch.profiler import ProfilerActivity, profile
+
+    name, phase, expanded, masked, forced = case
+    query, key, value = attention_inputs(torch, phase)
+    mask = torch.ones(query.shape[2], key.shape[2], dtype=torch.bool).tril() if masked else None
+    causal = phase == "prefill" and mask is None
+    with torch.inference_mode(), sdpa_kernel(SDPBackend.MATH):
+        reference = torch.nn.functional.scaled_dot_product_attention(
+            query, key.repeat_interleave(4, dim=1), value.repeat_interleave(4, dim=1),
+            attn_mask=mask, dropout_p=0.0, is_causal=causal)
+    q, k, v = [t.to(device=device, dtype=torch.float16) for t in (query, key, value)]
+    if expanded:
+        k, v = k.repeat_interleave(4, dim=1), v.repeat_interleave(4, dim=1)
+    mask = mask.to(device) if mask is not None else None
+    eligible = {}
+    with warnings.catch_warnings(record=True) as captured:
+        warnings.simplefilter("always")
+        if device.type == "cuda":
+            params = torch.backends.cuda.SDPAParams(q, k, v, mask, 0.0, causal, not expanded)
+            for backend, function in [("flash", "can_use_flash_attention"),
+                                      ("efficient", "can_use_efficient_attention"),
+                                      ("cudnn", "can_use_cudnn_attention")]:
+                eligible[backend] = bool(getattr(torch.backends.cuda, function)(params, debug=True))
+        activities = [ProfilerActivity.CPU] + ([ProfilerActivity.CUDA] if device.type == "cuda" else [])
+        started = time.monotonic()
+        try:
+            with torch.inference_mode(), sdpa_kernel(SDPBackend.EFFICIENT_ATTENTION) if forced else nullcontext():
+                with profile(activities=activities) as observed:
+                    result = torch.nn.functional.scaled_dot_product_attention(
+                        q, k, v, attn_mask=mask, dropout_p=0.0, is_causal=causal, enable_gqa=not expanded)
+                    if device.type == "cuda":
+                        torch.cuda.synchronize()
+            operators = sorted({event.key for event in observed.key_averages()})
+            kernels = sorted({event.name for event in observed.events() if str(event.device_type).endswith("CUDA")})
+            actual = result.float().cpu()
+            finite = bool(torch.isfinite(actual).all())
+            close = bool(torch.allclose(actual, reference, rtol=0.02, atol=0.002))
+            if not finite or not close:
+                raise ValueError("nonfinite_or_mismatched_sdpa: " + name)
+            observation = {"status": "passed", "finite": finite, "reference_matches": close,
+                           "max_absolute_error": float((actual - reference).abs().max()),
+                           "operator_backend": backend_name(operators), "operators": operators,
+                           "cuda_kernels": kernels, "cuda_kernel_trace_available": bool(kernels)}
+        except RuntimeError as exc:
+            if not forced or not any(s in str(exc) for s in ["No available kernel", "No viable backend"]):
+                raise
+            observation = {"status": "unsupported", "reason": str(exc), "operator_backend": None}
+    observation.update(name=name, phase=phase, query_shape=list(q.shape), key_shape=list(k.shape),
+                       value_shape=list(v.shape), dtype=str(q.dtype), mask_shape=list(mask.shape) if mask is not None else None,
+                       is_causal=causal, enable_gqa=not expanded, forced_efficient=forced,
+                       eligibility=eligible, warnings=[str(w.message) for w in captured],
+                       elapsed_seconds=time.monotonic()-started, rtol=0.02, atol=0.002)
+    return observation
+
+
+def nf4_comparison(torch, bnb, device) -> dict:
+    generator = torch.Generator(device="cpu").manual_seed(814)
+    weight = (torch.randn(128, 256, generator=generator) * 0.1).to(device=device, dtype=torch.float16)
+    packed, state = bnb.functional.quantize_4bit(weight, blocksize=64, compress_statistics=True, quant_type="nf4")
+    if state.quant_type != "nf4" or not state.nested or state.dtype != torch.float16:
+        raise ValueError("nf4_double_quant_fp16_settings")
+    dequantized = bnb.functional.dequantize_4bit(packed, quant_state=state).float().cpu()
+    rows = []
+    with torch.inference_mode():
+        for batch in (8, 1):
+            inputs = (torch.randn(batch, 256, generator=generator) * 0.1).to(device=device, dtype=torch.float16)
+            actual = bnb.matmul_4bit(inputs, packed.t(), quant_state=state)
+            expected = inputs.float().cpu() @ dequantized.t()
+            compared = actual.float().cpu()
+            finite = bool(torch.isfinite(compared).all())
+            close = bool(torch.allclose(compared, expected, rtol=0.02, atol=0.01))
+            if actual.dtype != torch.float16 or list(actual.shape) != [batch, 128] or not finite or not close:
+                raise ValueError("nonfinite_or_mismatched_nf4")
+            rows.append({"batch": batch, "output_shape": list(actual.shape), "output_dtype": str(actual.dtype),
+                         "finite": finite, "reference_matches": close,
+                         "max_absolute_error": float((compared-expected).abs().max())})
+    return {"status": "passed", "weight_shape": [128, 256], "quant_type": state.quant_type,
+            "double_quantization": bool(state.nested), "weight_dtype": str(state.dtype),
+            "blocksize": state.blocksize, "rtol": 0.02, "atol": 0.01, "operations": rows,
+            "scope": "Synthetic operator check against the same dequantized weight; no pretrained model."}
+
+
+def gpu_probe(output: Path, package_root: Path, snapshot_path: Path, identity: str) -> None:
+    report = {"kind": "standalone-t4-library-probe", "status": "failed", "assigned_uuid": identity,
+              "model_generations": 0, "attention": {}}
+
+    def save():
+        output.write_text(json.dumps(report, indent=2)+"\n", encoding="utf-8")
+
+    save()
+    try:
+        snapshot = read_machine(snapshot_path)
+        actual_paths = {p.relative_to(package_root).as_posix() for p in package_root.rglob("*") if p.is_file()}
+        if actual_paths != set(snapshot["files"]):
+            raise ValueError("changed_extracted_wheel_file_set")
+        for name, item in snapshot["files"].items():
+            path = package_root / name
+            if path.is_symlink() or path.stat().st_size != item["bytes"] or hashlib.sha256(path.read_bytes()).hexdigest() != item["sha256"]:
+                raise ValueError("changed_extracted_wheel: " + name)
+        if os.environ.get("CUDA_VISIBLE_DEVICES") != identity or os.environ.get("BNB_CUDA_VERSION"):
+            raise ValueError("device_or_native_library_override")
+        sys.path.insert(0, str(package_root))
+        import torch
+        if torch.__version__ != TORCH_VERSION or torch.version.cuda != "12.8" or not torch.cuda.is_available():
+            raise ValueError("matching_cuda_torch_unavailable")
+        if torch.cuda.device_count() != 1:
+            raise ValueError("worker_requires_one_visible_device")
+        props = torch.cuda.get_device_properties(0)
+        observed_uuid = str(props.uuid)
+        if uuid.UUID(observed_uuid.removeprefix("GPU-")) != uuid.UUID(identity.removeprefix("GPU-")) or (props.major, props.minor) != (7, 5):
+            raise ValueError("physical_device_identity_or_capability")
+        torch.set_num_threads(1)
+        device = torch.device("cuda:0")
+        torch.cuda.reset_peak_memory_stats()
+        report.update(observed_uuid=observed_uuid, device_count=1, capability=[props.major, props.minor],
+                      device_name=props.name, total_memory=props.total_memory, torch_version=torch.__version__,
+                      torch_cuda_build=torch.version.cuda, torch_root=str(Path(torch.__file__).resolve()),
+                      torch_native_root=str(Path(torch._C.__file__).resolve()), compiled_architectures=torch.cuda.get_arch_list(),
+                      torch_configuration=torch.__config__.show(), pre_probe_free_bytes=torch.cuda.mem_get_info()[0])
+        save()
+        for case in ATTENTION_CASES:
+            print("Running " + case[0], flush=True)
+            report["attention"][case[0]] = sdpa_comparison(torch, device, case)
+            save()
+        import bitsandbytes as bnb
+        if metadata.version("bitsandbytes") != "0.49.2" or not Path(bnb.__file__).resolve().is_relative_to(package_root.resolve()):
+            raise ValueError("bitsandbytes_import_origin")
+        library = Path(bnb.cextension.lib._lib._name).resolve()
+        if not library.is_relative_to(package_root.resolve()) or library.name != "libbitsandbytes_cuda128.so":
+            raise ValueError("bitsandbytes_native_library_origin")
+        report.update(bitsandbytes_version=metadata.version("bitsandbytes"), bitsandbytes_root=str(Path(bnb.__file__).resolve()),
+                      bitsandbytes_native_library=str(library))
+        print("Running NF4 double-quantized FP16 operations", flush=True)
+        report["nf4"] = nf4_comparison(torch, bnb, device)
+        torch.cuda.synchronize()
+        report.update(status="passed", peak_allocated_bytes=torch.cuda.max_memory_allocated(),
+                      peak_reserved_bytes=torch.cuda.max_memory_reserved(), post_probe_free_bytes=torch.cuda.mem_get_info()[0],
+                      full_candidate_gpu_acceptance=None, native_qwen_recurrent_acceptance=None,
+                      full_envelope_memory_acceptance=None)
+    except BaseException as exc:
+        report["error"] = f"{type(exc).__name__}: {exc}"
+        raise
+    finally:
+        save()
+
+
+def validate_probe(result: dict, identity: str, package_root: Path) -> None:
+    if (result.get("status") != "passed" or result.get("assigned_uuid") != identity or
+            uuid.UUID(result["observed_uuid"].removeprefix("GPU-")) != uuid.UUID(identity.removeprefix("GPU-")) or
+            result.get("device_count") != 1 or result.get("capability") != [7, 5] or
+            result.get("torch_version") != TORCH_VERSION or result.get("torch_cuda_build") != "12.8" or
+            result.get("bitsandbytes_version") != "0.49.2" or type(result.get("model_generations")) is not int or
+            result.get("model_generations") != 0):
+        raise ValueError("gpu_probe_identity_or_scope")
+    if (not Path(result["bitsandbytes_root"]).resolve().is_relative_to(package_root.resolve()) or
+            not Path(result["bitsandbytes_native_library"]).resolve().is_relative_to(package_root.resolve()) or
+            Path(result["bitsandbytes_native_library"]).name != "libbitsandbytes_cuda128.so" or
+            any(result.get(k) is not None for k in ["full_candidate_gpu_acceptance", "native_qwen_recurrent_acceptance", "full_envelope_memory_acceptance"])):
+        raise ValueError("probe_import_origin_or_acceptance_scope")
+    if set(result["attention"]) != {c[0] for c in ATTENTION_CASES}:
+        raise ValueError("missing_attention_case")
+    for name, phase, expanded, masked, forced in ATTENTION_CASES:
+        row = result["attention"][name]
+        if (row["query_shape"] != [1, 16, 32 if phase == "prefill" else 1, 256] or
+                row["key_shape"] != [1, 16 if expanded else 4, 32, 256] or row["value_shape"] != row["key_shape"] or
+                row["enable_gqa"] is not (not expanded) or row["is_causal"] is not (phase == "prefill" and not masked) or
+                row.get("dtype") != "torch.float16" or row.get("mask_shape") != ([32, 32] if masked else None) or
+                row.get("forced_efficient") is not forced):
+            raise ValueError("invalid_attention_observation: " + name)
+        if row["status"] == "unsupported" and forced and any(s in row.get("reason", "") for s in ["No available kernel", "No viable backend"]):
+            continue
+        if row["status"] != "passed" or row.get("finite") is not True or row.get("reference_matches") is not True:
+            raise ValueError("failed_attention_observation: " + name)
+    nf4 = result["nf4"]
+    if (nf4.get("status") != "passed" or nf4.get("quant_type") != "nf4" or
+            nf4.get("double_quantization") is not True or nf4.get("weight_shape") != [128, 256] or
+            nf4.get("weight_dtype") != "torch.float16" or nf4.get("blocksize") != 64 or [r["batch"] for r in nf4["operations"]] != [8, 1] or
+            any(r.get("finite") is not True or r.get("reference_matches") is not True or
+                r.get("output_shape") != [r["batch"], 128] or r.get("output_dtype") != "torch.float16" for r in nf4["operations"])):
+        raise ValueError("invalid_nf4_observation")
+
+
+def run_compatibility(output_root: Path, scratch_root: Path, expected: dict, ops: dict,
+                      program: str, started: float | None = None) -> dict:
+    started = time.monotonic() if started is None else started
+    deadline = started + WORKFLOW_SECONDS
+    label = uuid.uuid4().hex[:12]
+    output = output_root / ("recovery-m5-t4-compatibility-" + label)
+    output.mkdir(parents=True, exist_ok=False)
+    scratch = scratch_root / label
+    scratch.mkdir(parents=True, exist_ok=False)
+    stages = {name: {"status": "blocked", "reason": "earlier stage incomplete"} for name in
+              ["static_envelope", "host_inventory", "wheel_staging", "device_0", "device_1", "filesystem_backup"]}
+    report = {"kind": "standalone-t4-library-compatibility", "started_utc": ops["utc"](),
+              "controller_limit_seconds": WORKFLOW_SECONDS, "stages": stages, "root_blocker": None,
+              "process_cleanup_unconfirmed": False, "model_generations": 0}
+    result = {"run_directory": str(output), "zip_path": None, "zip_sha256": None, "report": report}
+    env = ops["candidate_environment"](scratch)
+    env.pop("BNB_CUDA_VERSION", None)
+    current, devices = "static_envelope", []
+    ops["save_json"](output / "expected-inputs.json", expected)
+
+    def invoke(name, args, timeout, identity=None):
+        if report["process_cleanup_unconfirmed"]:
+            raise RuntimeError("prior_cleanup_unconfirmed")
+        local_env = dict(env)
+        if identity:
+            local_env.update(CUDA_VISIBLE_DEVICES=identity, CUDA_DEVICE_ORDER="PCI_BUS_ID")
+        print("Running " + name + " ...", flush=True)
+        try:
+            return ops["command"](output, name, args, deadline=deadline, timeout=timeout, cwd=scratch, env=local_env)
+        finally:
+            log = output / "logs" / (name + ".json")
+            if log.is_file() and read_machine(log).get("tree_confirmation") == "unconfirmed":
+                report["process_cleanup_unconfirmed"] = True
+
+    def passed(value):
+        stages[current] = {"status": "passed", "result": value}
+        ops["save_json"](output / "compatibility-report.json", report)
+        print(current + ": passed", flush=True)
+
+    try:
+        passed(envelope_assessment(expected["configs"]))
+        current = "host_inventory"
+        software = {}
+        for name in expected["candidate_versions"]:
+            try:
+                software[name] = metadata.version(name)
+            except metadata.PackageNotFoundError:
+                software[name] = None
+        ops["save_json"](output / "host-software.json", {"python": platform.python_version(),
+            "os": platform.platform(), "versions": software, "candidate_differences": {
+                n: {"candidate": v, "host": software[n]} for n, v in expected["candidate_versions"].items() if software[n] != v},
+            "scope": "Host software observations, not the isolated accepted CPU environment or a scientific lock."})
+        if platform.system() != "Linux" or platform.machine() != "x86_64" or sys.version_info[:2] != (3, 13):
+            raise ValueError("diagnostic_requires_linux_x86_64_python313")
+        if software.get("torch") != TORCH_VERSION:
+            raise ValueError("host_torch_differs_from_reviewed_build")
+        record = invoke("gpu-inventory", ["nvidia-smi", "--query-gpu=index,uuid,name,pci.bus_id,driver_version,memory.total,memory.free",
+                                          "--format=csv,noheader,nounits"], 10)
+        devices = parse_inventory((output / record["stdout"]).read_text(encoding="utf-8"))
+        passed({"devices": devices, "provider_assignment_utc": None})
+        current = "wheel_staging"
+        wheel_meta = expected["bitsandbytes_wheel"]
+        ops["save_json"](output / "storage-before-wheel.json", ops["require_space"](
+            scratch, output, wheel_meta["bytes"] + wheel_meta["expanded_bytes"] + 2**20))
+        wheel = scratch / wheel_meta["filename"]
+        receipt = ops["json_stdout"](output, invoke("download-bitsandbytes-wheel", [sys.executable, "-I", "-B", "-c",
+                          ops["pip_wheel_download_script"](wheel_meta, wheel)], 60))
+        if receipt != dict(wheel_meta, verified=True):
+            raise ValueError("unverified_wheel_download_receipt")
+        package_root = scratch / "diagnostic-package"
+        snapshot = unpack_wheel(wheel, package_root, wheel_meta, ops, output)
+        snapshot_path = output / "extracted-wheel.json"
+        ops["save_json"](snapshot_path, snapshot)
+        passed({"verified_wheel_bytes": wheel.stat().st_size, "expanded_bytes": snapshot["expanded_bytes"],
+                "verified_files": len(snapshot["files"]), "base_environment_modified": False})
+        child = scratch / "gpu-probe.py"
+        child.write_text(program, encoding="utf-8")
+        (output / "gpu-probe-program.txt").write_text(program, encoding="utf-8")
+        for index, device in enumerate(devices):
+            current = "device_" + str(index)
+            machine = output / (current + ".json")
+            invoke(current, [sys.executable, "-I", "-B", child, "--probe", "--output", machine,
+                             "--package-root", package_root, "--snapshot", snapshot_path, "--uuid", device["uuid"]], 60, device["uuid"])
+            observed = read_machine(machine)
+            validate_probe(observed, device["uuid"], package_root)
+            passed(observed)
+    except BaseException as exc:
+        reason = f"{type(exc).__name__}: {exc}"
+        stages[current] = {"status": "failed", "reason": reason}
+        report["root_blocker"] = reason
+        print(current + ": failed - " + reason, flush=True)
+    finally:
+        try:
+            stages["filesystem_backup"] = {"status": "passed", "result": ops["sqlite_diagnostic"](output)}
+        except Exception as exc:
+            stages["filesystem_backup"] = {"status": "failed", "reason": f"{type(exc).__name__}: {exc}"}
+            report["root_blocker"] = report["root_blocker"] or stages["filesystem_backup"]["reason"]
+        elapsed = time.monotonic() - started
+        summary = {"library_checks_completed": all(s["status"] == "passed" for s in stages.values()),
+                   "root_blocker": report["root_blocker"], "model_generations": 0, "model_smoke_ready": False,
+                   "full_candidate_gpu_acceptance": None, "native_qwen_recurrent_acceptance": None,
+                   "full_envelope_memory_acceptance": None, "provider_assignment_utc": None, "provider_release_utc": None,
+                   "observed_controller_wall_seconds": elapsed, "observed_gpu_seconds_lower_bound": len(devices) * elapsed if devices else None,
+                   "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+                   "conditional_allocation_upper_bound_seconds": GPU_COUNT * (PRESTART_SECONDS + WORKFLOW_SECONDS + STOP_SECONDS),
+                   "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+                   "attention_dispatch": {name: {case: {"status": row["status"], "backend": row.get("operator_backend")}
+                        for case, row in stage.get("result", {}).get("attention", {}).items()}
+                        for name, stage in stages.items() if name.startswith("device_")},
+                   "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."}
+        report.update(summary=summary, ended_utc=ops["utc"]())
+        ops["save_json"](output / "compatibility-report.json", report)
+        ops["save_json"](output / "summary.json", summary)
+        result["summary"] = summary
+        try:
+            result.update(ops["export_evidence"](output))
+        except Exception as exc:
+            report["export_error"] = f"{type(exc).__name__}: {exc}"
+            ops["save_json"](output / "compatibility-report.json", report)
+        print(json.dumps(summary, indent=2), flush=True)
+    return result
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--probe", action="store_true", required=True)
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--package-root", type=Path, required=True)
+    parser.add_argument("--snapshot", type=Path, required=True)
+    parser.add_argument("--uuid", required=True)
+    args = parser.parse_args()
+    gpu_probe(args.output, args.package_root, args.snapshot, args.uuid)
