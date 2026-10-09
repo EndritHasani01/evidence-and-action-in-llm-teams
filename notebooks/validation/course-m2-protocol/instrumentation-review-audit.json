@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "stage": "checkpoint",
+  "baseline": "58890addb53efe2ccdc7940b8e8686ce64dea28a",
+  "audited_head": "bc4167b3ff3c35a6bd6ed193bde531c0f6aa7eb0",
+  "python": "3.11.9",
+  "raw_protected_files_identical": 1166,
+  "user_edit_identical_and_unstaged": true,
+  "thesis_settings_identical": true,
+  "thesis_roadmap_sections_1_to_10_preserved": true,
+  "local_references_checked": 607,
+  "markdown_fragments_checked": 269,
+  "course_task_states": {
+    "done": 2,
+    "active": 1,
+    "blocked": 18
+  },
+  "suites": {},
+  "native_requests": 11,
+  "native_replies": 23,
+  "native_shapes_and_shards": 225,
+  "maximum_useful_output_tokens": 132,
+  "maximum_feedback_tokens": 14,
+  "pinned_metadata_files_match": 4,
+  "model_calls": 0,
+  "complete_context_capacity": "unaccepted",
+  "runtime_freeze": false
+}

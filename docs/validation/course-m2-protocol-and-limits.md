@@ -47,8 +47,9 @@ codes at the next scheduled opportunity.
 
 [Exact candidate settings](../../recovery/inference.py) accept explicit course
 limits with the pinned 4B candidate and record all six values in the existing
-settings JSON. `limits_from_settings` rejects omitted or contradictory 256
-generation caps. Original thesis settings omit the new field and retain their
+settings JSON. `limits_from_settings` rejects a 256 generation cap without
+explicit course limits and rejects contradictory caps. Original thesis settings
+omit the new field and retain their
 exact contents for both reviewed models and attention choices. The existing
 round/replay/runner/store paths derive course limits from those saved settings,
 including controls, request equality, reopen and parent revalidation. Generation
@@ -73,14 +74,24 @@ them in every reply or adding a persistence layer.
 | Pinned 4B native tokenizer, fresh hash seed 37 | Global CPU tokenizer environment | 9 passed, zero skips |
 | Installed package outside checkout, no source `PYTHONPATH` | `.venv` interpreter; all 29 module bytes match `229684c` | 81 passed, zero skips |
 | Installed course checks with hash seed 37 | Same isolated installed package | 24 passed, zero skips |
+| Dependency-free complete core discovery | `python -S`, site packages disabled | 348 checks: 340 passed, eight expected optional-library skips |
+| Complete lifecycle rerun after validation-spy fix | `.venv`; real externally killed scripted controllers | 9 passed, zero skips; includes all four previously failing subcases |
 | Dependency consistency | `.venv` | `pip check` passed |
 
-Complete source CPU and site-disabled core validation are running; their final
-exit results and the preservation/link/status audit remain pending.
+The complete source CPU command reached all 558 checks. Its only failures were
+four kill-point subcases in two lifecycle tests: an existing validation spy did
+not forward the new `limits` keyword. All 549 non-lifecycle checks passed, as
+did seven lifecycle methods. The spy now accepts and forwards the keyword;
+all original pause, kill, restart and checkpoint assertions remain intact.
+The complete nine-method lifecycle rerun passes all four previously failing
+subcases and every original lifecycle check. Together the commands cover all
+558 source CPU checks with passing evidence after this instrumentation fix.
+The 37-minute full command was not repeated: production modules and the 549
+unaffected checks have not changed since that run or installed verification.
 
 The [checkpoint audit](../../notebooks/validation/course-m2-protocol/checkpoint-audit.json)
 passes 604 local references and 269 fragments, verifies all 21 course statuses,
-and confirms 1,167 protected files are byte-identical to the starting worktree.
+and confirms 1,167 protected files are byte-identical at that checkpoint.
 These include original thesis todos/defaults/fixtures, the adopted specification,
 course input/schedule fixtures and the user's pre-existing M5 evidence edit.
 Original plan Sections 1-10 and both models' baseline/opt-in exact settings remain
@@ -120,6 +131,7 @@ bytes; its tests ran outside the source checkout with source `PYTHONPATH` absent
 python -m tests.tokenizer_course_protocol --tokenizer "$env:TEMP/recovery-capacity-wr5ya_42/4B"
 .venv/Scripts/python.exe -m recovery validate --regime course --config configs/course-inputs.toml --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --authoritative tests/fixtures/population_course.json
 python -S -m recovery validate --core-only --regime course --config configs/course-inputs.toml --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --authoritative tests/fixtures/population_course.json
+.venv/Scripts/python.exe -m unittest tests.lifecycle_checks -v
 .venv/Scripts/python.exe -m pip check
 git diff --check
 ```
@@ -132,12 +144,14 @@ missed durable equality reconstruction used thesis limits; the failing checkpoin
 and passing correction are retained. Initial native test assertions confused
 JSON lists with tuples and required the final token to contain only a brace;
 the corrected checks compare canonical structures and require the completing
-brace in the last token. The original barrier spies now forward the limits
-keyword while preserving every synchrony assertion.
+brace in the last token. The original barrier and external-kill validation spies
+now forward the limits keyword while preserving every synchrony and kill-point
+assertion. The full failing log is retained rather than relabeled as a passing
+single-command run.
 
 ## Completion and handoff
 
-Final acceptance and handoff are pending the complete CPU/core and audit results.
+Final acceptance and handoff are pending the completion audit.
 Course interventions/replay acceptance, the complete witness/capacity gate,
 worker/accounting and analysis adaptation, actual hardware/model memory and
 capability, resource reconciliation, pilot, freeze, empirical execution and

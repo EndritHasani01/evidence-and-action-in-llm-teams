@@ -19,7 +19,7 @@ FOLDER = Path(__file__).resolve().parent
 MUTABLE = {
     "recovery/prompts.py", "recovery/protocol.py", "recovery/rounds.py", "recovery/replay.py",
     "recovery/runner.py", "recovery/storage.py", "recovery/inference.py", "recovery/__main__.py",
-    "tests/round_checks.py", "README.md", "tests/fixtures/README.md", "docs/IMPLEMENTATION_PLAN.md",
+    "tests/round_checks.py", "tests/lifecycle_worker.py", "README.md", "tests/fixtures/README.md", "docs/IMPLEMENTATION_PLAN.md",
     "docs/todos/course/README.md", "docs/todos/course/M2/M2-T01-course-protocol-and-limits.md",
     "docs/todos/course/M2/M2-T02-course-interventions-and-replay.md",
     "docs/planning/course-study-session-handoff.md",
@@ -121,12 +121,42 @@ def main():
         assert Counter(states.values()) == dict(done=3, ready=1, blocked=17)
         assert "3/21 course tasks done; 18 remaining; 0 active; 1 ready; 17 blocked" in index
         result = runpy.run_path(str(ROOT / "notebooks/validation/course-m1-inputs/verify_inputs.py"))["suite_result"]
-        for name in ("integration-pass", "core-validation", "full-validation", "native-hash37",
-                     "installed-validation", "installed-hash37"):
+        for name in ("integration-pass", "core-validation", "native-hash37",
+                     "installed-validation", "installed-hash37", "lifecycle-final"):
             suites[name] = result(FOLDER / (name + ".txt"))
             receipt = json.loads((FOLDER / (name + "-command.json")).read_bytes())
             assert receipt["exit_code"] == 0, name
         assert all(suites[name]["skipped"] == 0 for name in suites if name != "core-validation")
+        # The complete run reached every check. Its only failures were four
+        # subcases in two external-kill tests, caused by a test wrapper's old
+        # signature. Verify that exact failure set and the entire passing
+        # lifecycle rerun; do not repeat unchanged, slow report bootstraps.
+        full = gzip.decompress((FOLDER / "full-validation.txt.gz").read_bytes()).decode("utf-8").replace("\r\n", "\n")
+        ran = re.search(r"Ran (\d+) tests in ([\d.]+)s", full)
+        assert ran and int(ran[1]) == 558
+        failed = re.findall(r"^FAIL:.*\((tests\.lifecycle_checks\.LifecycleTests\.\w+)\) \(point='(\w+)'\)\s*$", full, re.MULTILINE)
+        assert set(failed) == {
+            ("tests.lifecycle_checks.LifecycleTests.test_kill_before_and_after_q_delivery_checkpoint_preserves_chronological_release", point)
+            for point in ("before_checkpoint", "after_checkpoint")
+        } | {
+            ("tests.lifecycle_checks.LifecycleTests.test_kill_during_cross_worker_replay_validation_and_staging", point)
+            for point in ("validation", "staging")
+        }
+        assert len(re.findall(r"^FAIL:", full, re.MULTILINE)) == 4 and "\nERROR:" not in full
+        assert full.count("during_validation() got an unexpected keyword argument 'limits'") == 4
+        assert "FAILED (failures=4)" in full
+        assert json.loads((FOLDER / "full-validation-command.json").read_bytes())["exit_code"] == 1
+        assert suites["lifecycle-final"]["tests"] == 9
+        original = git("show", baseline["head"] + ":tests/lifecycle_worker.py")
+        expected = original.replace("def during_validation(requests, generated, tokenizer):",
+                                    "def during_validation(requests, generated, tokenizer, **kwargs):")
+        expected = expected.replace("validate(requests, generated, tokenizer)",
+                                    "validate(requests, generated, tokenizer, **kwargs)")
+        assert (ROOT / "tests/lifecycle_worker.py").read_text(encoding="utf-8").strip() == expected
+        suites["full-regression-coverage"] = dict(tests=558, full_run_seconds=float(ran[2]),
+            full_run_failed_subcases=4, unaffected_full_run_checks=549,
+            passing_lifecycle_recheck=9, status="verified after instrumentation-only fix",
+            whole_suite_rerun=False)
         installed = json.loads((FOLDER / "installed-provenance.json").read_bytes())
         assert installed["source_pythonpath"] is False and installed["matching_modules"] == 29
         assert all(hashlib.sha256((ROOT / "recovery" / name).read_bytes()).hexdigest() == digest
