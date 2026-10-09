@@ -56,6 +56,21 @@ course limit audits use `output_fits(COURSE_LIMITS)` and
 `prose_fits(COURSE_LIMITS)`, preserving legacy thesis properties and archive bytes.
 Exact settings/round integration and native-tokenizer acceptance remain pending.
 
+**Settings/native checkpoint:** 110 focused integration checks pass, including
+real course round/control rendering, whole-reply validation, exact durable
+reopen and rejection of thesis replay/settings. An initially missed restart
+comparison used the thesis reserve/instruction; it now derives limits from the
+saved settings. The existing barrier test spies forward the new keyword without
+changing their ordering assertions. The pinned 4B tokenizer passes nine native
+checks in a fresh hash-seed-37 process, reproducing the new
+[course archive](../../../../tests/fixtures/course_protocol.json.gz) and both
+original thesis request/reply archives. Eleven rendered cases, 23 reply cases
+and 225 candidate/one-shard cases are retained; those useful cases need at most
+132 output tokens and fixed feedback at most 14. Complete JSON at 256 is valid;
+257 IDs, 65 prose tokens, known truncation and malformed messages reject all
+effects. No whole-envelope capacity claim is made. Full CPU, installed-package
+and preservation/documentation audits remain pending.
+
 **Prerequisite handoff, 9 October 2026:** Course/M1-T02 passes the
 [input/schedule CPU gate](../../../validation/course-m1-inputs-and-schedules.md#completion-and-handoff),
 with saved 20-main/five-development inputs, balanced cohorts, disjoint streams

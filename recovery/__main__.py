@@ -216,6 +216,8 @@ def main() -> int:
     suite = unittest.defaultTestLoader.discover(str(root / "tests"), top_level_dir=str(root))
     if not args.core_only:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.protocol_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_protocol_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_settings_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.round_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.event_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.replay_checks"))

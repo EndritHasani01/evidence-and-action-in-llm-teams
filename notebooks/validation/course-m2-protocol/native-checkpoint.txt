@@ -1,0 +1,14 @@
+{"requests": 11, "replies": 23, "shapes_and_shards": 225, "maximum_output": 132, "maximum_feedback": 14, "complete_context_capacity": "unaccepted"}
+test_complete_cap_fragment_truncation_and_257_are_distinct (__main__.NativeCourseProtocolTests.test_complete_cap_fragment_truncation_and_257_are_distinct) ... ok
+test_every_peer_control_shape_and_useful_one_shard_message_fits_256 (__main__.NativeCourseProtocolTests.test_every_peer_control_shape_and_useful_one_shard_message_fits_256) ... ok
+test_exact_archive_reproduces_native_text_ids_validation_and_settings (__main__.NativeCourseProtocolTests.test_exact_archive_reproduces_native_text_ids_validation_and_settings) ... ok
+test_native_64_65_prose_counts_whole_reply_failure_and_public_feedback (__main__.NativeCourseProtocolTests.test_native_64_65_prose_counts_whole_reply_failure_and_public_feedback) ... ok
+test_native_suffix_transport_uses_the_course_cap_and_preserves_unexpected_markers (__main__.NativeCourseProtocolTests.test_native_suffix_transport_uses_the_course_cap_and_preserves_unexpected_markers) ... ok
+test_native_template_keeps_literal_archive_special_markers_and_trailing_whitespace (__main__.NativeCourseProtocolTests.test_native_template_keeps_literal_archive_special_markers_and_trailing_whitespace) ... ok
+test_nested_decoder_adversaries_and_unicode_are_not_repaired (__main__.NativeCourseProtocolTests.test_nested_decoder_adversaries_and_unicode_are_not_repaired) ... ok
+test_thesis_request_and_reply_archives_remain_exact (__main__.NativeCourseProtocolTests.test_thesis_request_and_reply_archives_remain_exact) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.849s
+
+OK

@@ -116,16 +116,16 @@ class SynchronousRoundTests(unittest.TestCase):
     def test_all_rendering_and_generation_precede_validation_and_recipient_effects(self):
         events = []
         originals = (rounds.render_request, rounds.tokenize_request, rounds.validate_reply)
-        def render(view):
+        def render(view, **kwargs):
             events.append(("render", view.peer))
-            return originals[0](view)
-        def tokenize(request, tokenizer):
+            return originals[0](view, **kwargs)
+        def tokenize(request, tokenizer, **kwargs):
             events.append(("tokenize", None))
-            return originals[1](request, tokenizer)
-        def validate(view, generated, tokenizer):
+            return originals[1](request, tokenizer, **kwargs)
+        def validate(view, generated, tokenizer, **kwargs):
             events.append(("validate", view.peer))
             self.assertEqual(snapshot_bytes(self.state), before)
-            return originals[2](view, generated, tokenizer)
+            return originals[2](view, generated, tokenizer, **kwargs)
         def provider(view, rendered, tokenized):
             events.append(("generate", view.peer))
             self.assertEqual(rendered, originals[0](view))

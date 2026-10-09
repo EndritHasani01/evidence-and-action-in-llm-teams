@@ -64,7 +64,9 @@ def obtain_continuation_round(state: BranchState, branch: Branch, tokenizer,
     order = tuple(invocation_order)
     if len(order) != 4 or any(type(p) is not int for p in order) or set(order) != set(PEERS):
         raise ValueError("invoke every peer exactly once")
-    requests = prepare_round(state, tokenizer)
+    from .prompts import limits_from_settings
+    limits = limits_from_settings(settings)
+    requests = prepare_round(state, tokenizer, limits=limits)
     available = {}
     for parent in parents:
         if type(parent) is not SavedRound:
@@ -107,7 +109,7 @@ def obtain_continuation_round(state: BranchState, branch: Branch, tokenizer,
                 raise ValueError("a new scheduled generation needs a reply provider")
             generated[p] = reply_provider(requests.views[p], requests.rendered[p], requests.tokenized[p],
                                            seed=calls[p].seed, settings=json.loads(settings_json))
-    barrier = validate_round(requests, tuple(generated), tokenizer)
+    barrier = validate_round(requests, tuple(generated), tokenizer, limits=limits)
     for p, recorded in selected.items():
         # Revalidation binds sources to this branch, and must preserve even the
         # parent's invalid/failed outcome, raw tokens, feedback and termination.

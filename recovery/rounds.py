@@ -9,7 +9,8 @@ No inference, evaluator, event policy or persistence framework is imported.
 from dataclasses import asdict, dataclass, field, replace
 import json
 
-from .prompts import RenderedRequest, TokenizedRequest, render_request, rendered_data, tokenize_request
+from .prompts import (ProtocolLimits, THESIS_LIMITS, RenderedRequest, TokenizedRequest,
+                      render_request, rendered_data, tokenize_request)
 from .protocol import GeneratedReply, ReplyValidation, StagedMessage, failed_reply, validate_reply
 from .state import (CandidateState, ContinueNotice, DeliveryBoundary, Feedback,
                     HistoricalReceipt, OwnReply, PeerView, PendingSource,
@@ -191,7 +192,7 @@ class RoundResult:
     committed: BranchState
 
 
-def prepare_round(state: BranchState, tokenizer) -> RoundRequests:
+def prepare_round(state: BranchState, tokenizer, *, limits: ProtocolLimits = THESIS_LIMITS) -> RoundRequests:
     if not state.committed:
         raise ValueError("commit the preceding delivery barrier before another call")
     slot = state.next_slot
@@ -199,18 +200,18 @@ def prepare_round(state: BranchState, tokenizer) -> RoundRequests:
         raise ValueError("all four scheduled rounds are complete")
     views = tuple(p.view(state.task, state.size, i, slot, state.manifest)
                   for i, p in enumerate(state.peers))
-    rendered = tuple(render_request(view) for view in views)
-    tokenized = tuple(tokenize_request(request, tokenizer) for request in rendered)
+    rendered = tuple(render_request(view, limits=limits) for view in views)
+    tokenized = tuple(tokenize_request(request, tokenizer, limits=limits) for request in rendered)
     return RoundRequests(state, slot, views, rendered, tokenized)
 
 
 def validate_round(requests: RoundRequests, generated: tuple[GeneratedReply | None, ...],
-                   tokenizer) -> RoundBarrier:
+                   tokenizer, *, limits: ProtocolLimits = THESIS_LIMITS) -> RoundBarrier:
     """None is an explicitly recorded failed slot; empty text is invalid output."""
 
     if type(generated) is not tuple or len(generated) != 4:
         raise ValueError("record all four scheduled replies/failures before validation")
-    replies = tuple(failed_reply(view) if raw is None else validate_reply(view, raw, tokenizer)
+    replies = tuple(failed_reply(view) if raw is None else validate_reply(view, raw, tokenizer, limits=limits)
                     for view, raw in zip(requests.views, generated))
     # Canonical sender/recipient order, independent of invocation and send-list order.
     messages = tuple(sorted((m for reply in replies for m in reply.messages),
@@ -312,7 +313,8 @@ def commit_round(barrier: RoundBarrier) -> RoundResult:
     return RoundResult(barrier, drain_deliveries(stage_effects(barrier)))
 
 
-def run_round(state: BranchState, tokenizer, reply_provider, *, invocation_order=PEERS) -> RoundResult:
+def run_round(state: BranchState, tokenizer, reply_provider, *, invocation_order=PEERS,
+              limits: ProtocolLimits = THESIS_LIMITS) -> RoundResult:
     """The provider sees only its frozen view and exact rendered/tokenized request.
 
     It returns recorded output or an explicit failure. Provider exceptions leave
@@ -322,12 +324,12 @@ def run_round(state: BranchState, tokenizer, reply_provider, *, invocation_order
     order = tuple(invocation_order)
     if len(order) != 4 or any(type(i) is not int for i in order) or set(order) != set(PEERS):
         raise ValueError("invoke every peer exactly once")
-    requests = prepare_round(state, tokenizer)
+    requests = prepare_round(state, tokenizer, limits=limits)
     generated = [None] * 4
     for peer in order:
         generated[peer] = reply_provider(requests.views[peer], requests.rendered[peer],
                                          requests.tokenized[peer])
-    return commit_round(validate_round(requests, tuple(generated), tokenizer))
+    return commit_round(validate_round(requests, tuple(generated), tokenizer, limits=limits))
 
 
 def snapshot_bytes(state: BranchState) -> bytes:

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "C:\\Users\\EndritHasani\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "tests.tokenizer_course_protocol",
+    "--tokenizer",
+    "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\recovery-capacity-wr5ya_42\\4B",
+    "--write-fixture",
+    "tests/fixtures/course_protocol.json.gz"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "exit_code": 0
+}
