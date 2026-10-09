@@ -1,6 +1,6 @@
 # Course M2-T02 — Course interventions and exact replay
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T01](M2-T01-course-protocol-and-limits.md).
 
@@ -32,3 +32,14 @@ Every course event/retention/receipt/mask/Q branch preserves the implemented sci
 Run focused course scripted comparisons across all events/policies and small numeric/BFS instances, pending/tombstone/hidden-value cases, repeated deliveries, Q round-two source/own-reply equality and ordered release. Preserve raw parent/state artifacts and demonstrate no boundary mutation of the shared prefix. Existing passing libraries need only affected regression checks.
 
 **Evidence:** Not yet recorded. Original intervention/replay code exists; course-scoped acceptance is pending.
+
+**Prerequisite handoff, 9 October 2026:** Course/M2-T01 passes its
+[protocol and limits acceptance](../../../validation/course-m2-protocol-and-limits.md#completion-and-handoff).
+Use `COURSE_LIMITS` explicitly for in-memory rounds and the pinned 4B
+`candidate_settings(..., limits=COURSE_LIMITS)` for exact-settings consumers.
+The existing round, replay, durable runner and saved-round revalidation paths
+carry those settings without changing archived reply/state schemas. Native
+256/64 boundaries, wrong-but-valid shapes, genuine receipts, permission checks
+and thesis compatibility are verified. This hands off the real renderer and
+validator; it does not accept all course intervention branches, the complete
+witness/context bound or any GPU/model, pilot, freeze or main execution.

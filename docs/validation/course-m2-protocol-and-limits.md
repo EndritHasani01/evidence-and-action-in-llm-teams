@@ -49,8 +49,8 @@ codes at the next scheduled opportunity.
 limits with the pinned 4B candidate and record all six values in the existing
 settings JSON. `limits_from_settings` rejects a 256 generation cap without
 explicit course limits and rejects contradictory caps. Original thesis settings
-omit the new field and retain their
-exact contents for both reviewed models and attention choices. The existing
+omit the new field and retain their exact contents for both reviewed models and
+attention choices. The existing
 round/replay/runner/store paths derive course limits from those saved settings,
 including controls, request equality, reopen and parent revalidation. Generation
 and suffix decoding use 256; complete JSON at the cap remains valid. There is
@@ -95,7 +95,12 @@ and confirms 1,167 protected files are byte-identical at that checkpoint.
 These include original thesis todos/defaults/fixtures, the adopted specification,
 course input/schedule fixtures and the user's pre-existing M5 evidence edit.
 Original plan Sections 1-10 and both models' baseline/opt-in exact settings remain
-unchanged. The final completion audit will renew the handoff counts and links.
+unchanged. The [completion audit](../../notebooks/validation/course-m2-protocol/completion-audit.json)
+passes the handoff counts and links, verifies
+the exact four failing full-run subcases and the passing lifecycle rerun, and
+checks 1,166 protected starting files. The one-file count reduction permits only
+the three-line lifecycle-spy correction, whose exact baseline comparison is
+checked separately. The user's M5 edit remains byte-identical and unstaged.
 
 The native environment is Transformers 5.12.0, Tokenizers 0.22.2, Jinja2 3.1.6,
 Hugging Face Hub 1.19.0 and Pydantic 2.12.5. All four local metadata files match
@@ -133,6 +138,7 @@ python -m tests.tokenizer_course_protocol --tokenizer "$env:TEMP/recovery-capaci
 python -S -m recovery validate --core-only --regime course --config configs/course-inputs.toml --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --authoritative tests/fixtures/population_course.json
 .venv/Scripts/python.exe -m unittest tests.lifecycle_checks -v
 .venv/Scripts/python.exe -m pip check
+python -S -X utf8 notebooks/validation/course-m2-protocol/verify_protocol.py --completion --output notebooks/validation/course-m2-protocol/completion-audit.json
 git diff --check
 ```
 
@@ -147,12 +153,19 @@ the corrected checks compare canonical structures and require the completing
 brace in the last token. The original barrier and external-kill validation spies
 now forward the limits keyword while preserving every synchrony and kill-point
 assertion. The full failing log is retained rather than relabeled as a passing
-single-command run.
+single-command run. Its original bytes are stored in
+[full-validation.txt.gz](../../notebooks/validation/course-m2-protocol/full-validation.txt.gz)
+so raw unittest trailing whitespace stays lossless while `git diff --check`
+passes. The initial build failure is retained similarly.
 
 ## Completion and handoff
 
-Final acceptance and handoff are pending the completion audit.
-Course interventions/replay acceptance, the complete witness/capacity gate,
+Course/M2-T01 is done: explicit course rendering, validation, reservation and
+exact settings are implemented and CPU/native verified, with original thesis
+semantics/defaults preserved. [Course/M2-T02](../todos/course/M2/M2-T02-course-interventions-and-replay.md)
+is ready to renew the course intervention/retention/replay matrix using these
+real interfaces. Course interventions/replay acceptance, the complete
+witness/capacity gate,
 worker/accounting and analysis adaptation, actual hardware/model memory and
 capability, resource reconciliation, pilot, freeze, empirical execution and
 external delivery remain separate tasks and gates. Original thesis todos,

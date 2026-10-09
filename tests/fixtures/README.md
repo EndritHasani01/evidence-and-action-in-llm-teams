@@ -1044,3 +1044,33 @@ model. Mock subprocess checks cover saved seed/state ownership, exact raw
 evidence and resume/backup behavior. See the
 [M5 preparation evidence](../../docs/validation/m5-inference-preparation.md)
 for the proposed smoke/allocation scope and still-unverified GPU gates.
+
+## Course protocol and native limits
+
+[course_protocol.json.gz](course_protocol.json.gz) is the separate course archive
+for the pinned Qwen3.5-4B tokenizer revision
+`851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a` and explicit `COURSE_LIMITS`.
+It preserves eleven permitted rendered/native cases, 23 exact reply cases and
+225 candidate/one-shard cases covering the 20 main/five development worlds,
+all four peers and full-information controls. Cases include ordinary/disclosed
+receipts, wrong/absent compact work, pending updates, tombstones and literal
+special-looking history with trailing whitespace. Exact rendered strings and
+native template text/IDs remain separate.
+
+```powershell
+python -m tests.tokenizer_course_protocol --tokenizer LOCAL_4B_METADATA
+.venv/Scripts/python.exe -m unittest tests.test_course_limits tests.course_protocol_checks tests.course_settings_checks -v
+```
+
+The nine native checks reproduce this archive and both unchanged thesis
+request/reply archives. They verify complete JSON at 256 generated IDs versus
+257, fragments/known truncation, aggregate prose 64/65, recursive duplicate keys,
+strict permissions and Unicode scalars. Nine reference attempts with eight
+distinct held references pass; nine distinct references fail. Useful
+candidate/one-shard cases use at most 132 output tokens; fixed feedback uses at
+most 14 native tokens. These finite fixtures do not establish the complete
+retained-context bound or attainability gate, which belongs to course/M2-T03.
+No model weights or GPU are used. The
+[course M2 protocol evidence](../../docs/validation/course-m2-protocol-and-limits.md)
+records environments, exact commands, installed provenance and retained failures.
+The new archive never replaces original thesis fixtures or defaults.

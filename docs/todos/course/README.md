@@ -8,8 +8,8 @@ Fresh sessions can start with the [course handoff and practical lessons](../../p
 
 Course scientific/resource adoption was explicitly approved on 9 October 2026.
 Existing M1–M4 and thesis M5-T01 retain completion evidence: 21/29 original tasks.
-Course inputs/schedules and their M1 CPU gate are verified. Runtime configuration,
-later CPU gates, pretrained-model admission, pilot, freeze and empirical execution
+Course inputs/schedules, their M1 CPU gate and M2 protocol/limits are verified.
+Runtime configuration, later CPU gates, pretrained-model admission, pilot, freeze and empirical execution
 remain pending. Task creation and design/resource adoption authorize no execution.
 
 ## Adopted course scope
@@ -22,21 +22,25 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**2/21 course tasks done; 19 remaining; 1 active; 0 ready; 18 blocked.**
+**3/21 course tasks done; 18 remaining; 0 active; 1 ready; 17 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
 seeds and complete schedules pass the [M1 input/schedule gate](../../validation/course-m1-inputs-and-schedules.md#completion-and-handoff).
-Full CPU validation passes 534 tests with zero skips. Later runtime adaptations
-and course CPU gates remain open. Inherited
-foundation tasks are not counted as course acceptance.
+The M1 gate retains its 534-test full CPU pass with zero skips. Course/M2-T01 is
+done: explicit 256/64 rendering, reservation, strict validation and exact settings
+pass the [protocol acceptance](../../validation/course-m2-protocol-and-limits.md#completion-and-handoff).
+This includes native/installed checks and all 558 source CPU checks covered by
+the full regression run plus the passing nine-method lifecycle rerun after a
+test-spy fix. Later interventions/capacity, runtime and course CPU gates remain
+open. Inherited foundation tasks are not counted as course acceptance.
 
-The next safe task is [course/M2-T01](M2/M2-T01-course-protocol-and-limits.md), following completed [course/M1-T02](M1/M1-T02-course-inputs-and-schedules.md). **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
+The next safe task is [course/M2-T02](M2/M2-T02-course-interventions-and-replay.md), following completed [course/M2-T01](M2/M2-T01-course-protocol-and-limits.md). **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
-| M2 | 0/3 | 1 | 0 | 2 | Lawful views, literal interventions, exact replay, legal witness and complete course token bound |
+| M2 | 1/3 | 0 | 1 | 1 | Protocol/limits verified; literal interventions, exact replay, legal witness and complete course token bound remain |
 | M3 | 0/2 | 0 | 0 | 2 | Durable workers, bounded failures, honest accounting and crash-safe lifecycle |
 | M4 | 0/4 | 0 | 0 | 4 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
 | M5 | 0/5 | 0 | 0 | 5 | Actual-host smoke, capability, complete pilot, conservative resources and authorized course freeze |
@@ -50,8 +54,8 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 |---|---|---|
 | [M1-T01 — Course contract and reuse boundary](M1/M1-T01-course-contract-and-reuse-boundary.md) | done | Scientific/resource adoption and contract/reuse audit passed |
 | [M1-T02 — Course inputs and schedules](M1/M1-T02-course-inputs-and-schedules.md) | done | M1-T01 |
-| [M2-T01 — Course protocol and limits](M2/M2-T01-course-protocol-and-limits.md) | active | M1-T02 |
-| [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | blocked | M2-T01 |
+| [M2-T01 — Course protocol and limits](M2/M2-T01-course-protocol-and-limits.md) | done | M1-T02 |
+| [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | ready | M2-T01 |
 | [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | blocked | M2-T02 |
 | [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | blocked | M2-T03 |
 | [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | blocked | M3-T01 |
@@ -123,4 +127,4 @@ Select one full task path and read its referenced authority/evidence; the entire
 
 Runtime evidence belongs in the existing canonical bundles/checkpoints/ledgers; exports are derived views. These Markdown statuses describe implementation progress, not another experimental record store. Distinguish implemented, verified, pilot-tested and empirically executed work. Course completion does not close the original thesis obligations.
 
-Task-system review, 9 October 2026, Windows/Python 3.11.9: documentation checks pass for 22 Markdown files, 21 scoped IDs, local links/heading anchors, acyclic dependencies, progress counts, execution gates, all 22 plan coverage rows and seven essential categories. Course main/development totals reconcile independently. All 30 existing todo files and inspected authority/research/proposal files remain byte-for-byte unchanged; the pre-existing local evidence edit is preserved. No project-code tests, model calls or GPU runs were performed for this documentation work.
+Initial task-system review, 9 October 2026, Windows/Python 3.11.9: documentation checks pass for 22 Markdown files, 21 scoped IDs, local links/heading anchors, acyclic dependencies, progress counts, execution gates, all 22 plan coverage rows and seven essential categories. Course main/development totals reconcile independently. All 30 existing todo files and inspected authority/research/proposal files remain byte-for-byte unchanged; the pre-existing local evidence edit is preserved. No project-code tests, model calls or GPU runs were performed for that initial documentation work. Subsequent CPU acceptance and current progress are recorded above and in each completed task's evidence.

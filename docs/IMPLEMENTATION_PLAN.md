@@ -1000,7 +1000,9 @@ Course/M1-T01 establishes the authorized contract and
 [reuse/validation evidence](validation/course-m1-contract-and-reuse.md).
 [Course/M1-T02](todos/course/M1/M1-T02-course-inputs-and-schedules.md) now passes
 the [M1 input/schedule CPU gate](validation/course-m1-inputs-and-schedules.md).
-[Course/M2-T01](todos/course/M2/M2-T01-course-protocol-and-limits.md) is the next
+[Course/M2-T01](todos/course/M2/M2-T01-course-protocol-and-limits.md) now passes
+[protocol/limits acceptance](validation/course-m2-protocol-and-limits.md).
+[Course/M2-T02](todos/course/M2/M2-T02-course-interventions-and-replay.md) is the next
 engineering task. Later course CPU gates, GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
@@ -1040,10 +1042,31 @@ execution and applicable authorization remain separate.
   seed, parent, task/link and preservation audits pass; 1,148 protected files
   remain byte-identical, including the user's pre-existing M5 edit. Commands,
   failures/fix and actual logs are retained in the linked M1 gate evidence.
-- Carry the adopted course limits through the existing renderer, parser,
-  native tokenizer and exact inference/settings records. Keep four rounds,
-  literal boundaries, exact replay and synchronous visibility; no runtime fork,
-  dependency, second store, new identity or generalized coordinator is needed.
+- One immutable `ProtocolLimits` value in the existing renderer now carries the
+  adopted 256/64 caps and unchanged context/recipient/reference/feedback limits
+  through rendering, reservation, strict validation, inference and saved exact
+  settings. Course settings require the pinned 4B candidate and explicitly record
+  all six values in the existing settings JSON. Round/control, durable equality,
+  saved-round revalidation and replay derive limits from that record; request,
+  validation and state schemas retain their archived shapes. Thesis defaults and
+  both models' baseline/opt-in settings remain exact. Keep four rounds, literal
+  boundaries and synchronous visibility; no runtime fork, dependency, second store,
+  new identity or generalized coordinator is needed.
+- Course/M2-T01 passes 110 focused integrated checks, nine pinned-native checks,
+  81 installed checks and a 24-check installed hash-seed-37 repeat. All 29 installed
+  production modules match source. Site-disabled core discovery passes 340 checks
+  with eight expected optional-library skips. The full source CPU run reached
+  558 checks; its only failures were four kill-point subcases in two lifecycle
+  methods whose test spy did not forward `limits`. Updating that spy preserves
+  all original assertions; the complete nine-method lifecycle rerun passes.
+  Production code did not change after the full run, so the 549 unaffected checks
+  and passing lifecycle rerun supply complete coverage without relabeling the
+  original failing command. Native fixtures preserve 11 rendered cases, 23 replies
+  and 225 useful candidate/one-shard cases; original thesis archives reproduce.
+  Preservation/status/link audits retain 1,166 protected starting files,
+  Sections 1-10 and the user's unchanged, unstaged M5 edit. The linked protocol
+  evidence records exact commands, environments and retained corrections. These
+  finite token fixtures establish no complete-context bound or model acceptance.
 - Reuse SQLite/checkpoints, original worker/attempt/allocation records and
   read-only analysis. Renew the affected 20/eight/five-world population, cost,
   missingness and reporting checks using the owners in the reuse audit. Inherited
@@ -1059,14 +1082,15 @@ execution and applicable authorization remain separate.
 
 ### Course unresolved gates
 
-The course population/schedule and M1 input/schedule CPU gate are verified.
-Course runtime settings remain M2/M5 work; existing status/analysis count choices
-still address thesis 60/40 until their course M3/M4 adaptations. The pinned 4B/256/64 witness,
+The course population/schedule, M1 input/schedule CPU gate and M2 protocol/limits
+are verified. Course intervention acceptance remains M2-T02, and actual runtime
+environment/configuration acceptance remains M5. Existing status/analysis count
+choices still address thesis 60/40 until their course M3/M4 adaptations. The pinned 4B/256/64 witness,
 full permitted-input bound and complete model-memory/headroom argument must be
 renewed. Standalone run 6 and the CPU attention integration do not accept the new
 layout on T4 or the course pretrained model. Actual host/package/source assets,
 smoke requests, capability, complete pilot, resource reconciliation and freeze
 remain course M5 gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
-index with named executed evidence. M1-T01/T02 performed no GPU, model or
+index with named executed evidence. M1-T01/T02 and M2-T01 performed no GPU, model or
 empirical run and accepted no freeze.

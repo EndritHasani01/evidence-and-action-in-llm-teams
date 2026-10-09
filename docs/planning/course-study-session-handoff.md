@@ -1,6 +1,6 @@
 # Course study: lessons and fresh-session handoff
 
-Reviewed 9 October 2026 against checkout `09a85b8`. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
+Updated 9 October 2026 through course/M2-T01. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
 
 Current course contract handoff, 9 October 2026: the user explicitly approved
 design/resource adoption after preparation at `ef4c3f6` and the earlier pending
@@ -10,8 +10,11 @@ are applied; [reuse/adoption evidence](../validation/course-m1-contract-and-reus
 records the decision and validation. Course/M1-T02 now passes the
 [input/schedule CPU gate](../validation/course-m1-inputs-and-schedules.md),
 with saved course artifacts at master seed `20261009` and 534 full CPU tests
-passing without skips. Current status/counts belong to the course index;
-course/M2-T01 is the next ready task. Thesis runtime defaults and all original
+passing without skips. Course/M2-T01 now passes
+[protocol/limits acceptance](../validation/course-m2-protocol-and-limits.md),
+including explicit 256/64 settings, native/installed verification and the
+corrected lifecycle rerun. Current status/counts belong to the course index;
+course/M2-T02 is the next ready task. Thesis runtime defaults and all original
 todos/evidence remain unchanged.
 
 ## Start in the actual checkout
@@ -34,13 +37,14 @@ Read in this order:
 3. The [course index](../todos/course/README.md), then one selected course task and its prerequisite evidence. Qualify IDs as `course/M2-T01`: the [thesis tree](../todos/README.md) uses the same short ID format for different tasks.
 4. The [course proposal](abs-iis-course-study-proposal.md) for proposed scope, and the [research synthesis](../implementation-research/SYNTHESIS.md) plus only the investigations relevant to that task.
 
-The next engineering task is [course/M2-T01](../todos/course/M2/M2-T01-course-protocol-and-limits.md), following verified [course/M1-T02](../todos/course/M1/M1-T02-course-inputs-and-schedules.md) inputs/schedules. Read its linked prerequisite evidence before carrying 256/64 limits through the protocol. The task index owns current readiness and counts; this document does not duplicate them.
+The next engineering task is [course/M2-T02](../todos/course/M2/M2-T02-course-interventions-and-replay.md), following verified [course/M2-T01](../todos/course/M2/M2-T01-course-protocol-and-limits.md). Read its linked protocol evidence before renewing course intervention/replay comparisons. In-memory paths use explicit `COURSE_LIMITS`; exact-settings paths use pinned 4B `candidate_settings(..., limits=COURSE_LIMITS)`. The task index owns current readiness and counts; this document does not duplicate them.
 
 ## Reuse evidence within its actual scope
 
 | Verified or observed record | Lesson for a new session |
 |---|---|
 | [Course M1 input/schedule gate](../validation/course-m1-inputs-and-schedules.md): complete main/development bundles and independent seed/count audit | Reuse the saved actual inputs and original-prefix/replay parents. This accepts CPU preparation; it does not accept course rendering, runtime/analysis consumers, model capability or a scientific freeze. |
+| [Course M2 protocol/limits](../validation/course-m2-protocol-and-limits.md): native 256/64 boundaries, all saved peer/control shapes, exact settings and installed provenance | Reuse the real renderer/validator with explicit course limits; archived record shapes and thesis defaults remain intact. Finite useful-output fixtures do not prove complete context capacity. The corrected validation spies forward keyword arguments without changing synchrony or external-kill assertions; the full regression log and passing nine-method lifecycle rerun remain distinct. |
 | [M1–M4 CPU acceptance](../validation/m4-cpu-gate.md) | Generators/truth, protocol, interventions, durable workers/accounting and offline analysis already exist. Audit reuse and renew affected course checks; do not rebuild the project or repeat every unchanged suite. |
 | [Kaggle run 5](../validation/m5-kaggle-full-preparation-run-5.md): 97 CPU checks pass, zero skips, installed provenance and off-host snapshots checked | The earlier unchanged CPU preparation is accepted. Course/source/environment changes need relevant new checks; they do not invalidate unrelated evidence or justify another generic preflight by default. |
 | [Kaggle run 6](../validation/m5-t4-compatibility-run-6.md): standalone attention/NF4 diagnostic passes on both T4s | This is actual library evidence, with a host environment different from the full candidate. It contains no pretrained-model generation and does not establish full candidate, language loading, state, memory or capability acceptance. |

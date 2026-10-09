@@ -112,7 +112,12 @@ now passes on CPU: the separate saved bundle has 20 main/five development worlds
 5,752 new/6,280 logical main slots and 1,114/1,178 development slots. Preparation
 requires `--regime course --config configs/course-inputs.toml`; see the
 [fixture commands](tests/fixtures/README.md) for reproducible preparation.
-Course protocol limits and later runtime/model gates remain open.
+Course [protocol and limits acceptance](docs/validation/course-m2-protocol-and-limits.md)
+now verifies explicit 256/64 rendering, full output reservation, strict validation
+and exact saved settings with the pinned 4B tokenizer. Use `COURSE_LIMITS` from
+`recovery.prompts` explicitly; default calls retain thesis 384/128 limits. The
+next task is [course interventions/replay](docs/todos/course/M2/M2-T02-course-interventions-and-replay.md).
+Complete context capacity and later runtime/model gates remain open.
 
 ## CPU installation and validation
 
