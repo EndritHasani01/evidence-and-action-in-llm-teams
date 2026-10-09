@@ -47,6 +47,15 @@ interpreter attempt failed because its SQLite saver dependency is missing;
 both logs are retained. Native-tokenizer verification uses a separate
 environment and remains pending for this task.
 
+**Protocol checkpoint:** one immutable `ProtocolLimits` value in the existing
+renderer supplies the two adopted regimes. Explicit course rendering/reservation
+and whole-reply validation pass six dependency-free checks and twelve course
+strict checks; the combined existing/new renderer and validator regression passes
+58 checks. Requests, native text/IDs and validation record shapes are unchanged;
+course limit audits use `output_fits(COURSE_LIMITS)` and
+`prose_fits(COURSE_LIMITS)`, preserving legacy thesis properties and archive bytes.
+Exact settings/round integration and native-tokenizer acceptance remain pending.
+
 **Prerequisite handoff, 9 October 2026:** Course/M1-T02 passes the
 [input/schedule CPU gate](../../../validation/course-m1-inputs-and-schedules.md#completion-and-handoff),
 with saved 20-main/five-development inputs, balanced cohorts, disjoint streams

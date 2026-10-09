@@ -1,0 +1,15 @@
+{
+  "command": [
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.course_protocol_checks",
+    "tests.protocol_checks",
+    "tests.test_peer_views",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "exit_code": 0
+}

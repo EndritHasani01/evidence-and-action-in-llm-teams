@@ -11,14 +11,15 @@ import math
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
-from .prompts import MAX_OUTPUT_TOKENS
+from .prompts import ProtocolLimits, THESIS_LIMITS
 from .state import CandidateState, Feedback, OwnReply, PeerView, Slot, held_source
 from .tasks import PEERS, SourceRecord, candidate_contract
 
-MAX_RECIPIENTS = 3
-MAX_DISTINCT_REFERENCES = 8
-MAX_PROSE_TOKENS = 128
-MAX_FEEDBACK_TOKENS = 32
+MAX_OUTPUT_TOKENS = THESIS_LIMITS.output_tokens
+MAX_RECIPIENTS = THESIS_LIMITS.recipients
+MAX_DISTINCT_REFERENCES = THESIS_LIMITS.distinct_references
+MAX_PROSE_TOKENS = THESIS_LIMITS.prose_tokens
+MAX_FEEDBACK_TOKENS = THESIS_LIMITS.feedback_tokens
 
 
 class _SourceReference(BaseModel):
@@ -122,11 +123,19 @@ class ReplyValidation:
 
     @property
     def output_within_limit(self) -> bool | None:
-        return None if self.output_tokens is None else self.output_tokens <= MAX_OUTPUT_TOKENS
+        """Thesis compatibility shorthand; course audits pass explicit limits."""
+        return self.output_fits()
 
     @property
     def prose_within_limit(self) -> bool | None:
-        return None if self.prose_tokens is None else self.prose_tokens <= MAX_PROSE_TOKENS
+        """Thesis compatibility shorthand; course audits pass explicit limits."""
+        return self.prose_fits()
+
+    def output_fits(self, limits: ProtocolLimits = THESIS_LIMITS) -> bool | None:
+        return None if self.output_tokens is None else self.output_tokens <= limits.output_tokens
+
+    def prose_fits(self, limits: ProtocolLimits = THESIS_LIMITS) -> bool | None:
+        return None if self.prose_tokens is None else self.prose_tokens <= limits.prose_tokens
 
     @property
     def own_reply(self) -> OwnReply | None:
@@ -168,10 +177,11 @@ def token_count(text: str, tokenizer) -> int:
     return len(ids)
 
 
-def public_feedback(slot: Slot, code: str, tokenizer) -> tuple[Feedback, int]:
+def public_feedback(slot: Slot, code: str, tokenizer, *,
+                    limits: ProtocolLimits = THESIS_LIMITS) -> tuple[Feedback, int]:
     feedback = Feedback(slot, code)
     count = token_count(feedback.text, tokenizer)
-    if count > MAX_FEEDBACK_TOKENS:
+    if count > limits.feedback_tokens:
         raise ValueError("public feedback exceeds tokenizer cap; protocol configuration cannot be used")
     return feedback, count
 
@@ -190,22 +200,23 @@ def _schema_code(error: ValidationError) -> str:
     return "message_schema"
 
 
-def _permissions(reply: _Reply, view: PeerView) -> str | None:
+def _permissions(reply: _Reply, view: PeerView, limits: ProtocolLimits) -> str | None:
     if view.peer is None:
         return "control_send" if reply.send else None
     recipients = [message.to for message in reply.send]
-    if (len(recipients) > MAX_RECIPIENTS or len(set(recipients)) != len(recipients)
+    if (len(recipients) > limits.recipients or len(set(recipients)) != len(recipients)
             or any(to not in PEERS or to == view.peer for to in recipients)):
         return "recipient"
     for message in reply.send:
-        if len({(ref.record_id, ref.version) for ref in message.source_refs}) > MAX_DISTINCT_REFERENCES:
+        if len({(ref.record_id, ref.version) for ref in message.source_refs}) > limits.distinct_references:
             return "reference_limit"
         if any(held_source(view, ref.record_id, ref.version) is None for ref in message.source_refs):
             return "source_reference"
     return None
 
 
-def validate_reply(view: PeerView, generated: GeneratedReply, tokenizer) -> ReplyValidation:
+def validate_reply(view: PeerView, generated: GeneratedReply, tokenizer, *,
+                   limits: ProtocolLimits = THESIS_LIMITS) -> ReplyValidation:
     """Deterministically validate one recorded reply, then stage all or nothing.
 
     Error precedence is JSON/truncation, output cap, schema/shape, permissions,
@@ -215,6 +226,8 @@ def validate_reply(view: PeerView, generated: GeneratedReply, tokenizer) -> Repl
 
     if type(view) is not PeerView or type(generated) is not GeneratedReply:
         raise ValueError("validate a recorded generation against its immutable sender view")
+    if type(limits) is not ProtocolLimits:
+        raise ValueError("validation requires adopted protocol limits")
     json_valid = False
     schema_valid = permissions_valid = None
     prose_tokens = None
@@ -240,16 +253,16 @@ def validate_reply(view: PeerView, generated: GeneratedReply, tokenizer) -> Repl
     if reply is not None:
         prose_tokens = sum(token_count(message.text, tokenizer) for message in reply.send)
         if schema_valid:
-            code = _permissions(reply, view)
+            code = _permissions(reply, view, limits)
             permissions_valid = code is None
-            if code is None and prose_tokens > MAX_PROSE_TOKENS:
+            if code is None and prose_tokens > limits.prose_tokens:
                 code = "prose_limit"
     if generated.truncated or not json_valid:
         code = "json"
-    elif len(generated.token_ids) > MAX_OUTPUT_TOKENS:
+    elif len(generated.token_ids) > limits.output_tokens:
         code = "output_limit"
     if code is not None:
-        feedback, count = public_feedback(view.slot, code, tokenizer)
+        feedback, count = public_feedback(view.slot, code, tokenizer, limits=limits)
         return ReplyValidation(generated, json_valid, schema_valid, permissions_valid, prose_tokens,
                                CandidateState("invalid", view.slot), feedback=feedback, feedback_tokens=count)
     candidate = CandidateState.valid(view.task, view.size, view.peer, view.slot, reply.candidate)
