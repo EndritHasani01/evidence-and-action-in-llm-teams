@@ -22,7 +22,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**2/21 course tasks done; 19 remaining; 0 active; 1 ready; 18 blocked.**
+**2/21 course tasks done; 19 remaining; 1 active; 0 ready; 18 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
