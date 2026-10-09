@@ -1,0 +1,122 @@
+{
+  "schema_version": 2,
+  "kind": "cpu-canonical-source-preparation",
+  "started_utc": "2026-10-08T18:39:47.927869+00:00",
+  "output_directory": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-full-preparation-kernel-final\\missing-source\\recovery-m5-preflight-20261008T183947926865Z-54f30700",
+  "scratch_directory": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\m5-preparation-kernel-final-2xzzy650\\missing-source\\scratch\\20261008T183947926865Z-54f30700",
+  "cpu_workflow_limit_seconds": 2700,
+  "export_reserve_seconds": 90,
+  "stages": {
+    "input_inventory": {
+      "status": "failed",
+      "reason": "ValueError: payload_missing",
+      "prerequisites": [],
+      "started_utc": "2026-10-08T18:39:47.931861+00:00",
+      "ended_utc": "2026-10-08T18:39:47.965022+00:00",
+      "elapsed_seconds": 0.030999999959021807
+    },
+    "source": {
+      "status": "blocked",
+      "reason": "prerequisites: input_inventory",
+      "prerequisites": [
+        "input_inventory"
+      ]
+    },
+    "cpu_host": {
+      "status": "failed",
+      "reason": "ValueError: candidate_host_requires_linux_x86_64_python313",
+      "prerequisites": [],
+      "started_utc": "2026-10-08T18:39:47.970089+00:00",
+      "ended_utc": "2026-10-08T18:39:47.974295+00:00",
+      "elapsed_seconds": 0.0
+    },
+    "command_cleanup": {
+      "status": "blocked",
+      "reason": "prerequisites: source, cpu_host",
+      "prerequisites": [
+        "source",
+        "cpu_host"
+      ]
+    },
+    "environment": {
+      "status": "blocked",
+      "reason": "prerequisites: source, cpu_host, command_cleanup",
+      "prerequisites": [
+        "source",
+        "cpu_host",
+        "command_cleanup"
+      ]
+    },
+    "installed_packages": {
+      "status": "blocked",
+      "reason": "prerequisites: environment",
+      "prerequisites": [
+        "environment"
+      ]
+    },
+    "focused_checks": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_9b": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_4b": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_capacity": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "filesystem_backup": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T18:39:48.000703+00:00",
+      "result": {
+        "journal_mode": "wal",
+        "synchronous": 2,
+        "integrity": "ok",
+        "rows": [
+          [
+            7
+          ]
+        ],
+        "read_only_enforced": true,
+        "backup_sha256": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584",
+        "scope": "Small synthetic diagnostic; actual worker/crash checks are separate."
+      },
+      "ended_utc": "2026-10-08T18:39:48.612597+00:00",
+      "elapsed_seconds": 0.609000000054948
+    }
+  },
+  "root_blocker": "ValueError: payload_missing",
+  "summary": {
+    "preparation_checks_passed": false,
+    "root_blocker": "ValueError: payload_missing",
+    "tests_passed": 0,
+    "model_generations": 0,
+    "model_smoke_ready": false,
+    "gpu_native_diagnostics": null,
+    "model_assets_verified": null,
+    "model_smoke": null,
+    "provider_assignment_utc": null,
+    "provider_release_utc": null,
+    "observed_cpu_wall_seconds": 0.6870000000344589,
+    "next_action": "Attach the private dataset containing unchanged m5-kaggle-source.payload. Download this ZIP, stop the session, and return the evidence."
+  }
+}

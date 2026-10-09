@@ -6,7 +6,7 @@ Baseline inspected 4 October 2026: no current recovery implementation, accepted 
 
 ## Progress and next work
 
-**Completed: 20/29. Remaining: 9. Active: 0. Ready: 1. Blocked: 8.** Counts measure verified task outcomes, not effort or runtime.
+**Completed: 21/29. Remaining: 8. Active: 0. Ready: 0. Blocked: 8.** Counts measure verified task outcomes, not effort or runtime.
 
 M2-T01–T05 counts below describe their original completion checks. M2-T06 renews all
 affected archives/checks under the finalized renderer and supersedes earlier
@@ -31,7 +31,8 @@ capacity status; each prerequisite task links that renewal.
 - [M4-T03](M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff) is done: all four prefix inventories, rendered exposure, receipt timing/censoring, boundary evidence/acquisitions, conservative source association, stated-view atlas and actual-candidate transport derive from original records. The complete integrated regression passes 334 CPU checks; final core/installed/focused checks pass 160 (two optional skips)/81/26. All six information cases and 200 native history counts reproduce. Its handoff made M4-T04 ready.
 - [M4-T04](M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff) is done: shared original ledger costs, allocation/overhead reconciliation and the initial-coverage-only C/K rule preserve whole branches, fixed populations and unavailable selected costs. Complete CPU regression passes 362 checks, including all nine lifecycle checks. Final review passes 28 focused, 191 core (188 passed, three optional skips) and 110 installed-library checks. All sixteen cost cases and the unchanged nine-case M3 accounting archive reproduce. That handoff made M4-T05 ready.
 - [M4-T05](M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff) is done: paired world-cluster intervals, weighted Hoeffding companions, exact completion bounds and shared-response sensitivity preserve fixed populations, conditional repeats and incomplete trajectories. Whole-policy quality/preservation/cost displays share eligible paired cohorts; missing future costs remain unbounded. All sixteen uncertainty cases reproduce from original read-only workers. Complete CPU regression passes 396 checks; final focused/core/installed-library checks pass 33/225 (221 passed, four optional skips)/144. That handoff made M4-T06 ready.
-- [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate) is done: seven explicit exhibits, exact rational median cases, literal ID-linked traces and all M4 tables/assumptions reproduce from every original-worker scope twice. Five portable complete/incomplete/stopped reports retain 35 SVG/PNG exhibit pairs. All 424 source checks pass, including all nine lifecycle checks; final focused/core/installed checks pass 25/252 (244 passed, eight optional skips)/166. The 22-row/seven-category CPU audit passes. M1–M4 CPU gates are closed and M5-T01 is ready for CPU preparation; actual hardware/capability/host/resource admission remains M5 work.
+- [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate) is done: seven explicit exhibits, exact rational median cases, literal ID-linked traces and all M4 tables/assumptions reproduce from every original-worker scope twice. Five portable complete/incomplete/stopped reports retain 35 SVG/PNG exhibit pairs. All 424 source checks pass, including all nine lifecycle checks; final focused/core/installed checks pass 25/252 (244 passed, eight optional skips)/166. The 22-row/seven-category CPU audit passes. That handoff closed M1–M4 CPU gates and made M5-T01 ready for CPU preparation; actual hardware/capability/host/resource admission remains M5 work.
+- [M5-T01](M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) is done: direct maintained text-only loading, exact suffix decoding, fresh cache/seed/process ownership and existing worker/attempt evidence pass CPU/static/mock checks. Full regression passes 449 checks at the backend checkpoint; final identity guards pass 27 focused and 41 installed checks, core runs 260 (252 passed, eight optional skips), and native 9B/4B metadata checks pass four each. The unchanged native capacity passes eight checks. The [proposed Kaggle packet](../validation/m5-inference-preparation.md) fixes the 24-attempt/0.5 aggregate GPU-hour smoke envelope and pending provider/storage facts. [Actual Kaggle run 5](../validation/m5-kaggle-full-preparation-run-5.md) passes all 97 CPU preparation checks with zero skips and independently reopened exports, following run 4's verified source/install/build. [Actual run 6](../validation/m5-t4-compatibility-run-6.md) passes the standalone tiny T4 attention/NF4 diagnostic. No repeat CPU or tiny-GPU run is requested. [Offline integration and memory audit](../validation/m5-attention-memory.md) now pass 127 focused/native source and 15 installed checks. M5-T02 remains blocked by actual T4 acceptance of the new layout, full-envelope memory, full-candidate GPU-host/model gates and prepared smoke execution; existing GPU authorization persists. No full model/GPU-host gate is passed.
 - Other blocked tasks await their listed prerequisites; dependency-blocked is distinct from a failed gate.
 - No GPU run, main experiment, scientific/frozen-configuration change or publication is authorized by creation of this task system.
 
@@ -41,8 +42,39 @@ capacity status; each prerequisite task links that renewal.
 | M2 | 6/6 | 0 | Passed on CPU | All peer protocol, retention, replay, local-view attainability and complete native capacity checks pass; [M2-T06 completion](M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate) closes M2. GPU memory/capability/timing remain M5. |
 | M3 | 5/5 | 0 | Passed on CPU | Real externally killed controllers, all scripted paths, exact resumed states/deliveries, accounting/progress and stopped unknowns pass; [M3-T05 gate evidence](M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate) closes M3. |
 | M4 | 6/6 | 0 | Passed on CPU | Reports, cases, every scientific output and complete/incomplete/stopped original-worker reproduction pass; [M4-T06 completion](M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate) and the [CPU audit](../validation/m4-cpu-gate.md) close M4. |
-| M5 | 0/5 | 5 | M5-T01 ready; operational gate open | CPU backend/allocation preparation → authorized smoke → 90-slot capability gate → full pilot → measured complete-schedule forecast and freeze; close in [M5-T05](M5/M5-T05-allocation-admission-and-freeze.md). |
+| M5 | 1/5 | 4 | T01 verified on CPU; operational gate open | Authorized smoke → 90-slot capability gate → full pilot → measured complete-schedule forecast and freeze; close in [M5-T05](M5/M5-T05-allocation-admission-and-freeze.md). |
 | M6 | 0/4 | 4 | Blocked by M5 / evidence | Full frozen schedule, independent audit, clean offline reproduction and authorized release pass; completion requires [M6-T01](M6/M6-T01-frozen-execution-and-resume.md) and [M6-T04](M6/M6-T04-reproducible-release.md). |
+
+The first Kaggle preparation run now supplies actual two-T4/CUDA inspection,
+then fails the compressed-source contract; candidate installation/tests and
+model work did not execute. The [CPU upload canary](../validation/m5-kaggle-upload-canary.md)
+passes 12 local focused checks and real Jupyter success/failure exports. The
+[actual Kaggle run 2](../validation/m5-kaggle-upload-canary-run-2.md) now passes
+all five stages, with exact tiny payload/member bytes, the original compressed
+path diagnosis and independently readable off-host snapshots. Raw `.payload`
+delivery is selected for the [full-source preparation packet](../validation/m5-kaggle-full-preparation.md).
+The [actual run 4](../validation/m5-kaggle-full-preparation-run-4.md) verifies
+all 143 source members, Linux cleanup, the 88-package installation and project
+build. Its failed stdout parser remains recorded. The [actual run-5 continuation](../validation/m5-kaggle-full-preparation-run-5.md)
+passes the dedicated provenance file and all 97 focused/native checks with zero
+skips, eight clean command exits and independently reopened snapshots. Returned
+artifacts are retained under `notebooks/run/5/`; no repeated download/install or
+further CPU preflight is requested. The CPU portion of K4/K8 and K9's CPU review
+pass. Full-candidate GPU-specific host/attention/full-envelope checks and model smoke remain
+open under the [next-gate plan](../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md).
+Original failed results and scientific/package/resource semantics are preserved.
+Task counts and scientific gates above are unchanged; T02 remains blocked.
+
+The [actual run-6 review](../validation/m5-t4-compatibility-run-6.md) accepts
+six stages/four commands, 14 attention cases and four NF4 matmuls on both T4s,
+with exact source/wheel/device provenance, numerical/kernel traces and both
+off-host snapshots. Native GQA selects math; repeated K/V selects efficient
+SM75 kernels at the tested shapes. No repeat tiny-GPU run is requested. The
+user reports the session stopped; the 38.664-second observed workflow does not
+recover exact allocation duration, which stays unknown. The [offline integration](../validation/m5-attention-memory.md) now passes
+127 focused/native source and 15 installed checks. R7 memory and actual T4
+acceptance of the new layout remain open before preparing a model notebook. Full candidate/model acceptance remains open; zero model
+generations, scientific/package changes or task-status promotions occur.
 
 ## Selecting and updating a task
 
@@ -80,7 +112,7 @@ Coverage names the source sections owned by each outcome; detailed acceptance an
 | [M4-T04 — Policy costs and the frozen boundary rule](M4/M4-T04-policy-costs-and-boundary-rule.md) | done | [M4-T01](M4/M4-T01-exact-outcomes-and-trajectories.md) | Plan §6 costs; spec §7.3 |
 | [M4-T05 — Paired uncertainty and shared-response missingness](M4/M4-T05-uncertainty-and-missingness.md) | done | [M4-T02](M4/M4-T02-estimands-and-repeatability.md), [M4-T04](M4/M4-T04-policy-costs-and-boundary-rule.md) | Plan §6 uncertainty; spec §§5–6, 7.3, 9 |
 | [M4-T06 — Reproducible report and pre-GPU analysis gate](M4/M4-T06-reproducible-report-and-cpu-gate.md) | done | [M4-T03](M4/M4-T03-information-and-work-diagnostics.md), [M4-T05](M4/M4-T05-uncertainty-and-missingness.md) | Plan §§6, 9–10; spec §§7.4, 9–10 |
-| [M5-T01 — Inference backend and allocation preparation](M5/M5-T01-inference-and-allocation-preparation.md) | ready | [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md) | Plan §7 runtime; spec §§8.1, 8.4, 9 |
+| [M5-T01 — Inference backend and allocation preparation](M5/M5-T01-inference-and-allocation-preparation.md) | done | [M4-T06](M4/M4-T06-reproducible-report-and-cpu-gate.md) | Plan §7 runtime; spec §§8.1, 8.4, 9 |
 | [M5-T02 — Bounded hardware smoke and host validation](M5/M5-T02-hardware-smoke-and-host-validation.md) | blocked | [M5-T01](M5/M5-T01-inference-and-allocation-preparation.md); execution authorization | Plan §7 runtime/smoke; spec §§8.1–8.2, 8.4, 9 |
 | [M5-T03 — Capability-first 90-slot pilot gate](M5/M5-T03-capability-first-pilot.md) | blocked | [M5-T02](M5/M5-T02-hardware-smoke-and-host-validation.md); execution authorization | Plan §7 capability/fallback; spec §§8.1–8.2, 8.4 |
 | [M5-T04 — Complete development pilot and measured timing](M5/M5-T04-complete-pilot-and-timing.md) | blocked | [M5-T03](M5/M5-T03-capability-first-pilot.md); execution authorization | Plan §7 pilot/forecast; spec §§8.2–8.4, 9 |

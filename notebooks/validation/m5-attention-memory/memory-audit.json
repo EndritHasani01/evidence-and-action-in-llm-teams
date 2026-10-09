@@ -1,0 +1,290 @@
+{
+  "scope": "Offline conditional memory audit; complete-envelope admission remains unresolved.",
+  "inputs": {
+    "canonical_archive": {
+      "path": "dist/m5-kaggle-preflight.zip",
+      "bytes": 109248341,
+      "sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f"
+    },
+    "capacity_archive": {
+      "path": "tests/fixtures/capacity_report.json.gz",
+      "bytes": 316146,
+      "sha256": "e5b0843c9ce1c6a9deef81bf9d2af0b8af041ccbe867ebf31cf970a5f57a9871"
+    },
+    "run6_original_zip": {
+      "path": "notebooks/run/6/preflight-results.zip",
+      "bytes": 42834,
+      "sha256": "332237aa5b5b73b39bce42dc7ac98c7434bbea15148019b96dd615022c997a96"
+    },
+    "run6_review": {
+      "path": "notebooks/validation/m5-t4-compatibility-run-6/validation.json",
+      "bytes": 16514,
+      "sha256": "7de09d45baeb13ed3b9ed4a44341ae0fe85cfe4179918081059207814a86aba3"
+    }
+  },
+  "candidate_attention": "recovery_t4_sdpa",
+  "proposed_prefill_chunk_size": 256,
+  "envelopes": {
+    "target": {
+      "complete_input_tokens_upper": 261004,
+      "complete_resident_tokens_upper": 261388,
+      "constructed_fixture_max_input_tokens": 33106,
+      "constructed_fixture_max_resident_tokens": 33490,
+      "accounting_rows": 5,
+      "constructed_fixtures": 40,
+      "scope": "Conservative bound for permitted histories; fixture maximum is not that bound or a model trajectory.",
+      "upper_bound_attainability": null
+    },
+    "fallback": {
+      "complete_input_tokens_upper": 259484,
+      "complete_resident_tokens_upper": 259868,
+      "constructed_fixture_max_input_tokens": 32529,
+      "constructed_fixture_max_resident_tokens": 32913,
+      "accounting_rows": 5,
+      "constructed_fixtures": 40,
+      "scope": "Conservative bound for permitted histories; fixture maximum is not that bound or a model trajectory.",
+      "upper_bound_attainability": null
+    }
+  },
+  "models": {
+    "9B": {
+      "config_sha256": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+      "mathematical_sizes": {
+        "target": {
+          "tie_word_embeddings": false,
+          "kv_bytes_per_resident_token": 32768,
+          "fp16_embedding_head_bytes": 4068474880,
+          "ideal_packed_four_bit_mlp_bytes": 2415919104,
+          "fp16_full_attention_kv_bytes": 8565161984,
+          "conditional_weight_kv_subtotal_bytes": 15049555968,
+          "materialized_repeat_additional_bytes": 4282580992,
+          "proposed_kv_view_additional_storage_bytes": 0,
+          "kv_view_scope": "Adapter views alias original K/V; actual CUDA kernel workspace is unmeasured.",
+          "conditional_active_layer_cache_growth_pair_copy_bytes": 1070645248,
+          "cache_growth_scope": "Conservative one-layer K/V pair-copy term for maintained DynamicCache concatenation; not an observed simultaneous peak.",
+          "chunk_query_bytes": 2097152,
+          "chunk_output_bytes": 2097152,
+          "conditional_aligned_shared_mask_storage_bytes": 133832704,
+          "conditional_mask_conversion_tensor_allowance_bytes": 401498112,
+          "mask_scope": "Head-shared boolean/additive conversion and row alignment before expansion. Six bytes per aligned element conservatively pays its visible tensors; internal workspace remains excluded.",
+          "excluded_terms": [
+            "other attention/linear-attention weights and norms",
+            "NF4 scales/double-quantization metadata and padding",
+            "hybrid recurrent/conv state",
+            "other chunk activations, dequantization and attention/recurrent workspaces",
+            "allocator fragmentation, CUDA context and non-model occupancy"
+          ],
+          "complete_allocator_upper_bound_bytes": null,
+          "measured_model_peak_bytes": null,
+          "full_envelope_memory_acceptance": null,
+          "device_comparisons": {
+            "device_0": {
+              "native_total_bytes": 15636037632,
+              "historical_post_probe_free_bytes": 15458959360,
+              "required_free_headroom_bytes": 1610612736,
+              "native_total_minus_headroom_bytes": 14025424896,
+              "historical_free_minus_headroom_bytes": 13848346624,
+              "partial_subtotal_exceeds_native_allowance": true,
+              "partial_subtotal_exceeds_historical_free_allowance": true,
+              "scope": "Historical run-6 device observation, not current free memory. Partial subtotal comparison proves neither model fit nor empirical failure.",
+              "full_envelope_memory_acceptance": null
+            },
+            "device_1": {
+              "native_total_bytes": 15636037632,
+              "historical_post_probe_free_bytes": 15458959360,
+              "required_free_headroom_bytes": 1610612736,
+              "native_total_minus_headroom_bytes": 14025424896,
+              "historical_free_minus_headroom_bytes": 13848346624,
+              "partial_subtotal_exceeds_native_allowance": true,
+              "partial_subtotal_exceeds_historical_free_allowance": true,
+              "scope": "Historical run-6 device observation, not current free memory. Partial subtotal comparison proves neither model fit nor empirical failure.",
+              "full_envelope_memory_acceptance": null
+            }
+          }
+        },
+        "fallback": {
+          "tie_word_embeddings": false,
+          "kv_bytes_per_resident_token": 32768,
+          "fp16_embedding_head_bytes": 4068474880,
+          "ideal_packed_four_bit_mlp_bytes": 2415919104,
+          "fp16_full_attention_kv_bytes": 8515354624,
+          "conditional_weight_kv_subtotal_bytes": 14999748608,
+          "materialized_repeat_additional_bytes": 4257677312,
+          "proposed_kv_view_additional_storage_bytes": 0,
+          "kv_view_scope": "Adapter views alias original K/V; actual CUDA kernel workspace is unmeasured.",
+          "conditional_active_layer_cache_growth_pair_copy_bytes": 1064419328,
+          "cache_growth_scope": "Conservative one-layer K/V pair-copy term for maintained DynamicCache concatenation; not an observed simultaneous peak.",
+          "chunk_query_bytes": 2097152,
+          "chunk_output_bytes": 2097152,
+          "conditional_aligned_shared_mask_storage_bytes": 133054464,
+          "conditional_mask_conversion_tensor_allowance_bytes": 399163392,
+          "mask_scope": "Head-shared boolean/additive conversion and row alignment before expansion. Six bytes per aligned element conservatively pays its visible tensors; internal workspace remains excluded.",
+          "excluded_terms": [
+            "other attention/linear-attention weights and norms",
+            "NF4 scales/double-quantization metadata and padding",
+            "hybrid recurrent/conv state",
+            "other chunk activations, dequantization and attention/recurrent workspaces",
+            "allocator fragmentation, CUDA context and non-model occupancy"
+          ],
+          "complete_allocator_upper_bound_bytes": null,
+          "measured_model_peak_bytes": null,
+          "full_envelope_memory_acceptance": null,
+          "device_comparisons": {
+            "device_0": {
+              "native_total_bytes": 15636037632,
+              "historical_post_probe_free_bytes": 15458959360,
+              "required_free_headroom_bytes": 1610612736,
+              "native_total_minus_headroom_bytes": 14025424896,
+              "historical_free_minus_headroom_bytes": 13848346624,
+              "partial_subtotal_exceeds_native_allowance": true,
+              "partial_subtotal_exceeds_historical_free_allowance": true,
+              "scope": "Historical run-6 device observation, not current free memory. Partial subtotal comparison proves neither model fit nor empirical failure.",
+              "full_envelope_memory_acceptance": null
+            },
+            "device_1": {
+              "native_total_bytes": 15636037632,
+              "historical_post_probe_free_bytes": 15458959360,
+              "required_free_headroom_bytes": 1610612736,
+              "native_total_minus_headroom_bytes": 14025424896,
+              "historical_free_minus_headroom_bytes": 13848346624,
+              "partial_subtotal_exceeds_native_allowance": true,
+              "partial_subtotal_exceeds_historical_free_allowance": true,
+              "scope": "Historical run-6 device observation, not current free memory. Partial subtotal comparison proves neither model fit nor empirical failure.",
+              "full_envelope_memory_acceptance": null
+            }
+          }
+        }
+      }
+    },
+    "4B": {
+      "config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+      "mathematical_sizes": {
+        "target": {
+          "tie_word_embeddings": true,
+          "kv_bytes_per_resident_token": 32768,
+          "fp16_embedding_head_bytes": 1271398400,
+          "ideal_packed_four_bit_mlp_bytes": 1132462080,
+          "fp16_full_attention_kv_bytes": 8565161984,
+          "conditional_weight_kv_subtotal_bytes": 10969022464,
+          "materialized_repeat_additional_bytes": 4282580992,
+          "proposed_kv_view_additional_storage_bytes": 0,
+          "kv_view_scope": "Adapter views alias original K/V; actual CUDA kernel workspace is unmeasured.",
+          "conditional_active_layer_cache_growth_pair_copy_bytes": 1070645248,
+          "cache_growth_scope": "Conservative one-layer K/V pair-copy term for maintained DynamicCache concatenation; not an observed simultaneous peak.",
+          "chunk_query_bytes": 2097152,
+          "chunk_output_bytes": 2097152,
+          "conditional_aligned_shared_mask_storage_bytes": 133832704,
+          "conditional_mask_conversion_tensor_allowance_bytes": 401498112,
+          "mask_scope": "Head-shared boolean/additive conversion and row alignment before expansion. Six bytes per aligned element conservatively pays its visible tensors; internal workspace remains excluded.",
+          "excluded_terms": [
+            "other attention/linear-attention weights and norms",
+            "NF4 scales/double-quantization metadata and padding",
+            "hybrid recurrent/conv state",
+            "other chunk activations, dequantization and attention/recurrent workspaces",
+            "allocator fragmentation, CUDA context and non-model occupancy"
+          ],
+          "complete_allocator_upper_bound_bytes": null,
+          "measured_model_peak_bytes": null,
+          "full_envelope_memory_acceptance": null,
+          "device_comparisons": {
+            "device_0": {
+              "native_total_bytes": 15636037632,
+              "historical_post_probe_free_bytes": 15458959360,
+              "required_free_headroom_bytes": 1610612736,
+              "native_total_minus_headroom_bytes": 14025424896,
+              "historical_free_minus_headroom_bytes": 13848346624,
+              "partial_subtotal_exceeds_native_allowance": false,
+              "partial_subtotal_exceeds_historical_free_allowance": false,
+              "scope": "Historical run-6 device observation, not current free memory. Partial subtotal comparison proves neither model fit nor empirical failure.",
+              "full_envelope_memory_acceptance": null
+            },
+            "device_1": {
+              "native_total_bytes": 15636037632,
+              "historical_post_probe_free_bytes": 15458959360,
+              "required_free_headroom_bytes": 1610612736,
+              "native_total_minus_headroom_bytes": 14025424896,
+              "historical_free_minus_headroom_bytes": 13848346624,
+              "partial_subtotal_exceeds_native_allowance": false,
+              "partial_subtotal_exceeds_historical_free_allowance": false,
+              "scope": "Historical run-6 device observation, not current free memory. Partial subtotal comparison proves neither model fit nor empirical failure.",
+              "full_envelope_memory_acceptance": null
+            }
+          }
+        },
+        "fallback": {
+          "tie_word_embeddings": true,
+          "kv_bytes_per_resident_token": 32768,
+          "fp16_embedding_head_bytes": 1271398400,
+          "ideal_packed_four_bit_mlp_bytes": 1132462080,
+          "fp16_full_attention_kv_bytes": 8515354624,
+          "conditional_weight_kv_subtotal_bytes": 10919215104,
+          "materialized_repeat_additional_bytes": 4257677312,
+          "proposed_kv_view_additional_storage_bytes": 0,
+          "kv_view_scope": "Adapter views alias original K/V; actual CUDA kernel workspace is unmeasured.",
+          "conditional_active_layer_cache_growth_pair_copy_bytes": 1064419328,
+          "cache_growth_scope": "Conservative one-layer K/V pair-copy term for maintained DynamicCache concatenation; not an observed simultaneous peak.",
+          "chunk_query_bytes": 2097152,
+          "chunk_output_bytes": 2097152,
+          "conditional_aligned_shared_mask_storage_bytes": 133054464,
+          "conditional_mask_conversion_tensor_allowance_bytes": 399163392,
+          "mask_scope": "Head-shared boolean/additive conversion and row alignment before expansion. Six bytes per aligned element conservatively pays its visible tensors; internal workspace remains excluded.",
+          "excluded_terms": [
+            "other attention/linear-attention weights and norms",
+            "NF4 scales/double-quantization metadata and padding",
+            "hybrid recurrent/conv state",
+            "other chunk activations, dequantization and attention/recurrent workspaces",
+            "allocator fragmentation, CUDA context and non-model occupancy"
+          ],
+          "complete_allocator_upper_bound_bytes": null,
+          "measured_model_peak_bytes": null,
+          "full_envelope_memory_acceptance": null,
+          "device_comparisons": {
+            "device_0": {
+              "native_total_bytes": 15636037632,
+              "historical_post_probe_free_bytes": 15458959360,
+              "required_free_headroom_bytes": 1610612736,
+              "native_total_minus_headroom_bytes": 14025424896,
+              "historical_free_minus_headroom_bytes": 13848346624,
+              "partial_subtotal_exceeds_native_allowance": false,
+              "partial_subtotal_exceeds_historical_free_allowance": false,
+              "scope": "Historical run-6 device observation, not current free memory. Partial subtotal comparison proves neither model fit nor empirical failure.",
+              "full_envelope_memory_acceptance": null
+            },
+            "device_1": {
+              "native_total_bytes": 15636037632,
+              "historical_post_probe_free_bytes": 15458959360,
+              "required_free_headroom_bytes": 1610612736,
+              "native_total_minus_headroom_bytes": 14025424896,
+              "historical_free_minus_headroom_bytes": 13848346624,
+              "partial_subtotal_exceeds_native_allowance": false,
+              "partial_subtotal_exceeds_historical_free_allowance": false,
+              "scope": "Historical run-6 device observation, not current free memory. Partial subtotal comparison proves neither model fit nor empirical failure.",
+              "full_envelope_memory_acceptance": null
+            }
+          }
+        }
+      }
+    }
+  },
+  "required_free_headroom_bytes": 1610612736,
+  "allocation": {
+    "provider_stop_user_reported": true,
+    "provider_duration_seconds": null,
+    "prior_allocated_gpu_seconds": null,
+    "remaining_smoke_gpu_seconds": null
+  },
+  "full_envelope_memory_acceptance": null,
+  "model_selected": null,
+  "model_generations": 0,
+  "actual_cuda_execution": false,
+  "pretrained_weights_downloaded": false,
+  "blockers": [
+    "Actual T4 zero-stride/masked/chunked Qwen path is unexecuted.",
+    "No independently supported complete live-memory bound at the permitted input envelope.",
+    "Full candidate GPU/host acceptance and prior allocation reconciliation remain open."
+  ],
+  "environment": {
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "os": "Windows-10-10.0.26200-SP0"
+  }
+}

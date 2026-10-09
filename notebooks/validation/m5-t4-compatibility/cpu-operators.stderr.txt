@@ -1,0 +1,17 @@
+test_automatic_small_shape_cases_match_reference (tests.t4_cpu_operators.CPUOperatorTests.test_automatic_small_shape_cases_match_reference) ... ok
+test_causal_prefill_matches_independent_masked_matrix_formula (tests.t4_cpu_operators.CPUOperatorTests.test_causal_prefill_matches_independent_masked_matrix_formula) ... ok
+test_decode_attends_all_keys_and_matches_independent_matrix_formula (tests.t4_cpu_operators.CPUOperatorTests.test_decode_attends_all_keys_and_matches_independent_matrix_formula) ... ok
+test_nf4_double_quantized_fp16_api_and_dequantized_reference (tests.t4_cpu_operators.CPUOperatorTests.test_nf4_double_quantized_fp16_api_and_dequantized_reference) ... C:\Users\EndritHasani\AppData\Local\Programs\Python\Python311\Lib\site-packages\bitsandbytes\backends\default\ops.py:223: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+C:\Users\EndritHasani\AppData\Local\Programs\Python\Python311\Lib\site-packages\bitsandbytes\backends\cpu\ops.py:36: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+C:\Users\EndritHasani\AppData\Local\Programs\Python\Python311\Lib\site-packages\bitsandbytes\backends\cpu\ops.py:80: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+C:\Users\EndritHasani\AppData\Local\Programs\Python\Python311\Lib\site-packages\bitsandbytes\backends\cpu\ops.py:132: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.208s
+
+OK

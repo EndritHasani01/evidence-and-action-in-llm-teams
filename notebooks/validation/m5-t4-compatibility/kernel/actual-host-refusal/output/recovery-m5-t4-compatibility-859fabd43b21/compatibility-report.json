@@ -1,0 +1,99 @@
+{
+  "kind": "standalone-t4-library-compatibility",
+  "started_utc": "2026-10-09T09:18:51.427312+00:00",
+  "controller_limit_seconds": 360,
+  "stages": {
+    "static_envelope": {
+      "status": "passed",
+      "result": {
+        "models": {
+          "4B": {
+            "config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+            "tie_word_embeddings": true,
+            "kv_bytes_per_token": 32768,
+            "resident_token_assumption": 262144,
+            "fp16_kv_bytes_at_cap": 8589934592,
+            "conditional_embedding_head_bytes": 1271398400,
+            "ideal_packed_mlp_bytes": 1132462080,
+            "conditional_subtotal_bytes_at_cap": 10993795072,
+            "repeated_kv_one_layer_additional_bytes_at_cap": 4294967296,
+            "dense_score_fp32_bytes_at_cap": 4398046511104,
+            "full_envelope_memory_acceptance": null
+          },
+          "9B": {
+            "config_sha256": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+            "tie_word_embeddings": false,
+            "kv_bytes_per_token": 32768,
+            "resident_token_assumption": 262144,
+            "fp16_kv_bytes_at_cap": 8589934592,
+            "conditional_embedding_head_bytes": 4068474880,
+            "ideal_packed_mlp_bytes": 2415919104,
+            "conditional_subtotal_bytes_at_cap": 15074328576,
+            "repeated_kv_one_layer_additional_bytes_at_cap": 4294967296,
+            "dense_score_fp32_bytes_at_cap": 4398046511104,
+            "full_envelope_memory_acceptance": null
+          }
+        },
+        "full_envelope_memory_acceptance": null,
+        "scope": "Conditional arithmetic; excludes other weights/scales/activations/workspaces. Legal attainability and actual model memory remain unknown."
+      }
+    },
+    "host_inventory": {
+      "status": "failed",
+      "reason": "ValueError: diagnostic_requires_linux_x86_64_python313"
+    },
+    "wheel_staging": {
+      "status": "blocked",
+      "reason": "earlier stage incomplete"
+    },
+    "device_0": {
+      "status": "blocked",
+      "reason": "earlier stage incomplete"
+    },
+    "device_1": {
+      "status": "blocked",
+      "reason": "earlier stage incomplete"
+    },
+    "filesystem_backup": {
+      "status": "passed",
+      "result": {
+        "journal_mode": "wal",
+        "synchronous": 2,
+        "integrity": "ok",
+        "rows": [
+          [
+            7
+          ]
+        ],
+        "read_only_enforced": true,
+        "backup_sha256": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584",
+        "scope": "Small synthetic diagnostic; actual worker/crash checks are separate."
+      }
+    }
+  },
+  "root_blocker": "ValueError: diagnostic_requires_linux_x86_64_python313",
+  "process_cleanup_unconfirmed": false,
+  "model_generations": 0,
+  "summary": {
+    "library_checks_completed": false,
+    "root_blocker": "ValueError: diagnostic_requires_linux_x86_64_python313",
+    "model_generations": 0,
+    "model_smoke_ready": false,
+    "full_candidate_gpu_acceptance": null,
+    "native_qwen_recurrent_acceptance": null,
+    "full_envelope_memory_acceptance": null,
+    "provider_assignment_utc": null,
+    "provider_release_utc": null,
+    "observed_controller_wall_seconds": 1.0320000000065193,
+    "observed_gpu_seconds_lower_bound": null,
+    "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+    "conditional_allocation_upper_bound_seconds": 1080,
+    "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+    "attention_dispatch": {
+      "device_0": {},
+      "device_1": {}
+    },
+    "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+  },
+  "ended_utc": "2026-10-09T09:18:52.424831+00:00"
+}

@@ -1,0 +1,335 @@
+input_inventory: failed — ValueError: payload_ambiguous
+source: blocked — prerequisites: input_inventory
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: failed — ValueError: payload_size_mismatch
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: failed — ValueError: payload_hash_mismatch
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: failed — ValueError: controlled SQLite failure
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled create-venv failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled download-pip-wheel failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — ValueError: pip_bootstrap_unverified_wheel
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — ValueError: pip_bootstrap_unverified_wheel
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled bootstrap-pip failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled download-candidate failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled install-candidate failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled build-source failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — RuntimeError: controlled pip-check failure
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — ValueError: installed_probe_schema_or_provenance
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmp84p9o9tc\\output\\recovery-m5-preflight-20261008T213246291524Z-8e9c3b9b\\installed-probe-result.json'
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: failed — RuntimeError: controlled focused-checks failure
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: failed — ValueError: test_count_or_skip: focused-checks, expected=81
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: failed — RuntimeError: controlled native-9b failure
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: blocked — cpu_deadline_before_stage
+source: blocked — prerequisites: input_inventory
+cpu_host: blocked — cpu_deadline_before_stage
+command_cleanup: blocked — prerequisites: source, cpu_host
+environment: blocked — prerequisites: source, cpu_host, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: blocked — cpu_deadline_before_stage
+input_inventory: passed
+source: passed
+cpu_host: failed — ValueError: cpu_stage_gpu_visible: stop session and select Accelerator None
+command_cleanup: blocked — prerequisites: cpu_host
+environment: blocked — prerequisites: cpu_host, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: failed — ValueError: payload_missing
+source: blocked — prerequisites: input_inventory
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+Running pip-check ...
+Running installed-probe ...
+Running pip-list ...
+Running pip-freeze ...
+Running focused-checks ...
+focused_checks: passed
+Running native-9b ...
+native_9b: passed
+Running native-4b ...
+native_4b: passed
+Running native-capacity ...
+native_capacity: passed
+{
+  "continuation_checks_passed": true,
+  "tests_passed": 97,
+  "root_blocker": null,
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.10999999998603016
+}
+Result ZIP SHA-256: 8e89b30993954789d3b6840d26a75c67a91591274f72d135a89f76da3860f738
+{
+  "continuation_checks_passed": false,
+  "tests_passed": 0,
+  "root_blocker": "AssertionError: ",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.045999999972991645
+}
+Result ZIP SHA-256: 93cda743cfef3ec3ed4de68018581cb975c31945f2806e8377bb095f0aae25ec
+input_inventory: passed
+source: failed — ValueError: output_evidence_reserve
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed

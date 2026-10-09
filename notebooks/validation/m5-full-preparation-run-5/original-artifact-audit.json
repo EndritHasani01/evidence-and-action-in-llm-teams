@@ -1,0 +1,85 @@
+{
+  "supplied_artifacts": {
+    "notebooks/run/1/m5-kaggle-preflight-results/filesystem-check-backup.sqlite": {
+      "bytes": 8192,
+      "sha256": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/filesystem-check-backup.sqlite-shm": {
+      "bytes": 32768,
+      "sha256": "fd4c9fda9cd3f9ae7c962b0ddf37232294d55580e1aa165aa06129b8549389eb"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/filesystem-check-backup.sqlite-wal": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/filesystem-check.sqlite": {
+      "bytes": 8192,
+      "sha256": "554c5c739e9b6a71e47f618c861104efb8a2cb12f5ef72012692365a9880cd86"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/host.json": {
+      "bytes": 1552,
+      "sha256": "b94dcf9f49ccf35e0ebcbb81a8aed111783a526185c47a002d5f8eac30cee48b"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/logs/host-nvidia-smi.log": {
+      "bytes": 160,
+      "sha256": "1eed953d4c6de0111af3377839f59462ba1149db8b06995d7374f333e66eb935"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/logs/host-torch.log": {
+      "bytes": 177,
+      "sha256": "afff530acf2afb64d6df8456a676f53a998e97cc03668e8f948b501a8ed0ee4b"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/preflight-report.json": {
+      "bytes": 4616,
+      "sha256": "9045bdc9af4be4239dce09abce21f7c918f33e7878a2a08f0676c94e29134e6c"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/storage-plan.json": {
+      "bytes": 271,
+      "sha256": "ef519a46e69e150af1f8f62845b72918c84dea9704c77463bdb698948f7a397a"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results/summary.json": {
+      "bytes": 489,
+      "sha256": "5695ef6f792ddca9af7274880e67cd9ceb8828aedac20bbe5fc702c946c482a1"
+    },
+    "notebooks/run/1/m5-kaggle-preflight-results.zip": {
+      "bytes": 4604,
+      "sha256": "693f6770e7483777838e320118d92da0c5605d0e668276daf75f857fbab1da29"
+    },
+    "notebooks/run/2/canary-results.zip": {
+      "bytes": 8815,
+      "sha256": "de4c6d9dc7a1f32e87981cd52aa4e5a7afd4b02d7b653ccbc5d6984f5e1760fc"
+    },
+    "notebooks/run/2/recovery-m5-preflight.ipynb": {
+      "bytes": 25043,
+      "sha256": "f0c3f360257aaf62716744187d9124d6a53f17a4df2459073a12d96da0695a62"
+    },
+    "notebooks/run/3/notebook-exec.ipynb": {
+      "bytes": 111733,
+      "sha256": "efe476ada4fde533f85f316c0c0130689196a0bd9f7dfae608193f6cfb0e087a"
+    },
+    "notebooks/run/3/preflight-results.zip": {
+      "bytes": 29776,
+      "sha256": "d135f6749b9e206a3c8a9f797f2a987f4c0bddabeffbda124d3b3a1e3c939e2a"
+    },
+    "notebooks/run/4/notebook-exec.ipynb": {
+      "bytes": 114657,
+      "sha256": "f00d8dbd5a647d84d7a158286f3731cd578fb3b97a85aefe075a1067a34bd313"
+    },
+    "notebooks/run/4/preflight-results.zip": {
+      "bytes": 555169,
+      "sha256": "d3f4008055c8164737c30117f97b0969ad1e9ac2edc26c00d9da230ffc32e66e"
+    },
+    "notebooks/run/5/notebook-exec.ipynb": {
+      "bytes": 129199,
+      "sha256": "b7a031e90c7ac029b3995d64e3e85488aabce491cfd458a9538e3fabd9f18237"
+    },
+    "notebooks/run/5/preflight-results.zip": {
+      "bytes": 44863,
+      "sha256": "2e30aa95510e97eb9bea7cbab51ac4e60f5e58324e23d75f63e007ad72937b90"
+    },
+    "notebooks/run/recovery-m5-preflight-first-run.ipynb": {
+      "bytes": 39660,
+      "sha256": "ca9986d25968da28fe1e05c071c7eea9ccab7005b2f02538565c29e714f74e55"
+    }
+  },
+  "existing_user_edit_sha256": "c071fbb83438a9831b073fd80da4d60f92eed3d5945674d2f84fbd8348b55dca"
+}

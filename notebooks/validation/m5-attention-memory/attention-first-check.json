@@ -1,0 +1,17 @@
+{
+  "name": "attention-first-check",
+  "command": [
+    "C:\\Users\\EndritHasani\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "tests.test_t4_attention"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 20.430104900035076,
+  "actual_cuda_execution": false,
+  "pretrained_weights": false
+}

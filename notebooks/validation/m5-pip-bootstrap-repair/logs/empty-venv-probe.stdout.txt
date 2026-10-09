@@ -1,0 +1,1 @@
+{"pip_absent": true, "user_site": false, "prefix": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-pip-bootstrap-60eac59d53d7490cbbffb3b260201179\\venv"}

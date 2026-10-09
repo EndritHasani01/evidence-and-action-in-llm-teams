@@ -1,0 +1,33 @@
+{
+  "checked_utc": "2026-10-08T20:03:09.436588+00:00",
+  "status": "passed",
+  "python": "3.11.9",
+  "os": "Windows-10-10.0.26200-SP0",
+  "scope": "Local isolated pip bootstrap only",
+  "source_helper_sha256": "76f0fd7166852897e8e0176ee497d0b31207393c44fbeb0d04abd1f4dedab5ea",
+  "metadata_sha256": "7715a5381f90863fb3f88cbc0be09f6140cb5090cf16f63c79b22031fcc423aa",
+  "empty_venv": {
+    "pip_absent": true,
+    "user_site": false,
+    "prefix": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-pip-bootstrap-60eac59d53d7490cbbffb3b260201179\\venv"
+  },
+  "verified_download": {
+    "filename": "pip-26.2.1-py3-none-any.whl",
+    "bytes": 1816632,
+    "sha256": "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e",
+    "url": "https://files.pythonhosted.org/packages/f3/6e/1736e5b4ae2b778ef2f81c47d797de9f891d4d8acb047a24ca37a60294dd/pip-26.2.1-py3-none-any.whl",
+    "verified": true
+  },
+  "installed_probe": {
+    "version": "26.2.1",
+    "module": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-pip-bootstrap-60eac59d53d7490cbbffb3b260201179\\venv\\Lib\\site-packages\\pip\\__init__.py",
+    "prefix": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-pip-bootstrap-60eac59d53d7490cbbffb3b260201179\\venv",
+    "base_prefix": "C:\\Users\\EndritHasani\\AppData\\Local\\Programs\\Python\\Python311",
+    "user_site": false
+  },
+  "base_packages_unchanged": true,
+  "candidate_packages_installed": false,
+  "model_generations": 0,
+  "gpu_acceptance": null,
+  "linux_python313_bootstrap_acceptance": null
+}

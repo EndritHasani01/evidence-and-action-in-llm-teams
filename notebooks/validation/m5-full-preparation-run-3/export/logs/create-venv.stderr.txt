@@ -1,0 +1,1 @@
+Error: Command '['/tmp/recovery-m5/20261008T194459225087Z-3e63b0ff/venv/bin/python3', '-m', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1.

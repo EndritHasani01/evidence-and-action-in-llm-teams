@@ -1,0 +1,31 @@
+{
+  "name": "download-candidate",
+  "args": [
+    "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7/venv/bin/python",
+    "-m",
+    "pip",
+    "--isolated",
+    "--disable-pip-version-check",
+    "download",
+    "--no-deps",
+    "--dest",
+    "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7/wheels",
+    "--no-cache-dir",
+    "--require-hashes",
+    "--only-binary=:all:",
+    "-r",
+    "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7/candidate-download.lock"
+  ],
+  "cwd": "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7",
+  "started_utc": "2026-10-08T21:11:13.419128+00:00",
+  "timeout_seconds": 900,
+  "stdout": "logs/download-candidate.stdout.txt",
+  "stderr": "logs/download-candidate.stderr.txt",
+  "status": "passed",
+  "leader_exited": true,
+  "tree_confirmation": "exited",
+  "pid": 158,
+  "exit_code": 0,
+  "ended_utc": "2026-10-08T21:12:25.642025+00:00",
+  "elapsed_seconds": 72.22300951199998
+}

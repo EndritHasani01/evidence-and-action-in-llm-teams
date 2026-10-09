@@ -1,0 +1,40 @@
+{
+  "models": {
+    "9B": {
+      "config_sha256": "d0883072e01861ed0b2d47be3c16c36a8e81c224c7ffaa310c6558fb3f932b05",
+      "tie_word_embeddings": false,
+      "kv_bytes_per_token": 32768,
+      "resident_token_assumption": 262144,
+      "fp16_kv_bytes_at_cap": 8589934592,
+      "conditional_embedding_head_bytes": 4068474880,
+      "ideal_packed_mlp_bytes": 2415919104,
+      "conditional_subtotal_bytes_at_cap": 15074328576,
+      "repeated_kv_one_layer_additional_bytes_at_cap": 4294967296,
+      "dense_score_fp32_bytes_at_cap": 4398046511104,
+      "full_envelope_memory_acceptance": null
+    },
+    "4B": {
+      "config_sha256": "ddc63e1c717afa86c865bb5e01313d89d72bb53b97ad4a8a03ba8510c0621670",
+      "tie_word_embeddings": true,
+      "kv_bytes_per_token": 32768,
+      "resident_token_assumption": 262144,
+      "fp16_kv_bytes_at_cap": 8589934592,
+      "conditional_embedding_head_bytes": 1271398400,
+      "ideal_packed_mlp_bytes": 1132462080,
+      "conditional_subtotal_bytes_at_cap": 10993795072,
+      "repeated_kv_one_layer_additional_bytes_at_cap": 4294967296,
+      "dense_score_fp32_bytes_at_cap": 4398046511104,
+      "full_envelope_memory_acceptance": null
+    }
+  },
+  "full_envelope_memory_acceptance": null,
+  "scope": "Conditional arithmetic; excludes other weights/scales/activations/workspaces. Legal attainability and actual model memory remain unknown.",
+  "canonical_archive_sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f",
+  "environment": {
+    "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+    "os": "Windows-10-10.0.26200-SP0",
+    "sqlite": "3.45.1"
+  },
+  "actual_t4_execution": false,
+  "model_generations": 0
+}

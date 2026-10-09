@@ -1,0 +1,167 @@
+{
+  "scope": "M5 Kaggle setup/preflight; model smoke unexecuted",
+  "inspection_utc": "2026-10-08T12:51:04.687727+00:00",
+  "source_commit_expected": "ca46bcd55486b38bb453f5294e01f943bc7f7752",
+  "checks": [
+    {
+      "name": "host-nvidia-smi",
+      "argv": [
+        "nvidia-smi",
+        "--query-gpu=index,uuid,name,driver_version,memory.total,memory.free",
+        "--format=csv,noheader,nounits"
+      ],
+      "passed": true,
+      "exit_code": 0,
+      "elapsed_seconds": 0.037,
+      "log": "logs/host-nvidia-smi.log"
+    },
+    {
+      "name": "host-torch",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,torch; print(json.dumps(dict(version=torch.__version__,cuda_build=torch.version.cuda,cuda_available=torch.cuda.is_available(),device_count=torch.cuda.device_count(),compiled_architectures=torch.cuda.get_arch_list())))"
+      ],
+      "passed": true,
+      "exit_code": 0,
+      "elapsed_seconds": 8.168,
+      "log": "logs/host-torch.log"
+    }
+  ],
+  "notes": [
+    "Source input: ValueError: The input bundle is incomplete: tests/fixtures/capacity_report.json.gz"
+  ],
+  "states": {
+    "two_t4_devices": true,
+    "source_ready": false,
+    "package_install_completed": false,
+    "candidate_environment_verified": false,
+    "preparation_tests_verified": false,
+    "sqlite_storage_verified": true
+  },
+  "allocation": {
+    "provider_assignment_utc": null,
+    "provider_release_utc": null,
+    "observed_seconds_are_lower_bound": true,
+    "observed_notebook_wall_seconds": 39.774,
+    "observed_allocated_gpu_seconds_lower_bound": 79.548,
+    "provider_release": "pending external confirmation"
+  },
+  "scientific_gates": {
+    "model_loading": null,
+    "model_finite_outputs": null,
+    "worst_context_headroom": null,
+    "smoke": null,
+    "capability_pilot": null,
+    "main_execution": null
+  },
+  "host": {
+    "python": "3.13.15",
+    "os": "Linux-6.18.48+-x86_64-with-glibc2.39",
+    "sqlite": "3.45.1",
+    "packages": {
+      "torch": "2.11.0+cu128",
+      "pydantic": "2.13.5",
+      "langgraph": "1.2.11",
+      "langgraph-checkpoint": "4.2.0",
+      "langgraph-checkpoint-sqlite": "not installed",
+      "langchain-core": "1.6.1",
+      "transformers": "5.16.1",
+      "accelerate": "1.14.0",
+      "bitsandbytes": "not installed",
+      "tokenizers": "0.23.1",
+      "huggingface-hub": "1.29.0"
+    },
+    "filesystems": {
+      "/": {
+        "device": 54,
+        "free_gib": 1069.91
+      },
+      "/tmp": {
+        "device": 54,
+        "free_gib": 1069.91
+      },
+      "/kaggle/working": {
+        "device": 1794,
+        "free_gib": 19.5
+      },
+      "/kaggle/input": {
+        "device": 1794,
+        "free_gib": 19.5
+      }
+    },
+    "cuda_visible_devices": null,
+    "gpus": [
+      {
+        "index": "0",
+        "uuid": "GPU-62709afd-94a6-5925-d476-6f89b2d91d8c",
+        "name": "Tesla T4",
+        "driver": "580.178.04",
+        "memory_mib": "15360",
+        "free_mib": "14912"
+      },
+      {
+        "index": "1",
+        "uuid": "GPU-048f791f-6986-48cc-7afa-153baf9cdafa",
+        "name": "Tesla T4",
+        "driver": "580.178.04",
+        "memory_mib": "15360",
+        "free_mib": "14912"
+      }
+    ],
+    "torch_runtime": {
+      "version": "2.11.0+cu128",
+      "cuda_build": "12.8",
+      "cuda_available": true,
+      "device_count": 2,
+      "compiled_architectures": [
+        "sm_75",
+        "sm_80",
+        "sm_86",
+        "sm_90",
+        "sm_100",
+        "sm_120"
+      ]
+    },
+    "internet_http_status": 200,
+    "internet_ready": true
+  },
+  "source_input": "/kaggle/input/datasets/endrithasani/m5-kaggle-preflight",
+  "sqlite_storage": {
+    "journal": "wal",
+    "synchronous": 2,
+    "backup_integrity": "ok",
+    "readonly_enforced": true
+  },
+  "storage": {
+    "artifact_allowance_bytes": 1073741824,
+    "locations": [
+      {
+        "path": "/kaggle/working",
+        "device": 1794,
+        "free_bytes": 16685645824
+      },
+      {
+        "path": "/tmp",
+        "device": 54,
+        "free_bytes": 1148790222848
+      }
+    ],
+    "models": {}
+  },
+  "summary": {
+    "result": "preparation incomplete",
+    "failed_or_unexecuted_preparation": [
+      "source_ready",
+      "package_install_completed",
+      "candidate_environment_verified",
+      "preparation_tests_verified"
+    ],
+    "observed_wall_seconds": 39.774,
+    "model_generations": 0,
+    "model_smoke": "unexecuted",
+    "gpu_model_headroom": "unmeasured",
+    "provider_release": "record after stopping the session",
+    "next_action": "download the results ZIP, stop the session, and send back the results"
+  }
+}

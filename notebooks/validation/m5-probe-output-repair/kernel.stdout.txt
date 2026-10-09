@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "scope": "Real Jupyter cell wiring; candidate/import/test outcomes controlled",
+  "cell_sha256": "b07299f523e2cd08dba9d9e5366df9ec75695ed5ca01abf6f4a3d7ad4163aaa2",
+  "original_namespace_and_failed_export_preserved": true,
+  "controlled_test_count": 97,
+  "model_generations": 0,
+  "actual_linux_continuation_acceptance": null,
+  "continuation_zip": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-probe-output-repair\\controlled-case\\recovery-m5-continuation-d2f74d48a511\\preflight-results.zip",
+  "original_zip": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-probe-output-repair\\controlled-case\\recovery-m5-preflight-20261008T213728286792Z-e3918bc6\\preflight-results.zip"
+}
+

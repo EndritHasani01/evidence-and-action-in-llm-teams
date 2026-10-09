@@ -1,0 +1,24 @@
+test_configured_256_token_chunks_preserve_hybrid_state_across_513_tokens (tests.test_t4_attention.NativeHybridIntegrationTests.test_configured_256_token_chunks_preserve_hybrid_state_across_513_tokens) ... <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+<frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+ok
+test_real_hybrid_model_chunked_prefill_matches_full_cache_logits_and_decode (tests.test_t4_attention.NativeHybridIntegrationTests.test_real_hybrid_model_chunked_prefill_matches_full_cache_logits_and_decode) ... ok
+test_additive_mask_scaling_and_explicit_bidirectional_mode (tests.test_t4_attention.T4AttentionTests.test_additive_mask_scaling_and_explicit_bidirectional_mode) ... ok
+test_both_public_registries_preserve_builtin_sdpa_and_refuse_collision (tests.test_t4_attention.T4AttentionTests.test_both_public_registries_preserve_builtin_sdpa_and_refuse_collision) ... ok
+test_candidate_opt_in_changes_only_backend_and_maintained_prefill (tests.test_t4_attention.T4AttentionTests.test_candidate_opt_in_changes_only_backend_and_maintained_prefill) ... ok
+test_causal_padding_mask_and_fully_masked_row_are_preserved (tests.test_t4_attention.T4AttentionTests.test_causal_padding_mask_and_fully_masked_row_are_preserved) ... ok
+test_causal_prefill_matches_independent_per_head_reference (tests.test_t4_attention.T4AttentionTests.test_causal_prefill_matches_independent_per_head_reference) ... ok
+test_cuda_selects_only_efficient_and_never_retries_math (tests.test_t4_attention.T4AttentionTests.test_cuda_selects_only_efficient_and_never_retries_math) ... ok
+test_decode_reads_complete_cache_and_preserves_head_order (tests.test_t4_attention.T4AttentionTests.test_decode_reads_complete_cache_and_preserves_head_order) ... ok
+test_fp16_prefill_and_decode_remain_finite_and_match_fp32 (tests.test_t4_attention.T4AttentionTests.test_fp16_prefill_and_decode_remain_finite_and_match_fp32) ... ok
+test_kv_views_alias_original_storage_and_mask_rows_align_before_expand (tests.test_t4_attention.T4AttentionTests.test_kv_views_alias_original_storage_and_mask_rows_align_before_expand) ... ok
+test_long_meta_kv_storage_is_not_multiplied (tests.test_t4_attention.T4AttentionTests.test_long_meta_kv_storage_is_not_multiplied) ... ok
+test_missing_offset_mask_training_dropout_and_weight_output_refuse (tests.test_t4_attention.T4AttentionTests.test_missing_offset_mask_training_dropout_and_weight_output_refuse) ... ok
+test_offset_causal_mask_matches_cached_multi_query_reference (tests.test_t4_attention.T4AttentionTests.test_offset_causal_mask_matches_cached_multi_query_reference) ... ok
+test_wrong_shapes_dtype_device_and_mask_refuse_before_dispatch (tests.test_t4_attention.T4AttentionTests.test_wrong_shapes_dtype_device_and_mask_refuse_before_dispatch) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 10.256s
+
+OK
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

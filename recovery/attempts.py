@@ -15,7 +15,7 @@ from threading import Thread
 from time import monotonic
 
 from .protocol import GeneratedReply
-from .storage import RecordedFailure, UnresolvedAttempt, seconds
+from .storage import RecordedFailure, UnresolvedAttempt, record_json, seconds
 
 
 class InfrastructureInterruption(RuntimeError):
@@ -32,11 +32,15 @@ class MeasuredReply:
 
     response: GeneratedReply | RecordedFailure
     peak_memory_bytes: int
+    backend: dict | None = None
 
     def __post_init__(self):
         if (type(self.response) not in (GeneratedReply, RecordedFailure)
-                or type(self.peak_memory_bytes) is not int or self.peak_memory_bytes < 0):
+                or type(self.peak_memory_bytes) is not int or self.peak_memory_bytes < 0
+                or self.backend is not None and type(self.backend) is not dict):
             raise ValueError("record an exact outcome and measured peak device bytes")
+        if self.backend is not None:
+            record_json(self.backend)  # Reject unsavable evidence before transmission.
 
 
 def _die_with_owner():
@@ -53,7 +57,7 @@ def _serve(factory, connection):
         provider = factory()
         if not callable(provider):
             raise ProviderDefect("provider factory must return a callable")
-        connection.send(("ready", None))
+        connection.send(("ready", getattr(provider, "load_report", None)))
         while True:
             request = connection.recv()
             if request is None:
@@ -186,7 +190,7 @@ class ProcessProvider:
                     store.confirm_timeout_termination(call_id, monotonic() - started)
                     return failure
                 if kind == "ready":
-                    store.process_ready(*self._owner)
+                    store.process_ready(*self._owner, backend=payload)
                 elif kind == "response":
                     return payload
                 elif kind == "interrupted":
@@ -233,7 +237,9 @@ class ProcessProvider:
                 raise
             if store.call(call_id)["status"] == "running":
                 memory = response.peak_memory_bytes if type(response) is MeasuredReply else None
+                backend = response.backend if type(response) is MeasuredReply else None
                 if type(response) is MeasuredReply:
                     response = response.response
-                store.finish_attempt(call_id, response, monotonic() - started, peak_memory_bytes=memory)
+                store.finish_attempt(call_id, response, monotonic() - started,
+                                     peak_memory_bytes=memory, backend=backend)
             return store.response(call_id)

@@ -1,0 +1,22 @@
+{
+  "name": "focused-regression",
+  "command": [
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "tests.test_inference_preparation",
+    "tests.inference_checks",
+    "tests.test_model_feasibility",
+    "tests.worker_checks",
+    "tests.attempt_checks",
+    "tests.durable_checks"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 271.8889622000279,
+  "actual_cuda_execution": false,
+  "pretrained_weights": false
+}

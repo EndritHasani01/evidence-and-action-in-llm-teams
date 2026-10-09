@@ -1,0 +1,36 @@
+{
+  "reviewed_dates": "2026-10-08/2026-10-09",
+  "documents": [
+    "docs/IMPLEMENTATION_PLAN.md",
+    "docs/planning/m5-kaggle-first-run/03-preparation-design.md",
+    "docs/planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md",
+    "docs/planning/m5-kaggle-first-run/05-implementation-and-validation.md",
+    "docs/planning/m5-kaggle-first-run/06-lessons-learned.md",
+    "docs/planning/m5-kaggle-first-run/README.md",
+    "docs/todos/M5/M5-T01-inference-and-allocation-preparation.md",
+    "docs/todos/M5/M5-T02-hardware-smoke-and-host-validation.md",
+    "docs/todos/README.md",
+    "docs/validation/m5-kaggle-full-preparation-run-4.md",
+    "docs/validation/m5-kaggle-full-preparation-run-5.md",
+    "docs/validation/m5-kaggle-full-preparation.md",
+    "docs/validation/m5-kaggle-notebook-plan.md",
+    "docs/validation/m5-kaggle-pip-bootstrap-repair.md",
+    "docs/validation/m5-kaggle-preflight.md",
+    "docs/validation/m5-kaggle-probe-output-repair.md"
+  ],
+  "local_links_and_anchors_passed": 356,
+  "task_count": 29,
+  "task_status_counts": {
+    "done": 21,
+    "blocked": 8
+  },
+  "protected_scientific_diff": "empty",
+  "scientific_and_operational_source_unchanged_this_review": true,
+  "earlier_notebook_and_returned_artifacts_unchanged": 34,
+  "supplied_artifact_hashes_unchanged": 20,
+  "existing_user_edit_sha256": "c071fbb83438a9831b073fd80da4d60f92eed3d5945674d2f84fbd8348b55dca",
+  "cpu_preparation": "accepted with actual run 4 plus run 5 evidence",
+  "gpu_model_smoke_acceptance": null,
+  "model_generations": 0,
+  "provider_release_utc": null
+}

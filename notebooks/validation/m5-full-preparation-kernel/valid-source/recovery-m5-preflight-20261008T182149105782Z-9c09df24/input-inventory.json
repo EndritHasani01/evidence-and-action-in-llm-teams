@@ -1,0 +1,13 @@
+{
+  "root": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\m5-preparation-kernel-5tytue34\\valid-source\\input",
+  "entries": [
+    {
+      "path": "m5-kaggle-source.payload",
+      "kind": "file",
+      "bytes": 109248341
+    }
+  ],
+  "limit": 2000,
+  "truncated": false,
+  "errors": []
+}

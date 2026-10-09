@@ -1,0 +1,213 @@
+{
+  "schema_version": 2,
+  "kind": "cpu-canonical-source-preparation",
+  "started_utc": "2026-10-08T21:37:28.288027+00:00",
+  "output_directory": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-probe-output-repair\\controlled-case\\recovery-m5-preflight-20261008T213728286792Z-e3918bc6",
+  "scratch_directory": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmpkwrqc1ne\\scratch\\20261008T213728286792Z-e3918bc6",
+  "cpu_workflow_limit_seconds": 2700,
+  "export_reserve_seconds": 90,
+  "stages": {
+    "input_inventory": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T21:37:28.289474+00:00",
+      "result": {
+        "selected_payload": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmpkwrqc1ne\\input\\m5-kaggle-source.payload",
+        "entries": 1
+      },
+      "ended_utc": "2026-10-08T21:37:28.296513+00:00",
+      "elapsed_seconds": 0.015999999945051968
+    },
+    "source": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [
+        "input_inventory"
+      ],
+      "started_utc": "2026-10-08T21:37:28.300394+00:00",
+      "result": {
+        "payload": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmpkwrqc1ne\\input\\m5-kaggle-source.payload",
+        "archive_sha256": "27f401ed0953c7b38059d3b84e23747ed61b31459d2d8315c1f2646b6a074e72",
+        "verified_members": 4,
+        "expanded_bytes": 136,
+        "baseline_commit": "ca46bcd55486b38bb453f5294e01f943bc7f7752",
+        "build_commit": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "dataset_version": null,
+        "dataset_reference": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmpkwrqc1ne\\input",
+        "closure": "Every canonical archive member, including unchanged compressed fixtures."
+      },
+      "ended_utc": "2026-10-08T21:37:28.322014+00:00",
+      "elapsed_seconds": 0.015000000013969839
+    },
+    "cpu_host": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T21:37:28.323993+00:00",
+      "result": {
+        "python": "3.11.9",
+        "os": "Windows-10-10.0.26200-SP0",
+        "sqlite": "3.45.1",
+        "visible_driver_gpu_entries": [],
+        "cuda_initialized_by_kernel": false
+      },
+      "ended_utc": "2026-10-08T21:37:28.328214+00:00",
+      "elapsed_seconds": 0.0
+    },
+    "command_cleanup": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [
+        "source",
+        "cpu_host"
+      ],
+      "started_utc": "2026-10-08T21:37:28.331785+00:00",
+      "result": {
+        "scope": "controlled host diagnostic"
+      },
+      "ended_utc": "2026-10-08T21:37:28.333808+00:00",
+      "elapsed_seconds": 0.0
+    },
+    "environment": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [
+        "source",
+        "cpu_host",
+        "command_cleanup"
+      ],
+      "started_utc": "2026-10-08T21:37:28.337804+00:00",
+      "result": {
+        "mode": "clean-venv-offline-wheel-install",
+        "versions": {
+          "torch": "2.11.0+cu128",
+          "pydantic": "2.13.5",
+          "langgraph": "1.2.12",
+          "langgraph-checkpoint": "4.2.0",
+          "langgraph-checkpoint-sqlite": "3.1.1",
+          "langchain-core": "1.6.6",
+          "transformers": "5.12.0",
+          "accelerate": "1.14.0",
+          "bitsandbytes": "0.49.2",
+          "tokenizers": "0.22.2",
+          "huggingface-hub": "1.19.0"
+        },
+        "resolved_packages": 11,
+        "download_bytes": 1352,
+        "wheel_expanded_bytes": 157,
+        "build_tools": {
+          "pip": {
+            "version": "26.2.1",
+            "wheels": [
+              {
+                "filename": "pip-26.2.1-py3-none-any.whl",
+                "bytes": 113,
+                "sha256": "2756d937c1e756848d18e5c1ae2f750aa247454c579b65a2be62b520069a0df3",
+                "url": "https://files.pythonhosted.org/pip-26.2.1-py3-none-any.whl"
+              }
+            ]
+          },
+          "setuptools": {
+            "version": "84.0.0",
+            "wheels": [
+              {
+                "filename": "setuptools-84.0.0-py3-none-any.whl",
+                "bytes": 120,
+                "sha256": "a7e9c4bcb7f4ce7597009f18fe27e64ccd675dd8ccb719ddd9ef1db25eacfff3",
+                "url": "https://files.pythonhosted.org/setuptools-84.0.0-py3-none-any.whl"
+              }
+            ]
+          },
+          "wheel": {
+            "version": "0.48.0",
+            "wheels": [
+              {
+                "filename": "wheel-0.48.0-py3-none-any.whl",
+                "bytes": 115,
+                "sha256": "8bc6b57a14962c2accf3915b90bd53b9fa1a8042eca11013cc58dbe2b9dfd21b",
+                "url": "https://files.pythonhosted.org/wheel-0.48.0-py3-none-any.whl"
+              }
+            ]
+          }
+        }
+      },
+      "ended_utc": "2026-10-08T21:37:28.530871+00:00",
+      "elapsed_seconds": 0.1880000000819564
+    },
+    "installed_packages": {
+      "status": "failed",
+      "reason": "JSONDecodeError: Expecting value: line 1 column 2 (char 1)",
+      "prerequisites": [
+        "environment"
+      ],
+      "started_utc": "2026-10-08T21:37:28.534740+00:00",
+      "ended_utc": "2026-10-08T21:37:28.547190+00:00",
+      "elapsed_seconds": 0.015999999945051968
+    },
+    "focused_checks": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_9b": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_4b": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_capacity": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "filesystem_backup": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T21:37:28.561577+00:00",
+      "result": {
+        "journal_mode": "wal",
+        "synchronous": 2,
+        "integrity": "ok",
+        "rows": [
+          [
+            7
+          ]
+        ],
+        "read_only_enforced": true,
+        "backup_sha256": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584",
+        "scope": "Small synthetic diagnostic; actual worker/crash checks are separate."
+      },
+      "ended_utc": "2026-10-08T21:37:28.617691+00:00",
+      "elapsed_seconds": 0.0470000000204891
+    }
+  },
+  "root_blocker": "JSONDecodeError: Expecting value: line 1 column 2 (char 1)",
+  "summary": {
+    "preparation_checks_passed": false,
+    "root_blocker": "JSONDecodeError: Expecting value: line 1 column 2 (char 1)",
+    "tests_passed": 0,
+    "model_generations": 0,
+    "model_smoke_ready": false,
+    "gpu_native_diagnostics": null,
+    "model_assets_verified": null,
+    "model_smoke": null,
+    "provider_assignment_utc": null,
+    "provider_release_utc": null,
+    "observed_cpu_wall_seconds": 0.34399999992456287,
+    "next_action": "Download the ZIP and stop the session. Return the root-blocker evidence for review; do not rerun or repair fixtures."
+  }
+}

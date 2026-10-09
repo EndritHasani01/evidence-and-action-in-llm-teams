@@ -1,0 +1,297 @@
+{
+  "schema_version": 2,
+  "kind": "cpu-canonical-source-preparation",
+  "started_utc": "2026-10-08T21:11:02.265760+00:00",
+  "output_directory": "/kaggle/working/recovery-m5-preflight-20261008T211102264915Z-c5a493f7",
+  "scratch_directory": "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7",
+  "cpu_workflow_limit_seconds": 2700,
+  "export_reserve_seconds": 90,
+  "stages": {
+    "input_inventory": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T21:11:02.267029+00:00",
+      "result": {
+        "selected_payload": "/kaggle/input/datasets/endrithasani/m5-kaggle-source-v2/m5-kaggle-source.payload",
+        "entries": 4
+      },
+      "ended_utc": "2026-10-08T21:11:02.274703+00:00",
+      "elapsed_seconds": 0.007696203000023161
+    },
+    "source": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [
+        "input_inventory"
+      ],
+      "started_utc": "2026-10-08T21:11:02.275670+00:00",
+      "result": {
+        "payload": "/kaggle/input/datasets/endrithasani/m5-kaggle-source-v2/m5-kaggle-source.payload",
+        "archive_sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f",
+        "verified_members": 143,
+        "expanded_bytes": 165002177,
+        "baseline_commit": "ca46bcd55486b38bb453f5294e01f943bc7f7752",
+        "build_commit": "635a76b14f8b2cbf2b00bd325debb99c97769565",
+        "dataset_version": null,
+        "dataset_reference": "/kaggle/input/datasets/endrithasani/m5-kaggle-source-v2",
+        "closure": "Every canonical archive member, including unchanged compressed fixtures."
+      },
+      "ended_utc": "2026-10-08T21:11:07.540132+00:00",
+      "elapsed_seconds": 5.26448781299996
+    },
+    "cpu_host": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T21:11:07.541512+00:00",
+      "result": {
+        "python": "3.13.15",
+        "os": "Linux-6.18.48+-x86_64-with-glibc2.39",
+        "sqlite": "3.45.1",
+        "visible_driver_gpu_entries": [],
+        "cuda_initialized_by_kernel": false
+      },
+      "ended_utc": "2026-10-08T21:11:07.542493+00:00",
+      "elapsed_seconds": 0.0009956980001106785
+    },
+    "command_cleanup": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [
+        "source",
+        "cpu_host"
+      ],
+      "started_utc": "2026-10-08T21:11:07.544339+00:00",
+      "result": {
+        "expected_timeout": true,
+        "leader_exited": true,
+        "tree_confirmation": "exited",
+        "grandchild_stopped": true,
+        "scope": "Synthetic CPU process diagnostic; no model or GPU initialization."
+      },
+      "ended_utc": "2026-10-08T21:11:09.799689+00:00",
+      "elapsed_seconds": 2.2553744680000136
+    },
+    "environment": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [
+        "source",
+        "cpu_host",
+        "command_cleanup"
+      ],
+      "started_utc": "2026-10-08T21:11:09.800935+00:00",
+      "result": {
+        "mode": "clean-venv-offline-wheel-install",
+        "versions": {
+          "accelerate": "1.14.0",
+          "aiosqlite": "0.22.1",
+          "annotated-doc": "0.0.5",
+          "annotated-types": "0.8.0",
+          "anyio": "4.15.1",
+          "bitsandbytes": "0.49.2",
+          "certifi": "2026.7.22",
+          "charset-normalizer": "3.5.2",
+          "click": "8.5.0",
+          "cuda-bindings": "12.9.9",
+          "cuda-pathfinder": "1.8.3",
+          "cuda-toolkit": "12.8.1",
+          "distro": "1.9.0",
+          "filelock": "4.0.12",
+          "fsspec": "2026.9.0",
+          "h11": "0.16.0",
+          "hf-xet": "1.7.0",
+          "httpcore": "1.0.9",
+          "httpcore2": "2.13.1",
+          "httpx": "0.28.1",
+          "httpx2": "2.13.1",
+          "huggingface-hub": "1.19.0",
+          "idna": "3.20",
+          "jinja2": "3.1.6",
+          "jsonpatch": "1.33",
+          "jsonpointer": "3.2.0",
+          "langchain-core": "1.6.6",
+          "langchain-protocol": "0.0.19",
+          "langgraph": "1.2.12",
+          "langgraph-checkpoint": "4.2.0",
+          "langgraph-checkpoint-sqlite": "3.1.1",
+          "langgraph-prebuilt": "1.1.0",
+          "langgraph-sdk": "0.4.6",
+          "langsmith": "0.14.4",
+          "markdown-it-py": "4.2.0",
+          "markupsafe": "3.0.4",
+          "mdurl": "0.1.2",
+          "mpmath": "1.3.0",
+          "networkx": "3.7",
+          "numpy": "2.5.3",
+          "nvidia-cublas-cu12": "12.8.4.1",
+          "nvidia-cuda-cupti-cu12": "12.8.90",
+          "nvidia-cuda-nvrtc-cu12": "12.8.93",
+          "nvidia-cuda-runtime-cu12": "12.8.90",
+          "nvidia-cudnn-cu12": "9.19.0.56",
+          "nvidia-cufft-cu12": "11.3.3.83",
+          "nvidia-cufile-cu12": "1.13.1.3",
+          "nvidia-curand-cu12": "10.3.9.90",
+          "nvidia-cusolver-cu12": "11.7.3.90",
+          "nvidia-cusparse-cu12": "12.5.8.93",
+          "nvidia-cusparselt-cu12": "0.7.1",
+          "nvidia-nccl-cu12": "2.28.9",
+          "nvidia-nvjitlink-cu12": "12.8.93",
+          "nvidia-nvshmem-cu12": "3.4.5",
+          "nvidia-nvtx-cu12": "12.8.90",
+          "orjson": "3.13.0",
+          "ormsgpack": "1.12.2",
+          "packaging": "26.3",
+          "psutil": "7.2.2",
+          "pydantic": "2.13.5",
+          "pydantic-core": "2.46.5",
+          "pygments": "2.21.0",
+          "pyyaml": "6.0.3",
+          "regex": "2026.9.29",
+          "requests": "2.34.2",
+          "requests-toolbelt": "1.0.0",
+          "rich": "15.0.0",
+          "safetensors": "0.8.0",
+          "setuptools": "81.0.0",
+          "shellingham": "1.5.4",
+          "sniffio": "1.3.1",
+          "sqlite-vec": "0.1.9",
+          "sympy": "1.14.0",
+          "tenacity": "9.2.1",
+          "tokenizers": "0.22.2",
+          "torch": "2.11.0+cu128",
+          "tqdm": "4.70.1",
+          "transformers": "5.12.0",
+          "triton": "3.6.0",
+          "truststore": "0.10.4",
+          "typer": "0.25.1",
+          "typing-extensions": "4.16.0",
+          "typing-inspection": "0.4.4",
+          "urllib3": "2.8.0",
+          "uuid-utils": "0.17.1",
+          "websockets": "16.1.1",
+          "xxhash": "4.0.1",
+          "zstandard": "0.25.0"
+        },
+        "resolved_packages": 88,
+        "download_bytes": 4068346127,
+        "wheel_expanded_bytes": 7253701334,
+        "build_tools": {
+          "pip": {
+            "requires_python": ">=3.10",
+            "version": "26.2.1",
+            "wheels": [
+              {
+                "bytes": 1816632,
+                "filename": "pip-26.2.1-py3-none-any.whl",
+                "sha256": "71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e",
+                "url": "https://files.pythonhosted.org/packages/f3/6e/1736e5b4ae2b778ef2f81c47d797de9f891d4d8acb047a24ca37a60294dd/pip-26.2.1-py3-none-any.whl"
+              }
+            ]
+          },
+          "setuptools": {
+            "requires_python": ">=3.10",
+            "version": "84.0.0",
+            "wheels": [
+              {
+                "bytes": 818216,
+                "filename": "setuptools-84.0.0-py3-none-any.whl",
+                "sha256": "51a52592b3b99e102b609654876bd65f19f999935166d1352678931132b0c670",
+                "url": "https://files.pythonhosted.org/packages/95/9c/c510029fc6ef33a6275cd2c5d3cecd6613dfd6aa401d57c54f1c18852ccf/setuptools-84.0.0-py3-none-any.whl"
+              }
+            ]
+          },
+          "wheel": {
+            "requires_python": ">=3.9",
+            "version": "0.48.0",
+            "wheels": [
+              {
+                "bytes": 33320,
+                "filename": "wheel-0.48.0-py3-none-any.whl",
+                "sha256": "3217dcc807155e45db462d7ef2431f5ddda0d7273b700d05a67b271ceb1287ab",
+                "url": "https://files.pythonhosted.org/packages/2e/29/69cfbb602cd91690c55d38ba9fe53e6a7e76a6fa647bf38f19c138d25449/wheel-0.48.0-py3-none-any.whl"
+              }
+            ]
+          }
+        }
+      },
+      "ended_utc": "2026-10-08T21:15:34.068928+00:00",
+      "elapsed_seconds": 264.26801672600004
+    },
+    "installed_packages": {
+      "status": "failed",
+      "reason": "JSONDecodeError: Expecting value: line 1 column 2 (char 1)",
+      "prerequisites": [
+        "environment"
+      ],
+      "started_utc": "2026-10-08T21:15:34.072735+00:00",
+      "ended_utc": "2026-10-08T21:15:53.118775+00:00",
+      "elapsed_seconds": 19.046059646000003
+    },
+    "focused_checks": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_9b": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_4b": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "native_capacity": {
+      "status": "blocked",
+      "reason": "prerequisites: installed_packages",
+      "prerequisites": [
+        "installed_packages"
+      ]
+    },
+    "filesystem_backup": {
+      "status": "passed",
+      "reason": null,
+      "prerequisites": [],
+      "started_utc": "2026-10-08T21:15:53.126078+00:00",
+      "result": {
+        "journal_mode": "wal",
+        "synchronous": 2,
+        "integrity": "ok",
+        "rows": [
+          [
+            7
+          ]
+        ],
+        "read_only_enforced": true,
+        "backup_sha256": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584",
+        "scope": "Small synthetic diagnostic; actual worker/crash checks are separate."
+      },
+      "ended_utc": "2026-10-08T21:15:53.167829+00:00",
+      "elapsed_seconds": 0.04178025200008051
+    }
+  },
+  "root_blocker": "JSONDecodeError: Expecting value: line 1 column 2 (char 1)",
+  "summary": {
+    "preparation_checks_passed": false,
+    "root_blocker": "JSONDecodeError: Expecting value: line 1 column 2 (char 1)",
+    "tests_passed": 0,
+    "model_generations": 0,
+    "model_smoke_ready": false,
+    "gpu_native_diagnostics": null,
+    "model_assets_verified": null,
+    "model_smoke": null,
+    "provider_assignment_utc": null,
+    "provider_release_utc": null,
+    "observed_cpu_wall_seconds": 290.9041871569999,
+    "next_action": "Download the ZIP and stop the session. Return the root-blocker evidence for review; do not rerun or repair fixtures."
+  }
+}

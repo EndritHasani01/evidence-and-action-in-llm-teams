@@ -1,0 +1,29 @@
+{
+  "locations": {
+    "scratch": {
+      "path": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-kernel-v3-3de381c48ead461db00ff363213fa029\\valid-source\\scratch\\20261008T200549597158Z-9a8aaa09",
+      "pool": "1215279290",
+      "free_bytes": 11014496256,
+      "total_bytes": 511009562624
+    },
+    "output": {
+      "path": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-pip-bootstrap-kernel-v3\\valid-source\\output\\recovery-m5-preflight-20261008T200549597158Z-9a8aaa09",
+      "pool": "1215279290",
+      "free_bytes": 11014496256,
+      "total_bytes": 511009562624
+    }
+  },
+  "pools": {
+    "1215279290": {
+      "free_bytes": 11014496256,
+      "roles": [
+        "scratch",
+        "output"
+      ]
+    }
+  },
+  "quota_verified": false,
+  "interpretation": "Filesystem free space is observed; shared pools are counted once.",
+  "additional_scratch_bytes": 1238744001,
+  "output_reserve_bytes": 268435456
+}

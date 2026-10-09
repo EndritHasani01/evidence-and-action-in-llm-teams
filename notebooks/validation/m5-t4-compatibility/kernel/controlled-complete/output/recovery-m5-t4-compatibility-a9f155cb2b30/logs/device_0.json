@@ -1,0 +1,25 @@
+{
+  "scope": "Controlled command result, not an actual Linux/GPU process",
+  "name": "device_0",
+  "args": [
+    "C:\\Users\\EndritHasani\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "-I",
+    "-B",
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-t4-kernel-f9829c14a6b34e09b77821c78c98a05c\\controlled-complete\\a9f155cb2b30\\gpu-probe.py",
+    "--probe",
+    "--output",
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-t4-compatibility\\kernel\\controlled-complete\\output\\recovery-m5-t4-compatibility-a9f155cb2b30\\device_0.json",
+    "--package-root",
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-t4-kernel-f9829c14a6b34e09b77821c78c98a05c\\controlled-complete\\a9f155cb2b30\\diagnostic-package",
+    "--snapshot",
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-t4-compatibility\\kernel\\controlled-complete\\output\\recovery-m5-t4-compatibility-a9f155cb2b30\\extracted-wheel.json",
+    "--uuid",
+    "GPU-00000000-0000-0000-0000-000000000001"
+  ],
+  "stdout": "logs/device_0.stdout.txt",
+  "stderr": "logs/device_0.stderr.txt",
+  "status": "passed",
+  "exit_code": 0,
+  "leader_exited": true,
+  "tree_confirmation": "exited"
+}

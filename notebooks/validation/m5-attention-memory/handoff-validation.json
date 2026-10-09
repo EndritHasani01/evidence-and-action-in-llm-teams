@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "previous_checkpoint": "c8680c2",
+  "implementation_checkpoint": "8528105",
+  "original_notebooks": {
+    "files_unchanged": 483,
+    "returned_run_files_unchanged": 22
+  },
+  "canonical_payloads": {
+    "dist/m5-kaggle-preflight.zip": {
+      "bytes": 109248341,
+      "sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f"
+    },
+    "dist/m5-kaggle-source-v2/m5-kaggle-source.payload": {
+      "bytes": 109248341,
+      "sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f"
+    },
+    "dist/m5-kaggle-pip-bootstrap-v3/m5-kaggle-source.payload": {
+      "bytes": 109248341,
+      "sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f"
+    }
+  },
+  "protected_scientific_paths_unchanged": [
+    "configs",
+    "tests/fixtures",
+    "AGENTS.md",
+    "PROJECT_SPECIFICATION.md",
+    "pyproject.toml",
+    "README.md"
+  ],
+  "recovery_diff": [
+    "recovery/inference.py",
+    "recovery/t4_attention.py"
+  ],
+  "unexpected_tracked_changes": [],
+  "code_matches_implementation_commit": true,
+  "baseline_settings": "Original 9B/4B complete settings match current defaults exactly",
+  "existing_user_edit_sha256": "c071fbb83438a9831b073fd80da4d60f92eed3d5945674d2f84fbd8348b55dca",
+  "existing_user_edit_unstaged": true,
+  "task_states": {
+    "done": 21,
+    "blocked": 8
+  },
+  "test_counts": {
+    "focused-regression": 96,
+    "native-attention-verified": 15,
+    "native-tokenizer-9b": 4,
+    "native-tokenizer-4b": 4,
+    "native-capacity": 8,
+    "installed-native-check": 15
+  },
+  "source_and_native_checks": 127,
+  "additional_installed_checks": 15,
+  "skipped_checks": 0,
+  "installed_modules_verified": 29,
+  "selected_transformers_sources_verified": 8,
+  "full_envelope_memory_acceptance": null,
+  "model_generations": 0,
+  "actual_cuda_execution": false,
+  "provider_duration_seconds": null,
+  "remaining_smoke_gpu_seconds": null
+}

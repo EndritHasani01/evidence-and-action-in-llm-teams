@@ -1,0 +1,14 @@
+{
+  "preparation_checks_passed": false,
+  "root_blocker": "JSONDecodeError: Expecting value: line 1 column 2 (char 1)",
+  "tests_passed": 0,
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_assets_verified": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.34399999992456287,
+  "next_action": "Download the ZIP and stop the session. Return the root-blocker evidence for review; do not rerun or repair fixtures."
+}

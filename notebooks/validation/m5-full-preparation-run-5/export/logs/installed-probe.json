@@ -1,0 +1,20 @@
+{
+  "name": "installed-probe",
+  "args": [
+    "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7/venv/bin/python",
+    "-I",
+    "/kaggle/working/recovery-m5-continuation-76a4e60ec20e/installed-probe.py"
+  ],
+  "cwd": "/tmp/recovery-m5/20261008T211102264915Z-c5a493f7",
+  "started_utc": "2026-10-08T21:44:47.910959+00:00",
+  "timeout_seconds": 90,
+  "stdout": "logs/installed-probe.stdout.txt",
+  "stderr": "logs/installed-probe.stderr.txt",
+  "status": "passed",
+  "leader_exited": true,
+  "tree_confirmation": "exited",
+  "pid": 342,
+  "exit_code": 0,
+  "ended_utc": "2026-10-08T21:45:02.775462+00:00",
+  "elapsed_seconds": 14.864397124999869
+}

@@ -1,0 +1,60 @@
+{
+  "scope": "Windows CPU release check with recommended selector event-loop policy; Kaggle acceptance pending",
+  "notebook_cases": [
+    {
+      "scenario": "valid",
+      "real_kernel": "python3",
+      "execution_counts": [
+        1,
+        2,
+        3
+      ],
+      "elapsed_seconds": 6.0,
+      "summary": {
+        "canary_checks_passed": true,
+        "root_blocker": null,
+        "transport": "raw_payload",
+        "payload_filename": "m5-source-canary.payload",
+        "model_generations": 0,
+        "full_source_preparation": null,
+        "model_smoke": null,
+        "legacy_source_status": "not_observed",
+        "observed_wall_seconds": 0.063,
+        "provider_assignment_utc": null,
+        "provider_release_utc": null,
+        "next_action": "Download this ZIP, stop the session, and return it for transport review."
+      },
+      "result_zip_sha256": "473ca98b001123d14fc0e08bef01a0afc24f17b80aa65b21d808cee367228ab2",
+      "download_link_displayed": true,
+      "off_host_backup_reopen": true
+    },
+    {
+      "scenario": "missing",
+      "real_kernel": "python3",
+      "execution_counts": [
+        1,
+        2,
+        3
+      ],
+      "elapsed_seconds": 2.64,
+      "summary": {
+        "canary_checks_passed": false,
+        "root_blocker": "transport_bytes: ValueError: payload_missing: expected m5-source-canary.payload; see input-inventory.json for transformed or absent input",
+        "transport": "raw_payload",
+        "payload_filename": "m5-source-canary.payload",
+        "model_generations": 0,
+        "full_source_preparation": null,
+        "model_smoke": null,
+        "legacy_source_status": "not_observed",
+        "observed_wall_seconds": 0.063,
+        "provider_assignment_utc": null,
+        "provider_release_utc": null,
+        "next_action": "Download this ZIP and return the failure report; keep the original payload unchanged."
+      },
+      "result_zip_sha256": "8d8e63bd8754ebd3882a19f568f80fc23cfa521ceef764a9b465b5f86295ed75",
+      "download_link_displayed": true,
+      "off_host_backup_reopen": false
+    }
+  ],
+  "shipped_notebook_sha256": "ce936ca88595301a41ac88232bb3eb4c068ee9f515ca4e148bc6bd2a907d7d74"
+}

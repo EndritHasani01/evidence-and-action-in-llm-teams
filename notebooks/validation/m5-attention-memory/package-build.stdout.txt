@@ -1,0 +1,3 @@
+Processing c:\users\endrithasani\downloads\recovery_blueprint\recovery_blueprint
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'error'

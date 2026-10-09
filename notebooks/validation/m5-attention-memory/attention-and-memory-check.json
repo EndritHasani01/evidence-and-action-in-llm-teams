@@ -1,0 +1,20 @@
+{
+  "name": "attention-and-memory-check",
+  "command": [
+    "C:\\Users\\EndritHasani\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "tests.test_t4_attention",
+    "tests.test_model_feasibility",
+    "tests.test_inference_preparation",
+    "tests.inference_checks"
+  ],
+  "exit_code": 1,
+  "elapsed_seconds": 12.449287099996582,
+  "actual_cuda_execution": false,
+  "pretrained_weights": false
+}

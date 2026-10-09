@@ -1,0 +1,29 @@
+{
+  "locations": {
+    "scratch": {
+      "path": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmpkwrqc1ne\\scratch\\20261008T213728286792Z-e3918bc6",
+      "pool": "1215279290",
+      "free_bytes": 10543800320,
+      "total_bytes": 511009562624
+    },
+    "output": {
+      "path": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-probe-output-repair\\controlled-case\\recovery-m5-preflight-20261008T213728286792Z-e3918bc6",
+      "pool": "1215279290",
+      "free_bytes": 10543800320,
+      "total_bytes": 511009562624
+    }
+  },
+  "pools": {
+    "1215279290": {
+      "free_bytes": 10543800320,
+      "roles": [
+        "scratch",
+        "output"
+      ]
+    }
+  },
+  "quota_verified": false,
+  "interpretation": "Filesystem free space is observed; shared pools are counted once.",
+  "additional_scratch_bytes": 1073741981,
+  "output_reserve_bytes": 268435456
+}

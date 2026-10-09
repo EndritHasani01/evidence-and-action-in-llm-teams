@@ -1,0 +1,21 @@
+{
+  "name": "installed-pip-probe",
+  "args": [
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-pip-bootstrap-60eac59d53d7490cbbffb3b260201179\\venv\\Scripts\\python.exe",
+    "-I",
+    "-c",
+    "import json,pip,site,sys;from pathlib import Path;assert pip.__version__=='26.2.1';assert sys.prefix!=sys.base_prefix and site.ENABLE_USER_SITE is False;assert Path(pip.__file__).resolve().is_relative_to(Path(sys.prefix).resolve());print(json.dumps({'version':pip.__version__,'module':pip.__file__,'prefix':sys.prefix,'base_prefix':sys.base_prefix,'user_site':site.ENABLE_USER_SITE}))"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-pip-bootstrap-60eac59d53d7490cbbffb3b260201179",
+  "started_utc": "2026-10-08T20:03:08.138812+00:00",
+  "timeout_seconds": 30,
+  "stdout": "logs/installed-pip-probe.stdout.txt",
+  "stderr": "logs/installed-pip-probe.stderr.txt",
+  "status": "passed",
+  "leader_exited": true,
+  "tree_confirmation": "not_checked_on_windows",
+  "pid": 17912,
+  "exit_code": 0,
+  "ended_utc": "2026-10-08T20:03:08.237209+00:00",
+  "elapsed_seconds": 0.0940000000409782
+}

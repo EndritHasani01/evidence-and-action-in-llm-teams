@@ -981,3 +981,26 @@ and the [M1–M4 CPU audit](../../docs/validation/m4-cpu-gate.md) record the
 commands and limits. CPU report acceptance does not establish language-weight
 loading, finite GPU output, T4 headroom/timing, capability, accepted-host
 persistence, allocation feasibility, pilot results or main findings.
+
+## Native inference suffix fixtures
+
+[inference_suffixes.json](inference_suffixes.json) contains nine CPU-constructed
+native generated-token sequences for the pinned Qwen tokenizer. They include a
+single final transport token, internal/repeated markers, thinking/start markers,
+unexpected suffixes, preserved end-of-text and valid/incomplete/invalid JSON at
+exactly 384 generated IDs. These are decoding fixtures, not sampled model output.
+Every case retains its generated IDs, raw suffix, parsing text, termination and
+independently expected protocol validity. No normalization or repair is allowed.
+
+```powershell
+python -m tests.tokenizer_inference --tokenizer LOCAL_9B_METADATA
+python -m tests.tokenizer_inference --tokenizer LOCAL_4B_METADATA
+.venv/Scripts/python.exe -m unittest tests.test_inference_preparation tests.inference_checks -q
+```
+
+The native command also verifies actual template inputs, fresh generation
+defaults and independent empty hybrid-cache objects, without constructing a
+model. Mock subprocess checks cover saved seed/state ownership, exact raw
+evidence and resume/backup behavior. See the
+[M5 preparation evidence](../../docs/validation/m5-inference-preparation.md)
+for the proposed smoke/allocation scope and still-unverified GPU gates.
