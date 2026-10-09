@@ -1,0 +1,34 @@
+{
+  "locations": {
+    "scratch": {
+      "path": "/tmp/recovery-m5-t4/b103e20420e4",
+      "pool": "54",
+      "free_bytes": 1148790583296,
+      "total_bytes": 8758385086464
+    },
+    "output": {
+      "path": "/kaggle/working/recovery-m5-t4-compatibility-b103e20420e4",
+      "pool": "1794",
+      "free_bytes": 20940460032,
+      "total_bytes": 20957446144
+    }
+  },
+  "pools": {
+    "54": {
+      "free_bytes": 1148790583296,
+      "roles": [
+        "scratch"
+      ]
+    },
+    "1794": {
+      "free_bytes": 20940460032,
+      "roles": [
+        "output"
+      ]
+    }
+  },
+  "quota_verified": false,
+  "interpretation": "Filesystem free space is observed; shared pools are counted once.",
+  "additional_scratch_bytes": 245970238,
+  "output_reserve_bytes": 268435456
+}
