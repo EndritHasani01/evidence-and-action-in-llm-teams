@@ -39,6 +39,15 @@ decision. The proposed clause will enter the authority only after that decision
 is recorded here and in the task. Neither this evidence nor the historical
 [proposal](../planning/abs-iis-course-study-proposal.md) is another specification.
 
+Safe preparation is committed at `ef4c3f6`. A concrete approval request was
+presented on 9 October 2026 for exactly this design/resource amendment, with no
+GPU, freeze, main or external-delivery authorization. No adoption response has
+been recorded. Course/M1-T01 therefore remains unfinished and blocked by this
+explicit decision; course/M1-T02 is not unblocked by a passing preparation audit.
+After approval, apply the reviewed patch with `git apply --unidiff-zero`, record
+the decision, update course progress and run the audit with `--adopted` before
+marking the contract task done.
+
 ## Reuse audit and ownership
 
 The following observations come from current source inspection and retained
@@ -109,6 +118,13 @@ git apply --check --unidiff-zero --ignore-space-change docs/planning/course-cont
 git diff --check
 ```
 
+The final authorization-pending handoff is checked with:
+
+```powershell
+python -X utf8 -S -B notebooks/validation/course-m1-contract/verify_contract.py --pending-adoption --output notebooks/validation/course-m1-contract/pending-adoption-audit.json
+git diff --cached --check
+```
+
 - [Preparation audit](../../notebooks/validation/course-m1-contract/preparation-audit.json)
   passes independent course/thesis schedule enumeration and scoped replay-parent
   existence, candidate amendment table reconciliation, original manifest/schedule
@@ -134,6 +150,21 @@ git diff --check
   it with `--unidiff-zero`. Applicability and final staged/working-tree whitespace
   checks pass after this correction. No dependency changes require package
   installation or renewed GPU preparation.
+- [Independent resource arithmetic](../../notebooks/validation/course-m1-contract/resource-arithmetic.json)
+  passes three hypothetical spending/reserve reconciliations, including separately
+  charged prior costs. At illustrative g=10 seconds, the complete-main forecast
+  with twelve reserved hours and 25% margin is 31.9722 hours, above 30; this is
+  not measured 4B throughput. Two assigned devices for fifteen minutes charge
+  0.5 aggregate hour. Available quota, actual prior allocation and remaining smoke
+  allowance stay null. Standard-library Python/Fraction arithmetic produced this
+  derived evidence without importing the model stack.
+
+Final handoff evidence is retained as `pending-adoption-audit.json` in the
+[validation folder](../../notebooks/validation/course-m1-contract). It passes
+527 local references and 275 heading fragments and reconciles every course task
+and all six milestone counts with the actual authorization blocker. All 1,084
+protected files remain identical. No task is promoted to done, and no dependent
+task is unblocked.
 
 The [retained audit source](../../notebooks/validation/course-m1-contract/verify_contract.py)
 uses the existing Markdown anchor helper and independently declared schedule

@@ -2,6 +2,14 @@
 
 Reviewed 9 October 2026 against checkout `09a85b8`. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
 
+Current course contract handoff, 9 October 2026: safe preparation is committed
+at `ef4c3f6`. The [exact scientific/plan amendment](course-contract-amendment.patch)
+and [reuse evidence](../validation/course-m1-contract-and-reuse.md) are reviewed;
+explicit scientific/resource adoption is pending. Apply the amendment only after
+recording that decision, then verify authority/plan consistency and mark
+course/M1-T01 done before starting course/M1-T02. Current status/counts belong to
+the course index. The scientific authority and runtime defaults are unchanged.
+
 ## Start in the actual checkout
 
 Use read-only checks before trusting a remembered path, branch or completion claim:

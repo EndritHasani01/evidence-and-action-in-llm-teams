@@ -325,9 +325,9 @@ Update these sections only when a capability is verified, a consequential decisi
 
 ### Progress
 
-Course/M1-T01 is preparing the [reviewable course amendment](planning/course-contract-amendment.patch)
+Course/M1-T01 has prepared the [reviewable course amendment](planning/course-contract-amendment.patch)
 and [reuse audit](validation/course-m1-contract-and-reuse.md) on 9 October 2026.
-Scientific/resource adoption is pending; the [course index](todos/course/README.md)
+Explicit scientific/resource adoption is pending; the [course index](todos/course/README.md)
 owns its separate progress. Thesis statuses and defaults below remain unchanged.
 
 | Milestone | Status | Evidence / next action |

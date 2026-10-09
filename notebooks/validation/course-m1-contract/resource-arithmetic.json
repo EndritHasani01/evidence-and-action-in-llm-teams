@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "kind": "hypothetical arithmetic, not measured allocation or throughput",
+  "main_new_generations": 5752,
+  "reserve_reconciliation_examples": [
+    {
+      "hypothetical_spent_preparation_hours": 0,
+      "remaining_reserves_hours": 12,
+      "charged_plus_remaining_hours": 12
+    },
+    {
+      "hypothetical_spent_preparation_hours": 1.75,
+      "remaining_reserves_hours": 10.25,
+      "charged_plus_remaining_hours": 12.0
+    },
+    {
+      "hypothetical_spent_preparation_hours": 1.95,
+      "remaining_reserves_hours": 10.25,
+      "charged_plus_remaining_hours": 12.2
+    }
+  ],
+  "g_10_seconds_forecast_hours": 31.97222222222222,
+  "g_10_seconds_fits_30_hour_ceiling": false,
+  "two_assigned_devices_15_minutes_aggregate_hours": 0.5,
+  "available_quota": null,
+  "prior_allocation_duration": null,
+  "remaining_smoke_allowance": null
+}

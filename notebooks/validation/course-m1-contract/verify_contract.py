@@ -65,7 +65,9 @@ def independent_schedule(per_family, preserving_per_family, repeated_per_family,
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--adopted", action="store_true")
+    stage = parser.add_mutually_exclusive_group()
+    stage.add_argument("--adopted", action="store_true")
+    stage.add_argument("--pending-adoption", action="store_true")
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     assert not args.output.exists(), "retain earlier audit output"
@@ -151,11 +153,19 @@ def main():
     index = (ROOT / "docs/todos/course/README.md").read_text(encoding="utf-8")
     table = {key: status for key, status in re.findall(r"\| \[(M\d-T\d\d)[^\n]+?\| (ready|active|blocked|done) \|", index)}
     assert table == states, "course task index mismatch"
-    expected_states = Counter(done=1, ready=1, blocked=19) if args.adopted else Counter(active=1, blocked=20)
+    expected_states = (Counter(done=1, ready=1, blocked=19) if args.adopted else
+                       Counter(blocked=21) if args.pending_adoption else Counter(active=1, blocked=20))
     assert Counter(states.values()) == expected_states
-    expected_summary = ("1/21 course tasks done; 20 remaining; 0 active; 1 ready; 19 blocked"
-                        if args.adopted else "0/21 course tasks done; 21 remaining; 1 active; 0 ready; 20 blocked")
+    expected_summary = ("1/21 course tasks done; 20 remaining; 0 active; 1 ready; 19 blocked" if args.adopted else
+        "0/21 course tasks done; 21 remaining; 0 active; 0 ready; 21 blocked" if args.pending_adoption else
+        "0/21 course tasks done; 21 remaining; 1 active; 0 ready; 20 blocked")
     assert expected_summary in index
+    milestone_rows = re.findall(r"\| (M\d) \| (\d+)/(\d+) \| (\d+) \| (\d+) \| (\d+) \|", index)
+    assert len(milestone_rows) == 6
+    for milestone, done, total, active, ready, blocked in milestone_rows:
+        actual = Counter(status for task, status in states.items() if task.startswith(milestone + "-"))
+        assert tuple(map(int, (done, active, ready, blocked))) == tuple(actual[s] for s in ("done", "active", "ready", "blocked"))
+        assert int(total) == sum(actual.values())
 
     # Reuse the existing Markdown slug rules without running its historical writer.
     helper = ROOT / "notebooks/validation/m5-attention-memory"
@@ -184,7 +194,7 @@ def main():
                 assert unquote(fragment) in anchors(document), (source, link)
                 fragments += 1
 
-    report = {"status": "passed", "stage": "adopted" if args.adopted else "prepared",
+    report = {"status": "passed", "stage": "adopted" if args.adopted else "pending_adoption" if args.pending_adoption else "prepared",
         "code_baseline": BASE, "environment": sys.version.split()[0], "protected_files_identical": len(baseline["protected"]),
         "preexisting_user_edit_sha256": baseline["protected"]["docs/validation/m5-inference-preparation.md"],
         "thesis_specification_preserved": True, "thesis_runtime_defaults_preserved": True,

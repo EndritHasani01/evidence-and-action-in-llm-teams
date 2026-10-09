@@ -1,6 +1,6 @@
 # Course M1-T01 — Course contract and reuse boundary
 
-**Status:** active
+**Status:** blocked
 
 **Dependencies:** None for safe preparation. Explicit course-design/resource adoption is required before applying the scientific amendment; creating this task system supplies no execution authorization.
 
@@ -32,9 +32,15 @@ One explicitly adopted course regime is recorded in the sole scientific authorit
 
 Check proposal/authority/plan consistency, independent course schedule arithmetic, seed/input separation requirements and unchanged thesis behavior. Verify document references and preserve existing artifacts. Record amendment/authorization references, code baseline, reusable evidence and unresolved risks. No GPU, pilot, main run or publication belongs here.
 
-**Evidence:** Safe preparation is underway on 9 October 2026 at code baseline
+**Evidence:** Safe preparation is complete on 9 October 2026 at code baseline
 `96df569603dc940b4284791e17771e2dc19285b2`. The
 [contract and reuse audit](../../../validation/course-m1-contract-and-reuse.md)
 records the concrete amendment, independent arithmetic, reusable implementation,
-affected later checks and authorization boundary. Adoption remains pending;
-this task does not authorize model execution or a main freeze.
+affected later checks and authorization boundary. Preparation is committed at
+`ef4c3f6`; 51 focused existing checks and the independent documentation/preservation
+audits pass. **Actual blocker:** explicit adoption of the prepared four-round
+course scientific clause and cumulative 30-hour resource rule is still pending.
+The [exact specification/plan amendment](../../../planning/course-contract-amendment.patch)
+is reviewable and remains unapplied. This task is unfinished until that decision
+is recorded and the adopted authority/plan handoff is verified; course/M1-T02
+remains blocked. No model execution, main freeze or publication is authorized.
