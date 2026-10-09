@@ -22,18 +22,19 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**1/21 course tasks done; 20 remaining; 0 active; 1 ready; 19 blocked.**
+**1/21 course tasks done; 20 remaining; 1 active; 0 ready; 19 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
-are recorded. Course/M1-T02 is ready. Runtime adaptations, course inputs and
-course CPU gates remain unimplemented. Inherited foundation tasks are not counted
-as course acceptance.
+are recorded. Course/M1-T02 is active: population scope and isolated course seed
+assignments pass focused CPU checks; complete schedules and the M1 gate remain
+underway. Later runtime adaptations and course CPU gates remain open. Inherited
+foundation tasks are not counted as course acceptance.
 
 The next safe task is [course/M1-T02](M1/M1-T02-course-inputs-and-schedules.md), following completed [course/M1-T01](M1/M1-T01-course-contract-and-reuse-boundary.md). **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
-| M1 | 1/2 | 0 | 1 | 0 | Adopted contract/reuse audit passed; independent course input/schedule gate remains open |
+| M1 | 1/2 | 1 | 0 | 0 | Adopted contract/reuse audit passed; course populations verified; complete input/schedule gate remains open |
 | M2 | 0/3 | 0 | 0 | 3 | Lawful views, literal interventions, exact replay, legal witness and complete course token bound |
 | M3 | 0/2 | 0 | 0 | 2 | Durable workers, bounded failures, honest accounting and crash-safe lifecycle |
 | M4 | 0/4 | 0 | 0 | 4 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
@@ -47,7 +48,7 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | Task | Status | Required task dependencies |
 |---|---|---|
 | [M1-T01 — Course contract and reuse boundary](M1/M1-T01-course-contract-and-reuse-boundary.md) | done | Scientific/resource adoption and contract/reuse audit passed |
-| [M1-T02 — Course inputs and schedules](M1/M1-T02-course-inputs-and-schedules.md) | ready | M1-T01 |
+| [M1-T02 — Course inputs and schedules](M1/M1-T02-course-inputs-and-schedules.md) | active | M1-T01 |
 | [M2-T01 — Course protocol and limits](M2/M2-T01-course-protocol-and-limits.md) | blocked | M1-T02 |
 | [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | blocked | M2-T01 |
 | [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | blocked | M2-T02 |

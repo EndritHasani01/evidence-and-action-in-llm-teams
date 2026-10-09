@@ -1008,7 +1008,13 @@ CPU gate, GPU/model acceptance, an empirical result or execution authorization.
   stable IDs and manifests; add only explicit course scope to populations,
   schedules and their CLI consumers. Preserve target/fallback thesis defaults,
   60/40 inputs, original todos and evidence. Course inputs and seed assignments
-  are a later M1-T02 handoff; no input is frozen by contract adoption.
+  are owned by M1-T02; no input is frozen by contract adoption. Its population
+  checkpoint uses an explicit `regime="course"` field on the existing host
+  population, fixed 20/fallback scope and the existing integer seed slots.
+  Thesis records keep their canonical bytes/defaults. Course master seed
+  `20261009` is independently disjoint from both saved thesis-size assignments
+  (`20261004`); only index one receives a second continuation seed set. Six
+  focused CPU checks pass; schedules and the complete M1 gate remain underway.
 - Carry the adopted course limits through the existing renderer, parser,
   native tokenizer and exact inference/settings records. Keep four rounds,
   literal boundaries, exact replay and synchronous visibility; no runtime fork,

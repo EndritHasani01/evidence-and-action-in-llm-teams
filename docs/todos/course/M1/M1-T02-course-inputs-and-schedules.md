@@ -1,6 +1,6 @@
 # Course M1-T02 — Course inputs and schedules
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M1-T01](M1-T01-course-contract-and-reuse-boundary.md).
 
@@ -30,7 +30,17 @@ Existing mathematical generation/truth and schedule preparation support one repr
 
 Run affected mathematical/manifest/schedule checks, including duplicate cutoffs, endpoints/shard boundaries, rank crossings, alternatives/disconnection, D empty/nonempty, legal edit sampling and exhausted rejection. Reuse unchanged solver evidence rather than rebuilding solvers. Record commands/environment, course input/schedule locations and independent count/seed comparisons. No inference.
 
-**Evidence:** Not yet recorded. Existing M1 foundations are implemented; the course population/schedule is not.
+**Population checkpoint, 9 October 2026:** The authority, course handoff and
+M1-T01 adoption evidence were inspected. The unchanged 60-test M1/CPU-entrypoint
+baseline passes on Windows/CPython 3.11.9 with site packages disabled. Explicit
+course population scope now reuses the fallback mathematics and existing
+records/seed slots, with 20 main/five development worlds, one owner block and
+exactly five extra continuation seed sets. Six new independent population checks
+pass, and the combined 66-test M1/CLI/population regression passes with zero skips,
+including actual thesis/course/development seed separation, edit truth,
+reversed preparation, explicit rejection exhaustion and saved-file adversaries.
+Thesis JSON bytes/default scope remain unchanged. Complete course schedules,
+CLI preparation, retained inputs and the M1 course gate remain underway.
 
 **Prerequisite handoff, 9 October 2026:** M1-T01's explicit scientific/resource
 adoption and [contract/reuse audit](../../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
