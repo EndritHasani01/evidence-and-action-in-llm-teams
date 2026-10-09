@@ -325,6 +325,11 @@ Update these sections only when a capability is verified, a consequential decisi
 
 ### Progress
 
+Course/M1-T01 is preparing the [reviewable course amendment](planning/course-contract-amendment.patch)
+and [reuse audit](validation/course-m1-contract-and-reuse.md) on 9 October 2026.
+Scientific/resource adoption is pending; the [course index](todos/course/README.md)
+owns its separate progress. Thesis statuses and defaults below remain unchanged.
+
 | Milestone | Status | Evidence / next action |
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |

@@ -1,0 +1,130 @@
+{
+  "status": "passed",
+  "stage": "prepared",
+  "code_baseline": "96df569603dc940b4284791e17771e2dc19285b2",
+  "environment": "3.11.9",
+  "protected_files_identical": 1084,
+  "preexisting_user_edit_sha256": "c071fbb83438a9831b073fd80da4d60f92eed3d5945674d2f84fbd8348b55dca",
+  "thesis_specification_preserved": true,
+  "thesis_runtime_defaults_preserved": true,
+  "patch_check": "forward",
+  "course_main_components": {
+    "prefix": [
+      320,
+      320
+    ],
+    "controls": [
+      40,
+      40
+    ],
+    "revised": [
+      1600,
+      1600
+    ],
+    "sham": [
+      960,
+      960
+    ],
+    "masks": [
+      960,
+      1280
+    ],
+    "preserving": [
+      384,
+      384
+    ],
+    "repeat": [
+      720,
+      800
+    ],
+    "receipts": [
+      384,
+      384
+    ],
+    "prose_delay": [
+      384,
+      512
+    ]
+  },
+  "course_main": [
+    5752,
+    6280,
+    528
+  ],
+  "course_development_components": {
+    "prefix": [
+      80,
+      80
+    ],
+    "controls": [
+      10,
+      10
+    ],
+    "revised": [
+      400,
+      400
+    ],
+    "sham": [
+      240,
+      240
+    ],
+    "preserving": [
+      96,
+      96
+    ],
+    "masks": [
+      96,
+      128
+    ],
+    "receipts": [
+      96,
+      96
+    ],
+    "prose_delay": [
+      96,
+      128
+    ]
+  },
+  "course_development": [
+    1114,
+    1178,
+    64
+  ],
+  "thesis_totals": {
+    "60": [
+      16152,
+      17656
+    ],
+    "40": [
+      11504,
+      12560
+    ]
+  },
+  "existing_seed_domains": [
+    {
+      "size": "target",
+      "master_seed": 20261004,
+      "main_assigned_seeds": 2500,
+      "development_assigned_seeds": 195,
+      "domains_disjoint": true,
+      "complete_block_span_below": 1048576
+    },
+    {
+      "size": "fallback",
+      "master_seed": 20261004,
+      "main_assigned_seeds": 2500,
+      "development_assigned_seeds": 195,
+      "domains_disjoint": true,
+      "complete_block_span_below": 1048576
+    }
+  ],
+  "course_inputs_or_seeds_frozen": false,
+  "course_task_states": {
+    "active": 1,
+    "blocked": 20
+  },
+  "local_references_checked": 520,
+  "markdown_fragments_checked": 275,
+  "gpu_allocations_or_model_calls": 0,
+  "scope": "Contract/independent arithmetic and unchanged thesis audit; course behavioral and model gates remain open."
+}
