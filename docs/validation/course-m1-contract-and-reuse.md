@@ -9,9 +9,11 @@ Prepared 9 October 2026 on Windows/PowerShell, Python 3.11.9, from code baseline
 
 ## Amendment and authorization
 
-**Prepared; adoption pending.** The [exact amendment](../planning/course-contract-amendment.patch)
-adds one scoped course clause to the existing scientific authority. Its proposed
-values are the four-round course proposal: direct pinned 4B, numeric m=6/BFS
+**Explicitly approved and applied, 9 October 2026.** The
+[exact approved amendment](../planning/course-contract-amendment.patch) adds one
+scoped [course clause](../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+to the scientific authority and a [course living handoff](../IMPLEMENTATION_PLAN.md#11-course-living-handoff)
+to the existing plan. Its adopted values are direct pinned 4B, numeric m=6/BFS
 8 nodes and 12 edges, all five families, 20 main/five development worlds,
 four peers/four rounds per phase, 256/64 reply/prose caps, eight-world focal
 and preserving cohorts, five predetermined continuation repeats. All comparisons,
@@ -26,27 +28,32 @@ account, candidate or course label. Unknown prior allocation is not zero and
 blocks resource admission until recovered or bounded conservatively. A limit
 is not current quota, a fresh smoke allowance or permission to run.
 
-The reviewable clause specifies spending versus remaining reserves and retains
+The adopted clause specifies spending versus remaining reserves and retains
 the full twelve-hour pre-main reservation and 25% main margin. Execution, a
 scientific freeze, main inference and external delivery retain separate approval
 and technical gates. Local reporting/reproduction is the initial deliverable.
 ABS/IIS rubrics, deadline, report format and shared-submission rules remain
 unspecified; they do not prevent safe implementation.
 
-The user's implementation request authorizes this preparation and local commits.
-It does not explicitly settle the task's separate scientific/resource adoption
-decision. The proposed clause will enter the authority only after that decision
-is recorded here and in the task. Neither this evidence nor the historical
+The initial implementation request authorized preparation and local commits.
+The user subsequently answered the concrete amendment approval request with
+**"Approve design and resource adoption"** on 9 October 2026. That request named
+the four-round 4B/20-world/256-64 regime, cumulative 30-hour course ceiling within
+100 overall, 8/2/2 allowances, inclusion of shared prior spending and withholding
+resource admission for unknown allocation. It expressly excluded GPU runs,
+freeze, main execution and publication. This response settles course scientific
+and resource adoption within exactly that scope. It does not waive execution
+gates, supply current quota, recover prior allocation or freeze inputs/settings.
+Neither this evidence nor the historical
 [proposal](../planning/abs-iis-course-study-proposal.md) is another specification.
 
-Safe preparation is committed at `ef4c3f6`. A concrete approval request was
-presented on 9 October 2026 for exactly this design/resource amendment, with no
-GPU, freeze, main or external-delivery authorization. No adoption response has
-been recorded. Course/M1-T01 therefore remains unfinished and blocked by this
-explicit decision; course/M1-T02 is not unblocked by a passing preparation audit.
-After approval, apply the reviewed patch with `git apply --unidiff-zero`, record
-the decision, update course progress and run the audit with `--adopted` before
-marking the contract task done.
+Safe preparation is committed at `ef4c3f6`; the authorization-pending handoff
+at `387b06a` remains historical evidence. The later explicit approval supersedes
+that blocker. The exact reviewed patch was applied with
+`git apply --unidiff-zero --ignore-space-change` to the specification and plan.
+Final adoption/handoff checks use the same independent auditor with `--adopted`;
+the 20-world inputs/schedules and course runtime remain course/M1-T02 and later
+tasks rather than being supplied by this documentation amendment.
 
 ## Reuse audit and ownership
 
@@ -118,7 +125,7 @@ git apply --check --unidiff-zero --ignore-space-change docs/planning/course-cont
 git diff --check
 ```
 
-The final authorization-pending handoff is checked with:
+The earlier authorization-pending handoff was checked before approval with:
 
 ```powershell
 python -X utf8 -S -B notebooks/validation/course-m1-contract/verify_contract.py --pending-adoption --output notebooks/validation/course-m1-contract/pending-adoption-audit.json
@@ -137,8 +144,8 @@ git diff --cached --check
 - All **1,084 protected existing files remain byte-for-byte identical** to the
   pre-edit snapshot, including runtime code, configuration, all original thesis
   todos, scientific fixtures, historical archive, vendor source and notebooks.
-  The original specification is unchanged while adoption is pending. Its approved
-  amendment is append-only. The pre-existing user edit retains SHA-256
+  The original specification was unchanged before approval; its approved
+  amendment is append-only and preserves Sections 1-10. The pre-existing user edit retains SHA-256
   `c071fbb83438a9831b073fd80da4d60f92eed3d5945674d2f84fbd8348b55dca` and is unstaged.
 - Both saved thesis sizes use master seed `20261004`; each has 2,500 assigned main
   and 195 assigned development seeds, with no overlap and each complete stream
@@ -159,12 +166,13 @@ git diff --cached --check
   allowance stay null. Standard-library Python/Fraction arithmetic produced this
   derived evidence without importing the model stack.
 
-Final handoff evidence is retained as `pending-adoption-audit.json` in the
+The earlier handoff evidence is retained as `pending-adoption-audit.json` in the
 [validation folder](../../notebooks/validation/course-m1-contract). It passes
 527 local references and 275 heading fragments and reconciles every course task
 and all six milestone counts with the actual authorization blocker. All 1,084
-protected files remain identical. No task is promoted to done, and no dependent
-task is unblocked.
+protected files were identical. At that historical checkpoint no task was
+promoted to done and no dependent task was unblocked; the later authorization
+and adopted handoff supersede those progress statements.
 
 The [retained audit source](../../notebooks/validation/course-m1-contract/verify_contract.py)
 uses the existing Markdown anchor helper and independently declared schedule
@@ -172,3 +180,46 @@ matrix. Its preservation comparison reads the temporary snapshot made before any
 edit; it adds no runtime ledger, identity or mutable progress store. Output files
 are derived validation artifacts and cannot overwrite earlier audit results.
 No GPU allocation, model loading, pilot, main run, freeze or publication occurred.
+
+## Completion and handoff
+
+Course/M1-T01 is done on 9 October 2026 following the explicit adoption response
+recorded above. [Specification Section 11](../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+contains every authorized course change and unchanged invariant; the
+[existing plan's course handoff](../IMPLEMENTATION_PLAN.md#11-course-living-handoff)
+records the reuse decisions and outstanding gates. The task/index/handoff and
+repository orientation now refer to this adopted authority. The proposal and
+earlier pending-adoption records retain their historical status.
+
+The applied-authority review passes with 625 local references/335 heading
+fragments and all 1,084 protected files identical. The final status audit passes
+632 local references/341 heading fragments, exact 1/21-done progress and all six
+milestone counts, again preserving all 1,084 files. It is retained as
+`adopted-handoff-audit.json` in the
+[validation folder](../../notebooks/validation/course-m1-contract):
+
+```powershell
+python -X utf8 -S -B notebooks/validation/course-m1-contract/verify_contract.py --adopted --output notebooks/validation/course-m1-contract/adoption-review-audit.json
+python -X utf8 -S -B notebooks/validation/course-m1-contract/verify_contract.py --adopted --output notebooks/validation/course-m1-contract/adopted-handoff-audit.json
+git diff --check
+git diff --cached --check
+```
+
+These adopted checks verify exact append-only scientific changes, reverse
+applicability of the approved patch, authority/plan/table agreement, unchanged
+runtime/defaults and artifacts, independent counts, existing saved seed domains,
+all course references/inbound anchors and task/milestone progress. The 51 focused
+foundation checks already passed during preparation; no runtime behavior changed
+afterward to require repeating them. No inherited CPU or standalone CUDA result
+is promoted to course behavioral/model acceptance.
+
+[Course/M1-T02](../todos/course/M1/M1-T02-course-inputs-and-schedules.md) is ready;
+course progress is 1/21 done, one ready and 19 blocked. The course M1 gate remains
+open until actual inputs/schedules are verified. Course M2-M4 renew the owned CPU
+checks, and M5 still needs complete course-capacity/model-memory evidence,
+actual-host/model admission, resource reconciliation, smoke, capability, full
+pilot and authorized freeze. Prior allocation/quota/smoke allowance remain
+unknown; they withhold resource admission without blocking safe CPU adaptation.
+The original thesis contract/defaults/todos and all existing artifacts remain
+intact. External submission/publication and GPU/pilot/main execution remain
+separately authorized actions. No work on the M1-T02 implementation is claimed.

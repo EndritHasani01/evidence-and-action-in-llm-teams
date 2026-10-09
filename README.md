@@ -99,6 +99,14 @@ and the [implementation plan](docs/IMPLEMENTATION_PLAN.md#10-living-handoff).
 
 Four peers perform four rounds of collaborative work before an announced factual revision, then receive four recovery rounds. The study targets 60 worlds, with a 40-world resource fallback. The specification defines the retention and complementary team-reset comparisons, focused receipt/prose interventions, two primary estimands, exact evaluation, repetition, and measured feasibility gates.
 
+The separate [ABS/IIS course contract](PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+was explicitly adopted on 9 October 2026: direct 4B, smaller instances, 20 main
+worlds, four rounds per phase, 256/64 reply/prose caps and a cumulative 30-hour
+course subceiling. Its [course tasks](docs/todos/course/README.md) and
+[engineering handoff](docs/IMPLEMENTATION_PLAN.md#11-course-living-handoff)
+track the remaining adaptations and acceptance. Thesis defaults and evidence
+remain intact; course adoption supplies no model or execution acceptance.
+
 ## CPU installation and validation
 
 Use Python 3.11. Strict reply validation requires Pydantic 2, declared as a CPU

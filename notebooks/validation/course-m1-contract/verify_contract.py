@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[3]
 BASE = "96df569603dc940b4284791e17771e2dc19285b2"
 FAMILIES = ("top_k", "prefix", "difference", "sort", "bfs")
 DOCUMENTS = (
-    "PROJECT_SPECIFICATION.md", "docs/IMPLEMENTATION_PLAN.md",
+    "PROJECT_SPECIFICATION.md", "docs/IMPLEMENTATION_PLAN.md", "README.md",
     "docs/todos/course/README.md",
     "docs/todos/course/M1/M1-T01-course-contract-and-reuse-boundary.md",
     "docs/todos/course/M1/M1-T02-course-inputs-and-schedules.md",
@@ -153,10 +153,11 @@ def main():
     index = (ROOT / "docs/todos/course/README.md").read_text(encoding="utf-8")
     table = {key: status for key, status in re.findall(r"\| \[(M\d-T\d\d)[^\n]+?\| (ready|active|blocked|done) \|", index)}
     assert table == states, "course task index mismatch"
-    expected_states = (Counter(done=1, ready=1, blocked=19) if args.adopted else
+    completed = args.adopted and states["M1-T01"] == "done"
+    expected_states = (Counter(done=1, ready=1, blocked=19) if completed else
                        Counter(blocked=21) if args.pending_adoption else Counter(active=1, blocked=20))
     assert Counter(states.values()) == expected_states
-    expected_summary = ("1/21 course tasks done; 20 remaining; 0 active; 1 ready; 19 blocked" if args.adopted else
+    expected_summary = ("1/21 course tasks done; 20 remaining; 0 active; 1 ready; 19 blocked" if completed else
         "0/21 course tasks done; 21 remaining; 0 active; 0 ready; 21 blocked" if args.pending_adoption else
         "0/21 course tasks done; 21 remaining; 1 active; 0 ready; 20 blocked")
     assert expected_summary in index
@@ -195,6 +196,7 @@ def main():
                 fragments += 1
 
     report = {"status": "passed", "stage": "adopted" if args.adopted else "pending_adoption" if args.pending_adoption else "prepared",
+        "contract_task_completed": completed,
         "code_baseline": BASE, "environment": sys.version.split()[0], "protected_files_identical": len(baseline["protected"]),
         "preexisting_user_edit_sha256": baseline["protected"]["docs/validation/m5-inference-preparation.md"],
         "thesis_specification_preserved": True, "thesis_runtime_defaults_preserved": True,

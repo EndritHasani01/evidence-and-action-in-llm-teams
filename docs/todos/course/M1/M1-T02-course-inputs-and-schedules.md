@@ -1,12 +1,12 @@
 # Course M1-T02 — Course inputs and schedules
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M1-T01](M1-T01-course-contract-and-reuse-boundary.md).
 
 ## References
 
-- [Specification tasks/sampling/events](../../../../PROJECT_SPECIFICATION.md#2-worlds-task-structure-and-events), [controls and pilot](../../../../PROJECT_SPECIFICATION.md#81-model-and-capability-controls), accepted course clause from M1-T01, and [plan M1](../../../IMPLEMENTATION_PLAN.md#3-milestone-m1--reproducible-worlds-truth-and-schedules).
+- [Specification tasks/sampling/events](../../../../PROJECT_SPECIFICATION.md#2-worlds-task-structure-and-events), [controls and pilot](../../../../PROJECT_SPECIFICATION.md#81-model-and-capability-controls), [adopted course clause](../../../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime) from M1-T01, and [plan M1](../../../IMPLEMENTATION_PLAN.md#3-milestone-m1--reproducible-worlds-truth-and-schedules).
 - [Proposed exact course budget](../../../planning/abs-iis-course-study-proposal.md#exact-call-budget); reusable [task truth](../../M1/M1-T01-task-worlds-and-truth.md), [populations](../../M1/M1-T02-edits-and-populations.md), and [schedules](../../M1/M1-T03-complete-schedules.md).
 
 ## Intended outcome
@@ -31,3 +31,9 @@ Existing mathematical generation/truth and schedule preparation support one repr
 Run affected mathematical/manifest/schedule checks, including duplicate cutoffs, endpoints/shard boundaries, rank crossings, alternatives/disconnection, D empty/nonempty, legal edit sampling and exhausted rejection. Reuse unchanged solver evidence rather than rebuilding solvers. Record commands/environment, course input/schedule locations and independent count/seed comparisons. No inference.
 
 **Evidence:** Not yet recorded. Existing M1 foundations are implemented; the course population/schedule is not.
+
+**Prerequisite handoff, 9 October 2026:** M1-T01's explicit scientific/resource
+adoption and [contract/reuse audit](../../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
+pass. This task is ready for safe CPU implementation under the adopted clause;
+no course inputs, schedules, seed assignments or M1 course gate are completed by
+that contract handoff.

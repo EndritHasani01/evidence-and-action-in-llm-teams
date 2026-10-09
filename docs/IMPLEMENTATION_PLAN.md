@@ -325,10 +325,10 @@ Update these sections only when a capability is verified, a consequential decisi
 
 ### Progress
 
-Course/M1-T01 has prepared the [reviewable course amendment](planning/course-contract-amendment.patch)
-and [reuse audit](validation/course-m1-contract-and-reuse.md) on 9 October 2026.
-Explicit scientific/resource adoption is pending; the [course index](todos/course/README.md)
-owns its separate progress. Thesis statuses and defaults below remain unchanged.
+Course/M1-T01's [approved course clause](../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+and [reuse audit](validation/course-m1-contract-and-reuse.md) record the explicit
+design/resource adoption of 9 October 2026. The [course living handoff](#11-course-living-handoff)
+and [course index](todos/course/README.md) own its distinct engineering progress.
 
 | Milestone | Status | Evidence / next action |
 |---|---|---|
@@ -987,3 +987,52 @@ old source-v2 payloads cannot deliver the new adapter and remain preserved.
 T02 and all dependent gates remain blocked with twenty-one done/eight blocked;
 baseline/scientific/fallback/package/cap/frozen settings stay unchanged. No
 model generations, new GPU run, pilot/main execution or freeze occurred.
+
+## 11. Course living handoff
+
+The [adopted course clause](../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+is the sole authority for the separate ABS/IIS regime. Sections 1-10 above retain
+the thesis engineering roadmap and its existing task/evidence state. The
+[course index](todos/course/README.md) owns scoped task status and counts; this
+handoff records decisions and verified boundaries without another tracker.
+
+Course/M1-T01 establishes the authorized contract and
+[reuse/validation evidence](validation/course-m1-contract-and-reuse.md).
+[Course/M1-T02](todos/course/M1/M1-T02-course-inputs-and-schedules.md) is the next
+engineering task. Adoption is not the M1 course input/schedule gate, a course
+CPU gate, GPU/model acceptance, an empirical result or execution authorization.
+
+### Course implementation decisions
+
+- Reuse the existing fallback mathematical size, generators/truth/edits,
+  stable IDs and manifests; add only explicit course scope to populations,
+  schedules and their CLI consumers. Preserve target/fallback thesis defaults,
+  60/40 inputs, original todos and evidence. Course inputs and seed assignments
+  are a later M1-T02 handoff; no input is frozen by contract adoption.
+- Carry the adopted course limits through the existing renderer, parser,
+  native tokenizer and exact inference/settings records. Keep four rounds,
+  literal boundaries, exact replay and synchronous visibility; no runtime fork,
+  dependency, second store, new identity or generalized coordinator is needed.
+- Reuse SQLite/checkpoints, original worker/attempt/allocation records and
+  read-only analysis. Renew the affected 20/eight/five-world population, cost,
+  missingness and reporting checks using the owners in the reuse audit. Inherited
+  thesis CPU results remain reusable evidence, not new course acceptance.
+- Apply Section 11.3's cumulative course subceiling, shared prior spending and
+  reserves through existing budget/accounting records in course/M3-T02, and
+  independently check the measured complete-main forecast in course/M5-T05.
+  Unknown prior allocation withholds resource admission, without preventing CPU
+  adaptation. No available quota or fresh smoke allowance is recorded here.
+- Prepare local reporting/reproduction first. External submission/publication,
+  GPU/pilot/main execution and scientific/frozen-configuration changes retain
+  separate authorization. Unspecified course rubric/deadline is not a blocker.
+
+### Course unresolved gates
+
+The course population/settings are not implemented. The pinned 4B/256/64 witness,
+full permitted-input bound and complete model-memory/headroom argument must be
+renewed. Standalone run 6 and the CPU attention integration do not accept the new
+layout on T4 or the course pretrained model. Actual host/package/source assets,
+smoke requests, capability, complete pilot, resource reconciliation and freeze
+remain course M5 gates. Original thesis full-envelope/model obligations remain
+open independently. Subsequent tasks update this handoff and the existing course
+index with named executed evidence; no GPU, model or empirical run occurs in T01.

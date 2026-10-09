@@ -467,3 +467,148 @@ Keep the project within one announced edit, reliable synchronous communication, 
 Do not add live delayed resets, revision-time/direction sweeps, completion-reopening obligations, semantic/exposure-based deletion, verifier-assisted answer repair, learned routing, prefix-prevention training, or additional models to this schedule. Their distinct interfaces and controls would dilute the questions identified here. Prefix-progress/direction descriptors, version tests, and deterministic information examples preserve their useful lessons without another live matrix.
 
 The intended contribution is a **controlled account of when previously acquired evidence, retained outputs, historical change information, and peer interaction help or hinder recovery**. Useful findings include a compact practical policy, limits of correction broadcasting, harmful or beneficial effects on collaborators, costly loss of correct work, or well-bounded evidence that simpler recovery suffices. Inconclusive intervals and capability failures must remain visible. A completed, reproducible negative result is preferable to a stronger claim unsupported by the available observations.
+
+## 11. Adopted ABS/IIS course regime
+
+### 11.1 Scope and precedence
+
+This scoped amendment adopts the four-round course regime on 9 October 2026.
+The explicit adoption record is in [course/M1-T01 evidence](docs/validation/course-m1-contract-and-reuse.md#amendment-and-authorization).
+Sections 1-10 retain the full thesis contract and defaults; only the named course
+parameters, populations and resource choice below override them for a separate
+course bundle. All other scientific requirements, comparisons, exclusions,
+execution gates and attribution apply. Course acceptance does not close thesis
+todos or admit the original thesis configuration. This amendment is a design and
+resource decision, not an accepted model/environment freeze or permission for
+GPU allocation, pilot/main execution or external delivery.
+
+| Parameter | Course regime |
+|---|---|
+| Model | Direct text-only Qwen3.5-4B, reviewed model/tokenizer revision `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`; NF4/double quantization, FP16 and necessary FP32 calculations as in Section 8.1 |
+| Mathematical size | Numeric m=6, n=24; BFS eight nodes/twelve unique edges, uniform labelled Pruefer tree plus five uniformly sampled nonedges and equal random ownership |
+| Main/development population | 20 main worlds, four per family; five separate development worlds, one per family |
+| Peers/horizon | Four peers; four synchronous prefix and four synchronous recovery rounds |
+| Reply/prose limits | 256 generated tokens per scheduled call; at most 64 tokenizer tokens summed over outgoing message texts |
+| Other protocol limits | 262,144 total context including the full 256 output reserve; three recipients, eight distinct current references per recipient, 32 feedback tokens per slot |
+| Focused populations | All eight Prefix/Sort worlds for receipts; all eight Sort/BFS worlds for Q; all four Top-K and four BFS worlds for preserving edits |
+| Additional continuation replicate | First one main world per family, five total, fixed before outcomes; B/C/K/P_G/P_H under revision and sham only |
+
+Retain the value ranges, ownership/output-coordinate distinctions, Top-K's ten
+values including multiplicity, six assigned Prefix/Sort coordinates per peer,
+23 ordered Difference coordinates and complete canonical eight-node BFS keys.
+Full-information Prefix/Sort controls return all 24 coordinates and `send=[]`.
+The 256/64 limits are uniform acceptance candidates: all shapes, controls, useful
+forwarding and the complete permitted history must pass before GPU use. A failed
+cap/capacity gate requires an explicit pre-main amendment and renewed affected
+checks, never reply repair, silent truncation or a per-condition exception.
+The three-recovery-round proposal is outside this adopted regime.
+
+Use one balanced edited-owner block per family, each owner exactly once. Preserve
+mathematical eligibility, uniform legal edit sampling, the 1,000-attempt rejection
+limit and all unfavorable/incorrect prefixes. Independently sample the unordered
+two-pair partition; G contains peer zero and the same partition is used across
+siblings/events/repeats. Use new saved course master-seed streams verified
+disjoint from actual thesis and course-development/main assignments. Save actual
+inputs, edits, ownership, partitions, rejection counts and seeds before main
+inference. Existing IDs/records are reused within separate course and thesis
+bundles; neither equal-looking IDs nor equal seeds allow cross-bundle replay.
+
+### 11.2 Schedule and scientific invariants
+
+| Main component | New generations | Logical opportunities |
+|---|---:|---:|
+| Shared prefixes | 320 | 320 |
+| Revised L/B/C/K/F | 1,600 | 1,600 |
+| Sham B/C/K | 960 | 960 |
+| Complementary masks under both events | 960 | 1,280 |
+| Before/after full-information controls | 40 | 40 |
+| Preserving B/C/K | 384 | 384 |
+| Historical receipts, revision only | 384 | 384 |
+| Q_B/Q_C under both events | 384 | 512 |
+| Additional B/C/K/mask replicate under both events | 720 | 800 |
+| **Complete main** | **5,752** | **6,280** |
+
+Development retains Section 8.2's exact five-world matrix: 730+96+96+96+96=1,114
+new generations, 1,178 logical opportunities, beginning with 80 prefix and ten
+control slots. The separate smoke maximum remains 24 calls and 0.5 aggregate
+GPU-hour, whichever comes first; attempts/retries and setup/assigned idle time
+remain accounted within the applicable envelope. Main plus accepted development
+plus the smoke maximum is 6,890 planned new slots, before failed configurations,
+infrastructure retries or justified reruns. These counts grant no spending.
+
+All interventions remain original-prefix siblings. Retain literal L/B/C/K/F,
+complementary masks, genuine before-value receipts and Q's prose-only delay and
+release before round three; no additional crossings are introduced. Required
+mixed/Q first-round replay includes exact persisted invalid/failed outcomes,
+request/native tokens/settings/seed/permitted-view equality and branch-local
+effects. Persist raw outcomes before effects; use fresh call-owned KV/recurrent
+state, bounded infrastructure retries and synchronous checkpoint/delivery.
+Gold, hidden sources, future edits and condition labels remain outside peer views.
+
+Sections 5-7 apply unchanged: theta and phi target the equal five-family mixture
+of 20 independent world/prefix clusters; collaborator means use rounds 2-4,
+AUC uses all sixteen peer-round opportunities, final/stable completion ends at
+round four, receipts target round one and immediate Q effects round two.
+Focal contrasts use their fixed eight-world populations. Replicate zero is
+primary; the five additional continuations share their original prefixes and
+partitions and add no independent worlds. Preserve 10,000 paired within-family
+bootstrap draws, primary 97.5%/secondary 95% intervals, bounded companions,
+fixed case/C-or-K rules, and every diagnostic/cost denominator. Recorded invalid
+or failed slots score zero; unexecuted slots remain unknown with intended-population
+coverage and shared-response sensitivity. Policy cost includes sixteen prefix
+plus all sixteen logical continuation calls, original replay cost and F's prefix.
+
+### 11.3 Cumulative resources and admission
+
+Adopt a **30 aggregate allocated GPU-hour course subceiling**, within the unchanged
+**100-hour overall planning ceiling**. Count shared prior preparation once in the
+overall scientific total and include it in the course subceiling when reused.
+Keep cumulative allowances of eight hours for development, two for loading/setup
+and two for interruptions/reruns, including prior failed configurations and all
+assigned devices/idle time. A new account, candidate or course label does not
+reset prior spending, these allowances or the applicable smoke envelope.
+
+Recover prior allocation intervals from evidence or use defensible documented
+upper bounds; retain an unreconstructable interval as unknown. Unknown duration
+is not zero and cannot establish available hours or a remaining smoke allowance.
+With unresolved bounds, resource admission is withheld; safe CPU preparation
+may continue. Provider quota, session terms, billing, durable export and release
+must be verified at their later gate, not inferred from this ceiling.
+
+Let P be cumulative charged course/shared-preparation allocation, D/S/I its
+nonoverlapping development/setup/interruption portions, and M the measured
+complete-main allocation forecast including assigned idle time. Remaining
+allowances are R_D=max(0,8-D), R_S=max(0,2-S), R_I=max(0,2-I), in GPU-hours.
+Before main admission require the shared allowances to remain satisfied and
+`P + R_D + R_S + R_I + 1.25*M <= 30`, as well as the cumulative overall 100-hour
+constraint. This retains the full twelve-hour preparation reservation: spent
+portions plus their unspent remainder, with other prior costs included in P.
+Do not add already charged preparation a second time on top of twelve hours,
+refund spent reserves or double-count setup in M. Show spending, unused reserves,
+uncertainty and provider billing separately. Unknown intervals must be recovered
+or bounded sufficiently to check each applicable limit before admission.
+Two assigned T4s for fifteen minutes cost 0.5 aggregate hour; two devices do not
+halve aggregate scientific cost or combine their replica memory.
+
+Course M1-M4 acceptance and a concrete course-source runtime packet precede GPU
+use. Keep Section 8's actual-host loading/state/finite-output checks, complete
+course-envelope memory proof with at least 1.5 GiB free headroom, smoke, first-90
+capability screen (9/10 controls including one per family; 3/5 jointly correct
+final prefixes and 14/20 correct final prefix-peer candidates), complete-pilot
+98% protocol-valid screen and conservative measured forecast. Freeze the single
+accepted configuration, inputs and analysis before main outcomes with explicit
+freeze authorization; main execution requires separate authorization. Stop for
+an explicit scope/resource decision if the complete adopted matrix fails a gate.
+
+### 11.4 Deliverable and claims
+
+The initial deliverable is a locally reproducible course report and canonical
+artifact bundle, or an explicitly limited feasibility/incompletion report if an
+execution gate fails. External course submission/publication requires separate
+explicit authorization. ABS/IIS rubric, deadline, required format and rules for
+shared submissions remain unspecified and are not invented implementation blockers.
+Describe results as an exploratory 20-world, four-per-family SILO-derived course
+regime with fixed two-family/eight-world scopes and conditional continuation
+repeatability. Keep uncertainty, inactive treatments, failures and unfavorable
+results visible. Do not pool course/development/thesis outcomes, claim a universal
+best policy or replace outstanding thesis admission and execution obligations.

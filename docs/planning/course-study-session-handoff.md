@@ -2,13 +2,14 @@
 
 Reviewed 9 October 2026 against checkout `09a85b8`. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
 
-Current course contract handoff, 9 October 2026: safe preparation is committed
-at `ef4c3f6`. The [exact scientific/plan amendment](course-contract-amendment.patch)
-and [reuse evidence](../validation/course-m1-contract-and-reuse.md) are reviewed;
-explicit scientific/resource adoption is pending. Apply the amendment only after
-recording that decision, then verify authority/plan consistency and mark
-course/M1-T01 done before starting course/M1-T02. Current status/counts belong to
-the course index. The scientific authority and runtime defaults are unchanged.
+Current course contract handoff, 9 October 2026: the user explicitly approved
+design/resource adoption after preparation at `ef4c3f6` and the earlier pending
+handoff at `387b06a`. The [approved scientific clause](../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+and [course living handoff](../IMPLEMENTATION_PLAN.md#11-course-living-handoff)
+are applied; [reuse/adoption evidence](../validation/course-m1-contract-and-reuse.md)
+records the decision and validation. Current status/counts belong to the course
+index. The completed contract audit makes course/M1-T02 the next ready task;
+thesis runtime defaults and all original todos/evidence remain unchanged.
 
 ## Start in the actual checkout
 
@@ -30,7 +31,7 @@ Read in this order:
 3. The [course index](../todos/course/README.md), then one selected course task and its prerequisite evidence. Qualify IDs as `course/M2-T01`: the [thesis tree](../todos/README.md) uses the same short ID format for different tasks.
 4. The [course proposal](abs-iis-course-study-proposal.md) for proposed scope, and the [research synthesis](../implementation-research/SYNTHESIS.md) plus only the investigations relevant to that task.
 
-The next task at this checkpoint is [course/M1-T01](../todos/course/M1/M1-T01-course-contract-and-reuse-boundary.md). It prepares and establishes explicit course adoption before behavioral changes. The task index owns current readiness and counts; this document does not duplicate them.
+The next engineering task is [course/M1-T02](../todos/course/M1/M1-T02-course-inputs-and-schedules.md), following verified [course/M1-T01](../todos/course/M1/M1-T01-course-contract-and-reuse-boundary.md) adoption. The task index owns current readiness and counts; this document does not duplicate them.
 
 ## Reuse evidence within its actual scope
 
@@ -46,9 +47,9 @@ Older research and notebook plans intentionally retain earlier failures and pend
 
 ## Keep the course regime separate from the thesis regime
 
-- The smaller course configuration is still a proposal until the scientific authority records its explicit adoption. Direct 4B selection, smaller instances/caps/populations and the proposed resource ceiling are consequential changes, not ordinary defaults to silently overwrite.
+- The [scientific authority](../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime) now records the explicitly adopted course design/resource regime. Direct 4B selection, smaller instances/caps/populations and the course ceiling apply within the separate course bundle; they do not overwrite thesis defaults or establish runtime acceptance.
 - The course task tree reuses foundations and owns course adaptation/acceptance. Completing it does not close original thesis tasks or replace their populations, model/resource obligations and evidence. Preserve their defaults and artifacts.
-- Four recovery rounds are the proposed default. The optional three-round regime changes endpoints, attainability, capacity and schedule accounting; it is not an automatic fallback when a run is slow.
+- Four recovery rounds are the adopted default. The optional three-round proposal changes endpoints, attainability, capacity and schedule accounting; it is outside the adopted contract and is not an automatic fallback when a run is slow.
 - Fewer worlds reduce total calls, not the largest permitted request. A smaller model reduces some weights, not necessarily full-attention cache geometry. Resolve the complete course input/memory argument, including invalid retained text, cache growth, workspace and required headroom. Short successful prompts, fixture maxima and arbitrary padding cannot replace that proof. See the [course memory analysis](abs-iis-course-study-proposal.md#memory-why-4b-and-fewer-worlds-are-insufficient-alone).
 - Main and development worlds/streams are disjoint; controls, focal populations and repeats are predetermined. Smaller-study precision is limited. No unfavorable world, failed prefix, inactive Q case or incomplete comparison disappears to improve the report.
 
