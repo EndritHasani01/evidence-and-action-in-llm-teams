@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "comparison_checkpoint": "7f61fc7",
+  "scientific_baseline": "ca46bcd55486b38bb453f5294e01f943bc7f7752",
+  "documents_checked": 11,
+  "local_links_checked": 319,
+  "tasks_checked": 29,
+  "task_states": {
+    "done": 21,
+    "blocked": 8
+  },
+  "earlier_notebook_evidence_files_unchanged": 388,
+  "supplied_run_files_unchanged": 20,
+  "protected_scientific_git_diff": "empty",
+  "protected_paths": [
+    "recovery",
+    "configs",
+    "tests/fixtures",
+    "AGENTS.md",
+    "PROJECT_SPECIFICATION.md",
+    "pyproject.toml"
+  ],
+  "unchanged_operational_and_root_git_diff": "empty",
+  "unchanged_operational_paths": [
+    "README.md",
+    "scripts/m5_kaggle_preflight.py",
+    ".gitattributes",
+    "notebooks/.gitattributes"
+  ],
+  "existing_user_edit_sha256": "c071fbb83438a9831b073fd80da4d60f92eed3d5945674d2f84fbd8348b55dca",
+  "canonical_payloads": {
+    "dist/m5-kaggle-preflight.zip": {
+      "bytes": 109248341,
+      "sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f"
+    },
+    "dist/m5-kaggle-source-v2/m5-kaggle-source.payload": {
+      "bytes": 109248341,
+      "sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f"
+    },
+    "dist/m5-kaggle-pip-bootstrap-v3/m5-kaggle-source.payload": {
+      "bytes": 109248341,
+      "sha256": "57f99508f47f5571769891e39603db0c2b15c99038e0a186f3e2d40a9d48622f"
+    }
+  },
+  "notebook_sha256": "9e9d87e3c703b7d3656ad5cf385a554ed5b12134d3a84fb0e8294c7e982afa24",
+  "notebook_bytes": 91431,
+  "actual_t4_execution": false,
+  "model_generations": 0
+}

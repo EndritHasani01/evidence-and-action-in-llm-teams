@@ -1,0 +1,29 @@
+{
+  "locations": {
+    "scratch": {
+      "path": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\build\\m5-t4-kernel-f9829c14a6b34e09b77821c78c98a05c\\controlled-complete\\a9f155cb2b30",
+      "pool": "1215279290",
+      "free_bytes": 15547899904,
+      "total_bytes": 511009562624
+    },
+    "output": {
+      "path": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\notebooks\\validation\\m5-t4-compatibility\\kernel\\controlled-complete\\output\\recovery-m5-t4-compatibility-a9f155cb2b30",
+      "pool": "1215279290",
+      "free_bytes": 15547899904,
+      "total_bytes": 511009562624
+    }
+  },
+  "pools": {
+    "1215279290": {
+      "free_bytes": 15547899904,
+      "roles": [
+        "scratch",
+        "output"
+      ]
+    }
+  },
+  "quota_verified": false,
+  "interpretation": "Filesystem free space is observed; shared pools are counted once.",
+  "additional_scratch_bytes": 245970238,
+  "output_reserve_bytes": 268435456
+}

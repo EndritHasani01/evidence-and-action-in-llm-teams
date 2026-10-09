@@ -1,0 +1,21 @@
+{
+  "library_checks_completed": false,
+  "root_blocker": "ValueError: diagnostic_requires_linux_x86_64_python313",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 1.0320000000065193,
+  "observed_gpu_seconds_lower_bound": null,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {},
+    "device_1": {}
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}

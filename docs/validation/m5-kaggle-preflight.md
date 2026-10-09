@@ -20,14 +20,19 @@ under `notebooks/run/5/`. No further CPU preflight or package retry is requested
 Stop the CPU session if still open after retaining its artifacts; confirmed
 provider release remains unrecorded.
 
-Next prepare [K10's complete-envelope and tiny T4 compatibility checks](../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md).
-Actual attention/kernel geometry, GPU host/device facts and full-envelope
-headroom remain open before model smoke. A CPU scratch environment cannot be
-assumed to survive a new session or accelerator change; verified staging and
-candidate GPU-host checks are required. The model-smoke notebook is not yet
-ready. Existing GPU authorization persists, with all assigned time charged to
-the unchanged budgets. The manual inspection cell below is historical;
-the [current evidence review](m5-kaggle-full-preparation-run-5.md) governs the handoff.
+The [tiny T4 compatibility notebook](../../notebooks/recovery_m5_kaggle_t4_compatibility.ipynb)
+is now delivered with [planning/local evidence and exact instructions](m5-t4-compatibility.md).
+Import it as a new private notebook, attach no dataset, select Internet On /
+GPU T4 x2 and Run All once within one minute of assignment. Download its ZIP
+and executed notebook, stop the GPU session immediately and return both under
+`notebooks/run/6/` with the displayed allocation duration. It stages only the
+verified 60.7-MB bitsandbytes wheel, requires matching host Torch and changes no
+base packages. Actual T4 dispatch/NF4 observations are pending; this standalone
+library check does not pass the model lock or [K10's complete-envelope gate](../planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md).
+Verified full-candidate staging/host checks and model smoke remain later work.
+Existing authorization persists and all assigned time counts under the unchanged
+budgets. The manual inspection cell below is historical; the new delivery and
+[run-5 acceptance](m5-kaggle-full-preparation-run-5.md) govern the current handoff.
 
 ## Reported CPU notebook
 

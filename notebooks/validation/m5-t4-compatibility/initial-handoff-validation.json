@@ -1,0 +1,6 @@
+{
+  "status": "failed",
+  "comparison_checkpoint": "7f61fc7",
+  "scientific_baseline": "ca46bcd55486b38bb453f5294e01f943bc7f7752",
+  "error": "AssertionError: "
+}

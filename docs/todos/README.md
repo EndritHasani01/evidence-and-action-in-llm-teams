@@ -65,6 +65,14 @@ open under the [next-gate plan](../planning/m5-kaggle-first-run/04-model-feasibi
 Original failed results and scientific/package/resource semantics are preserved.
 Task counts and scientific gates above are unchanged; T02 remains blocked.
 
+The [tiny T4 compatibility notebook](../../notebooks/recovery_m5_kaggle_t4_compatibility.ipynb)
+is now delivered with [42 operational/four real CPU checks and real Jupyter
+refusal/controlled-complete evidence](../validation/m5-t4-compatibility.md).
+User run 6 needs a new private notebook, no dataset, Internet On / T4 x2,
+one Run All, download and immediate stop. Actual GPU/library observations and
+complete-envelope/model acceptance remain pending; no model generations,
+scientific/package changes or task-status promotions occur.
+
 ## Selecting and updating a task
 
 Statuses are **ready** (prerequisites satisfied), **active** (being worked), **blocked** (dependency, gate, missing evidence or authorization), and **done** (completion criteria and named validation passed). Record a concrete blocker when it is more specific than the listed dependencies. Code existence alone is not done.

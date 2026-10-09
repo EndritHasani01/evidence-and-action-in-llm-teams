@@ -2,7 +2,7 @@
 
 **Status: static planning; physical model acceptance unexecuted.** The source-input failure supplies no reason to alter the model, mathematical design, output cap or protocol. This document identifies the separate issues that must be resolved before a successful preparation run can become M5-T02 evidence.
 
-[Actual run 5](../../validation/m5-kaggle-full-preparation-run-5.md) now completes the unchanged candidate's CPU preparation with all 97 checks passed and zero skips. No repeat CPU preflight is requested. R7 complete-envelope coverage and R8's tiny admitted T4 attention/library probe are the next unresolved gates; the physical model-smoke notebook remains unprepared. A new GPU session/accelerator image needs verified environment staging and its own host checks, with all assigned time charged under the existing budgets.
+[Actual run 5](../../validation/m5-kaggle-full-preparation-run-5.md) now completes the unchanged candidate's CPU preparation with all 97 checks passed and zero skips. No repeat CPU preflight is requested. The small-operator portion of R8 is [implemented and locally verified](../../validation/m5-t4-compatibility.md), with actual T4 results pending. Its standalone matching-Torch/library environment does not accept the full model lock; later candidate GPU checks must repeat affected behavior. R7 complete-envelope coverage remains unresolved and the physical model-smoke notebook remains unprepared. A new GPU session/accelerator image needs verified environment staging and its own host checks, with all assigned time charged under the existing budgets.
 
 ## Scientific invariants
 

@@ -260,3 +260,13 @@ A warning's effect needs an executed result. Missing-`wrapt` startup diagnostics
 Stop repeating accepted preparation work once its evidence passes. The same-session continuation completes the remaining checks in 319.030 CPU seconds without another package download or install. Actual unittest durations, whole-command durations, whole-workflow time and intervening session idle time are different measurements; none records confirmed provider release or actual GPU feasibility.
 
 Accepted CPU scratch is disposable. A new session or accelerator image must verify environment/model staging and its own GPU-host behavior; CPU provenance does not establish T4 kernels, full-envelope headroom, language loading or finite outputs. The next work is the already identified complete-envelope and tiny T4 compatibility gate. Keep T02 blocked and model generations at zero until actual model criteria pass, while retaining the user's existing authorization and unchanged resource ceilings.
+
+## Tiny-library preparation lessons, 9 October
+
+Match setup cost to the question. [The delivered compatibility check](../../validation/m5-t4-compatibility.md) needs matching Torch and one verified 60.7-MB wheel, rather than recreating the 4.07-GB candidate closure while GPUs are assigned. This standalone diagnostic scope must stay explicit: successful tiny operators do not accept an inherited model environment, Qwen recurrent behavior or full-context memory. Repeat affected GPU checks in the eventual full candidate.
+
+Isolated Python flags have concrete semantics. `-I` ignores `PYTHONDONTWRITEBYTECODE`; adding `-B` preserves the extracted package file set between fresh workers. Two real local isolated imports verify that contract. A normally exited Windows child records a different process-tree observation from Linux; test the actual leader/status and keep platform-specific acceptance separate.
+
+Use actual operator names to identify dispatch. Public eligibility, warnings, profiled operators and available CUDA traces carry different evidence; speed alone cannot select a backend. Expected forced-backend unavailability is useful negative evidence, while other CUDA errors must remain failures. CPU FP32 attention references and comparison with the same dequantized NF4 weight test numerical semantics without claiming T4 success.
+
+A conditional wall ceiling needs start/stop discipline and retained external timing. The first cell cannot observe earlier assigned idle time or provider release. Give the user one ready notebook and one download/stop action, retain a conditional bound separately from observed time, and count prior/setup/idle spending under the existing budgets across accounts.

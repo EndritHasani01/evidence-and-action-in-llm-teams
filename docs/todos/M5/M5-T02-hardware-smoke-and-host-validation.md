@@ -190,3 +190,29 @@ provider release and all model/pilot/freeze acceptance remain unknown. This task
 therefore stays **blocked**; existing GPU authorization persists and all shared
 resource limits, candidate/scientific settings and task statuses are unchanged.
 
+### Tiny T4 compatibility delivery, 9 October
+
+The [next-step plan](../../planning/m5-kaggle-first-run/07-t4-compatibility.md)
+and [standalone library notebook](../../../notebooks/recovery_m5_kaggle_t4_compatibility.ipynb)
+are implemented. [Local evidence and instructions](../../validation/m5-t4-compatibility.md)
+record 42 focused operational checks and four real CPU operator checks, zero
+skips, plus exact-cell real Jupyter host-refusal and controlled-complete exports.
+The latter verifies the real pinned Linux wheel's 85 extracted files; GPU
+receipts remain explicitly controlled. Both ZIPs and four copied SQLite
+snapshots independently reopen correctly. Earlier failures/results stay intact.
+
+Next import this file into a new private notebook, attach no dataset, select
+Internet On / GPU T4 x2 and Run All once within one minute of assignment.
+Download the ZIP/executed notebook, stop GPU allocation immediately and return
+them under `notebooks/run/6/` with displayed allocation duration. Only the verified
+60.7-MB bitsandbytes wheel is staged; matching host Torch is required and no base
+packages or model weights change. The conditional 0.3 aggregate GPU-hour bound
+depends on the declared start/retrieval/stop discipline, not provider timestamps.
+Earlier/setup/idle time still counts under the unchanged shared budgets.
+
+This prepares R8's tiny operators, not the full accepted model environment.
+Actual T4 kernels/native NF4, R7 complete-envelope memory, full-candidate GPU
+provenance, Qwen loading/recurrent/isolation, bounded exact smoke and release
+reconciliation remain pending. Zero model generations run here. This task stays
+**blocked**, with existing authorization and all dependent task statuses unchanged.
+
