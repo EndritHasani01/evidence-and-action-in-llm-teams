@@ -4,6 +4,8 @@ This is the separate course task tree. The [existing thesis index](../README.md)
 
 Authority: [PROJECT_SPECIFICATION.md](../../../PROJECT_SPECIFICATION.md). Roadmap: [IMPLEMENTATION_PLAN.md](../../IMPLEMENTATION_PLAN.md). Follow [AGENTS.md](../../../AGENTS.md). The [course proposal](../../planning/abs-iis-course-study-proposal.md) supplies proposed changes, not an alternative scientific authority. [Research synthesis](../../implementation-research/SYNTHESIS.md) supplies supporting evidence.
 
+Fresh sessions can start with the [course handoff and practical lessons](../../planning/course-study-session-handoff.md) for the reading path, reusable evidence and known failure points. This index remains the course progress view.
+
 Inspected 9 October 2026 at `d04a904`. Existing M1–M4 and thesis M5-T01 have completion evidence: 21/29 original tasks. Course configuration, course CPU gates, pretrained-model admission, pilot, freeze and empirical execution remain pending. Creating these files adopts no scientific change and authorizes no run.
 
 ## Proposed course scope
