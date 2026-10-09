@@ -16,6 +16,7 @@ This package responds to the request to inspect the executed notebook and plan a
 | [04 — Model feasibility and smoke](04-model-feasibility-and-smoke.md) | First-principles memory/time analysis, the worst-context evidence gap, unchanged smoke/pilot gates and narrow possible backend changes. |
 | [05 — Implementation and validation](05-implementation-and-validation.md) | Ordered work items, file changes, acceptance checks, failure decisions and logical commit checkpoints. |
 | [06 — Lessons learned](06-lessons-learned.md) | Retrospective lessons from preparation, the first run and the review, with observed evidence separated from pending validation. |
+| [07 — T4 compatibility](07-t4-compatibility.md) | Authorized next-step plan for bounded standalone library diagnostics, exact operations, resource discipline and validation/delivery checkpoints. |
 
 ## Authority and scope
 
