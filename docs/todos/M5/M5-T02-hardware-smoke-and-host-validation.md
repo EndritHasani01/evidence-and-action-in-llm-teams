@@ -5,9 +5,11 @@
 **Current evidence, 9 October:** runs 4/5 accept CPU preparation and
 [run 6](../../validation/m5-t4-compatibility-run-6.md) accepts the standalone
 tiny T4 attention/NF4 diagnostic. No repeat CPU or tiny-GPU run is requested.
-Supported model attention integration, complete-envelope memory, full-candidate
-GPU checks and actual model smoke still block this task. The user reports the
-GPU session stopped; its exact allocation interval remains unknown.
+[Offline integration and memory audit](../../validation/m5-attention-memory.md)
+now pass 127 focused/native source and 15 installed checks. The opt-in layout
+still needs actual T4 acceptance; complete-envelope memory, full-candidate GPU
+checks and actual model smoke still block this task. The user reports the GPU
+session stopped; its exact allocation interval remains unknown.
 
 **Dependencies:** [M5-T01](../M5/M5-T01-inference-and-allocation-preparation.md). M1–M4 must have passed. Explicit authorization covering the GPU/paid-compute scope is also required.
 
@@ -248,4 +250,28 @@ provider assignment/release timestamps and earlier spending remain unknown;
 the conditional 0.3-hour ceiling is not verified spending. Retain uncertainty
 within unchanged shared limits. No further user run is requested now. This task
 stays **blocked**, with T01 done and progress at 21 done/eight blocked.
+
+### Offline integration and memory review, 9 October
+
+The [next-step contract](../../planning/m5-kaggle-first-run/08-attention-and-memory.md)
+is implemented at `8528105`, following separate planning `2182014`. The new
+opt-in public SDPA path retains K/V aliases, native masks/head order and fixed
+256-token maintained prefill. The baseline stays unchanged, exact settings
+separate saved calls, and unsupported CUDA stacks fail before model loading.
+[Local evidence](../../validation/m5-attention-memory.md) passes 127 focused/native
+source checks plus 15 installed attention checks, with no skips. Actual small
+random CPU hybrid Qwen forwards preserve chunk/full logits, KV/conv/recurrent
+state and subsequent decode; they are not pretrained-model or T4 evidence.
+
+The read-only report uses original capacity/config/run-6 bytes for both models
+and both mathematical sizes. It preserves complete bounds versus constructed
+fixture maxima, tied heads, repeat/copy/chunk terms and historical native memory.
+Conditional subtotals prove neither fit nor empirical failure; R7 remains open.
+No fallback, cap, package, retained-byte, scoring or freeze change is made.
+
+Actual T4 acceptance of this new layout, a sound complete-envelope memory
+argument, full candidate GPU/host checks, allocation reconciliation and smoke
+still precede completion. Old source-v2 payloads remain preserved and contain
+earlier source. No new GPU run, model generations, upload or model-smoke notebook
+is requested by this step. This task stays **blocked** with 21 done/eight blocked.
 

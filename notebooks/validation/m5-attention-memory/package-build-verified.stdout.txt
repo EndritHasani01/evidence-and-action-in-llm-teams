@@ -1,0 +1,9 @@
+Processing .\.
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: evidence-and-action-in-llm-teams
+  Building wheel for evidence-and-action-in-llm-teams (pyproject.toml): started
+  Building wheel for evidence-and-action-in-llm-teams (pyproject.toml): finished with status 'done'
+  Created wheel for evidence-and-action-in-llm-teams: filename=evidence_and_action_in_llm_teams-0.1.0-py3-none-any.whl size=158766 sha256=10eda6834fd882c38cab96436991addd0a59140f085013c6a50d1c74bb7d3807
+  Stored in directory: C:\Users\EndritHasani\AppData\Local\Temp\pip-ephem-wheel-cache-s8oss71x\wheels\cb\e4\03\8b39a15bc9c5ff44e9b07fa99a3d7512463ff070b570e95263
+Successfully built evidence-and-action-in-llm-teams

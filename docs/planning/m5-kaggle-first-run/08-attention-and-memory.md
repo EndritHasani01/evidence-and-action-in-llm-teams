@@ -4,6 +4,8 @@ Planned 9 October 2026 after [actual run 6](../../validation/m5-t4-compatibility
 
 ## Problem and proposed change
 
+**Completion, 9 October:** implementation `8528105` passes [127 focused/native source and 15 installed checks](../../validation/m5-attention-memory.md), including actual small CPU hybrid Qwen chunk/cache/logit continuity and selected-wheel source verification. The read-only audit covers both models and both mathematical sizes. The offline deliverable is complete; actual T4 acceptance of the new layout and R7 remain open. Original notebook/payload/results bytes and default settings are preserved. No new GPU run or model-smoke notebook is requested by this step.
+
 Run 6 observes native GQA math dispatch on T4 and efficient dispatch after materializing repeated K/V. Copying that operation into the model would add a conditional 4-GiB temporary per active full-attention layer at the cap. An adapter must preserve full causal attention, head mapping, cache ownership, masks and scaling while addressing that demonstrated allocation problem.
 
 Implement one **opt-in** candidate backend, `recovery_t4_sdpa`, with the existing Transformers/PyTorch versions. Preserve the current `sdpa` candidate and its exact settings as the default. Record the alternative backend and its fixed 256-token maintained prefill chunk size in existing candidate settings/load evidence; do not create new identities, stores or orchestration. This is a proposed runtime configuration, not an accepted or frozen model configuration.

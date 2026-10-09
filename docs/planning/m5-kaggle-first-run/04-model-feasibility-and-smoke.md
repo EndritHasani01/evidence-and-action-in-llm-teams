@@ -138,6 +138,8 @@ On any language-load defect, unexplained precision/device placement, nonfinite o
 
 ## What passing T02 would require
 
+The [offline next step](../../validation/m5-attention-memory.md) now verifies an opt-in public SDPA adapter and maintained 256-token hybrid prefill on CPU. Its read-only complete-bound report uses target/fallback resident bounds 261,388/259,868, giving conditional 9B subtotals 14.015991/13.969604 GiB and 4B subtotals 10.215698/10.169312 GiB against run 6's native-total-minus-headroom allowance of 13.062195 GiB. K/V view storage avoids the adapter's materialized-repeat allocation; actual kernel workspace remains unmeasured. Cache growth, mask conversion and omitted weights/activations/workspaces still matter. These comparisons do not establish fit, empirical failure, legal attainability of the upper bound or fallback selection. R7 remains unresolved under the existing three-outcome contract. The new layout's T4 acceptance and complete candidate/model smoke remain open.
+
 Acceptance needs traceable actual language-weight/tie inventory, NF4/precision/path/device evidence, finite raw outputs and generated IDs, all required output/forwarding/continuation coverage, fresh KV/recurrent ownership and seeded serial behavior, complete-envelope >=1.5-GiB headroom, adequate observed attempt bounds, candidate-host checkpoint/crash/backup behavior, verified off-host recovery, and reconciled allocation/attempt ceilings. Review both failure and success logs. Static arithmetic or metadata cannot pass it.
 
 Keep the later gates unchanged:

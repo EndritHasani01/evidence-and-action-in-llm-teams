@@ -1,0 +1,61 @@
+test_configured_256_token_chunks_preserve_hybrid_state_across_513_tokens (tests.test_t4_attention.NativeHybridIntegrationTests.test_configured_256_token_chunks_preserve_hybrid_state_across_513_tokens) ... <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+<frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+ok
+test_real_hybrid_model_chunked_prefill_matches_full_cache_logits_and_decode (tests.test_t4_attention.NativeHybridIntegrationTests.test_real_hybrid_model_chunked_prefill_matches_full_cache_logits_and_decode) ... ok
+test_additive_mask_scaling_and_explicit_bidirectional_mode (tests.test_t4_attention.T4AttentionTests.test_additive_mask_scaling_and_explicit_bidirectional_mode) ... ok
+test_both_public_registries_preserve_builtin_sdpa_and_refuse_collision (tests.test_t4_attention.T4AttentionTests.test_both_public_registries_preserve_builtin_sdpa_and_refuse_collision) ... ok
+test_candidate_opt_in_changes_only_backend_and_maintained_prefill (tests.test_t4_attention.T4AttentionTests.test_candidate_opt_in_changes_only_backend_and_maintained_prefill) ... ok
+test_causal_padding_mask_and_fully_masked_row_are_preserved (tests.test_t4_attention.T4AttentionTests.test_causal_padding_mask_and_fully_masked_row_are_preserved) ... ok
+test_causal_prefill_matches_independent_per_head_reference (tests.test_t4_attention.T4AttentionTests.test_causal_prefill_matches_independent_per_head_reference) ... ok
+test_cuda_selects_only_efficient_and_never_retries_math (tests.test_t4_attention.T4AttentionTests.test_cuda_selects_only_efficient_and_never_retries_math) ... ok
+test_decode_reads_complete_cache_and_preserves_head_order (tests.test_t4_attention.T4AttentionTests.test_decode_reads_complete_cache_and_preserves_head_order) ... ok
+test_fp16_prefill_and_decode_remain_finite_and_match_fp32 (tests.test_t4_attention.T4AttentionTests.test_fp16_prefill_and_decode_remain_finite_and_match_fp32) ... ok
+test_kv_views_alias_original_storage_and_mask_rows_align_before_expand (tests.test_t4_attention.T4AttentionTests.test_kv_views_alias_original_storage_and_mask_rows_align_before_expand) ... ok
+test_long_meta_kv_storage_is_not_multiplied (tests.test_t4_attention.T4AttentionTests.test_long_meta_kv_storage_is_not_multiplied) ... ok
+test_missing_offset_mask_training_dropout_and_weight_output_refuse (tests.test_t4_attention.T4AttentionTests.test_missing_offset_mask_training_dropout_and_weight_output_refuse) ... ok
+test_offset_causal_mask_matches_cached_multi_query_reference (tests.test_t4_attention.T4AttentionTests.test_offset_causal_mask_matches_cached_multi_query_reference) ... ok
+test_wrong_shapes_dtype_device_and_mask_refuse_before_dispatch (tests.test_t4_attention.T4AttentionTests.test_wrong_shapes_dtype_device_and_mask_refuse_before_dispatch) ... ok
+test_all_sizes_keep_proved_bounds_separate_from_constructed_fixtures (tests.test_model_feasibility.ModelFeasibilityTests.test_all_sizes_keep_proved_bounds_separate_from_constructed_fixtures) ... ok
+test_chunk_bounds_pay_shared_mask_alignment_without_head_replication (tests.test_model_feasibility.ModelFeasibilityTests.test_chunk_bounds_pay_shared_mask_alignment_without_head_replication) ... ok
+test_corrupt_input_fails_before_creating_output_and_keeps_bytes (tests.test_model_feasibility.ModelFeasibilityTests.test_corrupt_input_fails_before_creating_output_and_keeps_bytes) ... ok
+test_identity_check_and_existing_report_refuse_without_mutation (tests.test_model_feasibility.ModelFeasibilityTests.test_identity_check_and_existing_report_refuse_without_mutation) ... ok
+test_inconsistent_or_coerced_device_memory_is_rejected (tests.test_model_feasibility.ModelFeasibilityTests.test_inconsistent_or_coerced_device_memory_is_rejected) ... ok
+test_malformed_geometry_token_limit_and_contradictory_tie_are_rejected (tests.test_model_feasibility.ModelFeasibilityTests.test_malformed_geometry_token_limit_and_contradictory_tie_are_rejected) ... ok
+test_missing_task_changed_limit_and_invalid_bound_are_rejected (tests.test_model_feasibility.ModelFeasibilityTests.test_missing_task_changed_limit_and_invalid_bound_are_rejected) ... ok
+test_report_writer_retains_unknown_fields (tests.test_model_feasibility.ModelFeasibilityTests.test_report_writer_retains_unknown_fields) ... ok
+test_subtotal_under_allowance_does_not_grant_fit_and_over_does_not_fail_model (tests.test_model_feasibility.ModelFeasibilityTests.test_subtotal_under_allowance_does_not_grant_fit_and_over_does_not_fail_model) ... ok
+test_tied_head_is_counted_once_and_kv_is_independent_of_model_width (tests.test_model_feasibility.ModelFeasibilityTests.test_tied_head_is_counted_once_and_kv_is_independent_of_model_width) ... ok
+test_all_loading_errors_and_unexpected_language_keys_are_rejected (tests.test_inference_preparation.InferencePreparationTests.test_all_loading_errors_and_unexpected_language_keys_are_rejected) ... ok
+test_importing_adapter_never_imports_optional_inference_stack (tests.test_inference_preparation.InferencePreparationTests.test_importing_adapter_never_imports_optional_inference_stack) ... ok
+test_initialized_cuda_multiple_or_non_t4_devices_are_rejected_before_loading (tests.test_inference_preparation.InferencePreparationTests.test_initialized_cuda_multiple_or_non_t4_devices_are_rejected_before_loading) ... ok
+test_loader_sets_visibility_before_any_cuda_call_and_requests_native_nf4 (tests.test_inference_preparation.InferencePreparationTests.test_loader_sets_visibility_before_any_cuda_call_and_requests_native_nf4) ... ok
+test_offload_splitting_meta_and_unsupported_precision_fail (tests.test_inference_preparation.InferencePreparationTests.test_offload_splitting_meta_and_unsupported_precision_fail) ... ok
+test_only_reviewed_candidates_and_complete_non_thinking_settings (tests.test_inference_preparation.InferencePreparationTests.test_only_reviewed_candidates_and_complete_non_thinking_settings) ... ok
+test_opt_in_factory_registers_and_records_exact_chunk_backend_before_loading (tests.test_inference_preparation.InferencePreparationTests.test_opt_in_factory_registers_and_records_exact_chunk_backend_before_loading) ... ok
+test_opt_in_rejects_unreviewed_stack_before_any_model_load (tests.test_inference_preparation.InferencePreparationTests.test_opt_in_rejects_unreviewed_stack_before_any_model_load) ... ok
+test_template_ids_and_exact_terminal_spelling_are_verified (tests.test_inference_preparation.InferencePreparationTests.test_template_ids_and_exact_terminal_spelling_are_verified) ... ok
+test_tied_head_is_verified_and_does_not_excuse_missing_embedding (tests.test_inference_preparation.InferencePreparationTests.test_tied_head_is_verified_and_does_not_excuse_missing_embedding) ... ok
+test_unknown_attention_is_not_a_candidate_or_silent_fallback (tests.test_inference_preparation.InferencePreparationTests.test_unknown_attention_is_not_a_candidate_or_silent_fallback) ... ok
+inference_checks (unittest.loader._FailedTest.inference_checks) ... ERROR
+
+======================================================================
+ERROR: inference_checks (unittest.loader._FailedTest.inference_checks)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: inference_checks
+Traceback (most recent call last):
+  File "C:\Users\EndritHasani\AppData\Local\Programs\Python\Python311\Lib\unittest\loader.py", line 162, in loadTestsFromName
+    module = __import__(module_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\EndritHasani\Downloads\recovery_blueprint\recovery_blueprint\tests\inference_checks.py", line 19, in <module>
+    from recovery.runner import DurableRunner
+  File "C:\Users\EndritHasani\Downloads\recovery_blueprint\recovery_blueprint\recovery\runner.py", line 14, in <module>
+    from langgraph.checkpoint.sqlite import SqliteSaver
+ModuleNotFoundError: No module named 'langgraph.checkpoint.sqlite'
+
+
+----------------------------------------------------------------------
+Ran 37 tests in 10.860s
+
+FAILED (errors=1)
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

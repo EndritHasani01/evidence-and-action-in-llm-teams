@@ -1,0 +1,2 @@
+# Preserve pip's captured terminal padding without rewriting the raw evidence.
+package-build.stderr.txt whitespace=cr-at-eol,-blank-at-eol

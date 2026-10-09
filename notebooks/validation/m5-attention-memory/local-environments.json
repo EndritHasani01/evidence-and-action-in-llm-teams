@@ -1,0 +1,42 @@
+{
+  "os": "Windows-10-10.0.26200-SP0",
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "implementation_commit": "8528105",
+  "planning_commit": "2182014",
+  "native_cpu_and_build_interpreter": {
+    "executable": "C:\\Users\\EndritHasani\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+    "packages": {
+      "torch": "2.11.0",
+      "transformers": "5.12.0",
+      "tokenizers": "0.22.2",
+      "huggingface-hub": "1.19.0",
+      "pydantic": "2.12.5",
+      "langgraph": "1.2.5",
+      "langgraph-checkpoint": "4.1.1",
+      "langgraph-checkpoint-sqlite": null,
+      "langchain-core": "1.4.7",
+      "setuptools": "81.0.0",
+      "pip": "26.0.1"
+    }
+  },
+  "project_regression_interpreter": {
+    "executable": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\.venv\\Scripts\\python.exe",
+    "packages": {
+      "torch": null,
+      "transformers": null,
+      "tokenizers": null,
+      "huggingface-hub": null,
+      "pydantic": "2.13.5",
+      "langgraph": "1.2.12",
+      "langgraph-checkpoint": "4.2.0",
+      "langgraph-checkpoint-sqlite": "3.1.1",
+      "langchain-core": "1.6.6",
+      "setuptools": "65.5.0",
+      "pip": "24.0"
+    }
+  },
+  "actual_cuda_execution": false,
+  "pretrained_weights": false,
+  "model_generations": 0,
+  "full_candidate_gpu_acceptance": null
+}

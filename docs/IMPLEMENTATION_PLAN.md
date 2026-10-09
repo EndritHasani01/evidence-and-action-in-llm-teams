@@ -10,10 +10,13 @@ The [actual run-6 review](validation/m5-t4-compatibility-run-6.md) now accepts
 the standalone diagnostic on both T4s: 14 attention cases, four NF4 matmuls,
 six stages/four commands and both off-host snapshots. Native GQA uses math;
 repeated K/V uses efficient SM75 kernels at the tested shapes. No repeat CPU
-or tiny-GPU run is requested. Next review supported model attention integration
-and R7 complete-envelope memory offline before full model environment/assets,
-exact requests, admission and smoke. T02 stays blocked. The user reports the
-GPU session stopped; exact allocation duration remains unknown.
+or tiny-GPU run is requested. The [offline attention/memory step](validation/m5-attention-memory.md)
+now implements an opt-in public attention path and maintained 256-token prefill:
+127 focused/native source and 15 installed checks pass. Complete-envelope
+memory remains unresolved, and this specific layout is untested on T4. Resolve
+R7 before full model environment/assets, exact requests, admission and smoke.
+T02 stays blocked. The user reports the GPU session stopped; exact allocation
+duration remains unknown.
 
 ## 1. Execution roadmap
 
@@ -328,14 +331,14 @@ Update these sections only when a capability is verified, a consequential decisi
 | M2 | Verified on CPU (6/6 tasks done; gate passed) | [T01 views](todos/M2/M2-T01-peer-views-and-rendering.md#completion-and-handoff), [T02 replies](todos/M2/M2-T02-strict-replies-and-feedback.md#completion-and-handoff), [T03 rounds](todos/M2/M2-T03-synchronous-rounds-and-prefixes.md#completion-and-handoff), [T04 boundaries](todos/M2/M2-T04-events-retention-and-receipts.md#completion-and-handoff), [T05 replay](todos/M2/M2-T05-mixed-and-prose-delay-replay.md#completion-and-handoff), and [T06 completion](todos/M2/M2-T06-attainability-and-capacity.md#completion-and-m2-gate). Source and actual installed-library suites each pass 167 CPU checks; core-only passes 81, and all 37 native checks plus independent 4B capacity reproduction pass. The witness retains 4,340 calls/384 parent joins and output bounds 245/189 within 384. Authorized literal blocks/column labels/footer preserve work; a complete 261,388-token upper bound fits 262,144 uniformly. Both sizes are CPU-admitted; unpaired message surrogates are bounded whole-reply schema failures. Original negative evidence is retained. GPU memory/capability/timing and final model/size remain M5. |
 | M3 | Verified on CPU (5/5 tasks done; gate passed) | [M3-T05 gate evidence](todos/M3/M3-T05-crash-safe-scripted-lifecycle.md#completion-and-m3-gate): 18 durable, 22 attempt, 14 worker, 23 accounting and nine lifecycle checks; 253 source/installed and 81 core checks pass. Eleven real controller kills preserve raw reuse, branch-local effects, cleared fields and Q prose. Both complete fixtures reconcile 4,340 logical slots / 3,956 generations / 384 replays; full main/development schedules, synthetic budget stop/resume and supported backups pass. [Fourteen-case ordinary bundle](../tests/fixtures/scripted_lifecycle_run.zip) passes offline audit and fresh reproduction; all prior M3 CPU/native archives reproduce. |
 | M4 | Verified on CPU (6/6 tasks done; gate passed) | [T01](todos/M4/M4-T01-exact-outcomes-and-trajectories.md#completion-and-handoff), [T02](todos/M4/M4-T02-estimands-and-repeatability.md#completion-and-handoff), [T03](todos/M4/M4-T03-information-and-work-diagnostics.md#completion-and-handoff), [T04](todos/M4/M4-T04-policy-costs-and-boundary-rule.md#completion-and-handoff) and [T05](todos/M4/M4-T05-uncertainty-and-missingness.md#completion-and-handoff) establish exact outcomes, estimands, information/work, policy costs and paired uncertainty from original workers. [T06 completion](todos/M4/M4-T06-reproducible-report-and-cpu-gate.md#completion-and-m4-gate) supplies reports, exact cases and the passed [coverage/category audit](validation/m4-cpu-gate.md). All 424 source checks pass; focused/core/installed checks pass 25/252 (244 passed, eight optional skips)/166. Sixteen report scopes reproduce every M4 output/export twice under current source and installed hash seed 37; five reports retain 35 SVG/PNG exhibit pairs. |
-| M5 | T01 verified on CPU (1/5 tasks done); operational gates open | [T01 completion](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) supplies the direct adapter, exact raw/seed/cache/worker diagnostics and [proposed Kaggle packet](validation/m5-inference-preparation.md). Final 27 focused / 41 installed checks pass, and the 449-check full regression passes at the backend checkpoint. The first Kaggle run supplies device/CUDA inspection but rejects source; the [actual CPU canary](validation/m5-kaggle-upload-canary-run-2.md) passes byte transport/off-host snapshots. [Run 4](validation/m5-kaggle-full-preparation-run-4.md) verifies complete source/Linux cleanup, candidate installation and project build, retaining its failed probe parser. [Actual run 5](validation/m5-kaggle-full-preparation-run-5.md) passes the repaired installed provenance and all 97 CPU checks with zero skips, clean owned commands and independently reopened exports. [Actual run 6](validation/m5-t4-compatibility-run-6.md) accepts standalone tiny attention/NF4 diagnostics on both T4s. No repeat CPU/tiny-GPU run is requested. Supported model attention integration, full-envelope headroom, full-candidate GPU host/model smoke, capability and allocation reconciliation remain pending. |
+| M5 | T01 verified on CPU (1/5 tasks done); operational gates open | [T01 completion](todos/M5/M5-T01-inference-and-allocation-preparation.md#completion-and-handoff) supplies the direct adapter, exact raw/seed/cache/worker diagnostics and [proposed Kaggle packet](validation/m5-inference-preparation.md). Final 27 focused / 41 installed checks pass, and the 449-check full regression passes at the backend checkpoint. The first Kaggle run supplies device/CUDA inspection but rejects source; the [actual CPU canary](validation/m5-kaggle-upload-canary-run-2.md) passes byte transport/off-host snapshots. [Run 4](validation/m5-kaggle-full-preparation-run-4.md) verifies complete source/Linux cleanup, candidate installation and project build, retaining its failed probe parser. [Actual run 5](validation/m5-kaggle-full-preparation-run-5.md) passes the repaired installed provenance and all 97 CPU checks with zero skips, clean owned commands and independently reopened exports. [Actual run 6](validation/m5-t4-compatibility-run-6.md) accepts standalone tiny attention/NF4 diagnostics on both T4s. No repeat CPU/tiny-GPU run is requested. [Offline integration and memory audit](validation/m5-attention-memory.md) now pass 127 focused/native source and 15 installed checks. Actual T4 acceptance of the new layout, full-envelope headroom, full-candidate GPU host/model smoke, capability and allocation reconciliation remain pending. |
 | M6 | Not started | Requires accepted M5 freeze |
 
 ### Implementation decisions
 
 | Decision | Reason / reconsideration evidence |
 |---|---|
-| K10 reviews an opt-in public SDPA layout and maintained bounded prefill offline | [The attention/memory contract](planning/m5-kaggle-first-run/08-attention-and-memory.md) responds to run 6's math dispatch and materialized-K/V cost. Reinterpret KV groups as the kernel batch and broadcast heads with views; register a matching native mask formatter and force only efficient CUDA dispatch. The proposed candidate records a fixed 256-token maintained prefill chunk size. Keep baseline SDPA/settings unchanged; verify head/mask/cache/logit semantics on CPU and derive memory evidence from the existing complete bound. Actual T4 layout/model/headroom remains unaccepted; no cap, retention, package or fallback selection changes. |
+| K10 implements an opt-in public SDPA layout and maintained bounded prefill offline | [The attention/memory contract](planning/m5-kaggle-first-run/08-attention-and-memory.md) responds to run 6's math dispatch and materialized-K/V cost. Implementation `8528105` groups KV heads on the kernel batch axis, broadcasts K/V with views, registers the native mask formatter and forces only efficient CUDA dispatch. The proposed candidate records 256-token maintained prefill. [127 source/native and 15 installed checks](validation/m5-attention-memory.md) preserve head/mask/cache/logit semantics and exact setting separation; the baseline stays unchanged. The read-only audit covers both models/sizes at the existing complete bound. Actual T4 layout/model and R7 full-envelope headroom remain unaccepted; no cap, retention, package or fallback selection changes. |
 | K10's first T4 step is a standalone matching-Torch/verified-wheel diagnostic | The [bounded plan](planning/m5-kaggle-first-run/07-t4-compatibility.md) isolates the tiny SDPA/NF4 question without repeating a 4.07-GB install while two GPUs are assigned. Require host Torch 2.11.0+cu128, verify/extract only the pinned bitsandbytes wheel, use fresh `-I -B` children bound to distinct UUIDs and reuse existing command/storage/export helpers. Forty-two operational/four real CPU checks and exact-cell Jupyter exports pass locally; actual run 6 now passes 14 attention/four NF4 cases on both T4s. The full model lock and affected GPU/model paths must be checked later; supported attention integration and R7 remain unresolved. No scientific/backend/quantization/fallback setting changes. |
 | Actual GQA math dispatch and repeated-K/V memory are reviewed together | [Run 6](validation/m5-t4-compatibility-run-6.md) observes native-GQA math and efficient repeated-K/V SM75 kernels with matched tiny outputs. It does not implement a model adapter. A fully materialized repeated K/V pair adds a conditional 4 GiB per active full-attention layer at the cap. Native total is 14.562 GiB per T4, versus 15-GiB inventory; native total minus headroom is 13.062 GiB. Next review a supported model route's causal/mask/cache and temporary-memory semantics plus sound R7 coverage offline. No model failure, cap attainability, fallback selection or candidate change is inferred. |
 | M5-T01 uses one explicit maintained text-only adapter and the existing process/attempt ledger | Native AutoModel text-config/prefix conversion and tied-head diagnostics avoid a conversion wrapper. A fresh GenerationConfig, empty DynamicCache, exact canonical settings/token JSON, saved seeds and explicit matching/distinct worker device assignments implement the stated inference boundaries. The full raw suffix stays in optional existing process/attempt evidence fields; only one verified terminal im_end is removed for parsing. Old read-only records need no migration, and no new identity, progress store, dependency or orchestration layer is added. Final CPU/static/mock checks pass 27 focused and 41 installed; native 9B/4B metadata checks pass four each. Actual weights, GPU behavior and the proposed two-T4 clock/storage plan still require T02 validation. |
@@ -947,8 +950,9 @@ clean owned-command exits and both independent off-host SQLite copies. It
 takes 319.030 CPU seconds and repeats no download/install. This closes the CPU
 portion of K4/K8 and K9's CPU evidence review; GPU-specific K8 requirements remain
 open. No further CPU preflight is requested. Run 6 subsequently accepts the
-standalone tiny-library portion. Next resolve [K10's supported model attention
-and full-envelope gates](planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md)
+standalone tiny-library portion. The [offline integration](validation/m5-attention-memory.md)
+now passes its local checks. Next resolve [actual layout and full-envelope
+gates](planning/m5-kaggle-first-run/04-model-feasibility-and-smoke.md)
 before verified model assets, exact 24 smoke requests and attempt/allocation
 admission. A model-smoke notebook is not yet ready. Full-candidate GPU/model/pilot/freeze
 gates remain open; existing GPU authorization, scientific/package/resource
@@ -965,10 +969,16 @@ earlier spending remain unknown. No repeat is needed or requested. Preserve
 that uncertainty within the unchanged shared limits; the conditional notebook
 ceiling is not a verified total or fresh allowance.
 
-Next perform offline supported model-attention and R7 memory review. Tiny
-efficient dispatch is not a full-context memory proof, especially with a
-fully materialized repeated-K/V temporary and the lower observed native total.
-Later full-candidate staging/host checks, model assets, 24 exact requests and
-attempt/allocation admission still precede smoke. T02 and all dependent gates
-remain blocked with twenty-one done/eight blocked; no backend/scientific,
-fallback, package, cap or frozen setting changes and no model generations.
+The [offline next step](validation/m5-attention-memory.md), planned at `2182014`
+and implemented at `8528105`, verifies opt-in K/V views, native masks/head order,
+maintained 256-token hybrid prefill, fresh state and exact setting separation.
+All 127 focused/native source checks and 15 installed checks pass. Both models
+and mathematical sizes receive a read-only complete-bound memory audit; the
+conditional subtotals cannot accept fit or establish empirical failure.
+R7 remains unresolved. Review a sound complete live-input/memory argument before
+later full-candidate staging/host checks, model assets, 24 exact requests and
+attempt/allocation admission. The new layout still needs actual T4 evidence;
+old source-v2 payloads cannot deliver the new adapter and remain preserved.
+T02 and all dependent gates remain blocked with twenty-one done/eight blocked;
+baseline/scientific/fallback/package/cap/frozen settings stay unchanged. No
+model generations, new GPU run, pilot/main execution or freeze occurred.

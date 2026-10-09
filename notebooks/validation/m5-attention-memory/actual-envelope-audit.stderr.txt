@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\EndritHasani\Downloads\recovery_blueprint\recovery_blueprint\scripts\m5_model_feasibility.py", line 214, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "C:\Users\EndritHasani\Downloads\recovery_blueprint\recovery_blueprint\scripts\m5_model_feasibility.py", line 205, in main
+    report = audit(args.archive, args.capacity, args.run6, args.review)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\EndritHasani\Downloads\recovery_blueprint\recovery_blueprint\scripts\m5_model_feasibility.py", line 161, in audit
+    raise ValueError("review differs from original run-6 device bytes")
+ValueError: review differs from original run-6 device bytes
