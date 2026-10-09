@@ -47,3 +47,16 @@ adoption and [contract/reuse audit](../../../validation/course-m1-contract-and-r
 pass. This task is ready for safe CPU implementation under the adopted clause;
 no course inputs, schedules, seed assignments or M1 course gate are completed by
 that contract handoff.
+
+**Schedule/CLI checkpoint, 9 October 2026:** The complete course
+[population](../../../../tests/fixtures/population_course.json) and
+[schedule](../../../../tests/fixtures/schedules_course.json) were prepared with
+master seed `20261009` using explicit `--regime course` and the new
+[input-only size config](../../../../configs/course-inputs.toml). Thirteen focused
+course checks pass with zero skips, independently reconciling all component
+counts, exact cohorts, all replay parents/round barriers, new-repeat identities,
+matched sibling seeds and mutation/overwrite/configuration rejection. Two fresh
+process hash seeds reproduce both canonical artifacts with all optional model
+imports forbidden. Existing thesis fixtures/defaults are preserved. Broader CPU,
+installed-package and final documentation/preservation audits remain underway;
+no inference or M1 gate completion is claimed by this checkpoint.

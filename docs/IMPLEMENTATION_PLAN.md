@@ -1015,6 +1015,15 @@ CPU gate, GPU/model acceptance, an empirical result or execution authorization.
   `20261009` is independently disjoint from both saved thesis-size assignments
   (`20261004`); only index one receives a second continuation seed set. Six
   focused CPU checks pass; schedules and the complete M1 gate remain underway.
+- The course schedule reuses the existing branch/call enumerator and derives
+  repeat membership from validated continuation seed assignments. Existing
+  IDs, original-prefix parents and B/C first-round parents remain literal.
+  `Schedules.regime` rejects cross-regime configuration; canonical thesis bytes
+  omit the default field for compatibility. Course prepare/validate require
+  explicit `--regime course` and fallback size; the input-only course TOML freezes
+  no runtime settings. Thirteen independent course checks pass for saved
+  5,752/6,280 main and 1,114/1,178 development slots, cohorts, seeds, parents,
+  mutation rejection and hash-independent CPU CLI. Broader audits remain open.
 - Carry the adopted course limits through the existing renderer, parser,
   native tokenizer and exact inference/settings records. Keep four rounds,
   literal boundaries, exact replay and synchronous visibility; no runtime fork,
@@ -1034,7 +1043,9 @@ CPU gate, GPU/model acceptance, an empirical result or execution authorization.
 
 ### Course unresolved gates
 
-The course population/settings are not implemented. The pinned 4B/256/64 witness,
+The course population/schedule is implemented with focused CPU verification;
+the final M1 evidence audit is underway. Course runtime settings are not
+implemented. The pinned 4B/256/64 witness,
 full permitted-input bound and complete model-memory/headroom argument must be
 renewed. Standalone run 6 and the CPU attention integration do not accept the new
 layout on T4 or the course pretrained model. Actual host/package/source assets,

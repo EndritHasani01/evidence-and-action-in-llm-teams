@@ -103,7 +103,10 @@ def load_population(path: Path, *, authoritative: Population | None = None) -> P
 
 
 def schedule_bytes(schedules: Schedules) -> bytes:
-    return (json.dumps(asdict(schedules), ensure_ascii=False, sort_keys=True,
+    fields = asdict(schedules)
+    if schedules.regime == "thesis":
+        fields.pop("regime")
+    return (json.dumps(fields, ensure_ascii=False, sort_keys=True,
                        separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
 
 
@@ -140,6 +143,8 @@ def load_schedules(path: Path, population: Population, *, authoritative: Schedul
         fields.update(size=Size(data["size"]), main=tuple(_branch(b) for b in data["main"]),
                       development=tuple(_branch(b) for b in data["development"]))
         schedules = Schedules(**fields)
+        if data.get("regime") == "thesis":
+            data.pop("regime")
         encoded = (json.dumps(data, ensure_ascii=False, sort_keys=True,
                               separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
         if schedule_bytes(schedules) != encoded:

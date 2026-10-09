@@ -83,6 +83,46 @@ changes; optional `load_schedules(..., authoritative=saved_schedule)` also rejec
 otherwise-valid artifact reordering. Population input equality remains the job
 of `load_population(..., authoritative=saved_population)` / `--authoritative`.
 
+## Prepared course inputs and schedules
+
+[population_course.json](population_course.json) and
+[schedules_course.json](schedules_course.json) form a separate CPU preparation
+bundle under [Specification Section 11](../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime).
+The manifest explicitly records `regime="course"`, fallback mathematical size
+and master seed `20261009`. It saves 20 actual main worlds, four per family with
+one edited-owner block, and five separate development worlds. Existing world,
+source, branch and call IDs keep their spelling within this bundle; they are
+not cross-bundle replay identities. All assigned seeds are disjoint from both
+saved thesis-size fixtures (`20261004`) and course main/development domains.
+
+Receipt, Q and preserving cohorts each contain eight main worlds. Only the
+first world per family has an additional continuation seed set: five repeats
+retain their original prefix and G/H partition. Siblings match continuation
+seeds across events/policies; only prescribed first-round mask/Q uses replay.
+Main is 5,752 new / 6,280 logical slots (528 replay uses). Development retains
+1,114 / 1,178 (64 replay uses), with 80 prefix and ten complete-world controls
+first; smoke is separate. No outcomes, model settings or accepted freeze are
+stored, and peer metadata must still use only the public source projection.
+
+Prepare **new** files; existing scientific fixtures cannot be overwritten:
+
+```powershell
+python -X utf8 -S -B -m recovery prepare --regime course --config configs/course-inputs.toml --seed 20261009 --output population.json
+python -X utf8 -S -B -m recovery prepare --regime course --config configs/course-inputs.toml --manifest population.json --output schedules.json
+python -X utf8 -S -B -m recovery validate --core-only --regime course --config configs/course-inputs.toml --manifest population.json --schedule schedules.json --authoritative tests/fixtures/population_course.json
+```
+
+The API uses `prepare_population(seed, Size.FALLBACK, regime="course")` and
+`population.worlds()` / `schedules.main_for(population)` default to this bundle's
+20-world scope. Thesis preparation still defaults to 60 with nested 40 and keeps
+its saved canonical bytes; omitted manifest/schedule regime means thesis.
+Loading rejects wrong course size/scope, extra repeat assignments, changed seeds,
+parents and cohorts without resampling. Exact saved-authority comparisons also
+detect otherwise valid input edits or schedule reordering. The input-only TOML
+contains exactly `size="fallback"`; `--regime course` remains explicit. Runtime
+256/64 limits, protocol/capacity, worker/analysis acceptance, model/resource gates
+and freeze are owned by later course tasks.
+
 ## Permitted peer requests and tokenizer inputs
 
 All native request archives below were renewed on 5 October 2026 under M2-T06's
