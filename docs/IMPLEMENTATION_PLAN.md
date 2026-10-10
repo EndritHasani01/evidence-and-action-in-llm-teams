@@ -1002,7 +1002,9 @@ Course/M1-T01 establishes the authorized contract and
 the [M1 input/schedule CPU gate](validation/course-m1-inputs-and-schedules.md).
 [Course/M2-T01](todos/course/M2/M2-T01-course-protocol-and-limits.md) now passes
 [protocol/limits acceptance](validation/course-m2-protocol-and-limits.md).
-[Course/M2-T02](todos/course/M2/M2-T02-course-interventions-and-replay.md) is the next
+[Course/M2-T02](todos/course/M2/M2-T02-course-interventions-and-replay.md) now passes
+[intervention/replay acceptance](validation/course-m2-interventions-and-replay.md).
+[Course/M2-T03](todos/course/M2/M2-T03-course-attainability-and-capacity.md) is the next
 engineering task. Later course CPU gates, GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
@@ -1067,13 +1069,25 @@ execution and applicable authorization remain separate.
   Sections 1-10 and the user's unchanged, unstaged M5 edit. The linked protocol
   evidence records exact commands, environments and retained corrections. These
   finite token fixtures establish no complete-context bound or model acceptance.
-- Reuse SQLite/checkpoints, original worker/attempt/allocation records and
-  read-only analysis. Course/M2-T02 also makes the existing in-memory
+- Course/M2-T02 makes the existing in-memory
   `run_prefix` helper accept explicit course limits, matching `run_round`,
   while preserving the thesis default. Its course scripted checks cover all
   saved starts and replay parents; event/state/replay/delivery code is reused
   unchanged. This helper needs no new configuration, identity or persistence.
-  Renew the affected 20/eight/five-world population, cost,
+  All 438 starts, 592 replay joins and 7,008 scripted continuation slots pass:
+  127 affected source checks, 95 outside-checkout installed checks and 18 native
+  checks reproduced in a fresh hash-seed-37 process, without skips. The canonical
+  course archive retains 25 drained prefixes, 100 prefix rounds, 630 continuation
+  rounds and 2,920 exact requests, including eight inactive Q starts. Existing
+  source/prose timing, attempt/acquisition and receipt/exposure metadata remain
+  in their original records. CLI registration inspection finds the 15 new checks
+  in the 573-check full suite and none in the unchanged 348-check core suite;
+  this inspection executes no test bodies. Preservation/status/link audits keep
+  1,222 protected files, original thesis todos/defaults/archives, Sections 1-10
+  and the user's pre-existing M5 edit unchanged. Finite traffic is not the course
+  local witness or complete capacity proof; both remain M2-T03.
+- Reuse SQLite/checkpoints, original worker/attempt/allocation records and
+  read-only analysis. Renew the affected 20/eight/five-world population, cost,
   missingness and reporting checks using the owners in the reuse audit. Inherited
   thesis CPU results remain reusable evidence, not new course acceptance.
 - Apply Section 11.3's cumulative course subceiling, shared prior spending and
@@ -1087,8 +1101,9 @@ execution and applicable authorization remain separate.
 
 ### Course unresolved gates
 
-The course population/schedule, M1 input/schedule CPU gate and M2 protocol/limits
-are verified. Course intervention acceptance remains M2-T02, and actual runtime
+The course population/schedule, M1 input/schedule CPU gate, M2 protocol/limits
+and intervention/replay acceptance are verified. The complete course witness and
+capacity gate remain M2-T03, and actual runtime
 environment/configuration acceptance remains M5. Existing status/analysis count
 choices still address thesis 60/40 until their course M3/M4 adaptations. The pinned 4B/256/64 witness,
 full permitted-input bound and complete model-memory/headroom argument must be
@@ -1097,5 +1112,5 @@ layout on T4 or the course pretrained model. Actual host/package/source assets,
 smoke requests, capability, complete pilot, resource reconciliation and freeze
 remain course M5 gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
-index with named executed evidence. M1-T01/T02 and M2-T01 performed no GPU, model or
+index with named executed evidence. M1-T01/T02 and M2-T01/T02 performed no GPU, model or
 empirical run and accepted no freeze.

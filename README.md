@@ -116,8 +116,12 @@ Course [protocol and limits acceptance](docs/validation/course-m2-protocol-and-l
 now verifies explicit 256/64 rendering, full output reservation, strict validation
 and exact saved settings with the pinned 4B tokenizer. Use `COURSE_LIMITS` from
 `recovery.prompts` explicitly; default calls retain thesis 384/128 limits. The
-next task is [course interventions/replay](docs/todos/course/M2/M2-T02-course-interventions-and-replay.md).
-Complete context capacity and later runtime/model gates remain open.
+course [intervention/replay acceptance](docs/validation/course-m2-interventions-and-replay.md)
+now passes all saved starts and exact parents, literal retention, synchrony and
+Q release, with 127 affected CPU, 95 installed and 18 repeated native checks.
+`run_prefix(..., limits=COURSE_LIMITS)` applies the caps throughout the prefix.
+The next task is [course attainability/capacity](docs/todos/course/M2/M2-T03-course-attainability-and-capacity.md).
+The local witness, complete context capacity and later runtime/model gates remain open.
 
 ## CPU installation and validation
 

@@ -1,6 +1,6 @@
 # Course M2-T02 — Course interventions and exact replay
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M2-T01](M2-T01-course-protocol-and-limits.md).
 
@@ -31,11 +31,11 @@ Every course event/retention/receipt/mask/Q branch preserves the implemented sci
 
 Run focused course scripted comparisons across all events/policies and small numeric/BFS instances, pending/tombstone/hidden-value cases, repeated deliveries, Q round-two source/own-reply equality and ordered release. Preserve raw parent/state artifacts and demonstrate no boundary mutation of the shared prefix. Existing passing libraries need only affected regression checks.
 
-**Evidence:** Implementation began 10 October 2026 from `e46bd40` on
+**Evidence:** Completed 10 October 2026 from `e46bd40` on
 `feat/course-m1-contract-and-inputs`. The prerequisite protocol completion audit
 passes at this starting commit. The [intervention evidence](../../../validation/course-m2-interventions-and-replay.md)
-records the acceptance scope and retained checks. Course-scoped acceptance remains
-open while these checks are implemented and run.
+records the complete acceptance matrix, exact commands, environments, raw native
+artifacts, retained failures/corrections and preservation/installed checks.
 
 **Prerequisite handoff, 9 October 2026:** Course/M2-T01 passes its
 [protocol and limits acceptance](../../../validation/course-m2-protocol-and-limits.md#completion-and-handoff).
@@ -47,3 +47,32 @@ carry those settings without changing archived reply/state schemas. Native
 and thesis compatibility are verified. This hands off the real renderer and
 validator; it does not accept all course intervention branches, the complete
 witness/context bound or any GPU/model, pilot, freeze or main execution.
+
+## Completion and handoff
+
+All course intervention/replay criteria pass through the existing implementation.
+The only production adaptation adds explicit `limits` to `run_prefix`, preserving
+its thesis default; the full CPU CLI registers the new course suite. No event,
+retention, replay, state/delivery semantics, schema, dependency, ID, store, input,
+scientific contract or runtime freeze changes.
+
+The affected source regression passes 127 checks; the outside-checkout installed
+package passes 95 with hash seed 37 and all 29 module bytes verified. Both have
+zero skips. The pinned local 4B tokenizer passes the same 15 course assertions
+plus three archive checks, repeated in a fresh hash-seed-37 process. This covers
+25 main/development worlds, all 438 scheduled starts and 592 prescribed parent
+joins, and all 7,008 scripted continuation slots. The
+[native archive](../../../../tests/fixtures/course_interventions.json.gz)
+retains 100 prefix rounds, 630 continuation rounds and 2,920 exact peer requests,
+including full Q release horizons and eight inactive Q starts. Wrong K, invalid/
+failed parents, hidden pending/tombstone payloads, ordered idempotent delivery,
+source/receipt timing metadata and nested sibling isolation are verified.
+
+[Course/M2-T03](M2-T03-course-attainability-and-capacity.md) is ready. Reuse the
+saved course population/schedule and `run_prefix(..., limits=COURSE_LIMITS)`;
+continuations take pinned 4B `candidate_settings(..., limits=COURSE_LIMITS)`.
+Retain exact B/C `SavedRound` parents for each event/replicate and use the existing
+obtain/save/commit boundaries. The fixtures are protocol acceptance, not a locally
+informed attainability witness or complete context bound. Course M2's gate remains
+open for both proofs; worker/accounting, actual model/GPU, pilot, resource admission,
+freeze, empirical execution and external delivery remain their separate tasks.

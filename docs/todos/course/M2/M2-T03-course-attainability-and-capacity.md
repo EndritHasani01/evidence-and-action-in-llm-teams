@@ -1,6 +1,6 @@
 # Course M2-T03 — Course attainability and complete token capacity
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T02](M2-T02-course-interventions-and-replay.md).
 
@@ -31,3 +31,13 @@ The complete declared course channel/horizon is legally sufficient for every tas
 Use existing witness/capacity machinery with course inputs/settings and both pinned tokenizer metadata comparisons where relevant. Record exact commands/environment, raw native measurements, complete accounting rows and witness/replay evidence. Preserve the original positive/negative capacity archives and thesis defaults. Metadata downloads/CPU checks are allowed; no model weights or GPU execution here.
 
 **Evidence:** Not yet recorded. The old complete proof and new proposal arithmetic do not close this course gate.
+
+**Prerequisite handoff, 10 October 2026:** Course/M2-T02 passes its
+[intervention/replay acceptance](../../../validation/course-m2-interventions-and-replay.md#completion-and-handoff).
+Use the saved course inputs/schedules, `run_prefix(..., limits=COURSE_LIMITS)` and
+pinned 4B `candidate_settings(..., limits=COURSE_LIMITS)` with the existing
+continuation obtain/save/commit interfaces and exact B/C `SavedRound` parents.
+All scheduled starts, parent scopes and four-round delivery/retention semantics
+are verified on CPU/native and in the installed package. The retained native
+fixtures are finite scripted traffic; neither their small maxima nor the original
+thesis proof establishes this task's complete course bound or local witness.

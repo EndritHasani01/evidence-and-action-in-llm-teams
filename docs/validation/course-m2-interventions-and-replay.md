@@ -122,8 +122,27 @@ Recorded evidence paths are immutable; audit/native commands use a fresh output
 path when creating new records. The installed helper rejects an existing
 provenance output before beginning the build/checks.
 
-The final handoff audit remains open at this evidence checkpoint.
-These checks are scripted CPU/tokenizer validation;
-attainability and complete context capacity remain course/M2-T03. Model/GPU,
-pilot, freeze, empirical execution and external delivery retain their separate
-tasks and authorization gates.
+## Completion and handoff
+
+Course/M2-T02 is done: all intervention/replay criteria pass on CPU/native and
+through the installed package. [Course/M2-T03](../todos/course/M2/M2-T03-course-attainability-and-capacity.md)
+is ready. Use the original saved course inputs/schedule, explicit course limits
+on `run_prefix` and pinned 4B exact settings for continuations, with B/C
+`SavedRound` parents scoped by event/replicate. Existing metadata/record shapes
+remain available for witness/capacity and later worker/analysis work.
+
+The [completion audit](../../notebooks/validation/course-m2-interventions/completion-audit.json)
+passes preservation of 1,222 protected starting files, exact production-diff
+boundaries, installed/native provenance, all 21 course statuses and the updated
+four-done/one-ready/16-blocked counts. It checks 632 local references and 273
+heading fragments at that checkpoint. The final link recheck after adding this
+audit reference is retained alongside it as `handoff-audit.json`.
+
+Course M2's gate remains open for the locally informed witness and complete
+context bound. Model/GPU, pilot, resource admission, freeze, empirical execution
+and external delivery retain their separate tasks and authorization gates.
+No model weights, model calls, GPU allocation, pilot/main experiment, freeze or
+publication occurred. Original thesis todos/defaults/fixtures, the adopted
+specification and course inputs/schedules remain unchanged; the user's M5 edit
+remains byte-identical and unstaged. Commits separate preparation, implementation,
+native/installed evidence and final handoff.
