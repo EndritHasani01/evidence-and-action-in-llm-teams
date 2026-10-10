@@ -1,6 +1,6 @@
 # Course M2-T02 — Course interventions and exact replay
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M2-T01](M2-T01-course-protocol-and-limits.md).
 
@@ -31,7 +31,11 @@ Every course event/retention/receipt/mask/Q branch preserves the implemented sci
 
 Run focused course scripted comparisons across all events/policies and small numeric/BFS instances, pending/tombstone/hidden-value cases, repeated deliveries, Q round-two source/own-reply equality and ordered release. Preserve raw parent/state artifacts and demonstrate no boundary mutation of the shared prefix. Existing passing libraries need only affected regression checks.
 
-**Evidence:** Not yet recorded. Original intervention/replay code exists; course-scoped acceptance is pending.
+**Evidence:** Implementation began 10 October 2026 from `e46bd40` on
+`feat/course-m1-contract-and-inputs`. The prerequisite protocol completion audit
+passes at this starting commit. The [intervention evidence](../../../validation/course-m2-interventions-and-replay.md)
+records the acceptance scope and retained checks. Course-scoped acceptance remains
+open while these checks are implemented and run.
 
 **Prerequisite handoff, 9 October 2026:** Course/M2-T01 passes its
 [protocol and limits acceptance](../../../validation/course-m2-protocol-and-limits.md#completion-and-handoff).

@@ -22,7 +22,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**3/21 course tasks done; 18 remaining; 0 active; 1 ready; 17 blocked.**
+**3/21 course tasks done; 18 remaining; 1 active; 0 ready; 17 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -35,12 +35,12 @@ the full regression run plus the passing nine-method lifecycle rerun after a
 test-spy fix. Later interventions/capacity, runtime and course CPU gates remain
 open. Inherited foundation tasks are not counted as course acceptance.
 
-The next safe task is [course/M2-T02](M2/M2-T02-course-interventions-and-replay.md), following completed [course/M2-T01](M2/M2-T01-course-protocol-and-limits.md). **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
+The active task is [course/M2-T02](M2/M2-T02-course-interventions-and-replay.md), following completed [course/M2-T01](M2/M2-T01-course-protocol-and-limits.md). **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
-| M2 | 1/3 | 0 | 1 | 1 | Protocol/limits verified; literal interventions, exact replay, legal witness and complete course token bound remain |
+| M2 | 1/3 | 1 | 0 | 1 | Protocol/limits verified; literal interventions, exact replay, legal witness and complete course token bound remain |
 | M3 | 0/2 | 0 | 0 | 2 | Durable workers, bounded failures, honest accounting and crash-safe lifecycle |
 | M4 | 0/4 | 0 | 0 | 4 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
 | M5 | 0/5 | 0 | 0 | 5 | Actual-host smoke, capability, complete pilot, conservative resources and authorized course freeze |
@@ -55,7 +55,7 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M1-T01 — Course contract and reuse boundary](M1/M1-T01-course-contract-and-reuse-boundary.md) | done | Scientific/resource adoption and contract/reuse audit passed |
 | [M1-T02 — Course inputs and schedules](M1/M1-T02-course-inputs-and-schedules.md) | done | M1-T01 |
 | [M2-T01 — Course protocol and limits](M2/M2-T01-course-protocol-and-limits.md) | done | M1-T02 |
-| [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | ready | M2-T01 |
+| [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | active | M2-T01 |
 | [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | blocked | M2-T02 |
 | [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | blocked | M2-T03 |
 | [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | blocked | M3-T01 |
