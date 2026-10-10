@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime, timezone
 import gzip
 import json
+import os
 from pathlib import Path
 import subprocess
 import time
@@ -26,7 +27,7 @@ def main():
     log.write_bytes(gzip.compress(result.stdout, mtime=0))
     record = dict(command=command, cwd=str(Path.cwd()), started_utc=started,
                   seconds=time.monotonic() - before, exit_code=result.returncode,
-                  log=log.name)
+                  log=log.name, hash_seed=os.environ.get("PYTHONHASHSEED"))
     receipt.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
     print(result.stdout.decode("utf-8", errors="replace"))
     print(json.dumps(record, indent=2))

@@ -1074,3 +1074,43 @@ No model weights or GPU are used. The
 [course M2 protocol evidence](../../docs/validation/course-m2-protocol-and-limits.md)
 records environments, exact commands, installed provenance and retained failures.
 The new archive never replaces original thesis fixtures or defaults.
+
+## Course interventions and exact replay
+
+[course_interventions.json.gz](course_interventions.json.gz) retains the separate
+scripted course matrix with the pinned 4B tokenizer and explicit 256/64 settings.
+It contains 25 drained original prefixes with 100 raw prefix rounds, all 438
+scheduled continuation starts and all 592 exact B/C replay joins, including
+development masks and main continuation repeats. Full Q horizons and selected
+K/receipt horizons bring the retained continuation rounds to 630: 2,920 exact
+peer requests across both phases. Raw replies/failures, rendered strings,
+native IDs/masks/template text, settings/seeds, permitted state, committed state,
+host/peer source attempts/acquisitions and held/released prose remain available
+in existing record shapes.
+
+The 40 first-round Q branches include eight inactive source-only cases, each
+with its own unique scheduled parent IDs. The full course assertions separately
+cover all-invalid/all-failed parents, Unicode and stale-reference whole-reply
+failure, explicit empty prose, text-only omission/no placeholder, wrong/absent K,
+pending versus known tombstones, hidden fields, version handling, sibling
+mutation and invocation reversal. All 7,008 scripted continuation slots are
+checked; the retained archive selects later Q/K rounds rather than duplicating
+every ordinary recovery round.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.course_intervention_checks -v
+python -X utf8 -m tests.tokenizer_course_interventions --tokenizer LOCAL_4B_METADATA
+```
+
+The native harness passes 15 intervention assertions and three archive checks,
+and reproduces exact case records in a fresh process with hash seed 37. It loads
+only local tokenizer metadata. New archives can be written with
+`--write-fixture NEW_ARCHIVE.json.gz`; existing paths are rejected. Archive JSON
+is canonical UTF-8/LF with deterministic gzip metadata.
+
+Observed inputs use at most 2,563 native tokens, and replies at most 207 across
+the retained prefix/continuation records, reserving the full 256 output tokens.
+These are finite fixture measurements. The locally informed witness, complete
+course retained-context bound and model/GPU feasibility remain separate gates.
+The [course intervention evidence](../../docs/validation/course-m2-interventions-and-replay.md)
+records commands, environments, installed verification and preservation audits.
