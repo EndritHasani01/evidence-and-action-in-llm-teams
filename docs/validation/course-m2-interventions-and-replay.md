@@ -34,6 +34,29 @@ Exact commands and lossless logs are retained in
 The affected baseline command passes 62 round/prefix, event, replay and course
 settings checks in the repository `.venv`, with no skips.
 
+## Implementation checkpoint
+
+`run_prefix(..., limits=COURSE_LIMITS)` forwards the same immutable limits to
+every prefix round. Its thesis default remains unchanged. The existing full CPU
+CLI includes the explicit course intervention suite; dependency-free discovery
+continues to exclude protocol/native checks. Event, retention, replay, state and
+delivery implementations require no changes.
+
+The 15 course checks pass for all 25 saved main/development worlds, all 438
+scheduled continuation starts and all 592 prescribed first-round replay joins.
+All 7,008 scripted continuation opportunities execute through the real interfaces;
+four-round histories, failed-slot absence and wrong compact results remain literal.
+Reversed invocation and independent sibling mutation checks pass. The affected
+course/thesis integrated regression passes 127 checks with no skips, including
+original durability and exact-settings checks.
+
+The initial native run passes the same 15 assertions plus three raw-archive checks.
+Fresh-process reproduction, installed verification and the final handoff audit
+remain open at this checkpoint. Initial fixture errors and their passing correction
+are retained separately; they changed test assumptions about public positions,
+development masks, iterable invocation order and failed-slot history, without
+changing scientific behavior.
+
 Course acceptance is pending. These checks are scripted CPU/tokenizer validation;
 attainability and complete context capacity remain course/M2-T03. Model/GPU,
 pilot, freeze, empirical execution and external delivery retain their separate

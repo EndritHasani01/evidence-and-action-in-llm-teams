@@ -446,12 +446,13 @@ class ScriptedPrefix:
         return tuple(exposed)
 
 
-def run_prefix(world: World, branch_id: str, tokenizer, reply_provider, *, invocation_order=PEERS) -> ScriptedPrefix:
+def run_prefix(world: World, branch_id: str, tokenizer, reply_provider, *, invocation_order=PEERS,
+               limits: ProtocolLimits = THESIS_LIMITS) -> ScriptedPrefix:
     state = initial_branch(world, branch_id)
     order = tuple(invocation_order)
     rounds = []
     for _ in range(4):
-        result = run_round(state, tokenizer, reply_provider, invocation_order=order)
+        result = run_round(state, tokenizer, reply_provider, invocation_order=order, limits=limits)
         rounds.append(result)
         state = result.committed
     return ScriptedPrefix(tuple(rounds), prefix_snapshot(state))

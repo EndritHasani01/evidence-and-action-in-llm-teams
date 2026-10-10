@@ -1068,7 +1068,12 @@ execution and applicable authorization remain separate.
   evidence records exact commands, environments and retained corrections. These
   finite token fixtures establish no complete-context bound or model acceptance.
 - Reuse SQLite/checkpoints, original worker/attempt/allocation records and
-  read-only analysis. Renew the affected 20/eight/five-world population, cost,
+  read-only analysis. Course/M2-T02 also makes the existing in-memory
+  `run_prefix` helper accept explicit course limits, matching `run_round`,
+  while preserving the thesis default. Its course scripted checks cover all
+  saved starts and replay parents; event/state/replay/delivery code is reused
+  unchanged. This helper needs no new configuration, identity or persistence.
+  Renew the affected 20/eight/five-world population, cost,
   missingness and reporting checks using the owners in the reuse audit. Inherited
   thesis CPU results remain reusable evidence, not new course acceptance.
 - Apply Section 11.3's cumulative course subceiling, shared prior spending and

@@ -1,0 +1,16 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.course_intervention_checks",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-10T21:00:02.958213+00:00",
+  "seconds": 10.76500000001397,
+  "exit_code": 1,
+  "log": "course-initial.txt.gz"
+}
