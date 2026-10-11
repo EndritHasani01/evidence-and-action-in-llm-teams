@@ -221,7 +221,7 @@ Refresh committed source/request/host provenance only when a sufficient R7
 argument permits the next preparation step. Actual host acceptance, recovered
 prior spending, quota/duration/release and GPU authorization remain separate.
 
-The [completion audit](../../notebooks/validation/course-m5-r7/completion-audit.json)
+The [latest completion audit](../../notebooks/validation/course-m5-r7/loading-completion-audit.json)
 checks protected baseline bytes, unchanged pre-course plan/specification and
 thesis defaults/todos, task counts/links, source/installed report agreement and
 all withheld admission/unknown fields. This audit verifies the limited offline
@@ -232,3 +232,8 @@ plan, **364 local links**, matching course task counts and four rejection cases
 for wrong identity/partial coverage/relabelled GPU or headroom evidence. The
 working tree is committed in separate scope, proof, memory-review and evidence
 checkpoints. No broad prerequisite rerun or GPU work was needed for this audit.
+
+The extended loading audit at `109c8dc` passes: the same **1,734 protected
+files**, **55 checkpoint R7 files**, **371 local links**, five loading checks
+without skips, all new source/header identities and unchanged blocked task
+counts. Full physical peak/headroom remains unknown and admission stays false.

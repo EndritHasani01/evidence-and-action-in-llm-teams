@@ -1,6 +1,7 @@
 """Audit limited offline evidence and protection; R7 must remain withheld."""
 
 import argparse
+import base64
 from collections import Counter
 from copy import deepcopy
 import gzip
@@ -10,6 +11,7 @@ import json
 from pathlib import Path
 import re
 import subprocess
+import struct
 import sys
 from unittest.mock import patch
 from urllib.parse import unquote
@@ -106,6 +108,50 @@ def main():
     assert all(review[k] is None for k in ("complete_live_memory_upper_bound_bytes","actual_gpu_peak_bytes","actual_headroom_acceptance"))
     assert len(review["remaining_gaps"])==4
 
+    # The loading supplement is pinned to its verified checkpoint; protect its
+    # receipts, helpers and prior R7 evidence without repeating native runs.
+    loading_checkpoint = git("rev-parse","109c8dc")
+    loading_files = git("ls-tree","-r","--name-only",loading_checkpoint,
+                        "notebooks/validation/course-m5-r7").splitlines()
+    for name in loading_files:
+        if name.endswith("/verify_r7.py"):
+            continue
+        committed = subprocess.check_output(["git","show",loading_checkpoint+":"+name],cwd=ROOT)
+        current = (ROOT/name).read_bytes()
+        assert (current == committed if name.endswith(".gz") else
+                current.replace(b"\r\n",b"\n") == committed.replace(b"\r\n",b"\n")),name
+    loading = read(FOLDER/"loading-review-source.json")
+    assert (loading["checks"],loading["skips"],loading["language_tensors"],loading["checkpoint_tensors"]) == (5,0,426,738)
+    assert (loading["model"],loading["revision"]) == (proof["model"],proof["revision"])
+    assert loading["language_checkpoint_dtypes"] == dict(BF16=378,F32=48)
+    assert (loading["source_derived_parameter_storage_upper_bytes"],
+            loading["conditional_active_conversion_tensor_allowance_bytes"],
+            loading["nonpersistent_buffer_fp32_allowance_bytes"],
+            loading["tensor_storage_loading_allowance_bytes"]) == (3116700064,97321028,256,3214021348)
+    assert sum(loading["source_derived_parameter_components_bytes"].values())==3116700064
+    assert loading["tied_head_extra_materialization"] is False
+    assert loading["maintained_loader_events"] == [[kind,name+".weight"]
+        for name in ("first","second","third") for kind in ("materialize","quantize")]
+    assert all(loading[k] is False for k in ("cuda_initialized","preparation_admitted","weight_staging_permitted",
+        "terminal_model_feasibility_failure","gpu_execution","model_weights_staged","model_weights_loaded"))
+    assert all(loading[k] is None for k in ("complete_live_memory_upper_bound_bytes","actual_gpu_peak_bytes","actual_headroom_acceptance"))
+    headers = read(FOLDER/"checkpoint-headers.json.gz")
+    assert (headers["model"],headers["revision"]) == (proof["model"],proof["revision"])
+    assert headers["downloaded_metadata_bytes"] == loading["downloaded_metadata_bytes"] == 90240
+    assert headers["tensor_payload_bytes_read"] == loading["tensor_payload_bytes_read"] == 0
+    assert headers["model_weights_staged"] is False and headers["gpu_execution"] is False
+    for row in headers["headers"].values():
+        prefix = base64.b64decode(row["prefix_base64"],validate=True)
+        assert len(prefix)==8+struct.unpack("<Q",prefix[:8])[0]==8+row["header_bytes"]
+        assert hashlib.sha256(prefix).hexdigest()==row["prefix_sha256"]
+        assert [r["bytes_read"] for r in row["ranges"]]==[8,row["header_bytes"]]
+    loading_sources = read(FOLDER/"loading-sources.json.gz")["sources"]
+    assert len(loading_sources)==5 and sum(r["bytes"] for r in loading_sources.values())==163569
+    assert {name:row["sha256"] for name,row in loading_sources.items()}==loading["verified_additional_sources"]
+    for row in loading_sources.values():
+        raw = row["source"].encode("utf-8")
+        assert (len(raw),hashlib.sha256(raw).hexdigest()) == (row["bytes"],row["sha256"])
+
     # Challenge the new review's rejection boundaries without touching saved
     # files or importing/executing a GPU kernel.
     spec = importlib.util.spec_from_file_location("r7_memory_review",FOLDER/"review_memory.py")
@@ -138,6 +184,13 @@ def main():
     for name,code in (("native-tightening-initial",1),("meta-memory-corrected",0),("offline-memory-review",0),("source-capture",0)):
         receipt = read(FOLDER/(name+"-command.json"))
         assert receipt["exit_code"]==code and (FOLDER/receipt["log"]).is_file()
+    for name,code in (("loading-headers",0),("loading-source-capture",0),
+                      ("loading-review",1),("loading-review-corrected",0),("loading-review-source",0)):
+        receipt = read(FOLDER/(name+"-command.json"))
+        log = gzip.decompress((FOLDER/receipt["log"]).read_bytes()).decode("utf-8")
+        assert receipt["exit_code"]==code
+        if name=="loading-review-source":
+            assert "Ran 5 tests" in log and "OK" in log and "skipped=" not in log
 
     docs = sorted(ROOT/p for p in MUTABLE) + [ROOT/"docs/implementation-research/course-m5-r7-capacity-proof.md",
         ROOT/"docs/validation/course-m5-r7-offline-review.md"]
@@ -157,6 +210,10 @@ def main():
         course_tasks=dict(Counter(states.values())),native_source_checks=5,outside_native_checks=5,
         native_skips=0,matching_runtime_modules=29,unicode_scalars=1112064,vocabulary_entries=248077,
         complete_resident_tokens_upper=110107,meta_cases=3,pinned_native_sources=12,
+        loading_checkpoint=loading_checkpoint,preserved_r7_checkpoint_files=len(loading_files)-1,
+        loading_checks=5,loading_skips=0,pinned_loading_sources=5,
+        checkpoint_header_bytes=90240,tensor_payload_bytes_read=0,
+        explicit_loading_tensor_allowance_bytes=3214021348,
         review_negative_cases=rejected,local_links_checked=links,
         task_status="blocked",r7_resolved=False,preparation_admitted=False,weight_staging_permitted=False,
         terminal_model_feasibility_failure=False,gpu_execution=False,model_weights_loaded=False,
