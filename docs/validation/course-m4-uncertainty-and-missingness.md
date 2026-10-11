@@ -55,3 +55,31 @@ report consumer. Course exports state the exploratory small-sample limits and
 N=20/eight precision references; thesis calls retain identical defaults. Original
 worker reconstruction, focused consumer/source/installed checks and the final
 preservation/handoff audit remain pending at this checkpoint.
+
+## Original-worker reconstruction
+
+[Archive creation](../../notebooks/validation/course-m4-uncertainty/archive-create-command.json)
+derives seven scopes in 46.438 wall seconds from the untouched course lifecycle.
+Every coverage, original-cost and peer-diagnostic join agrees with accepted
+M4-T02 evidence. Independent rational coefficients check 11,422 eligible linear
+contrast rows, including original shared generation identities. The full
+20-world scope retains 2,170 recorded/4,110 unknown uses; theta/phi sensitivity
+is [-1.5,1.5]/[-0.75,0.75]. Intended intervals remain unavailable, with five-world
+complete-case zero contrasts separately descriptive. Missing main/development
+workers remain absent and have 6,280/1,178 unknown uses.
+
+The original-worker CLI, fresh process with execution/model imports blocked,
+and narrow report precision-scope consumer passed in the
+[first archive suite](../../notebooks/validation/course-m4-uncertainty/archive-accepted-command.json).
+That receipt is failed overall: a saved-table assertion used the wrong public
+stable-time field and assumed unknown preservation eligibility was empty.
+[Corrected table checks](../../notebooks/validation/course-m4-uncertainty/archive-table-corrected-command.json)
+pass two methods in 4.006 seconds. They use `first_stable_joint_round` and retain
+conditional unknown-eligibility bounds rather than asserting an empty
+denominator. No worker bytes or production formulas changed. The complete
+focused source/installed suites will rerun all five course archive methods.
+
+Earlier fault/native scopes, ten real controller kills, full core regression
+and unchanged diagnostic audits are reused from M4-T02. This task changes only
+reporting scope and accepts uncertainty on the original course populations.
+Full focused source/installed acceptance and completion audits remain pending.

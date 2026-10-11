@@ -1335,6 +1335,40 @@ worker fault probes retain their 312 unknown uses and are audited separately.
 .venv/Scripts/python.exe -m unittest tests.test_course_diagnostics tests.test_course_diagnostic_archive -v
 ```
 
+## Course paired uncertainty and missingness
+
+[course_uncertainty_tables.json.gz](course_uncertainty_tables.json.gz) retains
+seven derived scopes from the unchanged course lifecycle workers: complete
+selected records, hand costs, resumed/stopped work, full intended 20-world joins
+and wholly unexecuted main/development populations. These are exploratory CPU
+validation tables, not model results. The saved resampling seed is `20261011`,
+with 10,000 within-family world draws and type-7 97.5% primary/95% secondary
+intervals. Four main worlds per family, eight-world focal/preserving cohorts
+and five conditional repeated prefixes keep their original IDs.
+
+The full intended join retains 2,170 recorded/4,110 unknown uses. Its theta/phi
+sensitivity is [-1.5,1.5]/[-0.75,0.75]; intended statistical intervals remain
+unavailable, while five-world complete-case zeros are separately descriptive.
+Raw contrasts, family means, paired coverage, completion bounds, trajectories
+and whole-policy quality/preservation/cost displays remain explicit.
+
+[course_uncertainty_archive.py](../course_uncertainty_archive.py) rejoins the
+original SQLite snapshots read-only and checks unchanged accepted outcome/cost
+tables. Independent exact rational coefficients verify 11,422 eligible linear
+rows across the seven scopes, with original generation IDs combined before
+extrema. Missing logical uses are never fabricated from recorded parents.
+Unknown eligibility and future costs retain conditional/conservative or
+unbounded labels. Tiny nonlinear enumeration and independent draws/binomial
+references are in [course formula tests](../test_course_uncertainty.py).
+
+```powershell
+.venv/Scripts/python.exe -m tests.course_uncertainty_archive
+.venv/Scripts/python.exe -m unittest tests.test_course_uncertainty tests.test_course_uncertainty_archive -v
+```
+
+See [course acceptance](../../docs/validation/course-m4-uncertainty-and-missingness.md).
+The complete course report gate and all model/GPU/empirical gates stay separate.
+
 Default execution compares the retained tables; `--write-fixture NEW_PATH`
 exclusively creates a new derived export. [Course acceptance evidence](../../docs/validation/course-m4-diagnostics-and-policy-costs.md)
 owns executed results, preservation checks and the remaining uncertainty/report

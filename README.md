@@ -479,7 +479,8 @@ CPU dependencies. Nonempty history token counts remain unavailable without
 a tokenizer that reproduces the exact saved input IDs. The
 [course diagnostic/cost evidence](docs/validation/course-m4-diagnostics-and-policy-costs.md)
 records independent references, literal source provenance, full-policy costs
-and the whole C/K rule. Uncertainty and report acceptance remain later tasks.
+and the whole C/K rule. Course uncertainty acceptance is described below;
+the complete course report gate remains separate.
 
 [analysis.py](recovery/analysis.py) adds every prespecified contrast to the
 full offline outcome join. Use the saved complete schedule and original workers:
@@ -635,6 +636,23 @@ empirical policy evidence. The [M4 CPU audit](docs/validation/m4-cpu-gate.md)
 passes; actual GPU timing/resource admission remains M5 work.
 
 ## Offline uncertainty and missingness
+
+The course CLI forwards the saved manifest's regime. It retains the declared
+20-world/eight-world populations, five conditional repeats and actual executed
+coverage. Its precision references explicitly describe the exploratory course
+design, with four worlds per family; they are not measured power or equivalence
+claims. Direct API calls pass `regime="course"` to `uncertainty_run`,
+`uncertainty_records` or `report_run`; their default remains `"thesis"`.
+
+```powershell
+.venv/Scripts/python.exe -m recovery analyze --uncertainty --resampling-seed 20261011 --as-of 2026-10-11T23:59:59+00:00 --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker course-worker-0.sqlite --worker course-worker-1.sqlite --output course-uncertainty.json.gz
+.venv/Scripts/python.exe -m tests.course_uncertainty_archive
+```
+
+[Course uncertainty evidence](docs/validation/course-m4-uncertainty-and-missingness.md)
+reuses original CPU workers and accepted prerequisite joins, preserving unknown
+logical uses, shared physical replies and unavailable future policy costs.
+The course report/CPU gate remains course/M4-T04 work.
 
 [uncertainty.py](recovery/uncertainty.py) derives paired intervals, frozen-population
 sensitivity and completion coverage from the same original worker snapshots.
