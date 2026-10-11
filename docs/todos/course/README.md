@@ -24,7 +24,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**6/21 course tasks done; 15 remaining; 0 active; 1 ready; 14 blocked.**
+**6/21 course tasks done; 15 remaining; 1 active; 0 ready; 14 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -60,7 +60,7 @@ The next safe task is [course/M3-T02](M3/M3-T02-course-accounting-and-lifecycle-
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
 | M2 | 3/3 | 0 | 0 | 0 | CPU gate passed: lawful protocol/replay, locally informed witness and complete 156,251-token native bound |
-| M3 | 1/2 | 0 | 1 | 0 | Durable workers/bounded failures passed; accounting and combined lifecycle gate remain open |
+| M3 | 1/2 | 1 | 0 | 0 | Durable workers/bounded failures passed; accounting and combined lifecycle gate underway |
 | M4 | 0/4 | 0 | 0 | 4 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
 | M5 | 0/5 | 0 | 0 | 5 | Actual-host smoke, capability, complete pilot, conservative resources and authorized course freeze |
 | M6 | 0/5 | 0 | 0 | 5 | Complete frozen execution, independent audit, claims review, clean local reproduction and agreed delivery |
@@ -77,7 +77,7 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | done | M2-T01 |
 | [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | done | M2-T02 |
 | [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | done | M2-T03 |
-| [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | ready | M3-T01 |
+| [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | active | M3-T01 |
 | [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | blocked | M3-T02 |
 | [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | blocked | M4-T01 |
 | [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | blocked | M4-T01, M4-T02 |

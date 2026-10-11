@@ -1,6 +1,6 @@
 # Course M3-T02 — Course accounting, progress and lifecycle gate
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M3-T01](M3-T01-course-durable-workers-and-failures.md).
 
@@ -30,7 +30,11 @@ Course execution has honest reconstructible progress, physical versus policy cos
 
 Use synthetic allocation/setup/idle/uncertain-attempt scenarios, replay and failed-slot costs, controller-kill/held-prose cases, changed input/config rejection and database backup reopen. Compare uninterrupted/resumed logical states and allowed physical differences; verify read-only progress creates no effect or inference. Record commands/environment and ordinary course lifecycle artifacts for M4. No GPU.
 
-**Evidence:** Not yet recorded. Existing accounting/lifecycle machinery is reused; course acceptance is pending.
+**Evidence:** Work started 11 October 2026 from `11609f4` after inspecting the
+course handoff, scientific/resource clause, task references and completed
+M3-T01 evidence. [Accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)
+records the reuse boundary and protected starting bytes. Course acceptance is
+pending; no GPU or empirical execution is included.
 
 **Prerequisite handoff, 11 October 2026:** Course/M3-T01 passes
 [durable-worker acceptance](../../../validation/course-m3-durable-workers-and-failures.md#completion-and-handoff).
