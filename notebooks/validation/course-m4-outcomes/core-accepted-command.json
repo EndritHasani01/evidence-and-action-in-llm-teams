@@ -1,0 +1,30 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-S",
+    "-X",
+    "utf8",
+    "-m",
+    "recovery",
+    "validate",
+    "--core-only",
+    "--regime",
+    "course",
+    "--config",
+    "configs/course-inputs.toml",
+    "--manifest",
+    "tests/fixtures/population_course.json",
+    "--schedule",
+    "tests/fixtures/schedules_course.json",
+    "--authoritative",
+    "tests/fixtures/population_course.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T15:18:08.988398+00:00",
+  "source_head": "c6dc31a628de60292643fd39123a70f9152643d2",
+  "seconds": 451.75,
+  "exit_code": 0,
+  "log": "core-accepted.txt.gz",
+  "hash_seed": "73",
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m4-outcomes-20261011"
+}

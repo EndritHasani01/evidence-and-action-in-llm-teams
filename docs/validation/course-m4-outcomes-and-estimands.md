@@ -93,3 +93,65 @@ records and explicitly closes SQLite handles. The worker audit preserves its
 intentional unknowns and domain guard. No production guard was relaxed and no
 original fixture was edited. Affected M4/core regression, installed acceptance
 and final documentation/protected-byte audits remain pending here.
+
+## Independent course expectations
+
+[Course hand fixtures](../../tests/test_course_analysis.py) use explicit binary
+matrices and exact fractions, independently of replies or model behavior.
+Actual U-coordinate eligibility is checked on the original workers; the receipt
+companion fixture separately states one synthetic eligible coordinate per peer.
+These expectations establish implementation semantics, not measured effects.
+
+| Requirement | Independent expectation |
+|---|---|
+| Revised C-B = 1/2; sham C-B = 1/2, 0, 1 | theta = 0, +1/2, -1/2; both direct components displayed |
+| Same retained peers, no / beneficial / harmful teammate reset | phi = 0 / +1 / -1 over six peer-round slots per group |
+| Same beneficial effect under revision and sham | phi = +1; phi_corr = 0; round-one E_keep = 0 by exact parent reuse |
+| Complementary G/H matrix with cancelling retained effects | E_keep = 0, E_clear = 1/2, own-reset effects = -3/4 and -1/4; all four masks visible |
+| Revised C-B / K-C / K-B / B-L / C-F | AUC = 1/4 / 1/4 / 1/2 / 1/4 / -1/2; final C-F = -1 |
+| Sham K-C / K-B and correction interactions | Sham = -1/4 / -1/2; interactions = +1/2 / +1 |
+| Receipt B/C/K cells = 1/4, 1/2, 3/4; disclosed = 1/2, 1/4, 1 | eta = 1/2; direct effects = +1/4, -1/4, +1/4; all representation/endpoint companions |
+| C and K each gain 1/2 from the receipt | eta = 0, with both direct benefits visible |
+| Q_B-B / Q_C-C, revision then sham | Round two = +1/2, -1/2 / -1/4, +1/2; round one = 0; constant later effects yield AUC = 3/4 of the immediate effect |
+| Preserving B/C/K continuously correct for one/two/four rounds | Cells = 1/4, 1/2, 1; C-B/K-C/K-B = 1/4, 1/2, 3/4; final and preservation companions match |
+| Three +1 worlds in one family, zero in the other four | Equal-family theta = 1/5, not pooled 3/7 |
+| Three +1 Prefix receipt worlds and one zero Sort world | Equal two-family eta = 1/2, not pooled 3/4 |
+| Peer preservation 9/10 and 0/1 | Mean = 9/20; ten unique coordinates and eleven peer copies; unknown prefix eligibility stays unknown |
+| One unknown world in the complete 20-world manifest | Intended theta unknown; 19 observed worlds and four-per-family denominators; separate complete-case value 1 |
+| Correct earlier replies followed by invalid/timeout/unexecuted final slot | Current credit = 0/0/unknown; AUC = 15/16, 15/16, unknown; no answer inheritance |
+| Changed repeat seeds/outcomes | Main tables unchanged; exact ties distinct from strict sign reversals; incomplete trajectory changes unknown; only five fixed repeated prefixes |
+| Missing parent, malformed complete BFS keys or over-cap valid course reply | Reject inconsistent evidence; no replay synthesis or reply repair |
+
+The course non-preservation family denominators are four in full main summaries;
+named focal populations each have eight worlds. Preservation's eligible peer,
+world and family denominators may differ and remain explicit. Every primary
+component retains exact scheduled call/generation/replay/prefix IDs, rounds,
+peers, seed and rational coefficients. There is no added reset-boundary round,
+world selection, repeat averaging or outcome-adaptive admission.
+
+## Core and preservation checkpoint
+
+[Core-only acceptance](../../notebooks/validation/course-m4-outcomes/core-accepted-command.json)
+passes 368 methods in 450.352 seconds: 360 passed and eight expected declared-package
+skips under `python -S`, with hash seed 73. The command validates the actual
+course TOML, saved population/schedules and exact authoritative input equality
+without resampling, then checks both mathematical sizes. Runtime suites and
+optional checkpoint/plot consumers are not accepted by this core run; the
+affected integrated source/installed M4 checks remain pending here.
+
+[Dependency checking](../../notebooks/validation/course-m4-outcomes/pip-check-command.json)
+and [compilation](../../notebooks/validation/course-m4-outcomes/compile-check-command.json)
+pass. The [implementation audit](../../notebooks/validation/course-m4-outcomes/implementation-audit.json)
+verifies all 1,469 protected starting files byte-for-byte, including the user's
+unchanged unstaged M5 edit, all scientific/configuration/old fixture evidence,
+thesis todos and plan Sections 1–10. All 21 task/index states and milestone
+counts agree; 701 scoped local references and 288 heading anchors resolve.
+`git diff --check` passes. The task remains active pending integrated acceptance
+and the final completed-handoff audit.
+
+The executed environment is Windows build 26200, Python 3.11.9, SQLite 3.45.1,
+Pydantic 2.13.5, LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1 and
+langchain-core 1.6.6. No dependency was added or changed. CPU test durations
+include archive reconstruction and concurrent tests; they are not model/GPU
+timing evidence or an accepted inference freeze. Test counts overlap across
+commands and are not additive independent checks.
