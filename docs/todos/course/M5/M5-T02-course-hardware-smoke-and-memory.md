@@ -43,3 +43,9 @@ attempts/allocation/quota/duration and the cumulative 24-attempt/1,800-device-se
 ceiling. Do not reserve devices or stage weights from this blocked packet.
 The full candidate attention layout, model memory/state, actual storage,
 provider release and resource/authorization gates remain pending.
+
+The [offline R7 supplement](../../../validation/course-m5-r7-offline-review.md)
+verifies a tighter 110,107-token complete course bound without changing runtime
+caps or requests. Its 7,400,914,336-byte conditional subtotal and meta traces
+still leave native workspace/reservation/occupancy unbounded; this task remains
+blocked. Reuse the input proof; no weight staging or GPU admission is supplied.

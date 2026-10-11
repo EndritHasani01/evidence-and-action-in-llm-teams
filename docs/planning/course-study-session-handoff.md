@@ -61,10 +61,14 @@ unchanged prerequisite acceptance. All five retained thesis portable reports
 reassemble/export byte-identically; 1,616 protected starting files remain intact.
 Course/M5-T01 now has passing CPU adapter/native/installed and exact-input
 packet checks, linked in [its preparation evidence](../validation/course-m5-inference-and-smoke-preparation.md).
-R7 still lacks a complete live-memory upper bound; the task remains blocked.
-Its CPU review notebook stages no weights and admits no GPU work. Resolve the
-omitted activation/conversion/workspace/allocator envelope before refreshing
-affected provenance and preparing executable model smoke. This is not a
+The [offline R7 supplement](../validation/course-m5-r7-offline-review.md)
+verifies a tighter 110,107-token complete input bound with unchanged bytes/caps;
+five source/five outside-checkout native checks pass. Its conditional subtotal
+is 7,400,914,336 bytes, with three meta traces and 12 native source inspections.
+R7 still lacks a complete physical memory upper bound; the task remains blocked.
+Its CPU review notebook stages no weights and admits no GPU work. Resolve
+actual quantized loading, native workspace and allocator/context occupancy
+before refreshing affected provenance and preparing executable model smoke. This is not a
 terminal feasibility failure and does not enable the limited M6 route.
 Actual runtime/resource and GPU/model gates remain separate.
 Thesis runtime defaults and all original

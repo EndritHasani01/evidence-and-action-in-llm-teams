@@ -155,8 +155,10 @@ with zero skips. Eight scopes reproduce twice; five portable reports retain
 [Inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
 passes 64 affected source/64 installed and four native source/four native
 installed checks, with all 24 exact requests and a reviewed CPU source packet.
-It remains blocked by R7's incomplete live-memory bound; see
-[the preparation handoff](docs/validation/course-m5-inference-and-smoke-preparation.md#packet-and-resource-handoff).
+The [offline R7 supplement](docs/validation/course-m5-r7-offline-review.md)
+verifies a tighter complete bound of 110,107 tokens with five source/five
+outside-checkout native checks and unchanged runtime bytes/caps. R7 still lacks
+a supported physical memory bound; the task remains blocked.
 Weight staging and GPU smoke are withheld; no terminal model failure is established.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
 remain open. CPU admission supplies no experiment execution authorization.

@@ -27,7 +27,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**11/21 course tasks done; 10 remaining; 1 active; 0 ready; 9 blocked.**
+**11/21 course tasks done; 10 remaining; 0 active; 0 ready; 10 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -100,8 +100,14 @@ The next required work remains [course/M5-T01](M5/M5-T01-course-inference-and-sm
 | M2 | 3/3 | 0 | 0 | 0 | CPU gate passed: lawful protocol/replay, locally informed witness and complete 156,251-token native bound |
 | M3 | 2/2 | 0 | 0 | 0 | CPU gate passed: durable workers, honest accounting/status, cumulative resource refusal and portable all-family lifecycle |
 | M4 | 4/4 | 0 | 0 | 0 | CPU gate passed: outcomes/estimands, diagnostics/policy costs, uncertainty and reproducible synthetic reports |
-| M5 | 0/5 | 1 | 0 | 4 | Offline R7 review active; preparation still withholds weights/hardware smoke; later pilot/resource/freeze gates remain |
+| M5 | 0/5 | 0 | 0 | 5 | Tighter R7 input proof verified; physical memory argument unresolved; weights/hardware smoke remain withheld |
 | M6 | 0/5 | 0 | 0 | 5 | Complete frozen execution, independent audit, claims review, clean local reproduction and agreed delivery |
+
+The [offline R7 continuation](../../validation/course-m5-r7-offline-review.md)
+verifies a supplemental complete 110,107-token bound with unchanged bytes/caps,
+five source/five outside-checkout native checks and preserved original evidence.
+The tightened 7,400,914,336-byte conditional subtotal still lacks a supported
+physical peak; M5-T01 remains unfinished and blocked.
 
 ## Task index
 
@@ -120,7 +126,7 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | done | M4-T01 |
 | [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | done | M4-T01, M4-T02 |
 | [M4-T04 — Course report and CPU gate](M4/M4-T04-course-report-and-cpu-gate.md) | done | M4-T02, M4-T03 |
-| [M5-T01 — Course inference and smoke preparation](M5/M5-T01-course-inference-and-smoke-preparation.md) | active | M2-T03, M3-T02; unresolved R7 |
+| [M5-T01 — Course inference and smoke preparation](M5/M5-T01-course-inference-and-smoke-preparation.md) | blocked | M2-T03, M3-T02; unresolved R7 physical memory |
 | [M5-T02 — Course hardware smoke and memory](M5/M5-T02-course-hardware-smoke-and-memory.md) | blocked | M4-T04, M5-T01 |
 | [M5-T03 — Course capability-first pilot](M5/M5-T03-course-capability-first-pilot.md) | blocked | M5-T02 |
 | [M5-T04 — Course complete pilot and timing](M5/M5-T04-course-complete-pilot-and-timing.md) | blocked | M5-T03 |

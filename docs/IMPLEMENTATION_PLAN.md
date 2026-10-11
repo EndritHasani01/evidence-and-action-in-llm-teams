@@ -1278,8 +1278,14 @@ packet preparation is the next safe task; later gates still precede GPU use.
 
 The user requested an [offline R7 continuation](validation/course-m5-r7-offline-review.md)
 at `2c566b4`, preserving the scientific contract and avoiding GPU execution.
-Course/M5-T01 is active for tighter capacity/source/meta-device analysis only;
-its memory preparation gate remains withheld. Reuse accepted checks and preserve
+The supplemental proof at `5ce6d5f` verifies 109,851 input + 256 output reserve
+= **110,107 resident tokens**, using separated native byte-pair certificates
+and atomic complete Hangul syllables in the proof only. Five source/five
+outside-checkout native checks pass with zero skips; the original 156,251-token
+archive, rendered bytes, protocol caps and all 29 runtime modules remain intact.
+Three actual meta-device traces and 12 inspected pinned native sources narrow
+the memory question. No GPU or model assets were used. Course/M5-T01 remains
+blocked: the memory preparation gate is withheld. Reuse these checks and preserve
 historical packets; any sufficient proof still leaves actual host/headroom,
 resource reconciliation and authorization as separate gates.
 
@@ -1293,9 +1299,12 @@ probes. Production inference and thesis defaults remain unchanged. The new
 course source payload is bound to that committed code and the accepted CPU
 package candidate; historical source-v2/results are preserved.
 
-R7 remains unresolved: a complete 156,251-token proof and conditional
-9,172,843,936-byte tensor-component sum leave activation/conversion, kernel
-workspace and allocator/context costs without a sufficient live upper bound.
+R7 remains unresolved: evaluating the original conditional tensor arithmetic
+at the tighter complete bound gives **7,400,914,336 bytes**, saving
+1,512,046,592 KV bytes. The largest meta trace observes 3,897,131,776 bytes
+excluding parameters and real CUDA/load/quantization behavior; it is not an
+allocator bound. Actual quantized loading, selected native workspace and
+allocator/context occupancy still lack a sufficient physical upper bound.
 Positive conditional slack proves neither fit nor terminal failure. M5-T01
 therefore remains blocked under its completion criterion, with weight staging
 and executable model smoke withheld. No M6 terminal-feasibility handoff is

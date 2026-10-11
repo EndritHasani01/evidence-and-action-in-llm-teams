@@ -1,6 +1,6 @@
 # Course M5-T01 — Course inference and smoke preparation
 
-**Status:** active
+**Status:** blocked
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md), [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md). This is CPU preparation; actual GPU work also requires the course M4 gate.
 
@@ -66,10 +66,12 @@ package/source manifest and conditional complete-envelope arithmetic are saved
 in [the preparation evidence](../../../validation/course-m5-inference-and-smoke-preparation.md#packet-and-resource-handoff).
 Thesis defaults/todos and prerequisite artifacts remain intact.
 
-**Unresolved requirement:** R7 lacks a complete supported live-memory upper
-bound for the 156,251-token envelope. The 9,172,843,936-byte conditional component
-sum leaves activation, conversion, kernel workspace and allocator/context costs
-unbounded. It proves neither fit nor terminal model infeasibility. Under the
+**Unresolved requirement:** R7 lacks a complete supported physical memory
+upper bound. The original 156,251-token argument and 9,172,843,936-byte
+conditional component sum remain historical preparation evidence. The offline
+continuation below tightens that analysis, but still leaves loading, selected
+native workspace and allocator/context costs without sufficient bounds.
+Neither fit nor terminal model infeasibility is established. Under the
 completion criterion above this task remains unfinished; weight staging and
 M5-T02 admission are withheld. The delivered notebook runs only the safe CPU
 review. Resolve R7, then renew any affected source/request/host provenance and
@@ -80,5 +82,13 @@ failure or M6 limited-report route is accepted by this checkpoint.
 resolution without GPU execution. Resume only capacity/source/meta-device
 analysis, preserving the existing protocol and accepted evidence. Follow
 [the offline R7 record](../../../validation/course-m5-r7-offline-review.md).
-The preparation gate remains withheld until a sufficient reviewed argument or
-concrete terminal blocker exists; active work does not admit model assets.
+The supplemental proof at `5ce6d5f` verifies **109,851 input + 256 output reserve
+= 110,107 resident tokens**, with unchanged runtime bytes/caps. Five source and
+five outside-checkout native checks pass with zero skips; all 29 runtime modules
+match the accepted installed code. The conditional component sum becomes
+7,400,914,336 bytes. Three meta-device traces and 12 pinned native sources narrow
+the remaining gap but do not bound CUDA reservation/workspace/occupancy across
+the whole call. The task remains blocked and unfinished, with weights/model
+smoke withheld and no accepted terminal failure. Reuse the passing proof and
+existing CPU packet; obtain a sufficient complete memory argument before
+refreshing affected provenance. No GPU or weights were used in this continuation.
