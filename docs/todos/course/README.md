@@ -25,7 +25,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**7/21 course tasks done; 14 remaining; 0 active; 2 ready; 12 blocked.**
+**7/21 course tasks done; 14 remaining; 1 active; 1 ready; 12 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -59,14 +59,14 @@ audit and fresh-process reproduction. The course M3 CPU gate passes; actual
 runtime/resources and later course CPU/model gates remain open.
 Inherited foundation tasks are not counted as course acceptance.
 
-The next safe task is [course/M4-T01](M4/M4-T01-course-outcomes-and-estimands.md), following the completed course M3 gate. [Course/M5-T01](M5/M5-T01-course-inference-and-smoke-preparation.md) is also ready for CPU preparation; GPU use still requires course M4 and the applicable later gates/authorization. **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
+The active task is [course/M4-T01](M4/M4-T01-course-outcomes-and-estimands.md), following the completed course M3 gate. [Course/M5-T01](M5/M5-T01-course-inference-and-smoke-preparation.md) is also ready for CPU preparation; GPU use still requires course M4 and the applicable later gates/authorization. **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
 | M2 | 3/3 | 0 | 0 | 0 | CPU gate passed: lawful protocol/replay, locally informed witness and complete 156,251-token native bound |
 | M3 | 2/2 | 0 | 0 | 0 | CPU gate passed: durable workers, honest accounting/status, cumulative resource refusal and portable all-family lifecycle |
-| M4 | 0/4 | 0 | 1 | 3 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
+| M4 | 0/4 | 1 | 0 | 3 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
 | M5 | 0/5 | 0 | 1 | 4 | CPU packet preparation ready; actual-host smoke, capability, complete pilot, resources and authorized course freeze remain gated |
 | M6 | 0/5 | 0 | 0 | 5 | Complete frozen execution, independent audit, claims review, clean local reproduction and agreed delivery |
 
@@ -83,7 +83,7 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | done | M2-T02 |
 | [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | done | M2-T03 |
 | [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | done | M3-T01 |
-| [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | ready | M3-T02 |
+| [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | active | M3-T02 |
 | [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | blocked | M4-T01 |
 | [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | blocked | M4-T01, M4-T02 |
 | [M4-T04 — Course report and CPU gate](M4/M4-T04-course-report-and-cpu-gate.md) | blocked | M4-T02, M4-T03 |

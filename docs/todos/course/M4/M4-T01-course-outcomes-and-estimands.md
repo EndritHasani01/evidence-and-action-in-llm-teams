@@ -1,6 +1,6 @@
 # Course M4-T01 — Course exact outcomes and all estimands
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md).
 
@@ -29,7 +29,11 @@ Existing read-only analysis scores the course manifest and produces every prescr
 
 Reuse existing analysis fixtures plus course cohort/contract cases: duplicates, canonical keys, invalid/timeouts, incomplete parents, equal revised/sham effects, no/beneficial/harmful teammate influence and phi positive with phi_corr zero. Record exact independent expectations and commands. Analysis must not import inference, mutate worker data or provide evaluator results to peers.
 
-**Evidence:** Not yet recorded. Existing estimands are verified; course-cohort integration is pending.
+**Evidence:** Implementation started 11 October 2026 from `adaceac`. Authority,
+course handoff and completed M3 prerequisite evidence were inspected.
+[Preparation and executed evidence](../../../validation/course-m4-outcomes-and-estimands.md)
+will retain independent course expectations, original-worker reconstruction and
+thesis regression checks. Acceptance remains pending.
 
 **Prerequisite handoff, 11 October 2026:**
 [Course M3 accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)

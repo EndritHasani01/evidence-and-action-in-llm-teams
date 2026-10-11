@@ -1185,6 +1185,13 @@ execution and applicable authorization remain separate.
   outcome/estimand work and M5 CPU packet preparation are ready; course M4 and
   later runtime/resource/authorization gates still precede GPU use.
 
+Course/M4-T01 preparation from `adaceac` reuses the verified course M3 original
+records and existing read-only outcome/contrast code. Analysis main-count
+selection must follow the saved population, and repeat eligibility must follow
+its assigned continuation seed streams (five course prefixes, ten thesis).
+No new scientific parameter or persistence layer is needed. Acceptance is
+pending in [course outcome evidence](validation/course-m4-outcomes-and-estimands.md).
+
 ### Course unresolved gates
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2
