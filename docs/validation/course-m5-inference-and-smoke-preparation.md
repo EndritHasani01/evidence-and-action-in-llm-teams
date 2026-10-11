@@ -1,5 +1,10 @@
 # Course M5 inference and smoke preparation
 
+**Current status:** [M5-T01 is done under the approved preparation sequence](course-m5-preparation-completion.md).
+The original checkpoint and blocked decision below remain historical evidence.
+The refreshed packet includes the verified 110,107-token proof/loading review;
+physical R7 acceptance and actual hardware/resource/authorization gates remain M5-T02.
+
 Started 11 October 2026 from `2753c18` on
 `feat/course-m5-inference-preparation`, Windows/CPython 3.11.9.
 The [task](../todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
@@ -212,7 +217,8 @@ build and notebook review are adjacent `*-command.json` / `*.txt.gz` artifacts.
 
 ## Completion decision
 
-Safe CPU implementation and review are verified; **M5-T01 remains blocked**
+At the original checkpoint, safe CPU implementation and review were verified;
+**M5-T01 remained blocked**
 by the task's R7 requirement. Required simultaneous activation/conversion,
 kernel workspace and allocator/context terms have no complete supported upper
 bound at 156,251 resident tokens. The conditional subtotal/fixture runs cannot

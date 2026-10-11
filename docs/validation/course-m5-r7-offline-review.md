@@ -1,5 +1,11 @@
 # Course M5 R7 offline continuation
 
+**Current handoff:** [M5-T01 preparation is done](course-m5-preparation-completion.md)
+under the later user-approved course sequence. Physical R7 acceptance remains
+M5-T02; no memory or execution gate was waived. Task-blocked statements below
+describe the offline checkpoints under the former sequence. Their receipts,
+unaccepted physical-memory fields and scientific limitations remain unchanged.
+
 11 October 2026, starting at `2c566b4` on
 `feat/course-m5-inference-preparation`, with a clean tree. The user explicitly
 requested resolution of R7 offline, preserving the scientific contract and

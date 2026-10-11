@@ -1018,8 +1018,8 @@ the [local witness and complete capacity gate](validation/course-m2-attainabilit
 [paired uncertainty/missingness acceptance](validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff).
 [Course/M4-T04](todos/course/M4/M4-T04-course-report-and-cpu-gate.md) now passes
 [report and M1–M4 CPU acceptance](validation/course-m4-report-and-cpu-gate.md#completion-and-handoff).
-The combined course M1–M4 CPU gate is complete; course/M5-T01 is next for
-CPU packet preparation. GPU/model acceptance, empirical
+The combined course M1–M4 CPU gate and course/M5-T01 preparation are complete.
+Course/M5-T02 owns the next hardware/memory gate. GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
 ### Course implementation decisions
@@ -1037,7 +1037,11 @@ offline before finishing preparation. No scientific limit or gate is waived:
 at least 1.5 GiB free headroom over the complete envelope still precedes pilot
 admission; CPU/source/storage/resource prerequisites and explicit authorization
 still precede GPU allocation or weight staging. Historical failed/blocked
-receipts remain unchanged. Refresh the packet, then record preparation completion.
+receipts remain unchanged. [Preparation completion](validation/course-m5-preparation-completion.md)
+reuses the accepted adapter/installed/native evidence and tighter complete input
+proof. The refreshed `3d1a19c` packet passes 11 focused checks and literal CPU
+notebook/export review with two off-output immutable database reopenings.
+Production source and thesis defaults remain unchanged; M5-T01 is done.
 
 - Reuse the existing fallback mathematical size, generators/truth/edits,
   stable IDs and manifests; add only explicit course scope to populations,
@@ -1298,10 +1302,10 @@ the memory question. A further loading supplement from `f455522` verifies all
 tied-head handling in five focused CPU checks. Five more pinned sources support
 a 3,214,021,348-byte explicit loading-tensor allowance, conditional on the NF4
 layout; physical allocator/workspace/context costs remain excluded.
-No GPU or language weights were used. Course/M5-T01 remains
-blocked: the memory preparation gate is withheld. Reuse these checks and preserve
-historical packets; any sufficient proof still leaves actual host/headroom,
-resource reconciliation and authorization as separate gates.
+No GPU or language weights were used. Under the approved sequence above,
+M5-T01 CPU preparation is complete; physical R7 acceptance is withheld in
+M5-T02. Reuse these checks and preserve historical packets. Actual host/headroom,
+resource reconciliation and authorization remain separate prerequisites.
 
 Course/M5-T01's [safe CPU preparation](validation/course-m5-inference-and-smoke-preparation.md)
 is verified at `0260ca6`: 64 affected source/64 ordinary installed checks,
@@ -1319,12 +1323,15 @@ at the tighter complete bound gives **7,400,914,336 bytes**, saving
 excluding parameters and real CUDA/load/quantization behavior; it is not an
 allocator bound. Actual quantized loading, selected native workspace and
 allocator/context occupancy still lack a sufficient physical upper bound.
-Positive conditional slack proves neither fit nor terminal failure. M5-T01
-therefore remains blocked under its completion criterion, with weight staging
-and executable model smoke withheld. No M6 terminal-feasibility handoff is
-accepted. Reuse these checks while resolving R7; renew affected source/request
-and actual-host evidence, reconcile prior spending/quota/duration/release and
-honor resource/authorization gates before allocation.
+Positive conditional slack proves neither fit nor terminal failure. The former
+M5-T01 requirement to close this entirely offline is superseded by the approved
+sequence: M5-T02 must combine justified analysis and actual-host coverage before
+accepting the complete-envelope memory/headroom gate or admitting any pilot.
+No M6 terminal-feasibility handoff is accepted. Reuse the completed CPU packet
+and proof; renew affected source/request and actual-host evidence, reconcile
+prior spending/quota/duration/release and honor resource/authorization gates
+before allocation or staging. No further speculative offline bound is required
+to finish preparation, and finishing preparation permits no execution.
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2
 protocol/intervention/replay/witness/native-capacity gate are verified. Course

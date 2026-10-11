@@ -1,0 +1,108 @@
+{
+  "status": "prepared",
+  "preparation": {
+    "status": "prepared",
+    "preparation_complete": true,
+    "complete_input_tokens_upper": 109851,
+    "complete_resident_tokens_upper": 110107,
+    "physical_memory_acceptance_task": "course/M5-T02",
+    "conditional_tensor_component_sum_bytes": 7400914336,
+    "conditional_loading_tensor_allowance_bytes": 3214021348,
+    "complete_live_memory_upper_bound_bytes": null,
+    "actual_headroom_acceptance": null,
+    "physical_memory_accepted": false,
+    "weight_staging_permitted": false,
+    "gpu_admission": false,
+    "terminal_model_feasibility_failure": false
+  },
+  "source_verification": {
+    "payload": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\dist\\course-m5-preparation-v3\\course-m5-source.payload",
+    "archive_sha256": "24d00391f3255ff197ce4afad35d5444421a8c09325db80c9625c7abbfbc336d",
+    "verified_members": 272,
+    "expanded_bytes": 264613408,
+    "baseline_commit": "3d1a19cba62a286c5141af842986cff93d01c572",
+    "build_commit": "3d1a19cba62a286c5141af842986cff93d01c572",
+    "dataset_version": null,
+    "dataset_reference": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\dist\\course-m5-preparation-v3",
+    "closure": "Every canonical archive member, including unchanged compressed fixtures."
+  },
+  "prepared_requests": 24,
+  "historical_memory_review": {
+    "envelope": {
+      "input_tokens_upper": 155995,
+      "reserved_output_tokens": 256,
+      "resident_tokens_upper": 156251,
+      "largest_constructed_resident_tokens": 22503,
+      "scope": "Complete permitted-input bound, including invalid text; fixture maximum is supporting evidence.",
+      "upper_bound_attainability": null
+    },
+    "candidate_attention": "recovery_t4_sdpa",
+    "prefill_chunk_size": 256,
+    "known_or_conditional_tensor_components": {
+      "fp16_tied_embedding_head_bytes": 1271398400,
+      "ideally_packed_nf4_all_linear_bytes": 1784545280,
+      "conditional_double_quant_metadata_bytes": 56909216,
+      "ordinary_parameter_fp32_allowance_bytes": 3846144,
+      "fp16_full_attention_kv_bytes": 5120032768,
+      "fp32_recurrent_state_bytes": 50331648,
+      "fp16_conv_state_bytes": 1572864,
+      "active_layer_kv_growth_pair_copy_bytes": 640004096,
+      "chunk_query_output_bytes": 4194304,
+      "shared_mask_conversion_alignment_bytes": 240009216
+    },
+    "devices": {
+      "device_0": {
+        "historical_native_total_bytes": 15636037632,
+        "historical_total_minus_required_headroom_bytes": 14025424896,
+        "conditional_component_sum_bytes": 9172843936,
+        "remaining_for_omitted_terms_bytes": 4852580960,
+        "current_free_bytes": null,
+        "actual_course_peak_bytes": null
+      },
+      "device_1": {
+        "historical_native_total_bytes": 15636037632,
+        "historical_total_minus_required_headroom_bytes": 14025424896,
+        "conditional_component_sum_bytes": 9172843936,
+        "remaining_for_omitted_terms_bytes": 4852580960,
+        "current_free_bytes": null,
+        "actual_course_peak_bytes": null
+      }
+    },
+    "required_free_headroom_bytes": 1610612736,
+    "component_scope": "Source-derived conditional storage arithmetic, not a complete live allocator upper bound.",
+    "unbounded_terms": [
+      "remaining chunk/rotary/MLP/FP32 recurrent temporaries and their simultaneous liveness",
+      "NF4 conversion/dequantization temporaries and actual load footprint",
+      "efficient-attention, convolution and GEMM workspace on the full candidate CUDA host",
+      "allocator reservations/fragmentation, CUDA context and non-model occupancy"
+    ],
+    "complete_live_memory_upper_bound_bytes": null,
+    "actual_headroom_acceptance": null,
+    "preparation_admitted": false,
+    "weight_staging_permitted": false,
+    "blocker": "R7: no complete supported live-memory upper bound for the 156,251-token course envelope.",
+    "terminal_model_feasibility_failure": false,
+    "conclusion": "Keep preparation/model admission blocked. Positive component slack establishes neither fit nor impossibility."
+  },
+  "storage": {
+    "journal_mode": "wal",
+    "synchronous": 2,
+    "integrity": "ok",
+    "rows": [
+      [
+        7
+      ]
+    ],
+    "read_only_enforced": true,
+    "backup_sha256": "79fd2a4b560315094c6c5b9fbee0ddf57b5bf180652850797d7f8e200c81b584",
+    "scope": "Small synthetic diagnostic; actual worker/crash checks are separate."
+  },
+  "model_generations": 0,
+  "pretrained_weights_staged": false,
+  "provider_quota": null,
+  "provider_duration": null,
+  "prior_allocation": null,
+  "provider_release": null,
+  "gpu_admission": false,
+  "runtime_freeze": false
+}

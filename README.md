@@ -159,9 +159,11 @@ The [offline R7 supplement](docs/validation/course-m5-r7-offline-review.md)
 verifies a tighter complete bound of 110,107 tokens with five source/five
 outside-checkout native checks and unchanged runtime bytes/caps. Five more CPU
 checks verify checkpoint headers and sequential loading without weight payloads.
-R7 still lacks
-a supported physical memory bound; the task remains blocked.
-Weight staging and GPU smoke are withheld; no terminal model failure is established.
+[M5-T01 completion](docs/validation/course-m5-preparation-completion.md) is accepted
+with 11 focused checks and the refreshed committed CPU packet/notebook/export.
+The user approved moving remaining physical R7 acceptance to M5-T02.
+Weight staging and GPU smoke still require that task's resource/authorization
+prerequisites; no terminal model failure is established.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
 remain open. CPU admission supplies no experiment execution authorization.
 

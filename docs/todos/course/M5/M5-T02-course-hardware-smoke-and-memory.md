@@ -56,3 +56,12 @@ offline in M5-T01. The earlier blocked packet statements are historical.
 Loading/diagnostics still require the prerequisites above and a separately
 authorized bounded action. Completing CPU preparation grants no execution
 authorization, physical-memory acceptance, pilot admission or terminal failure.
+
+**Current preparation dependency:** M5-T01 is done. The
+[refreshed handoff](../../../validation/course-m5-preparation-completion.md#m5-t02-entry-and-acceptance)
+supplies the `3d1a19c` source packet, reused complete input/loading evidence and
+passing literal CPU review/export. Its preparation report says `prepared` while
+physical-memory/GPU/staging admission stays false. This task remains blocked by
+course execution authorization, actual resources/provider facts and host/R7
+acceptance; no further speculative offline proof is required before preparing
+that bounded authorized action.

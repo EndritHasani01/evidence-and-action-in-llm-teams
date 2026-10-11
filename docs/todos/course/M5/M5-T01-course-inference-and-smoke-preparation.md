@@ -1,6 +1,10 @@
 # Course M5-T01 — Course inference and smoke preparation
 
-**Status:** active
+**Status:** done
+
+**Current completion:** [CPU preparation and refreshed packet acceptance](../../../validation/course-m5-preparation-completion.md)
+passes under the approved sequence below. Earlier blocked statements are
+historical checkpoints; physical R7 acceptance remains M5-T02.
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md), [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md). This is CPU preparation; actual GPU work also requires the course M4 gate.
 
@@ -110,6 +114,8 @@ require the complete-envelope memory/headroom gate, actual loading/state/runtime
 checks, capability screen, complete pilot, resource forecast and freeze before
 their dependent work. The preceding blocked decisions and false
 `preparation_admitted` fields remain historical memory-gate receipts. Reuse
-the verified 110,107-token input proof and loading supplement; refresh the
-committed CPU packet and review its handoff before marking this task done.
+the verified 110,107-token input proof and loading supplement. The refreshed
+packet from `3d1a19c` passes 11 focused checks and literal CPU notebook/export
+review, including two off-output immutable database reopenings. Preparation is
+complete; the scientific physical-memory gate remains unaccepted in M5-T02.
 No GPU execution, weight staging or scientific change is authorized here.

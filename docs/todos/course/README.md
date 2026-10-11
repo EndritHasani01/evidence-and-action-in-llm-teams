@@ -27,7 +27,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**11/21 course tasks done; 10 remaining; 1 active; 0 ready; 9 blocked.**
+**12/21 course tasks done; 9 remaining; 0 active; 0 ready; 9 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -92,7 +92,7 @@ The course M4 CPU gate passes; synthetic feasibility evidence accepts no model
 failure, frozen main configuration or empirical coverage.
 Inherited foundation tasks are not counted as course acceptance.
 
-The user approved moving physical R7 acceptance to [course/M5-T02](M5/M5-T02-course-hardware-smoke-and-memory.md). [Course/M5-T01](M5/M5-T01-course-inference-and-smoke-preparation.md) is refreshing its CPU packet/handoff, reusing passing [adapter/native/installed checks](../../validation/course-m5-inference-and-smoke-preparation.md) and the complete input proof. Hardware admission remains blocked by authorization, resources and actual-host acceptance. This unresolved evidence gap is not terminal model infeasibility and does not unblock M6. **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
+[Course/M5-T01](M5/M5-T01-course-inference-and-smoke-preparation.md) is done: [preparation completion](../../validation/course-m5-preparation-completion.md) reuses passing adapter/native/installed evidence and the complete input proof, with 11 focused checks and a refreshed committed CPU packet/notebook/export. The user approved moving physical R7 acceptance to [course/M5-T02](M5/M5-T02-course-hardware-smoke-and-memory.md), whose preparation dependency is satisfied. Hardware admission remains blocked by authorization, resources and actual-host acceptance. This unresolved evidence gap is not terminal model infeasibility and does not unblock M6. **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
@@ -100,7 +100,7 @@ The user approved moving physical R7 acceptance to [course/M5-T02](M5/M5-T02-cou
 | M2 | 3/3 | 0 | 0 | 0 | CPU gate passed: lawful protocol/replay, locally informed witness and complete 156,251-token native bound |
 | M3 | 2/2 | 0 | 0 | 0 | CPU gate passed: durable workers, honest accounting/status, cumulative resource refusal and portable all-family lifecycle |
 | M4 | 4/4 | 0 | 0 | 0 | CPU gate passed: outcomes/estimands, diagnostics/policy costs, uncertainty and reproducible synthetic reports |
-| M5 | 0/5 | 1 | 0 | 4 | CPU packet refresh active; physical R7 acceptance belongs to T02; hardware admission remains withheld |
+| M5 | 1/5 | 0 | 0 | 4 | T01 CPU preparation/packet accepted; physical R7 and actual hardware/resource/authorization gates remain T02 |
 | M6 | 0/5 | 0 | 0 | 5 | Complete frozen execution, independent audit, claims review, clean local reproduction and agreed delivery |
 
 The [offline R7 continuation](../../validation/course-m5-r7-offline-review.md)
@@ -129,8 +129,8 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | done | M4-T01 |
 | [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | done | M4-T01, M4-T02 |
 | [M4-T04 — Course report and CPU gate](M4/M4-T04-course-report-and-cpu-gate.md) | done | M4-T02, M4-T03 |
-| [M5-T01 — Course inference and smoke preparation](M5/M5-T01-course-inference-and-smoke-preparation.md) | active | M2-T03, M3-T02 passed; CPU packet refresh |
-| [M5-T02 — Course hardware smoke and memory](M5/M5-T02-course-hardware-smoke-and-memory.md) | blocked | M4-T04, M5-T01 |
+| [M5-T01 — Course inference and smoke preparation](M5/M5-T01-course-inference-and-smoke-preparation.md) | done | M2-T03, M3-T02 passed; linked CPU packet acceptance |
+| [M5-T02 — Course hardware smoke and memory](M5/M5-T02-course-hardware-smoke-and-memory.md) | blocked | M4-T04, M5-T01 passed; authorization/resources/host and R7 acceptance pending |
 | [M5-T03 — Course capability-first pilot](M5/M5-T03-course-capability-first-pilot.md) | blocked | M5-T02 |
 | [M5-T04 — Course complete pilot and timing](M5/M5-T04-course-complete-pilot-and-timing.md) | blocked | M5-T03 |
 | [M5-T05 — Course admission and freeze](M5/M5-T05-course-admission-and-freeze.md) | blocked | M5-T04 |
