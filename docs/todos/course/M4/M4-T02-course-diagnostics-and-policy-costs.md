@@ -1,6 +1,6 @@
 # Course M4-T02 — Course diagnostics, retained work and policy costs
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M4-T01](M4-T01-course-outcomes-and-estimands.md).
 
@@ -31,7 +31,8 @@ Course records explain repair, preserved work, interaction and cost with the exi
 
 Read the course M3 bundle and original checkpoints without mutation or inference. Compare independent coordinate/inventory/cost references and reject mismatched source provenance. Record commands, raw unchanged excerpts, rubric/counterexample scope and derived table locations; retain synthetic labels.
 
-**Evidence:** Not yet recorded. Existing diagnostic/cost code is reused; course-cohort verification is pending.
+**Evidence:** [Preparation and acceptance record](../../../validation/course-m4-diagnostics-and-policy-costs.md).
+Existing diagnostic/cost code is reused; course-cohort verification is underway.
 
 **Prerequisite handoff, 11 October 2026:**
 [Course outcome/estimand acceptance](../../../validation/course-m4-outcomes-and-estimands.md#completion-and-handoff)

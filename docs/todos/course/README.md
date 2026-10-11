@@ -25,7 +25,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**8/21 course tasks done; 13 remaining; 0 active; 2 ready; 11 blocked.**
+**8/21 course tasks done; 13 remaining; 1 active; 1 ready; 11 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -73,7 +73,7 @@ The next safe task is [course/M4-T02](M4/M4-T02-course-diagnostics-and-policy-co
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
 | M2 | 3/3 | 0 | 0 | 0 | CPU gate passed: lawful protocol/replay, locally informed witness and complete 156,251-token native bound |
 | M3 | 2/2 | 0 | 0 | 0 | CPU gate passed: durable workers, honest accounting/status, cumulative resource refusal and portable all-family lifecycle |
-| M4 | 1/4 | 0 | 1 | 2 | Outcomes/estimands verified; diagnostics/costs, uncertainty and reproducible report gate remain open |
+| M4 | 1/4 | 1 | 0 | 2 | Outcomes/estimands verified; diagnostics/costs active; uncertainty and reproducible report gate remain open |
 | M5 | 0/5 | 0 | 1 | 4 | CPU packet preparation ready; actual-host smoke, capability, complete pilot, resources and authorized course freeze remain gated |
 | M6 | 0/5 | 0 | 0 | 5 | Complete frozen execution, independent audit, claims review, clean local reproduction and agreed delivery |
 
@@ -91,7 +91,7 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | done | M2-T03 |
 | [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | done | M3-T01 |
 | [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | done | M3-T02 |
-| [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | ready | M4-T01 |
+| [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | active | M4-T01 |
 | [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | blocked | M4-T01, M4-T02 |
 | [M4-T04 — Course report and CPU gate](M4/M4-T04-course-report-and-cpu-gate.md) | blocked | M4-T02, M4-T03 |
 | [M5-T01 — Course inference and smoke preparation](M5/M5-T01-course-inference-and-smoke-preparation.md) | ready | M2-T03, M3-T02 |

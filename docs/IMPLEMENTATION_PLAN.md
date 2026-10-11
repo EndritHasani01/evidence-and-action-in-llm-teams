@@ -1203,7 +1203,10 @@ and 4,110 unknown uses, so intended theta/phi remain unknown with separately
 labeled five-world complete-case zeros. Repeats add no independent worlds.
 Every original thesis M4 table/report reproduces twice; 1,469 protected starting
 files, including prior fixtures and the user edit, remain byte-identical.
-Course diagnostics/costs/rule acceptance is M4-T02's next work; uncertainty and
+Course diagnostics/costs/rule acceptance is active in M4-T02; reuse the original
+workers and existing conservative rubric, with independent course references
+and retained commands in [diagnostic/cost preparation](validation/course-m4-diagnostics-and-policy-costs.md).
+Uncertainty and
 the complete report/CPU gate still precede GPU use.
 
 ### Course unresolved gates
