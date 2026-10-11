@@ -1247,6 +1247,14 @@ including the local M5 edit, remain intact. Course/M4-T04 is ready for integrate
 report/CPU-gate acceptance; model/GPU, resources, freeze and empirical gates
 remain separate.
 
+Course/M4-T04 preparation from `b858d99` reuses the accepted course workers,
+derived joins and existing seven-exhibit/case logic. The integrated report gate
+is active: renew course scope/completeness, terminal-feasibility, portable
+export/figure and installed-package evidence, then consolidate all 22 coverage
+rows and seven consistency categories. Unchanged native capacity, lifecycle,
+controller-kill and statistical checks remain accepted prerequisites. No
+scientific configuration, inference or original-worker mutation is needed.
+
 ### Course unresolved gates
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2
