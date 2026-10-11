@@ -1276,6 +1276,26 @@ packet preparation is the next safe task; later gates still precede GPU use.
 
 ### Course unresolved gates
 
+Course/M5-T01's [safe CPU preparation](validation/course-m5-inference-and-smoke-preparation.md)
+is verified at `0260ca6`: 64 affected source/64 ordinary installed checks,
+four pinned-native source/four native installed checks and the literal new-source
+CPU notebook, integrity/export and closed-copy review pass. All 24 development
+smoke requests retain exact saved origins/seeds, native IDs/masks/text and
+4B/256/64 settings; separate physical IDs prevent implicit replay of independence
+probes. Production inference and thesis defaults remain unchanged. The new
+course source payload is bound to that committed code and the accepted CPU
+package candidate; historical source-v2/results are preserved.
+
+R7 remains unresolved: a complete 156,251-token proof and conditional
+9,172,843,936-byte tensor-component sum leave activation/conversion, kernel
+workspace and allocator/context costs without a sufficient live upper bound.
+Positive conditional slack proves neither fit nor terminal failure. M5-T01
+therefore remains blocked under its completion criterion, with weight staging
+and executable model smoke withheld. No M6 terminal-feasibility handoff is
+accepted. Reuse these checks while resolving R7; renew affected source/request
+and actual-host evidence, reconcile prior spending/quota/duration/release and
+honor resource/authorization gates before allocation.
+
 The course population/schedule, M1 input/schedule CPU gate and complete M2
 protocol/intervention/replay/witness/native-capacity gate are verified. Course
 M3 durable workers/bounded failures/accounting and portable combined lifecycle
@@ -1287,9 +1307,10 @@ and preserves thesis 60/40 behavior. The
 pinned 4B/256/64 complete input bound passes; the complete model-memory/headroom
 argument still needs actual supported-runtime evidence. Standalone run 6 and
 the CPU attention integration do not accept the new
-layout on T4 or the course pretrained model. Actual host/package/source assets,
-smoke requests, capability, complete pilot, resource reconciliation and freeze
-remain course M5 gates. Original thesis full-envelope/model obligations remain
+layout on T4 or the course pretrained model. Course source/metadata, exact smoke
+requests and CPU package provenance are prepared; actual host/package acceptance,
+capability, complete pilot, resource reconciliation and freeze remain course M5
+gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
 index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03, M3-T01/T02 and M4-T01/T02/T03/T04
 performed no GPU, pretrained-model or empirical run and accepted no freeze.

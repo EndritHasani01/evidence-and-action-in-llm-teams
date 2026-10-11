@@ -1440,5 +1440,6 @@ constructed pinned-native 4B suffix fixtures under the adopted 256-token cap.
 Internal markers and unexpected EOS remain literal; only one verified final
 im_end is removed for parsing. Complete JSON at the cap is valid, while
 malformed cap endings remain invalid. These are CPU parser/config/cache checks,
-with no model inference. Reproduce with `python -m tests.tokenizer_course_inference
---tokenizer LOCAL_4B_METADATA`. See [course preparation evidence](../../docs/validation/course-m5-inference-and-smoke-preparation.md).
+with no model inference. Reproduce with
+`python -m tests.tokenizer_course_inference --tokenizer LOCAL_4B_METADATA`.
+See [course preparation evidence](../../docs/validation/course-m5-inference-and-smoke-preparation.md).

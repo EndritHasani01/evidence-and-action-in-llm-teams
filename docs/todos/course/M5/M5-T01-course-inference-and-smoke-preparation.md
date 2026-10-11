@@ -1,6 +1,6 @@
 # Course M5-T01 — Course inference and smoke preparation
 
-**Status:** active
+**Status:** blocked
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md), [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md). This is CPU preparation; actual GPU work also requires the course M4 gate.
 
@@ -54,6 +54,24 @@ physical/policy costs retain it. Recover actual prior allocation and cumulative
 smoke usage, verify provider/billing/release terms, and prepare a new committed
 course source packet without changing historical source-v2/results. The complete
 156,251-token native bound is preparation input, not accepted model memory.
-Course M3's final broad acceptance passes; CPU preparation is ready.
+Course M3's final broad acceptance passes; its CPU prerequisites are accepted.
 Course M4 and the runtime/resource/authorization gates still precede
 any GPU allocation/inference.
+
+**Preparation checkpoint, 11 October 2026:** The safe CPU implementation is
+verified at `0260ca6`: 64 affected source/64 outside-checkout installed checks,
+four native source/four native installed checks and the literal CPU review
+notebook/export pass. All 24 exact proposed smoke requests, pinned metadata,
+package/source manifest and conditional complete-envelope arithmetic are saved
+in [the preparation evidence](../../../validation/course-m5-inference-and-smoke-preparation.md#packet-and-resource-handoff).
+Thesis defaults/todos and prerequisite artifacts remain intact.
+
+**Unresolved requirement:** R7 lacks a complete supported live-memory upper
+bound for the 156,251-token envelope. The 9,172,843,936-byte conditional component
+sum leaves activation, conversion, kernel workspace and allocator/context costs
+unbounded. It proves neither fit nor terminal model infeasibility. Under the
+completion criterion above this task remains unfinished; weight staging and
+M5-T02 admission are withheld. The delivered notebook runs only the safe CPU
+review. Resolve R7, then renew any affected source/request/host provenance and
+resource checks before preparing an executable model smoke. No terminal M5
+failure or M6 limited-report route is accepted by this checkpoint.

@@ -33,3 +33,13 @@ Actual 4B inference on the selected T4 host passes course-envelope memory, langu
 Execute the approved packet within its exact limits. Retain raw IDs/text, candidate/host facts, cache/state observations, boundary-memory evidence, failure/timeout cleanup, closed-copy checks and allocation/release receipts. Record incomplete checks explicitly rather than extending smoke to finish them.
 
 **Evidence:** Not yet recorded. Standalone run-6 diagnostics and CPU adapter checks do not pass this course model gate.
+
+**Preparation handoff, 11 October 2026:**
+[Course M5-T01 evidence](../../../validation/course-m5-inference-and-smoke-preparation.md#packet-and-resource-handoff)
+supplies 24 exact unexecuted requests, a new committed source/asset/package
+packet and a passing CPU review/export. R7 remains unresolved; its conditional
+memory subtotal supplies no loading or GPU admission. Preserve unknown prior
+attempts/allocation/quota/duration and the cumulative 24-attempt/1,800-device-second
+ceiling. Do not reserve devices or stage weights from this blocked packet.
+The full candidate attention layout, model memory/state, actual storage,
+provider release and resource/authorization gates remain pending.

@@ -153,7 +153,11 @@ passes 52 affected source/52 installed methods and 33 dependency-free methods
 with zero skips. Eight scopes reproduce twice; five portable reports retain
 35 deterministic SVG/PNG pairs, with original thesis exports unchanged.
 [Inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
-is the next safe task.
+passes 64 affected source/64 installed and four native source/four native
+installed checks, with all 24 exact requests and a reviewed CPU source packet.
+It remains blocked by R7's incomplete live-memory bound; see
+[the preparation handoff](docs/validation/course-m5-inference-and-smoke-preparation.md#packet-and-resource-handoff).
+Weight staging and GPU smoke are withheld; no terminal model failure is established.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
 remain open. CPU admission supplies no experiment execution authorization.
 
