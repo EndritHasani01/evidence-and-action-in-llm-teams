@@ -1,0 +1,28 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-S",
+    "-m",
+    "recovery",
+    "validate",
+    "--core-only",
+    "--regime",
+    "course",
+    "--config",
+    "configs/course-inputs.toml",
+    "--manifest",
+    "tests/fixtures/population_course.json",
+    "--schedule",
+    "tests/fixtures/schedules_course.json",
+    "--authoritative",
+    "tests/fixtures/population_course.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T13:06:25.633571+00:00",
+  "seconds": 228.1720000000205,
+  "exit_code": 1,
+  "log": "core-checks.txt.gz",
+  "hash_seed": null
+}

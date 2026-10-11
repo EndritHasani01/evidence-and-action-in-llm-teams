@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 import json
 from pathlib import Path
 
-from .costs import (FINAL, OVERHEAD_RULE, timestamp, _attempt_range, _allocation_resources, ledger_generation_costs,
+from .costs import (FINAL, OVERHEAD_RULE, timestamp, _attempt_range, _allocation_resources, _union_length, ledger_generation_costs,
                     ledger_policy_costs, physical_costs)
 from .rounds import deserialize_state
 from .runner import WorkerReader, DurableRunner
@@ -174,7 +174,37 @@ class _SnapshotChanged(ValueError):
     """A dependent worker committed after its parent's read snapshot opened."""
 
 
+def _setup_free_seconds(attempts, processes, now):
+    """Forecast computation only; physical/policy attempts retain full costs.
+
+    Loading is already in the setup allowance. Use the original ready/process
+    clocks, including resident reuse, and withhold samples with unknown loading.
+    """
+    result = {}
+    for attempt in attempts:
+        cid = attempt["call_id"]
+        if cid in result and result[cid] is None:
+            continue
+        elapsed = attempt["elapsed_seconds"]
+        if elapsed is None or attempt["finished_at"] is None:
+            result[cid] = None
+            continue
+        start, end = timestamp(attempt["started_at"]), timestamp(attempt["finished_at"])
+        matching = [p for p in processes if p["worker"] == attempt["worker"] and p["pid"] == attempt.get("worker_pid")
+                    and timestamp(p["started_at"]) <= end and timestamp(p["stopped_at"] or p["recovered_at"] or now) >= start]
+        if not matching or any(p["ready_at"] is None for p in matching):
+            result[cid] = None
+            continue
+        setup = [(timestamp(p["started_at"]), timestamp(p["ready_at"])) for p in matching]
+        if any(b < a for a, b in setup) or end < start:
+            raise ValueError("provider/attempt clocks cannot reconstruct setup")
+        loading = min(elapsed, _union_length(setup, start, end))
+        result[cid] = result.get(cid, 0) + elapsed - loading
+    return result
+
+
 def _forecast(branches, calls, generations, devices, budget, history=(), gpu_generations=None):
+    course_gpu = isinstance(budget, CourseBudget) and budget.allocation_mode == "gpu"
     samples = defaultdict(list)
     for branch in branches:
         for call in branch.calls:
@@ -186,14 +216,27 @@ def _forecast(branches, calls, generations, devices, budget, history=(), gpu_gen
             generation = generations[call.generation_id]
             if generation["unknown_duration_attempts"]:
                 continue
+            duration = generation.get("forecast_seconds_excluding_setup") if course_gpu else generation["seconds"][0]
+            if duration is None:
+                continue
             key = (branch.task.value, branch.phase, branch.policy or "none")
             for device in generation.get("by_device_seconds", {generation["device"]: generation["seconds"]}):
                 # A retry spanning devices supplies its full workflow cost to
                 # each participating device, conservatively preserving lost work.
-                samples[key].append((generation["seconds"][0], device, generation["request_tokens"]))
+                samples[key].append((duration, device, generation["request_tokens"]))
     for snapshot in history:
-        if isinstance(budget, CourseBudget) and budget.allocation_mode == "gpu" and snapshot["resources"]["allocation_mode"] != "gpu":
+        if course_gpu and snapshot["resources"]["allocation_mode"] != "gpu":
             continue  # CPU timings cannot forecast T4 throughput.
+        if course_gpu:
+            for slot in snapshot["logical_slots"]:
+                cost = slot["cost"]
+                duration = cost.get("forecast_seconds_excluding_setup")
+                if not slot["finished"] or slot["replay_parent"] is not None or duration is None:
+                    continue
+                key = slot["family"], slot["phase"], slot["policy"] or "none"
+                for device in cost["by_device_seconds"]:
+                    samples[key].append((duration, device, cost["request_tokens"]))
+            continue
         for cell in snapshot["forecast"]["cells"]:
             key = (cell["family"], cell["phase"], cell["condition"])
             for device, bounds in cell["by_device"].items():
@@ -389,9 +432,12 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
             if configurations:
                 budget = budget_from_record(json.loads(configurations.pop()))
         for attempt in attempts:
+            # The status clock can precede a concurrent attempt commit. Only a
+            # recorded release closes device ownership; now is a cost clock.
             attempt["device"] = next((a["device"] for a in reversed(allocations)
                 if a["worker"] == attempt["worker"] and timestamp(a["started_at"]) <= timestamp(attempt["started_at"])
-                <= timestamp(a["stopped_at"] or now)), f"worker:{attempt['worker']}")
+                and (a["stopped_at"] is None or timestamp(attempt["started_at"]) <= timestamp(a["stopped_at"]))),
+                f"worker:{attempt['worker']}")
         # Read-only compatibility with pre-T04 backups. Ordinary migrated
         # calls already carry the scalar request count.
         for row in records.values():
@@ -402,6 +448,10 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                     ("$.tokenized.input_ids" if row["peer"] == -1 else f"$.tokenized[{row['peer']}].input_ids",
                      row["branch_id"], row["round_number"])).fetchone()[0]
         generation_costs = ledger_generation_costs(branches, records, attempts, now)
+        if isinstance(budget, CourseBudget) and budget.allocation_mode == "gpu":
+            setup_free = _setup_free_seconds(attempts, processes, now)
+            for cid, cost in generation_costs.items():
+                cost["forecast_seconds_excluding_setup"] = setup_free.get(cid)
         logical = []
         for branch in branches:
             for call in branch.calls:
@@ -486,7 +536,8 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
             gpu_attempts = {(a["call_id"], a["number"]) for a in attempts if any(
                 allocation["worker"] == a["worker"] and allocation["device"] == a["device"]
                 and allocation["budget_json"] and json.loads(allocation["budget_json"])["allocation_mode"] == "gpu"
-                and timestamp(allocation["started_at"]) <= timestamp(a["started_at"]) <= timestamp(allocation["stopped_at"] or now)
+                and timestamp(allocation["started_at"]) <= timestamp(a["started_at"])
+                and (allocation["stopped_at"] is None or timestamp(a["started_at"]) <= timestamp(allocation["stopped_at"]))
                 for allocation in allocations)}
             unclassified = {a["call_id"] for a in attempts if (a["call_id"], a["number"]) not in gpu_attempts}
             gpu_generations = {a["call_id"] for a in attempts} - unclassified

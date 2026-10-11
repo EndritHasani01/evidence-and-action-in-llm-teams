@@ -1,0 +1,17 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m3-accounting/verify_accounting.py",
+    "--output",
+    "notebooks/validation/course-m3-accounting/review-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T13:28:13.374753+00:00",
+  "seconds": 3.26500000001397,
+  "exit_code": 0,
+  "log": "review-audit.txt.gz",
+  "hash_seed": null,
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m3-accounting-20261011"
+}

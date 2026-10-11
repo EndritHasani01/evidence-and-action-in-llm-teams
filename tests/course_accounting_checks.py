@@ -14,7 +14,7 @@ from time import monotonic, sleep
 import unittest
 
 from recovery.accounting import (Budget, BudgetStop, CourseBudget, _course_resources,
-    _forecast, budget_from_record, course_admission, format_status, progress_snapshot)
+    _forecast, _setup_free_seconds, budget_from_record, course_admission, format_status, progress_snapshot)
 from recovery.runner import DurableRunner, WorkerReader
 from recovery.storage import WorkerStore, record_json
 from recovery.tasks import Task
@@ -228,6 +228,31 @@ class CourseAccountingTests(unittest.TestCase):
             LocalScheduler((WorkerSpec(path, provider_factory, allocated_device="synthetic:0"),), (world,), selected,
                 tokenizer_factory, settings=SETTINGS, regime="course", budget=Budget(), release_device=lambda *_: True)
 
+    def test_gpu_forecast_excludes_recorded_loading_without_discounting_physical_work(self):
+        # Synthetic arithmetic input only: these are not GPU observations.
+        p, s = course_inputs()
+        selected = tuple(b for b in s.main if b.phase == "control")[:2]
+        cid = selected[0].calls[0].call_id
+        attempts = [dict(call_id=cid, worker=0, worker_pid=42, elapsed_seconds=5, started_at=clock(0), finished_at=clock(5)),
+                    dict(call_id=cid, worker=0, worker_pid=42, elapsed_seconds=3, started_at=clock(6), finished_at=clock(9))]
+        processes = [dict(worker=0, pid=42, started_at=clock(1), ready_at=clock(3), stopped_at=clock(10), recovered_at=None)]
+        free = _setup_free_seconds(attempts, processes, clock(10))
+        self.assertEqual(free[cid], 6)  # Eight measured seconds, two loading seconds, resident reuse.
+        generation = dict(seconds=[8, 8], unknown_duration_attempts=0, device="fixture-device",
+            by_device_seconds={"fixture-device": [8, 8]}, request_tokens=100, forecast_seconds_excluding_setup=free[cid])
+        budget = known_budget(allocation_mode="gpu", overhead_seconds=4)
+        forecast = _forecast(selected, {cid: dict(status="completed")}, {cid: generation}, ["fixture-device"], budget, gpu_generations={cid})
+        self.assertEqual(forecast["remaining_gpu_hours"], [6/3600, 1.25*(6+4)/3600])
+        self.assertEqual(generation["seconds"], [8, 8])  # Full physical/policy work remains charged.
+        history = dict(resources=dict(allocation_mode="gpu"), logical_slots=[dict(finished=True, replay_parent=None,
+            family=selected[0].task.value, phase=selected[0].phase, policy=None, cost=generation)])
+        prior_forecast = _forecast(selected[1:], {}, {}, ["fixture-device"], budget, history=[history], gpu_generations=set())
+        self.assertEqual(prior_forecast["remaining_gpu_hours"], forecast["remaining_gpu_hours"])
+        for unknown in ([], [dict(processes[0], ready_at=None)]):
+            self.assertIsNone(_setup_free_seconds(attempts, unknown, clock(10))[cid])
+        generation["forecast_seconds_excluding_setup"] = None
+        self.assertFalse(_forecast(selected, {cid: dict(status="completed")}, {cid: generation}, ["fixture-device"], budget, gpu_generations={cid})["available"])
+
     def test_unknown_smoke_and_spent_envelope_never_create_a_new_allowance(self):
         p, s = course_inputs()
         for budget, reason in ((known_budget(prior_smoke_gpu_hours=None), "unknown_prior_smoke"),
@@ -344,6 +369,12 @@ class CourseAccountingTests(unittest.TestCase):
                         self.assertEqual(snapshot["current"][0]["stage"], "main")
                         self.assertEqual(snapshot["current"][0]["device"], "synthetic:0")
                         self.assertTrue(any(row["status"] == "active" for row in snapshot["work"]))
+                        # The status clock precedes its SQLite read snapshot.
+                        # A call admitted meanwhile still belongs to the open
+                        # allocation; that clock is not an allocation stop.
+                        allocation_start = con.execute("SELECT started_at FROM allocations").fetchone()[0]
+                        earlier = progress_snapshot((world,), selected, (path,), regime="course", now=allocation_start)
+                        self.assertTrue(all(c["device"] == "synthetic:0" for c in earlier["current"]))
                 self.assertEqual(con.total_changes, before)
             scheduler.run()
         self.assertGreaterEqual(sum(bool(r["current"]) for r in reports), 5)

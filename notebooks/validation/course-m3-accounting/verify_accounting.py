@@ -83,10 +83,10 @@ def main():
                 assert unquote(fragment) in anchors(target), (source, link)
                 fragments += 1
     suites = {}
-    required = ["accounting-complete", "unchanged-accounting"]
+    required = ["accounting-review-final", "unchanged-accounting"]
     if args.completion:
         required += ["lifecycle-archive-corrected", "lifecycle-reproduction", "offline-audit",
-                     "source-full", "installed-checks", "core-checks", "pip-check", "unchanged-lifecycle-audit"]
+                     "source-full-final", "installed-final", "core-checks-corrected", "pip-check", "unchanged-lifecycle-audit"]
     for label in required:
         command = read(FOLDER / f"{label}-command.json")
         assert command["exit_code"] == 0, label

@@ -56,3 +56,44 @@ reproduces all 23 checks and nine cases. Initial failed test commands are retain
 their corrections use the actual `edited_owner`, `dependency_waiting` and task enum
 contracts. The all-family lifecycle, installed checks and final regression remain
 underway; this checkpoint does not close M3.
+
+## Lifecycle and review checkpoint
+
+The [ordinary course lifecycle bundle](../../tests/fixtures/course_lifecycle_run.zip)
+now retains three cases: one original main world per family covering every
+intervention, control and repeat path; hand-assigned uncertain/retry/allocation
+costs; and a forced budget deadline followed by resume of the original scope.
+Together they record 2,332 completed logical calls, 2,124 distinct generations,
+2,126 attempts, 208 replay uses and two uncertain attempts. The all-family case
+has 145 scheduled branches and 2,170 logical calls. This is a tiny scripted
+selection, not execution of the complete main or development population.
+
+[Packaged acceptance](../../notebooks/validation/course-m3-accounting/lifecycle-archive-corrected-command.json),
+[fresh hash-seed-37 reproduction](../../notebooks/validation/course-m3-accounting/lifecycle-reproduction-command.json)
+and [offline audit](../../notebooks/validation/course-m3-accounting/offline-audit-command.json)
+pass. Original raw outcomes, native requests, allowed views, settings, seeds,
+validation and branch-local committed states agree; operational clocks/PIDs may
+differ. Ordinary SQLite backup/reopen is exact. The earlier course worker bundle
+supplies its ten real controller/worker/provider kills, independently rejoined
+without editing or duplicating that artifact. The original thesis lifecycle
+[offline audit](../../notebooks/validation/course-m3-accounting/unchanged-lifecycle-audit-command.json)
+also passes unchanged.
+
+[Thirteen final course accounting checks](../../notebooks/validation/course-m3-accounting/accounting-review-final-command.json)
+pass after two production review fixes. A course GPU forecast excludes measured
+loading intersecting the attempt, using original process/ready clocks and
+resident reuse; full physical and policy attempt costs stay charged. Missing
+loading measurements make that timing sample unavailable. Device ownership
+uses the original allocation release, not the status timestamp, so a call
+starting during a read retains its assigned device. Synthetic arithmetic and
+read-only concurrent checks verify both rules without GPU use.
+
+The first broad core run hit a transient C-drive scratch-capacity guard while
+several SQLite archives were running. No guard was weakened and no experiment
+artifact was deleted. Child `TEMP`/`TMP` now use the explicit task-owned
+`E:/CodexTemp/recovery-course-m3-accounting-20261011` directory. The corrected
+[core-only run](../../notebooks/validation/course-m3-accounting/core-checks-corrected-command.json)
+passes 348 checks with eight declared-package skips under `python -S`. Source
+and installed runs begun before the review fixes were stopped and retained as
+partial evidence; they are not acceptance. Final-code full source/installed
+validation and the completion audit remain pending.
