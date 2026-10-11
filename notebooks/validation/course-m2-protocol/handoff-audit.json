@@ -1,0 +1,80 @@
+{
+  "status": "passed",
+  "stage": "completion",
+  "baseline": "58890addb53efe2ccdc7940b8e8686ce64dea28a",
+  "audited_head": "20c88354c464003b04e802e793be4cec9575ce4c",
+  "python": "3.11.9",
+  "raw_protected_files_identical": 1166,
+  "user_edit_identical_and_unstaged": true,
+  "thesis_settings_identical": true,
+  "thesis_roadmap_sections_1_to_10_preserved": true,
+  "local_references_checked": 620,
+  "markdown_fragments_checked": 271,
+  "course_task_states": {
+    "done": 3,
+    "ready": 1,
+    "blocked": 17
+  },
+  "suites": {
+    "integration-pass": {
+      "log": "integration-pass.txt",
+      "tests": 110,
+      "skipped": 0,
+      "seconds": 83.012,
+      "status": "passed"
+    },
+    "core-validation": {
+      "log": "core-validation.txt",
+      "tests": 348,
+      "skipped": 8,
+      "seconds": 228.318,
+      "status": "passed"
+    },
+    "native-hash37": {
+      "log": "native-hash37.txt",
+      "tests": 9,
+      "skipped": 0,
+      "seconds": 0.885,
+      "status": "passed"
+    },
+    "installed-validation": {
+      "log": "installed-validation.txt",
+      "tests": 81,
+      "skipped": 0,
+      "seconds": 3.168,
+      "status": "passed"
+    },
+    "installed-hash37": {
+      "log": "installed-hash37.txt",
+      "tests": 24,
+      "skipped": 0,
+      "seconds": 1.189,
+      "status": "passed"
+    },
+    "lifecycle-final": {
+      "log": "lifecycle-final.txt",
+      "tests": 9,
+      "skipped": 0,
+      "seconds": 972.497,
+      "status": "passed"
+    },
+    "full-regression-coverage": {
+      "tests": 558,
+      "full_run_seconds": 2214.248,
+      "full_run_failed_subcases": 4,
+      "unaffected_full_run_checks": 549,
+      "passing_lifecycle_recheck": 9,
+      "status": "verified after instrumentation-only fix",
+      "whole_suite_rerun": false
+    }
+  },
+  "native_requests": 11,
+  "native_replies": 23,
+  "native_shapes_and_shards": 225,
+  "maximum_useful_output_tokens": 132,
+  "maximum_feedback_tokens": 14,
+  "pinned_metadata_files_match": 4,
+  "model_calls": 0,
+  "complete_context_capacity": "unaccepted",
+  "runtime_freeze": false
+}

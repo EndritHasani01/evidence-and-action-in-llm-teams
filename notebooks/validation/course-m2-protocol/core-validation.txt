@@ -1,0 +1,858 @@
+Saved population verified without resampling: tests\fixtures\population_course.json.
+Saved schedules and CPU dependencies verified: tests\fixtures\schedules_course.json.
+Main 20: 5,752 distinct / 6,280 logical slots.
+Development: 1,114 distinct / 1,178 logical; first 90 capability calls.
+Smoke is separate: at most 24 additional calls (1,138 combined).
+CPU validation (core subset (strict replies, rounds, events, replay, attainability, durability, attempts, workers, accounting and lifecycle excluded)): configured size=fallback; checks cover target and fallback.
+input_inventory: failed — ValueError: payload_ambiguous
+source: blocked — prerequisites: input_inventory
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: failed — ValueError: payload_size_mismatch
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: failed — ValueError: payload_hash_mismatch
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: failed — ValueError: controlled SQLite failure
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled create-venv failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled download-pip-wheel failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — ValueError: pip_bootstrap_unverified_wheel
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — ValueError: pip_bootstrap_unverified_wheel
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled bootstrap-pip failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled download-candidate failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled install-candidate failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled build-source failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — RuntimeError: controlled pip-check failure
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — ValueError: installed_probe_schema_or_provenance
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmpgglvggep\\output\\recovery-m5-preflight-20261009T183134594150Z-8086dd37\\installed-probe-result.json'
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: failed — RuntimeError: controlled focused-checks failure
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: failed — ValueError: test_count_or_skip: focused-checks, expected=81
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: failed — RuntimeError: controlled native-9b failure
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: blocked — cpu_deadline_before_stage
+source: blocked — prerequisites: input_inventory
+cpu_host: blocked — cpu_deadline_before_stage
+command_cleanup: blocked — prerequisites: source, cpu_host
+environment: blocked — prerequisites: source, cpu_host, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: blocked — cpu_deadline_before_stage
+input_inventory: passed
+source: passed
+cpu_host: failed — ValueError: cpu_stage_gpu_visible: stop session and select Accelerator None
+command_cleanup: blocked — prerequisites: cpu_host
+environment: blocked — prerequisites: cpu_host, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: failed — ValueError: payload_missing
+source: blocked — prerequisites: input_inventory
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+Running pip-check ...
+Running installed-probe ...
+Running pip-list ...
+Running pip-freeze ...
+Running focused-checks ...
+focused_checks: passed
+Running native-9b ...
+native_9b: passed
+Running native-4b ...
+native_4b: passed
+Running native-capacity ...
+native_capacity: passed
+{
+  "continuation_checks_passed": true,
+  "tests_passed": 97,
+  "root_blocker": null,
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.1720000000204891
+}
+Result ZIP SHA-256: a8555c964ba80307f67114250f9f0d64fc1ef06ae7d1fa5152101011a5bd46af
+{
+  "continuation_checks_passed": false,
+  "tests_passed": 0,
+  "root_blocker": "AssertionError: ",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.125
+}
+Result ZIP SHA-256: 649ad09816ba3baab3a8c0f5f4c73624ccf17fe11687168ed826d1e0b750c689
+input_inventory: passed
+source: failed — ValueError: output_evidence_reserve
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+static_envelope: passed
+Running gpu-inventory ...
+host_inventory: passed
+Running download-bitsandbytes-wheel ...
+wheel_staging: passed
+Running device_0 ...
+device_0: passed
+Running device_1 ...
+device_1: passed
+{
+  "library_checks_completed": true,
+  "root_blocker": null,
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 0.21899999992456287,
+  "observed_gpu_seconds_lower_bound": 0.43799999984912574,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {
+      "prefill-gqa": {
+        "status": "passed",
+        "backend": "math"
+      },
+      "prefill-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "prefill-expanded-efficient": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "prefill-mask-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "decode-gqa": {
+        "status": "passed",
+        "backend": "math"
+      },
+      "decode-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "decode-expanded-efficient": {
+        "status": "passed",
+        "backend": "efficient"
+      }
+    },
+    "device_1": {
+      "prefill-gqa": {
+        "status": "passed",
+        "backend": "math"
+      },
+      "prefill-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "prefill-expanded-efficient": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "prefill-mask-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "decode-gqa": {
+        "status": "passed",
+        "backend": "math"
+      },
+      "decode-expanded": {
+        "status": "passed",
+        "backend": "efficient"
+      },
+      "decode-expanded-efficient": {
+        "status": "passed",
+        "backend": "efficient"
+      }
+    }
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}
+static_envelope: passed
+Running gpu-inventory ...
+host_inventory: failed - TimeoutError: deadline_before_command: gpu-inventory, remaining=-90.0, bound=10
+{
+  "library_checks_completed": false,
+  "root_blocker": "TimeoutError: deadline_before_command: gpu-inventory, remaining=-90.0, bound=10",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 360.0470000000205,
+  "observed_gpu_seconds_lower_bound": null,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {},
+    "device_1": {}
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}
+Already executed in this kernel; showing the retained result without another run.
+static_envelope: passed
+Running gpu-inventory ...
+host_inventory: passed
+Running download-bitsandbytes-wheel ...
+wheel_staging: passed
+Running device_0 ...
+device_0: failed - RuntimeError: controlled cleanup failure
+{
+  "library_checks_completed": false,
+  "root_blocker": "RuntimeError: controlled cleanup failure",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 0.125,
+  "observed_gpu_seconds_lower_bound": 0.25,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {},
+    "device_1": {}
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}
+static_envelope: passed
+host_inventory: failed - ValueError: host_torch_differs_from_reviewed_build
+{
+  "library_checks_completed": false,
+  "root_blocker": "ValueError: host_torch_differs_from_reviewed_build",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "full_candidate_gpu_acceptance": null,
+  "native_qwen_recurrent_acceptance": null,
+  "full_envelope_memory_acceptance": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_controller_wall_seconds": 0.0470000000204891,
+  "observed_gpu_seconds_lower_bound": null,
+  "timing_scope": "First code cell to the pre-export report; ZIP publication and provider stopping are outside this observed lower bound.",
+  "conditional_allocation_upper_bound_seconds": 1080,
+  "allocation_bounds_basis": "User must start within 60 seconds of assignment and stop within the 120-second reserve. Provider interval is unverified; prior allocations remain separate.",
+  "attention_dispatch": {
+    "device_0": {},
+    "device_1": {}
+  },
+  "next_action": "Download this ZIP and the executed notebook; stop the GPU session immediately. Return both under notebooks/run/6/ and report displayed allocation duration. Do not rerun or start model smoke."
+}
+test_clear_and_complementary_own_group_signs (tests.test_analysis.EstimandTests.test_clear_and_complementary_own_group_signs) ... ok
+test_every_retention_delivery_evidence_and_compact_endpoint (tests.test_analysis.EstimandTests.test_every_retention_delivery_evidence_and_compact_endpoint) ... ok
+test_focal_peers_match_and_round_one_is_excluded (tests.test_analysis.EstimandTests.test_focal_peers_match_and_round_one_is_excluded) ... ok
+test_prose_round_two_event_effects_trajectories_and_preservation (tests.test_analysis.EstimandTests.test_prose_round_two_event_effects_trajectories_and_preservation) ... ok
+test_receipt_equal_large_benefits_have_zero_eta (tests.test_analysis.EstimandTests.test_receipt_equal_large_benefits_have_zero_eta) ... ok
+test_retained_collaborator_null_benefit_harm_and_same_event_effect (tests.test_analysis.EstimandTests.test_retained_collaborator_null_benefit_harm_and_same_event_effect) ... ok
+test_six_receipt_cells_eta_direct_effects_and_representation_signs (tests.test_analysis.EstimandTests.test_six_receipt_cells_eta_direct_effects_and_representation_signs) ... ok
+test_theta_equal_effect_null_positive_and_negative (tests.test_analysis.EstimandTests.test_theta_equal_effect_null_positive_and_negative) ... ok
+test_duplicate_drifted_or_incomplete_tables_fail (tests.test_analysis.PopulationAndMissingnessTests.test_duplicate_drifted_or_incomplete_tables_fail) ... ok
+test_empty_preservation_is_na_and_does_not_remove_main_outcomes (tests.test_analysis.PopulationAndMissingnessTests.test_empty_preservation_is_na_and_does_not_remove_main_outcomes) ... ok
+test_equal_five_family_weighting_rather_than_pooled_worlds (tests.test_analysis.PopulationAndMissingnessTests.test_equal_five_family_weighting_rather_than_pooled_worlds) ... ok
+test_fixed_subsets_overlapping_ids_and_original_repeat_seeds (tests.test_analysis.PopulationAndMissingnessTests.test_fixed_subsets_overlapping_ids_and_original_repeat_seeds) ... ok
+test_missing_sibling_and_missing_family_are_explicit (tests.test_analysis.PopulationAndMissingnessTests.test_missing_sibling_and_missing_family_are_explicit) ... ok
+test_preservation_averages_peers_then_rounds_and_keeps_unknown_eligibility (tests.test_analysis.PopulationAndMissingnessTests.test_preservation_averages_peers_then_rounds_and_keeps_unknown_eligibility) ... ok
+test_preserving_cells_and_companions_stay_on_fixed_eligible_worlds (tests.test_analysis.PopulationAndMissingnessTests.test_preserving_cells_and_companions_stay_on_fixed_eligible_worlds) ... ok
+test_unexecuted_logical_replay_retains_parent_identity_and_unknown_value (tests.test_analysis.PopulationAndMissingnessTests.test_unexecuted_logical_replay_retains_parent_identity_and_unknown_value) ... ok
+test_unknown_components_and_complete_cases_do_not_redefine_population (tests.test_analysis.PopulationAndMissingnessTests.test_unknown_components_and_complete_cases_do_not_redefine_population) ... ok
+test_analysis_imports_no_runtime_or_statistics_dependencies (tests.test_analysis.RepeatabilityTests.test_analysis_imports_no_runtime_or_statistics_dependencies) ... ok
+test_exact_ties_are_distinct_from_strict_sign_reversals (tests.test_analysis.RepeatabilityTests.test_exact_ties_are_distinct_from_strict_sign_reversals) ... ok
+test_replicate_zero_unchanged_and_no_receipt_q_or_new_world_repeats (tests.test_analysis.RepeatabilityTests.test_replicate_zero_unchanged_and_no_receipt_q_or_new_world_repeats) ... ok
+test_trajectory_category_changes_and_incomplete_pairs (tests.test_analysis.RepeatabilityTests.test_trajectory_category_changes_and_incomplete_pairs) ... ok
+test_cli_full_development_schedule_is_offline_and_protects_existing_exports (tests.test_analysis_run.OfflineEstimandRunTests.test_cli_full_development_schedule_is_offline_and_protects_existing_exports) ... ok
+test_counts_survive_release_and_wrong_release_is_a_protocol_defect (tests.test_analysis_run.OfflineEstimandRunTests.test_counts_survive_release_and_wrong_release_is_a_protocol_defect) ... ok
+test_observed_held_empty_inactive_and_unknown_prose_never_selects_worlds (tests.test_analysis_run.OfflineEstimandRunTests.test_observed_held_empty_inactive_and_unknown_prose_never_selects_worlds) ... ok
+test_original_worker_joins_and_exclusive_json_exports (tests.test_analysis_run.OfflineEstimandRunTests.test_original_worker_joins_and_exclusive_json_exports) ... ok
+test_all_original_cases_reconcile_m3_and_reproduce_cost_rule_tables (tests.test_cost_archive.CostArchiveTests.test_all_original_cases_reconcile_m3_and_reproduce_cost_rule_tables) ... skipped 'saved checkpoint decoder needs declared CPU dependencies'
+test_all_covered_includes_bfs_deleted_edge_tombstone (tests.test_costs.BoundaryRuleTests.test_all_covered_includes_bfs_deleted_edge_tombstone) ... ok
+test_committed_pre_call_boundary_is_valid_later_checkpoint_is_not (tests.test_costs.BoundaryRuleTests.test_committed_pre_call_boundary_is_valid_later_checkpoint_is_not) ... ok
+test_gold_candidates_and_derived_history_never_determine_choice (tests.test_costs.BoundaryRuleTests.test_gold_candidates_and_derived_history_never_determine_choice) ... ok
+test_later_acquisitions_never_fill_missing_initial_boundary (tests.test_costs.BoundaryRuleTests.test_later_acquisitions_never_fill_missing_initial_boundary) ... ok
+test_mismatched_sibling_coverage_is_a_protocol_defect (tests.test_costs.BoundaryRuleTests.test_mismatched_sibling_coverage_is_a_protocol_defect) ... ok
+test_missing_pending_stale_and_mixed_coverage_select_k (tests.test_costs.BoundaryRuleTests.test_missing_pending_stale_and_mixed_coverage_select_k) ... ok
+test_selected_policy_is_not_replaced_when_its_branch_is_unscheduled (tests.test_costs.BoundaryRuleTests.test_selected_policy_is_not_replaced_when_its_branch_is_unscheduled) ... ok
+test_ambiguous_duration_retains_observation_and_upper_clock_bound (tests.test_costs.LedgerCostTests.test_ambiguous_duration_retains_observation_and_upper_clock_bound) ... ok
+test_idle_allocation_setup_interruption_partition_and_billing_are_separate (tests.test_costs.LedgerCostTests.test_idle_allocation_setup_interruption_partition_and_billing_are_separate) ... ok
+test_shared_prefix_mixed_q_f_failure_retry_and_unknown_tokens (tests.test_costs.LedgerCostTests.test_shared_prefix_mixed_q_f_failure_retry_and_unknown_tokens) ... ok
+test_completed_raw_reply_without_attempt_cost_cannot_be_reported_free (tests.test_costs.WholePolicyTests.test_completed_raw_reply_without_attempt_cost_cannot_be_reported_free) ... ok
+test_constant_rule_is_explicit_and_unknown_boundaries_keep_population_denominator (tests.test_costs.WholePolicyTests.test_constant_rule_is_explicit_and_unknown_boundaries_keep_population_denominator) ... ok
+test_incomplete_prefix_blocks_full_policy_cost_without_erasing_recorded_quality (tests.test_costs.WholePolicyTests.test_incomplete_prefix_blocks_full_policy_cost_without_erasing_recorded_quality) ... ok
+test_k_choice_uses_k_whole_cost_despite_better_c_outcomes (tests.test_costs.WholePolicyTests.test_k_choice_uses_k_whole_cost_despite_better_c_outcomes) ... ok
+test_nonconstant_rule_keeps_paired_worlds_and_frequencies (tests.test_costs.WholePolicyTests.test_nonconstant_rule_keeps_paired_worlds_and_frequencies) ... ok
+test_observed_inventory_and_output_preservation_are_separate_from_measured_cost (tests.test_costs.WholePolicyTests.test_observed_inventory_and_output_preservation_are_separate_from_measured_cost) ... ok
+test_retained_remote_inventory_excludes_host_v2_but_rule_requires_it (tests.test_costs.WholePolicyTests.test_retained_remote_inventory_excludes_host_v2_but_rule_requires_it) ... ok
+test_retrospective_stable_cost_includes_prefix_and_is_not_actual_savings (tests.test_costs.WholePolicyTests.test_retrospective_stable_cost_includes_prefix_and_is_not_actual_savings) ... ok
+test_selected_complete_branch_cost_quality_preservation_and_denominators_match (tests.test_costs.WholePolicyTests.test_selected_complete_branch_cost_quality_preservation_and_denominators_match) ... ok
+test_shared_ambiguous_prefix_cost_cancels_in_paired_difference (tests.test_costs.WholePolicyTests.test_shared_ambiguous_prefix_cost_cancels_in_paired_difference) ... ok
+test_token_scalar_drift_and_unzoned_resource_clocks_are_rejected (tests.test_costs.WholePolicyTests.test_token_scalar_drift_and_unzoned_resource_clocks_are_rejected) ... ok
+test_unavailable_selected_c_does_not_fall_back_to_completed_k (tests.test_costs.WholePolicyTests.test_unavailable_selected_c_does_not_fall_back_to_completed_k) ... ok
+test_unavailable_selected_k_keeps_unknown_cost_even_with_complete_c (tests.test_costs.WholePolicyTests.test_unavailable_selected_k_keeps_unknown_cost_even_with_complete_c) ... ok
+test_unrecorded_replay_does_not_become_completed_just_because_parent_exists (tests.test_costs.WholePolicyTests.test_unrecorded_replay_does_not_become_completed_just_because_parent_exists) ... ok
+test_cli_costs_diagnostics_estimands_full_unknown_schedule_and_existing_export (tests.test_costs_run.CostRunTests.test_cli_costs_diagnostics_estimands_full_unknown_schedule_and_existing_export) ... ok
+test_original_worker_snapshot_tokens_costs_and_exclusive_exports (tests.test_costs_run.CostRunTests.test_original_worker_snapshot_tokens_costs_and_exclusive_exports) ... ok
+test_pure_costs_and_rule_never_import_runtime_or_model_dependencies (tests.test_costs_run.CostRunTests.test_pure_costs_and_rule_never_import_runtime_or_model_dependencies) ... ok
+test_resource_records_share_the_application_snapshot_and_provider_billing_stays_separate (tests.test_costs_run.CostRunTests.test_resource_records_share_the_application_snapshot_and_provider_billing_stays_separate) ... ok
+test_course_rejects_missing_scope_changed_configuration_and_unassigned_replicates (tests.test_course_inputs.CourseInputTests.test_course_rejects_missing_scope_changed_configuration_and_unassigned_replicates) ... ok
+test_course_reuses_the_thousand_attempt_limit_and_records_fixed_owner (tests.test_course_inputs.CourseInputTests.test_course_reuses_the_thousand_attempt_limit_and_records_fixed_owner) ... ok
+test_exact_cohorts_owner_block_shapes_and_independent_edit_truth (tests.test_course_inputs.CourseInputTests.test_exact_cohorts_owner_block_shapes_and_independent_edit_truth) ... ok
+test_independent_seed_slots_and_separation_from_actual_thesis_inputs (tests.test_course_inputs.CourseInputTests.test_independent_seed_slots_and_separation_from_actual_thesis_inputs) ... ok
+test_repreparation_order_and_unrelated_random_draws_do_not_change_inputs (tests.test_course_inputs.CourseInputTests.test_repreparation_order_and_unrelated_random_draws_do_not_change_inputs) ... ok
+test_saved_course_round_trip_has_explicit_scope_and_never_resamples_or_overwrites (tests.test_course_inputs.CourseInputTests.test_saved_course_round_trip_has_explicit_scope_and_never_resamples_or_overwrites) ... ok
+test_all_saved_course_peer_and_control_shapes_keep_the_same_task_hints (tests.test_course_limits.CourseLimitsTests.test_all_saved_course_peer_and_control_shapes_keep_the_same_task_hints) ... ok
+test_course_reservation_uses_all_256_tokens_and_rejects_without_truncating (tests.test_course_limits.CourseLimitsTests.test_course_reservation_uses_all_256_tokens_and_rejects_without_truncating) ... ok
+test_exact_settings_select_limits_and_reject_omission_or_contradiction (tests.test_course_limits.CourseLimitsTests.test_exact_settings_select_limits_and_reject_omission_or_contradiction) ... ok
+test_hidden_source_values_and_endpoints_do_not_influence_requests (tests.test_course_limits.CourseLimitsTests.test_hidden_source_values_and_endpoints_do_not_influence_requests) ... ok
+test_lossless_history_footer_and_genuine_receipts_have_no_extra_source_authority (tests.test_course_limits.CourseLimitsTests.test_lossless_history_footer_and_genuine_receipts_have_no_extra_source_authority) ... ok
+test_only_adopted_uniform_limits_are_available (tests.test_course_limits.CourseLimitsTests.test_only_adopted_uniform_limits_are_available) ... ok
+test_actual_cpu_cli_prepares_saved_inputs_and_schedule_and_refuses_scope_drift (tests.test_course_preparation.CoursePreparationTests.test_actual_cpu_cli_prepares_saved_inputs_and_schedule_and_refuses_scope_drift) ... ok
+test_cpu_discovery_keeps_native_stack_checks_explicitly_available (tests.test_course_preparation.CoursePreparationTests.test_cpu_discovery_keeps_native_stack_checks_explicitly_available) ... ok
+test_hashing_and_optional_dependencies_cannot_change_course_inputs_or_schedule (tests.test_course_preparation.CoursePreparationTests.test_hashing_and_optional_dependencies_cannot_change_course_inputs_or_schedule) ... ok
+test_configuration_branch_and_replay_mutations_are_rejected (tests.test_course_schedules.CourseScheduleTests.test_configuration_branch_and_replay_mutations_are_rejected) ... ok
+test_every_replay_has_the_same_world_event_replicate_peer_and_required_retention (tests.test_course_schedules.CourseScheduleTests.test_every_replay_has_the_same_world_event_replicate_peer_and_required_retention) ... ok
+test_independent_component_counts_cells_and_all_fixed_opportunities (tests.test_course_schedules.CourseScheduleTests.test_independent_component_counts_cells_and_all_fixed_opportunities) ... ok
+test_retained_fixtures_and_saved_round_trips_without_resampling_or_rebuilding (tests.test_course_schedules.CourseScheduleTests.test_retained_fixtures_and_saved_round_trips_without_resampling_or_rebuilding) ... ok
+test_reversed_dependencies_respect_all_prefix_and_previous_round_barriers (tests.test_course_schedules.CourseScheduleTests.test_reversed_dependencies_respect_all_prefix_and_previous_round_barriers) ... ok
+test_cli_exhaustion_retains_every_rejection_and_writes_no_manifest (tests.test_cpu_entrypoint.CPUEntryPointTests.test_cli_exhaustion_retains_every_rejection_and_writes_no_manifest) ... ok
+test_cli_prepares_complete_schedules_from_each_saved_size_without_overwrite (tests.test_cpu_entrypoint.CPUEntryPointTests.test_cli_prepares_complete_schedules_from_each_saved_size_without_overwrite) ... ok
+test_cli_prepares_each_size_and_refuses_overwrite_or_bad_inputs (tests.test_cpu_entrypoint.CPUEntryPointTests.test_cli_prepares_each_size_and_refuses_overwrite_or_bad_inputs) ... ok
+test_cli_rejects_changed_manifest_and_wrong_config_before_test_execution (tests.test_cpu_entrypoint.CPUEntryPointTests.test_cli_rejects_changed_manifest_and_wrong_config_before_test_execution) ... ok
+test_cli_rejects_invalid_configuration_with_failure_exit (tests.test_cpu_entrypoint.CPUEntryPointTests.test_cli_rejects_invalid_configuration_with_failure_exit) ... ok
+test_cli_schedule_errors_fail_before_checks_and_leave_no_prepared_file (tests.test_cpu_entrypoint.CPUEntryPointTests.test_cli_schedule_errors_fail_before_checks_and_leave_no_prepared_file) ... ok
+test_cpu_import_and_all_task_shapes_with_inference_imports_forbidden (tests.test_cpu_entrypoint.CPUEntryPointTests.test_cpu_import_and_all_task_shapes_with_inference_imports_forbidden) ... ok
+test_declared_configuration_and_only_uniform_size_choices (tests.test_cpu_entrypoint.CPUEntryPointTests.test_declared_configuration_and_only_uniform_size_choices) ... ok
+test_full_validation_cannot_silently_skip_missing_protocol_dependency (tests.test_cpu_entrypoint.CPUEntryPointTests.test_full_validation_cannot_silently_skip_missing_protocol_dependency) ... ok
+test_bfs_all_legal_edges_against_independent_relaxation (tests.test_edits.LegalEditTests.test_bfs_all_legal_edges_against_independent_relaxation) ... ok
+test_numeric_exact_sets_all_owners_endpoints_and_sizes (tests.test_edits.LegalEditTests.test_numeric_exact_sets_all_owners_endpoints_and_sizes) ... ok
+test_preserving_is_one_uniform_pair_draw_main_is_two_draws (tests.test_edits.LegalEditTests.test_preserving_is_one_uniform_pair_draw_main_is_two_draws) ... ok
+test_source_events_are_immutable_single_edits_from_original (tests.test_edits.LegalEditTests.test_source_events_are_immutable_single_edits_from_original) ... ok
+test_top_k_exact_unique_cutoff_and_preserving_pair_sets (tests.test_edits.LegalEditTests.test_top_k_exact_unique_cutoff_and_preserving_pair_sets) ... ok
+test_all_tables_reproduce_without_redefining_fixed_populations (tests.test_estimand_archive.EstimandArchiveTests.test_all_tables_reproduce_without_redefining_fixed_populations) ... ok
+test_empty_D_empty_U_and_no_eligible_old_correct_coordinate (tests.test_evaluate.CoordinateOutcomeTests.test_empty_D_empty_U_and_no_eligible_old_correct_coordinate) ... ok
+test_final_invalid_prefix_never_backfills_an_earlier_answer (tests.test_evaluate.CoordinateOutcomeTests.test_final_invalid_prefix_never_backfills_an_earlier_answer) ... ok
+test_invalid_current_is_incorrect_and_explicitly_malformed (tests.test_evaluate.CoordinateOutcomeTests.test_invalid_current_is_incorrect_and_explicitly_malformed) ... ok
+test_repair_old_errors_and_collateral_damage_are_distinct (tests.test_evaluate.CoordinateOutcomeTests.test_repair_old_errors_and_collateral_damage_are_distinct) ... ok
+test_unique_global_coordinates_for_segments (tests.test_evaluate.CoordinateOutcomeTests.test_unique_global_coordinates_for_segments) ... ok
+test_unknown_slot_and_unknown_prefix_eligibility (tests.test_evaluate.CoordinateOutcomeTests.test_unknown_slot_and_unknown_prefix_eligibility) ... ok
+test_annotation_unknowns_and_inapplicable_denominators_are_explicit (tests.test_evaluate.DiagnosticAggregationTests.test_annotation_unknowns_and_inapplicable_denominators_are_explicit) ... ok
+test_average_peers_then_worlds_then_equal_eligible_families (tests.test_evaluate.DiagnosticAggregationTests.test_average_peers_then_worlds_then_equal_eligible_families) ... ok
+test_bfs_full_dictionary_and_unreachable_node (tests.test_evaluate.ExactOutcomeTests.test_bfs_full_dictionary_and_unreachable_node) ... ok
+test_order_and_duplicate_multiplicity (tests.test_evaluate.ExactOutcomeTests.test_order_and_duplicate_multiplicity) ... ok
+test_saved_bfs_pair_encoding_is_decoded_without_losing_keys (tests.test_evaluate.ExactOutcomeTests.test_saved_bfs_pair_encoding_is_decoded_without_losing_keys) ... ok
+test_segment_assignments_and_full_information_control (tests.test_evaluate.ExactOutcomeTests.test_segment_assignments_and_full_information_control) ... ok
+test_cli_joins_entire_development_manifest_offline_and_protects_export (tests.test_evaluate.OfflineRecordTests.test_cli_joins_entire_development_manifest_offline_and_protects_export) ... ok
+test_export_is_exclusive_and_plain_and_gzip_tables_agree (tests.test_evaluate.OfflineRecordTests.test_export_is_exclusive_and_plain_and_gzip_tables_agree) ... ok
+test_failure_annotations_overlap_and_keep_archived_provenance (tests.test_evaluate.OfflineRecordTests.test_failure_annotations_overlap_and_keep_archived_provenance) ... ok
+test_invalid_failed_unknown_and_raw_validation_defect_are_distinct (tests.test_evaluate.OfflineRecordTests.test_invalid_failed_unknown_and_raw_validation_defect_are_distinct) ... ok
+test_invalid_final_prefix_does_not_remove_a_world_or_backfill_eligibility (tests.test_evaluate.OfflineRecordTests.test_invalid_final_prefix_does_not_remove_a_world_or_backfill_eligibility) ... ok
+test_literal_replay_and_unexecuted_replay_do_not_copy_parent_outcomes (tests.test_evaluate.OfflineRecordTests.test_literal_replay_and_unexecuted_replay_do_not_copy_parent_outcomes) ... ok
+test_offline_imports_exclude_runtime_and_inference_dependencies (tests.test_evaluate.OfflineRecordTests.test_offline_imports_exclude_runtime_and_inference_dependencies) ... ok
+test_reader_is_read_only_missing_files_are_unknown_and_duplicates_fail (tests.test_evaluate.OfflineRecordTests.test_reader_is_read_only_missing_files_are_unknown_and_duplicates_fail) ... ok
+test_saved_numeric_and_bfs_candidates_and_original_attempt_joins (tests.test_evaluate.OfflineRecordTests.test_saved_numeric_and_bfs_candidates_and_original_attempt_joins) ... ok
+test_unbound_saved_source_drift_cannot_change_evaluator_truth (tests.test_evaluate.OfflineRecordTests.test_unbound_saved_source_drift_cannot_change_evaluator_truth) ... ok
+test_four_complete_categories_times_auc_and_regression (tests.test_evaluate.TrajectoryTests.test_four_complete_categories_times_auc_and_regression) ... ok
+test_fragmentation_does_not_splice_best_answers (tests.test_evaluate.TrajectoryTests.test_fragmentation_does_not_splice_best_answers) ... ok
+test_identical_wrong_only_for_replicated_outputs (tests.test_evaluate.TrajectoryTests.test_identical_wrong_only_for_replicated_outputs) ... ok
+test_incomplete_is_separate_from_never_correct (tests.test_evaluate.TrajectoryTests.test_incomplete_is_separate_from_never_correct) ... ok
+test_all_loading_errors_and_unexpected_language_keys_are_rejected (tests.test_inference_preparation.InferencePreparationTests.test_all_loading_errors_and_unexpected_language_keys_are_rejected) ... ok
+test_importing_adapter_never_imports_optional_inference_stack (tests.test_inference_preparation.InferencePreparationTests.test_importing_adapter_never_imports_optional_inference_stack) ... ok
+test_initialized_cuda_multiple_or_non_t4_devices_are_rejected_before_loading (tests.test_inference_preparation.InferencePreparationTests.test_initialized_cuda_multiple_or_non_t4_devices_are_rejected_before_loading) ... ok
+test_loader_sets_visibility_before_any_cuda_call_and_requests_native_nf4 (tests.test_inference_preparation.InferencePreparationTests.test_loader_sets_visibility_before_any_cuda_call_and_requests_native_nf4) ... ok
+test_offload_splitting_meta_and_unsupported_precision_fail (tests.test_inference_preparation.InferencePreparationTests.test_offload_splitting_meta_and_unsupported_precision_fail) ... ok
+test_only_reviewed_candidates_and_complete_non_thinking_settings (tests.test_inference_preparation.InferencePreparationTests.test_only_reviewed_candidates_and_complete_non_thinking_settings) ... ok
+test_opt_in_factory_registers_and_records_exact_chunk_backend_before_loading (tests.test_inference_preparation.InferencePreparationTests.test_opt_in_factory_registers_and_records_exact_chunk_backend_before_loading) ... ok
+test_opt_in_rejects_unreviewed_stack_before_any_model_load (tests.test_inference_preparation.InferencePreparationTests.test_opt_in_rejects_unreviewed_stack_before_any_model_load) ... ok
+test_template_ids_and_exact_terminal_spelling_are_verified (tests.test_inference_preparation.InferencePreparationTests.test_template_ids_and_exact_terminal_spelling_are_verified) ... ok
+test_tied_head_is_verified_and_does_not_excuse_missing_embedding (tests.test_inference_preparation.InferencePreparationTests.test_tied_head_is_verified_and_does_not_excuse_missing_embedding) ... ok
+test_unknown_attention_is_not_a_candidate_or_silent_fallback (tests.test_inference_preparation.InferencePreparationTests.test_unknown_attention_is_not_a_candidate_or_silent_fallback) ... ok
+test_atlas_selected_independent_ambiguity_and_sufficiency_witnesses (tests.test_information.InformationCoreTests.test_atlas_selected_independent_ambiguity_and_sufficiency_witnesses) ... ok
+test_descriptors_distinguish_source_and_output_owners_and_preserving_empty (tests.test_information.InformationCoreTests.test_descriptors_distinguish_source_and_output_owners_and_preserving_empty) ... ok
+test_local_current_raw_prefix_suffices_without_unrelated_tail (tests.test_information.InformationCoreTests.test_local_current_raw_prefix_suffices_without_unrelated_tail) ... ok
+test_numeric_coincidence_wrong_ids_versions_and_unrecognized_prose_unresolved (tests.test_information.InformationCoreTests.test_numeric_coincidence_wrong_ids_versions_and_unrecognized_prose_unresolved) ... ok
+test_prefix_reconstruction_local_first_interior_and_missing_boundary (tests.test_information.InformationCoreTests.test_prefix_reconstruction_local_first_interior_and_missing_boundary) ... ok
+test_receipt_first_usable_boundary_cannot_be_in_the_future (tests.test_information.InformationCoreTests.test_receipt_first_usable_boundary_cannot_be_in_the_future) ... ok
+test_receipt_same_later_none_without_success_and_before_receipt (tests.test_information.InformationCoreTests.test_receipt_same_later_none_without_success_and_before_receipt) ... ok
+test_receipt_unknowns_censor_first_boundaries_and_lags (tests.test_information.InformationCoreTests.test_receipt_unknowns_censor_first_boundaries_and_lags) ... ok
+test_sort_reconstruction_publishes_ambiguity_and_domain (tests.test_information.InformationCoreTests.test_sort_reconstruction_publishes_ambiguity_and_domain) ... ok
+test_source_bound_literal_and_host_receipt_keep_original_links_and_conflicts (tests.test_information.InformationCoreTests.test_source_bound_literal_and_host_receipt_keep_original_links_and_conflicts) ... ok
+test_tombstone_pending_remote_coverage_and_revision_exclusion (tests.test_information.InformationCoreTests.test_tombstone_pending_remote_coverage_and_revision_exclusion) ... ok
+test_transport_all_positions_directions_shards_sizes_and_wrong_candidates (tests.test_information.InformationCoreTests.test_transport_all_positions_directions_shards_sizes_and_wrong_candidates) ... ok
+test_transport_invalid_unknown_and_other_tasks_never_backfill (tests.test_information.InformationCoreTests.test_transport_invalid_unknown_and_other_tasks_never_backfill) ... ok
+test_wrong_difference_candidate_is_only_hypothetical_reconstruction (tests.test_information.InformationCoreTests.test_wrong_difference_candidate_is_only_hypothetical_reconstruction) ... ok
+test_original_workers_full_unknown_populations_and_final_acquisitions (tests.test_information_run.InformationArchiveTests.test_original_workers_full_unknown_populations_and_final_acquisitions) ... skipped 'saved checkpoint decoder needs declared CPU dependencies'
+test_public_checkpoint_decoder_reads_same_snapshot_and_protects_original_bytes (tests.test_information_run.InformationArchiveTests.test_public_checkpoint_decoder_reads_same_snapshot_and_protects_original_bytes) ... skipped 'saved checkpoint decoder needs declared CPU dependencies'
+test_all_prefix_rounds_actual_exposure_history_counts_and_offline_strata (tests.test_information_run.InformationRunTests.test_all_prefix_rounds_actual_exposure_history_counts_and_offline_strata) ... ok
+test_boundary_checkpoint_before_calls_is_evidence_without_fabricating_outcomes (tests.test_information_run.InformationRunTests.test_boundary_checkpoint_before_calls_is_evidence_without_fabricating_outcomes) ... ok
+test_cleared_candidate_cannot_be_used_for_reconstruction_but_compact_wrong_one_can (tests.test_information_run.InformationRunTests.test_cleared_candidate_cannot_be_used_for_reconstruction_but_compact_wrong_one_can) ... ok
+test_cli_unknown_schedule_and_combined_estimands_and_exclusive_export (tests.test_information_run.InformationRunTests.test_cli_unknown_schedule_and_combined_estimands_and_exclusive_export) ... ok
+test_committed_scope_and_unknown_outcomes_and_source_drift_are_rejected (tests.test_information_run.InformationRunTests.test_committed_scope_and_unknown_outcomes_and_source_drift_are_rejected) ... ok
+test_final_validation_alone_does_not_prove_delivery_or_acquisition (tests.test_information_run.InformationRunTests.test_final_validation_alone_does_not_prove_delivery_or_acquisition) ... ok
+test_invalid_last_candidate_has_no_transport_despite_earlier_correct_candidate (tests.test_information_run.InformationRunTests.test_invalid_last_candidate_has_no_transport_despite_earlier_correct_candidate) ... ok
+test_pure_diagnostics_do_not_import_runner_or_model_or_protocol (tests.test_information_run.InformationRunTests.test_pure_diagnostics_do_not_import_runner_or_model_or_protocol) ... ok
+test_rendering_drift_is_rejected_even_when_state_is_correct (tests.test_information_run.InformationRunTests.test_rendering_drift_is_rejected_even_when_state_is_correct) ... ok
+test_repeated_delivery_attempts_and_unique_acquisitions_and_final_boundary (tests.test_information_run.InformationRunTests.test_repeated_delivery_attempts_and_unique_acquisitions_and_final_boundary) ... ok
+test_token_counts_unavailable_without_matching_tokenizer_and_mismatch_rejected (tests.test_information_run.InformationRunTests.test_token_counts_unavailable_without_matching_tokenizer_and_mismatch_rejected) ... ok
+test_worker_read_only_duplicate_protection_and_optional_estimands (tests.test_information_run.InformationRunTests.test_worker_read_only_duplicate_protection_and_optional_estimands) ... ok
+test_notebook_bootstrap_binds_the_delivered_helper_manifest_and_lock (tests.test_kaggle_bundle.BundleTests.test_notebook_bootstrap_binds_the_delivered_helper_manifest_and_lock) ... ok
+test_raw_payload_and_each_compressed_member_are_exact (tests.test_kaggle_bundle.BundleTests.test_raw_payload_and_each_compressed_member_are_exact) ... ok
+test_rejects_drift_and_never_overwrites_outputs (tests.test_kaggle_bundle.BundleTests.test_rejects_drift_and_never_overwrites_outputs) ... ok
+test_rejects_invalid_build_provenance_and_source_marker (tests.test_kaggle_bundle.BundleTests.test_rejects_invalid_build_provenance_and_source_marker) ... ok
+test_rejects_unsafe_duplicates_symlinks_and_path_conflicts (tests.test_kaggle_bundle.BundleTests.test_rejects_unsafe_duplicates_symlinks_and_path_conflicts) ... ok
+test_target_metadata_refuses_untrusted_origin_or_missing_wheel (tests.test_kaggle_bundle.BundleTests.test_target_metadata_refuses_untrusted_origin_or_missing_wheel) ... ok
+test_target_wheel_selection_pins_one_compatible_file_and_byte_range_total (tests.test_kaggle_bundle.BundleTests.test_target_wheel_selection_pins_one_compatible_file_and_byte_range_total) ... ok
+test_real_interruption_and_machine_schema_failure (tests.test_kaggle_preflight.CommandTests.test_real_interruption_and_machine_schema_failure) ... ok
+test_real_preinstallation_process_diagnostic (tests.test_kaggle_preflight.CommandTests.test_real_preinstallation_process_diagnostic) ... ok
+test_real_stdout_stderr_exit_and_deadline (tests.test_kaggle_preflight.CommandTests.test_real_stdout_stderr_exit_and_deadline) ... ok
+test_real_timeout_reaps_owned_child_tree_and_keeps_partial_logs (tests.test_kaggle_preflight.CommandTests.test_real_timeout_reaps_owned_child_tree_and_keeps_partial_logs) ... ok
+test_ambiguous_and_corrupt_payload_stop_before_environment (tests.test_kaggle_preflight.PreflightTests.test_ambiguous_and_corrupt_payload_stop_before_environment) ... ok
+test_archive_safety_rejects_raw_headers_before_copy (tests.test_kaggle_preflight.PreflightTests.test_archive_safety_rejects_raw_headers_before_copy) ... ok
+test_backup_and_export_failures_are_named (tests.test_kaggle_preflight.PreflightTests.test_backup_and_export_failures_are_named) ... ok
+test_candidate_failures_and_bad_machine_output_export (tests.test_kaggle_preflight.PreflightTests.test_candidate_failures_and_bad_machine_output_export) ... ok
+test_complete_controlled_workflow_preserves_inputs_and_isolates_modes (tests.test_kaggle_preflight.PreflightTests.test_complete_controlled_workflow_preserves_inputs_and_isolates_modes) ... ok
+test_complete_member_hash_rejects_same_marker_with_changed_fixture (tests.test_kaggle_preflight.PreflightTests.test_complete_member_hash_rejects_same_marker_with_changed_fixture) ... ok
+test_deadline_and_interruption_preserve_readable_evidence (tests.test_kaggle_preflight.PreflightTests.test_deadline_and_interruption_preserve_readable_evidence) ... ok
+test_generated_probe_writes_machine_file_in_real_noisy_subprocess (tests.test_kaggle_preflight.PreflightTests.test_generated_probe_writes_machine_file_in_real_noisy_subprocess) ... ok
+test_inventory_limit_symlinks_and_gpu_refusal (tests.test_kaggle_preflight.PreflightTests.test_inventory_limit_symlinks_and_gpu_refusal) ... ok
+test_linux_group_inspection_distinguishes_live_members_from_exited_zombies (tests.test_kaggle_preflight.PreflightTests.test_linux_group_inspection_distinguishes_live_members_from_exited_zombies) ... ok
+test_observed_transformed_input_exports_root_diagnosis (tests.test_kaggle_preflight.PreflightTests.test_observed_transformed_input_exports_root_diagnosis) ... ok
+test_pinned_pip_download_refuses_bad_bytes_and_origins (tests.test_kaggle_preflight.PreflightTests.test_pinned_pip_download_refuses_bad_bytes_and_origins) ... ok
+test_pinned_pip_download_verifies_bytes_before_publish (tests.test_kaggle_preflight.PreflightTests.test_pinned_pip_download_verifies_bytes_before_publish) ... ok
+test_same_session_continuation_uses_existing_environment_and_keeps_failed_export (tests.test_kaggle_preflight.PreflightTests.test_same_session_continuation_uses_existing_environment_and_keeps_failed_export) ... ok
+test_shared_pool_admission_uses_the_smallest_observed_capacity (tests.test_kaggle_preflight.PreflightTests.test_shared_pool_admission_uses_the_smallest_observed_capacity) ... ok
+test_shared_pool_and_storage_failure_prevent_download (tests.test_kaggle_preflight.PreflightTests.test_shared_pool_and_storage_failure_prevent_download) ... ok
+test_ambiguous_and_altered_payloads_are_rejected (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_ambiguous_and_altered_payloads_are_rejected) ... ok
+test_archive_traversal_symlinks_duplicates_and_member_drift (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_archive_traversal_symlinks_duplicates_and_member_drift) ... ok
+test_build_preserves_originals_and_is_repeatable (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_build_preserves_originals_and_is_repeatable) ... ok
+test_compressed_defect_and_export_error_are_visible (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_compressed_defect_and_export_error_are_visible) ... ok
+test_deadline_blocks_checks_and_still_exports (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_deadline_blocks_checks_and_still_exports) ... ok
+test_gpu_visibility_and_interruption_retain_reports (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_gpu_visibility_and_interruption_retain_reports) ... ok
+test_inventory_limit_refuses_partial_uniqueness (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_inventory_limit_refuses_partial_uniqueness) ... ok
+test_missing_payload_and_missing_input_export_real_failure (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_missing_payload_and_missing_input_export_real_failure) ... ok
+test_notebook_embeds_exact_helper_and_canonical_expectations (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_notebook_embeds_exact_helper_and_canonical_expectations) ... ok
+test_symlinks_are_not_scanned_or_admitted (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_symlinks_are_not_scanned_or_admitted) ... ok
+test_transformed_input_is_inventory_evidence_not_repaired_source (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_transformed_input_is_inventory_evidence_not_repaired_source) ... ok
+test_valid_payload_backup_export_and_new_run_preserve_inputs (tests.test_kaggle_upload_canary.KaggleUploadCanaryTests.test_valid_payload_backup_export_and_new_run_preserve_inputs) ... ok
+test_all_sizes_keep_proved_bounds_separate_from_constructed_fixtures (tests.test_model_feasibility.ModelFeasibilityTests.test_all_sizes_keep_proved_bounds_separate_from_constructed_fixtures) ... ok
+test_chunk_bounds_pay_shared_mask_alignment_without_head_replication (tests.test_model_feasibility.ModelFeasibilityTests.test_chunk_bounds_pay_shared_mask_alignment_without_head_replication) ... ok
+test_corrupt_input_fails_before_creating_output_and_keeps_bytes (tests.test_model_feasibility.ModelFeasibilityTests.test_corrupt_input_fails_before_creating_output_and_keeps_bytes) ... ok
+test_identity_check_and_existing_report_refuse_without_mutation (tests.test_model_feasibility.ModelFeasibilityTests.test_identity_check_and_existing_report_refuse_without_mutation) ... ok
+test_inconsistent_or_coerced_device_memory_is_rejected (tests.test_model_feasibility.ModelFeasibilityTests.test_inconsistent_or_coerced_device_memory_is_rejected) ... ok
+test_malformed_geometry_token_limit_and_contradictory_tie_are_rejected (tests.test_model_feasibility.ModelFeasibilityTests.test_malformed_geometry_token_limit_and_contradictory_tie_are_rejected) ... ok
+test_missing_task_changed_limit_and_invalid_bound_are_rejected (tests.test_model_feasibility.ModelFeasibilityTests.test_missing_task_changed_limit_and_invalid_bound_are_rejected) ... ok
+test_report_writer_retains_unknown_fields (tests.test_model_feasibility.ModelFeasibilityTests.test_report_writer_retains_unknown_fields) ... ok
+test_review_memory_changes_are_rejected_against_original_zip (tests.test_model_feasibility.ModelFeasibilityTests.test_review_memory_changes_are_rejected_against_original_zip) ... ok
+test_subtotal_under_allowance_does_not_grant_fit_and_over_does_not_fail_model (tests.test_model_feasibility.ModelFeasibilityTests.test_subtotal_under_allowance_does_not_grant_fit_and_over_does_not_fail_model) ... ok
+test_tied_head_is_counted_once_and_kv_is_independent_of_model_width (tests.test_model_feasibility.ModelFeasibilityTests.test_tied_head_is_counted_once_and_kv_is_independent_of_model_width) ... ok
+test_every_table_reproduces_and_full_manifests_retain_unknown_worlds (tests.test_outcome_archive.OutcomeArchiveTests.test_every_table_reproduces_and_full_manifests_retain_unknown_worlds) ... ok
+test_all_initial_shards_controls_public_metadata_and_shapes (tests.test_peer_views.PeerViewTests.test_all_initial_shards_controls_public_metadata_and_shapes) ... ok
+test_bfs_candidate_copy_is_canonical_and_source_state_is_deeply_immutable (tests.test_peer_views.PeerViewTests.test_bfs_candidate_copy_is_canonical_and_source_state_is_deeply_immutable) ... ok
+test_compact_actual_wrong_result_and_historical_absence_are_explicit (tests.test_peer_views.PeerViewTests.test_compact_actual_wrong_result_and_historical_absence_are_explicit) ... ok
+test_deterministic_requests_in_fresh_hash_seeded_processes_without_optional_imports (tests.test_peer_views.PeerViewTests.test_deterministic_requests_in_fresh_hash_seeded_processes_without_optional_imports) ... ok
+test_feedback_layout_has_only_fixed_public_descriptions (tests.test_peer_views.PeerViewTests.test_feedback_layout_has_only_fixed_public_descriptions) ... ok
+test_hidden_values_and_private_bfs_endpoints_cannot_change_other_renderings (tests.test_peer_views.PeerViewTests.test_hidden_values_and_private_bfs_endpoints_cannot_change_other_renderings) ... ok
+test_history_preserves_literal_text_as_data_and_has_no_raw_table_archive (tests.test_peer_views.PeerViewTests.test_history_preserves_literal_text_as_data_and_has_no_raw_table_archive) ... ok
+test_latest_candidate_cannot_survive_a_newer_own_reply_or_feedback_slot (tests.test_peer_views.PeerViewTests.test_latest_candidate_cannot_survive_a_newer_own_reply_or_feedback_slot) ... ok
+test_latest_candidate_is_not_duplicated_or_reused_after_invalid_failed_slots (tests.test_peer_views.PeerViewTests.test_latest_candidate_is_not_duplicated_or_reused_after_invalid_failed_slots) ... ok
+test_length_delimited_blocks_preserve_fake_headers_controls_and_order (tests.test_peer_views.PeerViewTests.test_length_delimited_blocks_preserve_fake_headers_controls_and_order) ... ok
+test_malformed_or_host_enriched_peer_records_are_rejected (tests.test_peer_views.PeerViewTests.test_malformed_or_host_enriched_peer_records_are_rejected) ... ok
+test_offline_gold_edits_conditions_and_queue_text_are_not_inputs (tests.test_peer_views.PeerViewTests.test_offline_gold_edits_conditions_and_queue_text_are_not_inputs) ... ok
+test_pending_sources_tombstones_and_stale_lookup_are_distinct (tests.test_peer_views.PeerViewTests.test_pending_sources_tombstones_and_stale_lookup_are_distinct) ... ok
+test_public_identity_order_is_payload_independent_and_canonical (tests.test_peer_views.PeerViewTests.test_public_identity_order_is_payload_independent_and_canonical) ... ok
+test_receipt_disclosure_changes_only_historical_field_and_never_current_lookup (tests.test_peer_views.PeerViewTests.test_receipt_disclosure_changes_only_historical_field_and_never_current_lookup) ... ok
+test_receipt_layout_at_both_sizes_on_prefix_and_sort_and_invalid_receipts (tests.test_peer_views.PeerViewTests.test_receipt_layout_at_both_sizes_on_prefix_and_sort_and_invalid_receipts) ... ok
+test_released_prose_preserves_append_order_and_source_metadata_is_queue_independent (tests.test_peer_views.PeerViewTests.test_released_prose_preserves_append_order_and_source_metadata_is_queue_independent) ... ok
+test_revision_rejects_old_usable_payload_and_checks_cpu_v1_v2_v3 (tests.test_peer_views.PeerViewTests.test_revision_rejects_old_usable_payload_and_checks_cpu_v1_v2_v3) ... ok
+test_exact_native_template_flags_and_serializable_token_inputs (tests.test_peer_views.RequestTokenBoundaryTests.test_exact_native_template_flags_and_serializable_token_inputs) ... ok
+test_full_384_token_reserve_and_no_truncation_at_or_above_context_boundary (tests.test_peer_views.RequestTokenBoundaryTests.test_full_384_token_reserve_and_no_truncation_at_or_above_context_boundary) ... ok
+test_retained_request_fixture_and_token_archive_match_exact_renderings (tests.test_peer_views.RequestTokenBoundaryTests.test_retained_request_fixture_and_token_archive_match_exact_renderings) ... ok
+test_all_populations_edit_truth_subsets_owner_balance_and_nesting (tests.test_populations.PopulationTests.test_all_populations_edit_truth_subsets_owner_balance_and_nesting) ... ok
+test_authoritative_comparison_detects_changed_but_mathematically_valid_inputs (tests.test_populations.PopulationTests.test_authoritative_comparison_detects_changed_but_mathematically_valid_inputs) ... ok
+test_bfs_rejects_fixed_owner_without_changing_edge (tests.test_populations.PopulationTests.test_bfs_rejects_fixed_owner_without_changing_edge) ... ok
+test_multiple_roots_and_saved_configuration_regenerate_byte_stably (tests.test_populations.PopulationTests.test_multiple_roots_and_saved_configuration_regenerate_byte_stably) ... ok
+test_process_hashing_global_rng_and_optional_dependencies_do_not_affect_preparation (tests.test_populations.PopulationTests.test_process_hashing_global_rng_and_optional_dependencies_do_not_affect_preparation) ... ok
+test_rejection_reasons_owner_fixed_and_explicit_thousand_attempt_exhaustion (tests.test_populations.PopulationTests.test_rejection_reasons_owner_fixed_and_explicit_thousand_attempt_exhaustion) ... ok
+test_reordering_and_unrelated_stream_consumption_cannot_shift_worlds (tests.test_populations.PopulationTests.test_reordering_and_unrelated_stream_consumption_cannot_shift_worlds) ... ok
+test_retained_host_fixtures_reload_and_regenerate_without_evaluator_fields (tests.test_populations.PopulationTests.test_retained_host_fixtures_reload_and_regenerate_without_evaluator_fields) ... ok
+test_structural_and_scientific_manifest_mutations_rejected (tests.test_populations.PopulationTests.test_structural_and_scientific_manifest_mutations_rejected) ... ok
+test_uniform_partition_domains_and_fixed_owner_orders (tests.test_populations.PopulationTests.test_uniform_partition_domains_and_fixed_owner_orders) ... ok
+test_unique_disjoint_streams_matched_siblings_and_repeat_prefix (tests.test_populations.PopulationTests.test_unique_disjoint_streams_matched_siblings_and_repeat_prefix) ... ok
+test_all_zero_uses_smallest_regression_world_then_smallest_complete_world (tests.test_report.CaseSelectionTests.test_all_zero_uses_smallest_regression_world_then_smallest_complete_world) ... ok
+test_any_unexecuted_world_slot_blocks_card_without_treating_failure_as_missing (tests.test_report.CaseSelectionTests.test_any_unexecuted_world_slot_blocks_card_without_treating_failure_as_missing) ... ok
+test_duplicate_selections_merge_all_reasons_and_card_count_is_bounded (tests.test_report.CaseSelectionTests.test_duplicate_selections_merge_all_reasons_and_card_count_is_bounded) ... ok
+test_lower_observed_median_sorts_effect_before_id_for_both_signs (tests.test_report.CaseSelectionTests.test_lower_observed_median_sorts_effect_before_id_for_both_signs) ... ok
+test_missing_signs_are_explicit_and_unknown_world_cannot_be_selected (tests.test_report.CaseSelectionTests.test_missing_signs_are_explicit_and_unknown_world_cannot_be_selected) ... ok
+test_no_eligible_complete_cases_is_unavailable_not_a_zero_fallback (tests.test_report.CaseSelectionTests.test_no_eligible_complete_cases_is_unavailable_not_a_zero_fallback) ... ok
+test_repeats_never_replace_original_and_duplicate_contrasts_fail (tests.test_report.CaseSelectionTests.test_repeats_never_replace_original_and_duplicate_contrasts_fail) ... ok
+test_tied_effects_use_immutable_ids_and_are_order_independent (tests.test_report.CaseSelectionTests.test_tied_effects_use_immutable_ids_and_are_order_independent) ... ok
+test_tiny_nonzero_rational_is_not_rounded_to_a_zero_tie (tests.test_report.CaseSelectionTests.test_tiny_nonzero_rational_is_not_rounded_to_a_zero_tie) ... ok
+test_zero_fallback_does_not_replace_an_existing_sign (tests.test_report.CaseSelectionTests.test_zero_fallback_does_not_replace_an_existing_sign) ... ok
+test_all_sixteen_scopes_reproduce_all_m4_outputs_twice_from_original_workers (tests.test_report_archive.ReportArchiveTests.test_all_sixteen_scopes_reproduce_all_m4_outputs_twice_from_original_workers) ... skipped 'ordinary checkpoint decoder needs declared CPU packages'
+test_portable_complete_incomplete_and_stopped_reports_match_retained_evidence (tests.test_report_archive.ReportArchiveTests.test_portable_complete_incomplete_and_stopped_reports_match_retained_evidence) ... skipped 'ordinary checkpoint decoder needs declared CPU packages'
+test_all_seven_figures_reproduce_with_coherent_synthetic_labels_and_links (tests.test_report_figures.ReportFigureTests.test_all_seven_figures_reproduce_with_coherent_synthetic_labels_and_links) ... skipped 'SVG/PNG rendering needs optional report extra'
+test_all_unknown_report_renders_missing_values_without_zero_points (tests.test_report_figures.ReportFigureTests.test_all_unknown_report_renders_missing_values_without_zero_points) ... skipped 'SVG/PNG rendering needs optional report extra'
+test_absolute_quality_cost_axes_do_not_mix_in_paired_policy_differences (tests.test_report_run.ReportRunTests.test_absolute_quality_cost_axes_do_not_mix_in_paired_policy_differences) ... ok
+test_all_m4_outputs_share_original_snapshot_and_worker_is_unchanged (tests.test_report_run.ReportRunTests.test_all_m4_outputs_share_original_snapshot_and_worker_is_unchanged) ... ok
+test_branchless_prose_delivery_links_original_message_and_sender_call_ids (tests.test_report_run.ReportRunTests.test_branchless_prose_delivery_links_original_message_and_sender_call_ids) ... ok
+test_cards_link_actual_last_prefix_and_component_calls_and_preserve_raw_text (tests.test_report_run.ReportRunTests.test_cards_link_actual_last_prefix_and_component_calls_and_preserve_raw_text) ... ok
+test_cli_report_all_unknown_export_and_invalid_options (tests.test_report_run.ReportRunTests.test_cli_report_all_unknown_export_and_invalid_options) ... ok
+test_existing_export_is_protected_and_accounting_clock_is_required (tests.test_report_run.ReportRunTests.test_existing_export_is_protected_and_accounting_clock_is_required) ... ok
+test_full_information_control_uses_its_single_rendered_request (tests.test_report_run.ReportRunTests.test_full_information_control_uses_its_single_rendered_request) ... ok
+test_literal_trace_preserves_control_characters_unicode_and_raw_whitespace (tests.test_report_run.ReportRunTests.test_literal_trace_preserves_control_characters_unicode_and_raw_whitespace) ... ok
+test_missing_workers_stay_absent_and_cases_are_unavailable (tests.test_report_run.ReportRunTests.test_missing_workers_stay_absent_and_cases_are_unavailable) ... ok
+test_non_scalar_raw_unicode_is_reversibly_displayed_without_repair (tests.test_report_run.ReportRunTests.test_non_scalar_raw_unicode_is_reversibly_displayed_without_repair) ... ok
+test_offline_export_blocks_inference_execution_and_plotting_imports (tests.test_report_run.ReportRunTests.test_offline_export_blocks_inference_execution_and_plotting_imports) ... ok
+test_repeat_one_contrasts_cannot_replace_original_case_card_joins (tests.test_report_run.ReportRunTests.test_repeat_one_contrasts_cannot_replace_original_case_card_joins) ... ok
+test_two_reconstructions_exports_and_plotting_inputs_match_exactly (tests.test_report_run.ReportRunTests.test_two_reconstructions_exports_and_plotting_inputs_match_exactly) ... ok
+test_both_sizes_round_trip_without_rebuilding_and_refuse_overwrite (tests.test_schedule_manifests.ScheduleManifestTests.test_both_sizes_round_trip_without_rebuilding_and_refuse_overwrite) ... ok
+test_process_hashing_optional_imports_and_global_rng_cannot_change_schedules (tests.test_schedule_manifests.ScheduleManifestTests.test_process_hashing_optional_imports_and_global_rng_cannot_change_schedules) ... ok
+test_retained_prepared_fixture_is_canonical_and_contains_only_host_schedule_fields (tests.test_schedule_manifests.ScheduleManifestTests.test_retained_prepared_fixture_is_canonical_and_contains_only_host_schedule_fields) ... ok
+test_serialized_scientific_and_structural_mutations_fail (tests.test_schedule_manifests.ScheduleManifestTests.test_serialized_scientific_and_structural_mutations_fail) ... ok
+test_valid_changed_order_requires_exact_saved_authority_comparison (tests.test_schedule_manifests.ScheduleManifestTests.test_valid_changed_order_requires_exact_saved_authority_comparison) ... ok
+test_wrong_population_rejected_and_invalid_schedule_not_saved (tests.test_schedule_manifests.ScheduleManifestTests.test_wrong_population_rejected_and_invalid_schedule_not_saved) ... ok
+test_controls_full_world_candidate_lengths_and_empty_send (tests.test_schedules.ScheduleTests.test_controls_full_world_candidate_lengths_and_empty_send) ... ok
+test_cpu_dependency_orders_even_after_branch_reordering (tests.test_schedules.ScheduleTests.test_cpu_dependency_orders_even_after_branch_reordering) ... ok
+test_exact_memberships_no_unprescribed_crossings_and_fixed_opportunities (tests.test_schedules.ScheduleTests.test_exact_memberships_no_unprescribed_crossings_and_fixed_opportunities) ... ok
+test_extra_replicate_new_ids_seeds_original_prefix_and_partition (tests.test_schedules.ScheduleTests.test_extra_replicate_new_ids_seeds_original_prefix_and_partition) ... ok
+test_independent_main_component_tables_and_exact_generation_join (tests.test_schedules.ScheduleTests.test_independent_main_component_tables_and_exact_generation_join) ... ok
+test_independent_pilot_components_capability_block_and_separate_smoke (tests.test_schedules.ScheduleTests.test_independent_pilot_components_capability_block_and_separate_smoke) ... ok
+test_missing_parents_and_cycles_fail_cpu_dependency_validation (tests.test_schedules.ScheduleTests.test_missing_parents_and_cycles_fail_cpu_dependency_validation) ... ok
+test_only_required_first_round_replay_same_event_replicate_and_peer (tests.test_schedules.ScheduleTests.test_only_required_first_round_replay_same_event_replicate_and_peer) ... ok
+test_poor_or_perfect_prefix_never_selects_or_changes_opportunities (tests.test_schedules.ScheduleTests.test_poor_or_perfect_prefix_never_selects_or_changes_opportunities) ... ok
+test_bad_uuid_nf4_mask_or_scope_receipts_rejected (tests.test_t4_compatibility.CompatibilityTests.test_bad_uuid_nf4_mask_or_scope_receipts_rejected) ... ok
+test_builder_refuses_overwrite_changed_archive_and_checkpoint (tests.test_t4_compatibility.CompatibilityTests.test_builder_refuses_overwrite_changed_archive_and_checkpoint) ... ok
+test_changed_config_or_geometry_rejected (tests.test_t4_compatibility.CompatibilityTests.test_changed_config_or_geometry_rejected) ... ok
+test_conditional_bounds_preserve_context_and_tie_assumptions (tests.test_t4_compatibility.CompatibilityTests.test_conditional_bounds_preserve_context_and_tie_assumptions) ... ok
+test_controlled_complete_export_no_install_or_model_acceptance (tests.test_t4_compatibility.CompatibilityTests.test_controlled_complete_export_no_install_or_model_acceptance) ... ok
+test_duplicate_uuid_wrong_device_and_low_space_refused (tests.test_t4_compatibility.CompatibilityTests.test_duplicate_uuid_wrong_device_and_low_space_refused) ... ok
+test_expired_workflow_exports_without_starting_gpu_commands (tests.test_t4_compatibility.CompatibilityTests.test_expired_workflow_exports_without_starting_gpu_commands) ... ok
+test_isolated_children_leave_verified_imports_unchanged (tests.test_t4_compatibility.CompatibilityTests.test_isolated_children_leave_verified_imports_unchanged) ... ok
+test_notebook_sources_compile_and_repeat_run_cell_reuses_result (tests.test_t4_compatibility.CompatibilityTests.test_notebook_sources_compile_and_repeat_run_cell_reuses_result) ... ok
+test_only_expected_forced_backend_failure_is_an_observation (tests.test_t4_compatibility.CompatibilityTests.test_only_expected_forced_backend_failure_is_an_observation) ... ok
+test_real_command_admission_refuses_expired_deadline (tests.test_t4_compatibility.CompatibilityTests.test_real_command_admission_refuses_expired_deadline) ... ok
+test_uncertain_cleanup_prevents_second_device (tests.test_t4_compatibility.CompatibilityTests.test_uncertain_cleanup_prevents_second_device) ... ok
+test_unknown_or_ambiguous_dispatch_stays_unknown (tests.test_t4_compatibility.CompatibilityTests.test_unknown_or_ambiguous_dispatch_stays_unknown) ... ok
+test_wheel_bytes_and_unsafe_member_refused_before_extraction (tests.test_t4_compatibility.CompatibilityTests.test_wheel_bytes_and_unsafe_member_refused_before_extraction) ... ok
+test_wrong_torch_exports_before_download (tests.test_t4_compatibility.CompatibilityTests.test_wrong_torch_exports_before_download) ... ok
+test_all_families_both_sizes_independent_truth_and_contracts (tests.test_tasks.GeneratedWorldTests.test_all_families_both_sizes_independent_truth_and_contracts) ... ok
+test_bfs_tree_plus_exactly_five_uniform_nonedges (tests.test_tasks.GeneratedWorldTests.test_bfs_tree_plus_exactly_five_uniform_nonedges) ... ok
+test_ids_and_source_ownership_do_not_depend_on_values (tests.test_tasks.GeneratedWorldTests.test_ids_and_source_ownership_do_not_depend_on_values) ... ok
+test_numeric_uniform_inclusive_domains (tests.test_tasks.GeneratedWorldTests.test_numeric_uniform_inclusive_domains) ... ok
+test_prufer_bijection_for_all_four_node_sequences (tests.test_tasks.GeneratedWorldTests.test_prufer_bijection_for_all_four_node_sequences) ... ok
+test_reproducibility_and_unrelated_random_streams (tests.test_tasks.GeneratedWorldTests.test_reproducibility_and_unrelated_random_streams) ... ok
+test_extracted_inputs_and_gold_equal_attributed_vendor_sources (tests.test_tasks.NativeFixtureTests.test_extracted_inputs_and_gold_equal_attributed_vendor_sources) ... ok
+test_stored_mathematics_with_independent_references (tests.test_tasks.NativeFixtureTests.test_stored_mathematics_with_independent_references) ... ok
+test_invalid_bfs_edges_ids_positions_and_tombstones_rejected (tests.test_tasks.WorldValidationTests.test_invalid_bfs_edges_ids_positions_and_tombstones_rejected) ... ok
+test_invalid_numeric_records_cannot_silently_change_task_semantics (tests.test_tasks.WorldValidationTests.test_invalid_numeric_records_cannot_silently_change_task_semantics) ... ok
+test_bfs_exact_canonical_keys_and_unreachable_integers (tests.test_truth_contracts.CandidateContractTests.test_bfs_exact_canonical_keys_and_unreachable_integers) ... ok
+test_numeric_strict_types_lengths_order_multiplicity_and_reply_validity (tests.test_truth_contracts.CandidateContractTests.test_numeric_strict_types_lengths_order_multiplicity_and_reply_validity) ... ok
+test_output_lengths_keys_assignments_and_inverse_maps (tests.test_truth_contracts.CandidateContractTests.test_output_lengths_keys_assignments_and_inverse_maps) ... ok
+test_undeclared_sizes_tasks_peers_and_malformed_truth_rejected (tests.test_truth_contracts.CandidateContractTests.test_undeclared_sizes_tasks_peers_and_malformed_truth_rejected) ... ok
+test_bfs_preserving_alternatives_longer_paths_and_disconnection (tests.test_truth_contracts.RevisionTruthTests.test_bfs_preserving_alternatives_longer_paths_and_disconnection) ... ok
+test_difference_all_positions_endpoints_boundaries_and_negatives (tests.test_truth_contracts.RevisionTruthTests.test_difference_all_positions_endpoints_boundaries_and_negatives) ... ok
+test_prefix_all_positions_and_both_delta_directions (tests.test_truth_contracts.RevisionTruthTests.test_prefix_all_positions_and_both_delta_directions) ... ok
+test_record_order_is_not_output_order_and_updates_do_not_repair_candidates (tests.test_truth_contracts.RevisionTruthTests.test_record_order_is_not_output_order_and_updates_do_not_repair_candidates) ... ok
+test_sort_global_rank_crossings_and_distinct_source_ownership (tests.test_truth_contracts.RevisionTruthTests.test_sort_global_rank_crossings_and_distinct_source_ownership) ... ok
+test_top_k_duplicate_cutoff_missing_reserve_and_preserving_edit (tests.test_truth_contracts.RevisionTruthTests.test_top_k_duplicate_cutoff_missing_reserve_and_preserving_edit) ... ok
+test_frozen_population_bounds_and_separate_complete_case_uncertainty (tests.test_uncertainty.ContrastUncertaintyTests.test_frozen_population_bounds_and_separate_complete_case_uncertainty) ... ok
+test_power_references_are_the_prespecified_arithmetic (tests.test_uncertainty.ContrastUncertaintyTests.test_power_references_are_the_prespecified_arithmetic) ... ok
+test_repeats_never_increase_independent_n_and_overlap_uses_saved_world_ids (tests.test_uncertainty.ContrastUncertaintyTests.test_repeats_never_increase_independent_n_and_overlap_uses_saved_world_ids) ... ok
+test_structurally_empty_preservation_population_is_na_end_to_end (tests.test_uncertainty.ContrastUncertaintyTests.test_structurally_empty_preservation_population_is_na_end_to_end) ... ok
+test_unexecuted_scheduled_replay_stays_unknown_but_recorded_parent_constrains_it (tests.test_uncertainty.ContrastUncertaintyTests.test_unexecuted_scheduled_replay_stays_unknown_but_recorded_parent_constrains_it) ... ok
+test_costs_reject_changed_original_generation_and_selected_branch_ids (tests.test_uncertainty.PolicyUncertaintyTests.test_costs_reject_changed_original_generation_and_selected_branch_ids) ... ok
+test_preservation_cost_axis_keeps_its_own_eligible_world_cohort (tests.test_uncertainty.PolicyUncertaintyTests.test_preservation_cost_axis_keeps_its_own_eligible_world_cohort) ... ok
+test_preservation_sharing_uses_coordinate_rate_not_whole_candidate_credit (tests.test_uncertainty.PolicyUncertaintyTests.test_preservation_sharing_uses_coordinate_rate_not_whole_candidate_credit) ... ok
+test_shared_unknown_original_costs_cancel_before_unbounded_extrema (tests.test_uncertainty.PolicyUncertaintyTests.test_shared_unknown_original_costs_cancel_before_unbounded_extrema) ... ok
+test_whole_policy_pairing_exact_costs_and_incomplete_selected_bounds (tests.test_uncertainty.PolicyUncertaintyTests.test_whole_policy_pairing_exact_costs_and_incomplete_selected_bounds) ... ok
+test_known_failure_remains_zero_in_nonlinear_unknown_final (tests.test_uncertainty.SharedMissingnessTests.test_known_failure_remains_zero_in_nonlinear_unknown_final) ... ok
+test_large_nonlinear_envelope_retains_shared_variables_and_label (tests.test_uncertainty.SharedMissingnessTests.test_large_nonlinear_envelope_retains_shared_variables_and_label) ... ok
+test_linear_bounds_match_independent_exhaustive_completions (tests.test_uncertainty.SharedMissingnessTests.test_linear_bounds_match_independent_exhaustive_completions) ... ok
+test_nonlinear_feasible_shared_completions_and_exact_cancellation (tests.test_uncertainty.SharedMissingnessTests.test_nonlinear_feasible_shared_completions_and_exact_cancellation) ... ok
+test_shared_linear_cancellation_and_known_parent_constraint (tests.test_uncertainty.SharedMissingnessTests.test_shared_linear_cancellation_and_known_parent_constraint) ... ok
+test_unknown_eligibility_is_not_an_empty_or_fixed_denominator (tests.test_uncertainty.SharedMissingnessTests.test_unknown_eligibility_is_not_an_empty_or_fixed_denominator) ... ok
+test_empty_missing_families_unknowns_and_duplicate_worlds_are_explicit (tests.test_uncertainty.StatisticalArithmeticTests.test_empty_missing_families_unknowns_and_duplicate_worlds_are_explicit) ... ok
+test_exact_binomial_extremes_mixed_counts_and_empty (tests.test_uncertainty.StatisticalArithmeticTests.test_exact_binomial_extremes_mixed_counts_and_empty) ... ok
+test_independent_finite_stratified_distribution_has_expected_percentiles (tests.test_uncertainty.StatisticalArithmeticTests.test_independent_finite_stratified_distribution_has_expected_percentiles) ... ok
+test_percentile_exact_primary_and_secondary_endpoints (tests.test_uncertainty.StatisticalArithmeticTests.test_percentile_exact_primary_and_secondary_endpoints) ... ok
+test_shared_world_draws_preserve_matched_endpoint_relation (tests.test_uncertainty.StatisticalArithmeticTests.test_shared_world_draws_preserve_matched_endpoint_relation) ... ok
+test_stratified_equal_weighting_and_constant_within_family (tests.test_uncertainty.StatisticalArithmeticTests.test_stratified_equal_weighting_and_constant_within_family) ... ok
+test_weighted_hoeffding_formula_ranges_alpha_and_clipping (tests.test_uncertainty.StatisticalArithmeticTests.test_weighted_hoeffding_formula_ranges_alpha_and_clipping) ... ok
+test_conservative_trajectory_envelope_contains_every_independent_completion (tests.test_uncertainty.TrajectorySensitivityTests.test_conservative_trajectory_envelope_contains_every_independent_completion) ... ok
+test_fragmented_complete_trajectory_has_no_joint_completion (tests.test_uncertainty.TrajectorySensitivityTests.test_fragmented_complete_trajectory_has_no_joint_completion) ... ok
+test_large_incomplete_trajectory_has_conservative_labeled_marginals (tests.test_uncertainty.TrajectorySensitivityTests.test_large_incomplete_trajectory_has_conservative_labeled_marginals) ... ok
+test_nonlinear_trajectory_bounds_match_independent_tiny_enumeration (tests.test_uncertainty.TrajectorySensitivityTests.test_nonlinear_trajectory_bounds_match_independent_tiny_enumeration) ... ok
+test_shared_unknown_first_and_final_cannot_create_infeasible_temporary_success (tests.test_uncertainty.TrajectorySensitivityTests.test_shared_unknown_first_and_final_cannot_create_infeasible_temporary_success) ... ok
+test_all_sixteen_original_worker_cases_reproduce_uncertainty_and_frozen_bounds (tests.test_uncertainty_archive.UncertaintyArchiveTests.test_all_sixteen_original_worker_cases_reproduce_uncertainty_and_frozen_bounds) ... skipped 'ordinary checkpoint decoder needs declared CPU packages'
+test_absent_workers_leave_frozen_population_unknown_without_creating_files (tests.test_uncertainty_run.OfflineUncertaintyRunTests.test_absent_workers_leave_frozen_population_unknown_without_creating_files) ... ok
+test_cli_includes_estimands_and_costs_saves_seed_and_preserves_existing_export (tests.test_uncertainty_run.OfflineUncertaintyRunTests.test_cli_includes_estimands_and_costs_saves_seed_and_preserves_existing_export) ... ok
+test_offline_stack_does_not_import_execution_or_model_modules (tests.test_uncertainty_run.OfflineUncertaintyRunTests.test_offline_stack_does_not_import_execution_or_model_modules) ... ok
+test_resampling_seed_requires_uncertainty_and_invalid_clock_does_not_write (tests.test_uncertainty_run.OfflineUncertaintyRunTests.test_resampling_seed_requires_uncertainty_and_invalid_clock_does_not_write) ... ok
+test_saved_worker_is_read_only_reproducible_and_export_is_exclusive (tests.test_uncertainty_run.OfflineUncertaintyRunTests.test_saved_worker_is_read_only_reproducible_and_export_is_exclusive) ... ok
+
+----------------------------------------------------------------------
+Ran 348 tests in 228.318s
+
+OK (skipped=8)

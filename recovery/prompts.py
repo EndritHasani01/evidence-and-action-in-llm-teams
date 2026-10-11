@@ -7,22 +7,71 @@ Capacity enforcement rejects an oversized request; it never truncates history.
 Complete permitted-context admission is M2-T06, not these short fixtures.
 """
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 import json
 
 from .state import (CandidateState, ContinueNotice, OwnReply, PeerView,
                     ReceivedProse, RevisionNotice, Slot)
-from .tasks import SourceRecord, Task, candidate_contract
+from .tasks import Size, SourceRecord, Task, candidate_contract
 
-MAX_CONTEXT_TOKENS = 262144
-MAX_OUTPUT_TOKENS = 384
+
+@dataclass(frozen=True, slots=True)
+class ProtocolLimits:
+    """Only the two adopted protocols; no arbitrary per-condition caps."""
+
+    output_tokens: int = 384
+    prose_tokens: int = 128
+    context_tokens: int = 262144
+    recipients: int = 3
+    distinct_references: int = 8
+    feedback_tokens: int = 32
+
+    def __post_init__(self):
+        if (any(type(value) is not int for value in asdict(self).values())
+                or (self.output_tokens, self.prose_tokens) not in ((384, 128), (256, 64))
+                or (self.context_tokens, self.recipients, self.distinct_references,
+                    self.feedback_tokens) != (262144, 3, 8, 32)):
+            raise ValueError("use the adopted thesis or course protocol limits")
+
+
+THESIS_LIMITS = ProtocolLimits()
+COURSE_LIMITS = ProtocolLimits(output_tokens=256, prose_tokens=64)
+# Existing imports keep the unchanged thesis defaults.
+MAX_CONTEXT_TOKENS = THESIS_LIMITS.context_tokens
+MAX_OUTPUT_TOKENS = THESIS_LIMITS.output_tokens
+
+
+def limits_from_settings(settings: dict) -> ProtocolLimits:
+    """Read limits from the existing exact settings record, defaulting to thesis.
+
+    Course settings explicitly retain all six limits. Old thesis records omit
+    this field and preserve their exact bytes. Reject contradictory generation
+    caps before rendering or generation, rather than silently using a default.
+    """
+    if type(settings) is not dict:
+        raise ValueError("record generation settings as a JSON object")
+    limits = THESIS_LIMITS
+    if "protocol_limits" in settings:
+        data = settings["protocol_limits"]
+        if type(data) is not dict or set(data) != set(asdict(THESIS_LIMITS)):
+            raise ValueError("record all adopted protocol limits explicitly")
+        limits = ProtocolLimits(**data)
+    generation = settings.get("generation", {})
+    if type(generation) is not dict:
+        raise ValueError("generation settings must be a JSON object")
+    for data, key, expected in ((settings, "max_context_tokens", limits.context_tokens),
+                                (settings, "max_new_tokens", limits.output_tokens),
+                                (generation, "max_new_tokens", limits.output_tokens)):
+        if key in data and (type(data[key]) is not int or data[key] != expected):
+            raise ValueError("generation settings contradict the adopted protocol limits")
+    return limits
 DATA_MARKER = "\nPeer data (JSON):\n"
 DATA_FOOTER = "\nEnd peer data."
 DELIVERY_COLUMNS = ("record_id", "version", "origin", "sender", "generated_phase",
                     "generated_round", "first_usable_phase", "first_usable_round")
 HISTORY_COLUMNS = ("kind", "phase", "round", "sender", "characters", "encoding")
 
-COMMON_INSTRUCTION = (
+_COMMON_INSTRUCTION = (
     "Solve the assigned task and submit your current candidate each round. "
     "Only known records in current_sources are current source authority; "
     "update_pending records have no usable payload and deleted edges are inactive. "
@@ -35,10 +84,11 @@ COMMON_INSTRUCTION = (
     "Each send entry has to and optional source_refs and text; "
     "each source reference has exactly record_id and version. "
     "Send at most one message to each other peer, three total, with at most eight "
-    "distinct currently held references per recipient and at most 128 tokenizer "
+    "distinct currently held references per recipient and at most {prose_tokens} tokenizer "
     "tokens summed over texts. Use no extra fields. "
-    "The reply limit is 384 tokens."
+    "The reply limit is {output_tokens} tokens."
 )
+COMMON_INSTRUCTION = _COMMON_INSTRUCTION.format(**asdict(THESIS_LIMITS))
 
 
 def _task_text(view: PeerView) -> tuple[str, str]:
@@ -113,9 +163,13 @@ class TokenizedRequest:
         return len(self.input_ids)
 
 
-def render_request(view: PeerView) -> RenderedRequest:
+def render_request(view: PeerView, *, limits: ProtocolLimits = THESIS_LIMITS) -> RenderedRequest:
     if type(view) is not PeerView:
         raise ValueError("renderer accepts only a permitted PeerView")
+    if type(limits) is not ProtocolLimits:
+        raise ValueError("renderer requires adopted protocol limits")
+    if limits == COURSE_LIMITS and view.size is not Size.FALLBACK:
+        raise ValueError("course requests require the adopted fallback mathematical size")
     definition, hint = _task_text(view)
     contract = candidate_contract(view.task, view.size, view.peer)
     public = {"task": view.task.value, "peer": view.peer, "slot": _slot(view.slot),
@@ -192,7 +246,7 @@ def render_request(view: PeerView) -> RenderedRequest:
                 for entry in view.source_deliveries]}}
     # Never parse/reformat own replies, sort history, or archive resolved sources.
     # Newline boundaries isolate each literal block for native NFC normalization.
-    content = COMMON_INSTRUCTION + DATA_MARKER + json.dumps(
+    content = _COMMON_INSTRUCTION.format(**asdict(limits)) + DATA_MARKER + json.dumps(
         data, ensure_ascii=True, separators=(",", ":"), allow_nan=False)
     content += "".join(header + payload + "\n" for header, payload in blocks)
     # The native template strips outer message whitespace. A fixed footer
@@ -254,7 +308,8 @@ def rendered_data(request: RenderedRequest) -> dict:
     return data
 
 
-def tokenize_request(request: RenderedRequest, tokenizer) -> TokenizedRequest:
+def tokenize_request(request: RenderedRequest, tokenizer, *,
+                     limits: ProtocolLimits = THESIS_LIMITS) -> TokenizedRequest:
     """Apply the injected native non-thinking template, with truncation disabled.
 
     No inference packages are imported here. Tests inject a CPU tokenizer; M5
@@ -263,6 +318,8 @@ def tokenize_request(request: RenderedRequest, tokenizer) -> TokenizedRequest:
 
     if type(request) is not RenderedRequest:
         raise ValueError("tokenization requires the exact rendered request")
+    if type(limits) is not ProtocolLimits:
+        raise ValueError("tokenization requires adopted protocol limits")
     text = tokenizer.apply_chat_template(request.messages(), tokenize=False,
                                          add_generation_prompt=True, enable_thinking=False)
     if type(text) is not str:
@@ -275,6 +332,6 @@ def tokenize_request(request: RenderedRequest, tokenizer) -> TokenizedRequest:
             or len(attention_mask) != len(input_ids)
             or any(type(i) is not int or i != 1 for i in attention_mask)):
         raise ValueError("tokenizer must return one unpadded integer sequence")
-    if len(input_ids) + MAX_OUTPUT_TOKENS > MAX_CONTEXT_TOKENS:
+    if len(input_ids) + limits.output_tokens > limits.context_tokens:
         raise ValueError("request exceeds context limit with full output reserve; no truncation permitted")
     return TokenizedRequest(text, input_ids, attention_mask)

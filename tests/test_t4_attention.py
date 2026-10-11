@@ -11,6 +11,12 @@ import unittest
 from unittest.mock import patch
 
 
+def load_tests(loader, tests, pattern):
+    # These native-stack checks are explicit opt-in, not dependency-free/CPU
+    # package discovery. `unittest tests.test_t4_attention` still runs them all.
+    return tests if pattern is None else unittest.TestSuite()
+
+
 class T4AttentionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

@@ -94,10 +94,12 @@ class Schedules:
     size: Size
     main: tuple[Branch, ...]
     development: tuple[Branch, ...]
+    regime: str = "thesis"
 
-    def main_for(self, population: Population, count: int = 60) -> tuple[Branch, ...]:
-        """The nested 40 keeps the same IDs/parents/seeds; no second slot store."""
-        if self.master_seed != population.master_seed or self.size is not population.size:
+    def main_for(self, population: Population, count: int | None = None) -> tuple[Branch, ...]:
+        """Select the declared scope without changing any IDs/parents/seeds."""
+        if (self.master_seed != population.master_seed or self.size is not population.size
+                or self.regime != population.regime):
             raise ValueError("schedule population/configuration differs")
         selected = {w.world_id for w in population.worlds(count)}
         return tuple(b for b in self.main if b.world_id in selected)
@@ -129,7 +131,7 @@ def _branch_keys(world: PreparedWorld) -> Iterator[tuple[str, str, str | None, i
 
     Acceptance tests independently enumerate the matrix and component arithmetic.
     Development deliberately has fewer masks, no extra replicate, and two
-    preserving worlds rather than the sixteen main worlds.
+    preserving worlds rather than the thesis sixteen/course eight main worlds.
     """
     yield "prefix", "original", None, 0
     yield "control", "original", None, 0
@@ -152,7 +154,7 @@ def _branch_keys(world: PreparedWorld) -> Iterator[tuple[str, str, str | None, i
     if world.world.task in (Task.TOP_K, Task.BFS) and world.index <= 8:
         for policy in ("B", "C", "K"):
             yield "continuation", "preserving", policy, 0
-    if not world.development and world.index <= 2:
+    if not world.development and len(world.streams.continuation) == 2:
         for event in ("revision", "sham"):
             for policy in ("B", "C", "K", "P_G", "P_H"):
                 yield "continuation", event, policy, 1
@@ -206,7 +208,8 @@ def _prepare_branches(worlds: tuple[PreparedWorld, ...]) -> tuple[Branch, ...]:
 def prepare_schedules(population: Population) -> Schedules:
     validate_population(population)
     return Schedules(1, population.master_seed, population.size,
-                     _prepare_branches(population.main), _prepare_branches(population.development))
+                     _prepare_branches(population.main), _prepare_branches(population.development),
+                     population.regime)
 
 
 def dependency_order(branches: tuple[Branch, ...]) -> tuple[tuple[Branch, CallSlot], ...]:
@@ -300,10 +303,11 @@ def validate_schedules(schedules: Schedules, population: Population) -> None:
     validate_population(population)
     if (type(schedules.format_version) is not int or schedules.format_version != 1
             or type(schedules.master_seed) is not int or schedules.master_seed != population.master_seed
-            or schedules.size is not population.size):
+            or schedules.size is not population.size or schedules.regime != population.regime):
         raise ValueError("schedule population/configuration differs")
     _validate_branches(schedules.main, population.main)
-    _validate_branches(schedules.main_for(population, 40), population.worlds(40))
+    for count in population.main_counts[1:]:
+        _validate_branches(schedules.main_for(population, count), population.worlds(count))
     _validate_branches(schedules.development, population.development)
     first = tuple(iter_calls(schedules.development))[:CAPABILITY_CALLS]
     if (len(schedules.capability) != CAPABILITY_CALLS or first != schedules.capability

@@ -1,0 +1,11 @@
+test_all_saved_course_peer_and_control_shapes_keep_the_same_task_hints (tests.test_course_limits.CourseLimitsTests.test_all_saved_course_peer_and_control_shapes_keep_the_same_task_hints) ... ok
+test_course_reservation_uses_all_256_tokens_and_rejects_without_truncating (tests.test_course_limits.CourseLimitsTests.test_course_reservation_uses_all_256_tokens_and_rejects_without_truncating) ... ok
+test_exact_settings_select_limits_and_reject_omission_or_contradiction (tests.test_course_limits.CourseLimitsTests.test_exact_settings_select_limits_and_reject_omission_or_contradiction) ... ok
+test_hidden_source_values_and_endpoints_do_not_influence_requests (tests.test_course_limits.CourseLimitsTests.test_hidden_source_values_and_endpoints_do_not_influence_requests) ... ok
+test_lossless_history_footer_and_genuine_receipts_have_no_extra_source_authority (tests.test_course_limits.CourseLimitsTests.test_lossless_history_footer_and_genuine_receipts_have_no_extra_source_authority) ... ok
+test_only_adopted_uniform_limits_are_available (tests.test_course_limits.CourseLimitsTests.test_only_adopted_uniform_limits_are_available) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.278s
+
+OK

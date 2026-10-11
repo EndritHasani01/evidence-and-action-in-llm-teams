@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python",
+    "-S",
+    "-X",
+    "utf8",
+    "-B",
+    "notebooks/validation/course-m2-interventions/verify_interventions.py",
+    "--completion",
+    "--output",
+    "notebooks/validation/course-m2-capacity/prerequisite-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T10:17:04.050825+00:00",
+  "seconds": 15.0,
+  "exit_code": 0,
+  "log": "prerequisite-audit.txt.gz",
+  "hash_seed": null
+}

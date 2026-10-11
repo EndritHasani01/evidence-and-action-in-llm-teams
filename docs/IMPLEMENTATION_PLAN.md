@@ -325,6 +325,11 @@ Update these sections only when a capability is verified, a consequential decisi
 
 ### Progress
 
+Course/M1-T01's [approved course clause](../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+and [reuse audit](validation/course-m1-contract-and-reuse.md) record the explicit
+design/resource adoption of 9 October 2026. The [course living handoff](#11-course-living-handoff)
+and [course index](todos/course/README.md) own its distinct engineering progress.
+
 | Milestone | Status | Evidence / next action |
 |---|---|---|
 | M1 | Verified on CPU (3/3 tasks done; gate passed) | [M1-T01 evidence](todos/M1/M1-T01-task-worlds-and-truth.md#validation-and-evidence), [M1-T02 evidence](todos/M1/M1-T02-edits-and-populations.md#validation-and-evidence), and [M1-T03 gate tables](todos/M1/M1-T03-complete-schedules.md#acceptance-and-m1-gate): 59 checks pass on Windows / Python 3.11.9 with site packages disabled and installed outside checkout. Task truth, eligible populations/streams and both complete schedules pass: 16,152/17,656 and 11,504/12,560 distinct/logical main slots; exact 1,114 distinct development slots with first 90 capability calls. Retained inputs/schedule and saved authority/mutation checks pass. |
@@ -982,3 +987,155 @@ old source-v2 payloads cannot deliver the new adapter and remain preserved.
 T02 and all dependent gates remain blocked with twenty-one done/eight blocked;
 baseline/scientific/fallback/package/cap/frozen settings stay unchanged. No
 model generations, new GPU run, pilot/main execution or freeze occurred.
+
+## 11. Course living handoff
+
+The [adopted course clause](../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+is the sole authority for the separate ABS/IIS regime. Sections 1-10 above retain
+the thesis engineering roadmap and its existing task/evidence state. The
+[course index](todos/course/README.md) owns scoped task status and counts; this
+handoff records decisions and verified boundaries without another tracker.
+
+Course/M1-T01 establishes the authorized contract and
+[reuse/validation evidence](validation/course-m1-contract-and-reuse.md).
+[Course/M1-T02](todos/course/M1/M1-T02-course-inputs-and-schedules.md) now passes
+the [M1 input/schedule CPU gate](validation/course-m1-inputs-and-schedules.md).
+[Course/M2-T01](todos/course/M2/M2-T01-course-protocol-and-limits.md) now passes
+[protocol/limits acceptance](validation/course-m2-protocol-and-limits.md).
+[Course/M2-T02](todos/course/M2/M2-T02-course-interventions-and-replay.md) now passes
+[intervention/replay acceptance](validation/course-m2-interventions-and-replay.md).
+[Course/M2-T03](todos/course/M2/M2-T03-course-attainability-and-capacity.md) now passes
+the [local witness and complete capacity gate](validation/course-m2-attainability-and-capacity.md).
+[Course/M3-T01](todos/course/M3/M3-T01-course-durable-workers-and-failures.md) is the next
+engineering task. Later course CPU gates, GPU/model acceptance, empirical
+execution and applicable authorization remain separate.
+
+### Course implementation decisions
+
+- Reuse the existing fallback mathematical size, generators/truth/edits,
+  stable IDs and manifests; add only explicit course scope to populations,
+  schedules and their CLI consumers. Preserve target/fallback thesis defaults,
+  60/40 inputs, original todos and evidence. Course inputs and seed assignments
+  are owned by M1-T02; these prepared inputs are not frozen. Its population
+  uses an explicit `regime="course"` field on the existing host
+  population, fixed 20/fallback scope and the existing integer seed slots.
+  Thesis records keep their canonical bytes/defaults. Course master seed
+  `20261009` is independently disjoint from both saved thesis-size assignments
+  (`20261004`); only index one receives a second continuation seed set.
+  Independent cohort/owner/seed/edit and rejection-exhaustion checks pass;
+  the complete M1 input/schedule gate is verified.
+- The course schedule reuses the existing branch/call enumerator and derives
+  repeat membership from validated continuation seed assignments. Existing
+  IDs, original-prefix parents and B/C first-round parents remain literal.
+  `Schedules.regime` rejects cross-regime configuration; canonical thesis bytes
+  omit the default field for compatibility. Course prepare/validate require
+  explicit `--regime course` and fallback size; the input-only course TOML freezes
+  no runtime settings. Fourteen course checks pass for saved
+  5,752/6,280 main and 1,114/1,178 development slots, cohorts, seeds, parents,
+  mutation rejection, hash-independent CPU CLI and the discovery boundary.
+  Both original size contracts and 60/40 totals/defaults remain correct.
+- Broad CPU discovery exposed an existing boundary defect: the explicitly
+  invoked native Torch/Transformers attention checks were discovered even by
+  `--core-only`. Their standard unittest `load_tests` hook now excludes automatic
+  discovery while preserving explicit native runs and every original test body.
+  The corrected dependency-free CLI passes 342 checks (334 passed, eight
+  checkpoint-library/renderer skips); 73 installed M1/course checks and 14
+  installed hash-seed-37 course checks pass with no skips. The full CPU
+  regression passes 534 tests with zero skips, including original report
+  reproduction and controller-kill lifecycle checks. Independent component,
+  seed, parent, task/link and preservation audits pass; 1,148 protected files
+  remain byte-identical, including the user's pre-existing M5 edit. Commands,
+  failures/fix and actual logs are retained in the linked M1 gate evidence.
+- One immutable `ProtocolLimits` value in the existing renderer now carries the
+  adopted 256/64 caps and unchanged context/recipient/reference/feedback limits
+  through rendering, reservation, strict validation, inference and saved exact
+  settings. Course settings require the pinned 4B candidate and explicitly record
+  all six values in the existing settings JSON. Round/control, durable equality,
+  saved-round revalidation and replay derive limits from that record; request,
+  validation and state schemas retain their archived shapes. Thesis defaults and
+  both models' baseline/opt-in settings remain exact. Keep four rounds, literal
+  boundaries and synchronous visibility; no runtime fork, dependency, second store,
+  new identity or generalized coordinator is needed.
+- Course/M2-T01 passes 110 focused integrated checks, nine pinned-native checks,
+  81 installed checks and a 24-check installed hash-seed-37 repeat. All 29 installed
+  production modules match source. Site-disabled core discovery passes 340 checks
+  with eight expected optional-library skips. The full source CPU run reached
+  558 checks; its only failures were four kill-point subcases in two lifecycle
+  methods whose test spy did not forward `limits`. Updating that spy preserves
+  all original assertions; the complete nine-method lifecycle rerun passes.
+  Production code did not change after the full run, so the 549 unaffected checks
+  and passing lifecycle rerun supply complete coverage without relabeling the
+  original failing command. Native fixtures preserve 11 rendered cases, 23 replies
+  and 225 useful candidate/one-shard cases; original thesis archives reproduce.
+  Preservation/status/link audits retain 1,166 protected starting files,
+  Sections 1-10 and the user's unchanged, unstaged M5 edit. The linked protocol
+  evidence records exact commands, environments and retained corrections. These
+  finite token fixtures establish no complete-context bound or model acceptance.
+- Course/M2-T02 makes the existing in-memory
+  `run_prefix` helper accept explicit course limits, matching `run_round`,
+  while preserving the thesis default. Its course scripted checks cover all
+  saved starts and replay parents; event/state/replay/delivery code is reused
+  unchanged. This helper needs no new configuration, identity or persistence.
+  All 438 starts, 592 replay joins and 7,008 scripted continuation slots pass:
+  127 affected source checks, 95 outside-checkout installed checks and 18 native
+  checks reproduced in a fresh hash-seed-37 process, without skips. The canonical
+  course archive retains 25 drained prefixes, 100 prefix rounds, 630 continuation
+  rounds and 2,920 exact requests, including eight inactive Q starts. Existing
+  source/prose timing, attempt/acquisition and receipt/exposure metadata remain
+  in their original records. CLI registration inspection finds the 15 new checks
+  in the 573-check full suite and none in the unchanged 348-check core suite;
+  this inspection executes no test bodies. Preservation/status/link audits keep
+  1,222 protected files, original thesis todos/defaults/archives, Sections 1-10
+  and the user's pre-existing M5 edit unchanged. Finite traffic is not the course
+  local witness or complete capacity proof; both remain M2-T03.
+- Reuse SQLite/checkpoints, original worker/attempt/allocation records and
+  read-only analysis. Renew the affected 20/eight/five-world population, cost,
+  missingness and reporting checks using the owners in the reuse audit. Inherited
+  thesis CPU results remain reusable evidence, not new course acceptance.
+- Course/M2-T03 reuses the local-view witness and vocabulary/Unicode/structural
+  audit with explicit saved course schedules, settings and limits. The strategy
+  covers every saved world and all 7,458 logical opportunities; final answers are exact, including
+  592 exact parent joins, L forwarding, F reacquisition and masks/receipts/Q.
+  All 225 correct-width candidate/control/useful-shard shapes fit: maximum native
+  length 162 and universal serialization bound 189 within 256. The renewed
+  complete bound is 155,995 input plus all 256 output tokens, 156,251 resident
+  tokens within the unchanged 262,144 window; the conditional proposal value
+  157,772 is superseded. Exhaustive native audits, 110 adversarial envelopes,
+  17 compact/pending/receipt probes and independent pinned 9B metadata support
+  the pinned 4B proof. Native maxima alone are not admission evidence.
+  All 139 affected source/139 installed CPU checks and 18 native course checks
+  pass with zero skips, including fresh-process reproduction. Original native
+  thesis witness/capacity archives reproduce unchanged. Production changes only
+  register the course witness in full CPU validation; the renderer, validator,
+  interventions, replay, workers and default scientific settings are unchanged.
+  The installed packet's missing test configurations were copied and the full
+  corrected packet passed. Preservation/status/link audits retain 1,260 protected
+  starting files, Sections 1-10, original todos/defaults/archives, saved course
+  inputs and the user's unrelated M5 edit. This closes course M2's CPU gate and
+  hands off course M3-T01. The 4.768 GiB static full-attention KV lower bound at
+  the resident upper bound admits no T4 model, peak memory or headroom claim.
+- Apply Section 11.3's cumulative course subceiling, shared prior spending and
+  reserves through existing budget/accounting records in course/M3-T02, and
+  independently check the measured complete-main forecast in course/M5-T05.
+  Unknown prior allocation withholds resource admission, without preventing CPU
+  adaptation. No available quota or fresh smoke allowance is recorded here.
+- Prepare local reporting/reproduction first. External submission/publication,
+  GPU/pilot/main execution and scientific/frozen-configuration changes retain
+  separate authorization. Unspecified course rubric/deadline is not a blocker.
+
+### Course unresolved gates
+
+The course population/schedule, M1 input/schedule CPU gate and complete M2
+protocol/intervention/replay/witness/native-capacity gate are verified. Course
+M3 durability/accounting and M4 analysis/reporting remain open; actual runtime
+environment/configuration acceptance remains M5. Existing status/analysis count
+choices still address thesis 60/40 until their course M3/M4 adaptations. The
+pinned 4B/256/64 complete input bound passes; the complete model-memory/headroom
+argument still needs actual supported-runtime evidence. Standalone run 6 and
+the CPU attention integration do not accept the new
+layout on T4 or the course pretrained model. Actual host/package/source assets,
+smoke requests, capability, complete pilot, resource reconciliation and freeze
+remain course M5 gates. Original thesis full-envelope/model obligations remain
+open independently. Subsequent tasks update this handoff and the existing course
+index with named executed evidence. M1-T01/T02 and M2-T01/T02/T03 performed no GPU, model or
+empirical run and accepted no freeze.

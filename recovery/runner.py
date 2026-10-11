@@ -17,7 +17,7 @@ from langgraph.graph import END, START, StateGraph
 from .attempts import ProcessProvider
 from .events import start_continuation
 from .manifests import _branch
-from .prompts import render_request, tokenize_request
+from .prompts import limits_from_settings, render_request, tokenize_request
 from .protocol import GeneratedReply, failed_reply, validate_reply
 from .replay import commit_continuation_round, obtain_continuation_round
 from .rounds import (RoundResult, commit_round, deserialize_state, initial_branch,
@@ -148,6 +148,7 @@ class DurableRunner:
 
     def start(self, world, branch, *, settings: dict):
         """Commit a new original prefix or single applied event in a fresh thread."""
+        limits_from_settings(settings)
         if branch not in _prepare_branches((world,)) or branch.phase not in ("prefix", "continuation"):
             raise ValueError("durable rounds require a scheduled four-peer branch")
         if branch.phase == "prefix":
@@ -201,12 +202,14 @@ class DurableRunner:
         if branch not in _prepare_branches((world,)) or branch.phase != "control":
             raise ValueError("control requires its scheduled original/revised world")
         view = initial_view(world.world if branch.event == "original" else world.event_world(branch.event), None)
-        rendered = render_request(view)
-        tokenized = tokenize_request(rendered, self.tokenizer)
+        limits = limits_from_settings(settings)
+        rendered = render_request(view, limits=limits)
+        tokenized = tokenize_request(rendered, self.tokenizer, limits=limits)
         self.store.prepare_control(branch, settings_json(settings), view, rendered, tokenized)
         raw = self._generate(branch.calls[0], view, rendered, tokenized,
                              settings=json.loads(settings_json(settings)))
-        reply = (validate_reply(view, raw, self.tokenizer) if type(raw) is GeneratedReply else failed_reply(view))
+        reply = (validate_reply(view, raw, self.tokenizer, limits=limits)
+                 if type(raw) is GeneratedReply else failed_reply(view))
         self.store.save_control_validation(branch.calls[0].call_id, reply)
         return reply
 
@@ -215,7 +218,8 @@ class DurableRunner:
         branch = _branch(json.loads(checkpoint["branch_json"]))
         if state.next_slot is None or state.next_slot.round_number != checkpoint["round_number"]:
             raise ValueError("round differs from its committed starting checkpoint")
-        requests = prepare_round(state, self.tokenizer)
+        requests = prepare_round(state, self.tokenizer,
+                                 limits=limits_from_settings(json.loads(checkpoint["settings_json"])))
         self.store.prepare(branch, checkpoint["settings_json"], requests)
         return {"round_number": requests.slot.round_number}
 
@@ -227,7 +231,8 @@ class DurableRunner:
         saved_branch, settings, requests = self.store.inputs(branch.branch_id, r)
         if (saved_branch != branch or settings != checkpoint["settings_json"]
                 or requests.before != deserialize_state(checkpoint["committed"])
-                or requests != prepare_round(requests.before, self.tokenizer)):
+                or requests != prepare_round(requests.before, self.tokenizer,
+                                             limits=limits_from_settings(json.loads(settings)))):
             raise ValueError("frozen requests/settings/state/tokenization equality failed")
         calls = tuple(c for c in branch.calls if c.round_number == r)
 
@@ -252,7 +257,8 @@ class DurableRunner:
             for p in self.order:
                 generated[p] = provide(requests.views[p], requests.rendered[p], requests.tokenized[p],
                                        seed=calls[p].seed, settings=json.loads(settings))
-            barrier = validate_round(requests, tuple(generated), self.tokenizer)
+            barrier = validate_round(requests, tuple(generated), self.tokenizer,
+                                      limits=limits_from_settings(json.loads(settings)))
         self.store.save_validation(branch, barrier)
         return {"round_number": r}
 

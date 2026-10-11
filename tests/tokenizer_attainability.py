@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 import unittest
 
-from recovery.prompts import MAX_CONTEXT_TOKENS, render_request, tokenize_request
+from recovery.prompts import MAX_CONTEXT_TOKENS, THESIS_LIMITS, render_request, tokenize_request
 from recovery.protocol import GeneratedReply, validate_reply
 from recovery.replay import commit_continuation_round, held_prose_counts
 from recovery.schedule import _prepare_branches
@@ -61,7 +61,8 @@ def call_record(call, view, encoded, outcome):
             "protocol_valid": outcome.protocol_valid}
 
 
-def output_shapes(tokenizer):
+def output_shapes(tokenizer, *, sizes=tuple(Size), tasks=tuple(Task),
+                  limits=THESIS_LIMITS, world_for=case_world):
     """Actual outer serialization, reference spellings and correct-value ranges.
 
     Wrong integers have no added mathematical cap. The 384 generated-token
@@ -69,9 +70,9 @@ def output_shapes(tokenizer):
     """
 
     rows = []
-    for size in Size:
-        for task in Task:
-            world = case_world(task, size).world
+    for size in sizes:
+        for task in tasks:
+            world = world_for(task, size).world
             for peer in (*PEERS, None):
                 view = initial_view(world, peer)
                 complete = witness_reply(initial_view(world, None), tokenizer)
@@ -92,7 +93,7 @@ def output_shapes(tokenizer):
                 for send in sends:
                     text = json.dumps({"candidate": candidate, "send": send}, separators=(",", ":"))
                     raw = GeneratedReply(text, tuple(tokenizer.encode(text, add_special_tokens=False)), "scripted")
-                    outcome = validate_reply(view, raw, tokenizer)
+                    outcome = validate_reply(view, raw, tokenizer, limits=limits)
                     rows.append({"task": task.value, "size": size.value, "peer": peer,
                                  "shape": "candidate_empty_send" if not send else "candidate_own_shard",
                                  "text": text, "token_ids": list(raw.token_ids),

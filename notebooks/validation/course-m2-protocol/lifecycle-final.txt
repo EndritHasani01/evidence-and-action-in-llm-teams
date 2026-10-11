@@ -1,0 +1,14 @@
+test_every_family_intervention_control_and_repeat_at_both_sizes (tests.lifecycle_checks.LifecycleTests.test_every_family_intervention_control_and_repeat_at_both_sizes) ... ok
+test_full_main_and_development_manifests_reconcile_without_executing (tests.lifecycle_checks.LifecycleTests.test_full_main_and_development_manifests_reconcile_without_executing) ... ok
+test_kill_after_c_and_f_boundary_does_not_restore_cleared_fields_or_repeat_event (tests.lifecycle_checks.LifecycleTests.test_kill_after_c_and_f_boundary_does_not_restore_cleared_fields_or_repeat_event) ... ok
+test_kill_after_durable_invalid_and_known_timeout_never_resamples (tests.lifecycle_checks.LifecycleTests.test_kill_after_durable_invalid_and_known_timeout_never_resamples) ... ok
+test_kill_before_and_after_q_delivery_checkpoint_preserves_chronological_release (tests.lifecycle_checks.LifecycleTests.test_kill_before_and_after_q_delivery_checkpoint_preserves_chronological_release) ... ok
+test_kill_before_raw_with_held_prose_retains_uncertainty_and_exact_retry_inputs (tests.lifecycle_checks.LifecycleTests.test_kill_before_raw_with_held_prose_retains_uncertainty_and_exact_retry_inputs) ... ok
+test_kill_during_cross_worker_replay_validation_and_staging (tests.lifecycle_checks.LifecycleTests.test_kill_during_cross_worker_replay_validation_and_staging) ... ok
+test_synthetic_budget_stop_retains_unknown_slots_and_resumes_same_configuration (tests.lifecycle_checks.LifecycleTests.test_synthetic_budget_stop_retains_unknown_slots_and_resumes_same_configuration) ... ok
+test_two_real_precommit_kills_exhaust_retry_without_a_third_attempt (tests.lifecycle_checks.LifecycleTests.test_two_real_precommit_kills_exhaust_retry_without_a_third_attempt) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 972.497s
+
+OK

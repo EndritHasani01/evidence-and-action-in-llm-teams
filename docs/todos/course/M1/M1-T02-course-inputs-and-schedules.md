@@ -1,12 +1,12 @@
 # Course M1-T02 — Course inputs and schedules
 
-**Status:** blocked
+**Status:** done
 
 **Dependencies:** [M1-T01](M1-T01-course-contract-and-reuse-boundary.md).
 
 ## References
 
-- [Specification tasks/sampling/events](../../../../PROJECT_SPECIFICATION.md#2-worlds-task-structure-and-events), [controls and pilot](../../../../PROJECT_SPECIFICATION.md#81-model-and-capability-controls), accepted course clause from M1-T01, and [plan M1](../../../IMPLEMENTATION_PLAN.md#3-milestone-m1--reproducible-worlds-truth-and-schedules).
+- [Specification tasks/sampling/events](../../../../PROJECT_SPECIFICATION.md#2-worlds-task-structure-and-events), [controls and pilot](../../../../PROJECT_SPECIFICATION.md#81-model-and-capability-controls), [adopted course clause](../../../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime) from M1-T01, and [plan M1](../../../IMPLEMENTATION_PLAN.md#3-milestone-m1--reproducible-worlds-truth-and-schedules).
 - [Proposed exact course budget](../../../planning/abs-iis-course-study-proposal.md#exact-call-budget); reusable [task truth](../../M1/M1-T01-task-worlds-and-truth.md), [populations](../../M1/M1-T02-edits-and-populations.md), and [schedules](../../M1/M1-T03-complete-schedules.md).
 
 ## Intended outcome
@@ -30,4 +30,38 @@ Existing mathematical generation/truth and schedule preparation support one repr
 
 Run affected mathematical/manifest/schedule checks, including duplicate cutoffs, endpoints/shard boundaries, rank crossings, alternatives/disconnection, D empty/nonempty, legal edit sampling and exhausted rejection. Reuse unchanged solver evidence rather than rebuilding solvers. Record commands/environment, course input/schedule locations and independent count/seed comparisons. No inference.
 
-**Evidence:** Not yet recorded. Existing M1 foundations are implemented; the course population/schedule is not.
+The authority, course handoff, referenced plan/specification and M1-T01
+[adoption/reuse evidence](../../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
+were inspected before implementation. Meaningful checkpoints are `105c327`
+(populations; 66 focused regression checks), `5521961` (saved schedule/CPU CLI;
+13 course checks) and `913da21` (explicit native-test discovery boundary).
+
+## Completion and handoff
+
+**Passed 9 October 2026 on Windows/CPython 3.11.9.** The complete course
+[population](../../../../tests/fixtures/population_course.json) and
+[schedule](../../../../tests/fixtures/schedules_course.json) were prepared with
+master seed `20261009` using explicit `--regime course` and the new
+[input-only size config](../../../../configs/course-inputs.toml). They contain
+20 main/five development worlds, balanced owners, exact eight-world focal cohorts
+and five extra continuation replicates. Independent enumeration reconciles
+**5,752 new / 6,280 logical / 528 replay main slots** and
+**1,114 / 1,178 / 64 development slots**, with the initial 90 capability slots.
+
+The corrected full CPU CLI passes **534 tests, zero skips**; dependency-free
+core validation passes **342 tests (334 passed, six checkpoint-library and two
+optional-renderer skips)**. Installed M1/course validation passes 73 tests, and
+all fourteen installed course tests pass separately under hash seed 37, with
+zero skips and no source-path injection. Fresh hash seeds 1/3981 also reproduce
+both canonical artifacts with optional imports blocked. Exact commands, logs,
+the retained initial discovery failure/fix, independent component/seed/parent
+checks, link/status checks and protected-file audit are in
+[M1 input/schedule evidence](../../../validation/course-m1-inputs-and-schedules.md).
+Both original sizes and 60/40 counts/defaults remain correct; 1,148 protected
+baseline files, including the pre-existing unstaged M5 edit, remain byte-identical.
+
+The course M1 input/schedule gate is passed. [Course/M2-T01](../M2/M2-T01-course-protocol-and-limits.md)
+is ready to carry the adopted 256/64 limits through the real protocol. Later
+intervention/capacity, runtime/analysis, CPU, model/resource, pilot, freeze and
+execution gates remain open. No model generation, GPU allocation, freeze or
+empirical execution was performed or authorized by this handoff.

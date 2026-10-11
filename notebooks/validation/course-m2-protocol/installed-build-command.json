@@ -1,0 +1,14 @@
+{
+  "command": [
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\.venv\\Scripts\\python.exe",
+    "-m",
+    "pip",
+    "install",
+    "--no-deps",
+    "--target",
+    "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\recovery-course-m2-installed-_q3rh50k",
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "exit_code": 0
+}

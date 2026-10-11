@@ -83,6 +83,46 @@ changes; optional `load_schedules(..., authoritative=saved_schedule)` also rejec
 otherwise-valid artifact reordering. Population input equality remains the job
 of `load_population(..., authoritative=saved_population)` / `--authoritative`.
 
+## Prepared course inputs and schedules
+
+[population_course.json](population_course.json) and
+[schedules_course.json](schedules_course.json) form a separate CPU preparation
+bundle under [Specification Section 11](../../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime).
+The manifest explicitly records `regime="course"`, fallback mathematical size
+and master seed `20261009`. It saves 20 actual main worlds, four per family with
+one edited-owner block, and five separate development worlds. Existing world,
+source, branch and call IDs keep their spelling within this bundle; they are
+not cross-bundle replay identities. All assigned seeds are disjoint from both
+saved thesis-size fixtures (`20261004`) and course main/development domains.
+
+Receipt, Q and preserving cohorts each contain eight main worlds. Only the
+first world per family has an additional continuation seed set: five repeats
+retain their original prefix and G/H partition. Siblings match continuation
+seeds across events/policies; only prescribed first-round mask/Q uses replay.
+Main is 5,752 new / 6,280 logical slots (528 replay uses). Development retains
+1,114 / 1,178 (64 replay uses), with 80 prefix and ten complete-world controls
+first; smoke is separate. No outcomes, model settings or accepted freeze are
+stored, and peer metadata must still use only the public source projection.
+
+Prepare **new** files; existing scientific fixtures cannot be overwritten:
+
+```powershell
+python -X utf8 -S -B -m recovery prepare --regime course --config configs/course-inputs.toml --seed 20261009 --output population.json
+python -X utf8 -S -B -m recovery prepare --regime course --config configs/course-inputs.toml --manifest population.json --output schedules.json
+python -X utf8 -S -B -m recovery validate --core-only --regime course --config configs/course-inputs.toml --manifest population.json --schedule schedules.json --authoritative tests/fixtures/population_course.json
+```
+
+The API uses `prepare_population(seed, Size.FALLBACK, regime="course")` and
+`population.worlds()` / `schedules.main_for(population)` default to this bundle's
+20-world scope. Thesis preparation still defaults to 60 with nested 40 and keeps
+its saved canonical bytes; omitted manifest/schedule regime means thesis.
+Loading rejects wrong course size/scope, extra repeat assignments, changed seeds,
+parents and cohorts without resampling. Exact saved-authority comparisons also
+detect otherwise valid input edits or schedule reordering. The input-only TOML
+contains exactly `size="fallback"`; `--regime course` remains explicit. Runtime
+256/64 limits, protocol/capacity, worker/analysis acceptance, model/resource gates
+and freeze are owned by later course tasks.
+
 ## Permitted peer requests and tokenizer inputs
 
 All native request archives below were renewed on 5 October 2026 under M2-T06's
@@ -1004,3 +1044,116 @@ model. Mock subprocess checks cover saved seed/state ownership, exact raw
 evidence and resume/backup behavior. See the
 [M5 preparation evidence](../../docs/validation/m5-inference-preparation.md)
 for the proposed smoke/allocation scope and still-unverified GPU gates.
+
+## Course protocol and native limits
+
+[course_protocol.json.gz](course_protocol.json.gz) is the separate course archive
+for the pinned Qwen3.5-4B tokenizer revision
+`851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a` and explicit `COURSE_LIMITS`.
+It preserves eleven permitted rendered/native cases, 23 exact reply cases and
+225 candidate/one-shard cases covering the 20 main/five development worlds,
+all four peers and full-information controls. Cases include ordinary/disclosed
+receipts, wrong/absent compact work, pending updates, tombstones and literal
+special-looking history with trailing whitespace. Exact rendered strings and
+native template text/IDs remain separate.
+
+```powershell
+python -m tests.tokenizer_course_protocol --tokenizer LOCAL_4B_METADATA
+.venv/Scripts/python.exe -m unittest tests.test_course_limits tests.course_protocol_checks tests.course_settings_checks -v
+```
+
+The nine native checks reproduce this archive and both unchanged thesis
+request/reply archives. They verify complete JSON at 256 generated IDs versus
+257, fragments/known truncation, aggregate prose 64/65, recursive duplicate keys,
+strict permissions and Unicode scalars. Nine reference attempts with eight
+distinct held references pass; nine distinct references fail. Useful
+candidate/one-shard cases use at most 132 output tokens; fixed feedback uses at
+most 14 native tokens. These finite fixtures do not establish the complete
+retained-context bound or attainability gate, which belongs to course/M2-T03.
+No model weights or GPU are used. The
+[course M2 protocol evidence](../../docs/validation/course-m2-protocol-and-limits.md)
+records environments, exact commands, installed provenance and retained failures.
+The new archive never replaces original thesis fixtures or defaults.
+
+## Course interventions and exact replay
+
+[course_interventions.json.gz](course_interventions.json.gz) retains the separate
+scripted course matrix with the pinned 4B tokenizer and explicit 256/64 settings.
+It contains 25 drained original prefixes with 100 raw prefix rounds, all 438
+scheduled continuation starts and all 592 exact B/C replay joins, including
+development masks and main continuation repeats. Full Q horizons and selected
+K/receipt horizons bring the retained continuation rounds to 630: 2,920 exact
+peer requests across both phases. Raw replies/failures, rendered strings,
+native IDs/masks/template text, settings/seeds, permitted state, committed state,
+host/peer source attempts/acquisitions and held/released prose remain available
+in existing record shapes.
+
+The 40 first-round Q branches include eight inactive source-only cases, each
+with its own unique scheduled parent IDs. The full course assertions separately
+cover all-invalid/all-failed parents, Unicode and stale-reference whole-reply
+failure, explicit empty prose, text-only omission/no placeholder, wrong/absent K,
+pending versus known tombstones, hidden fields, version handling, sibling
+mutation and invocation reversal. All 7,008 scripted continuation slots are
+checked; the retained archive selects later Q/K rounds rather than duplicating
+every ordinary recovery round.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.course_intervention_checks -v
+python -X utf8 -m tests.tokenizer_course_interventions --tokenizer LOCAL_4B_METADATA
+```
+
+The native harness passes 15 intervention assertions and three archive checks,
+and reproduces exact case records in a fresh process with hash seed 37. It loads
+only local tokenizer metadata. New archives can be written with
+`--write-fixture NEW_ARCHIVE.json.gz`; existing paths are rejected. Archive JSON
+is canonical UTF-8/LF with deterministic gzip metadata.
+
+Observed inputs use at most 2,563 native tokens, and replies at most 207 across
+the retained prefix/continuation records, reserving the full 256 output tokens.
+These are finite fixture measurements. The locally informed witness, complete
+course retained-context bound and model/GPU feasibility remain separate gates.
+The [course intervention evidence](../../docs/validation/course-m2-interventions-and-replay.md)
+records commands, environments, installed verification and preservation audits.
+
+## Course local witness and complete capacity
+
+[course_attainability.json.gz](course_attainability.json.gz) retains the locally
+informed course strategy across all 25 saved worlds: 100 prefix rounds, all
+1,752 continuation rounds, 50 controls and 7,458 logical opportunities,
+including 592 exact B/C parent joins. Existing raw record shapes preserve
+permitted views, rendered/native strings/IDs/masks, replies, settings, seeds,
+committed states and Q queues/release metadata. The script forwards each current
+own shard to a different peer in rounds 1–3 and computes only from acquired
+records. Early legal placeholders are allowed; every final prefix/continuation
+and full-information control is exactly correct. Its 225 worst-width correct
+candidate/control/useful-shard fixtures have maximum measured output 162 and
+a universal 189-token serialization bound within 256, with useful prose within 64.
+
+[course_capacity.json.gz](course_capacity.json.gz) retains the renewed complete
+vocabulary/Unicode audit, all five structural accounting rows and 110 raw native
+adversarial envelopes, including invalid own text, maximal ASCII/dash and
+non-NFC prose, partial/invalid UTF-8, template-like strings, quoting/controls,
+fake block headers, bounded feedback and large valid wrong integers. A real
+invalid 256-token slot receives three valid 64-token texts. The largest archived
+native envelope uses 22,247 input tokens; this supports the
+[complete proof](../../docs/implementation-research/course-m2-capacity-proof.md),
+which independently bounds **155,995 input + 256 output = 156,251**.
+Seventeen additional compact/pending/receipt measurements are in the native logs.
+Both pinned 4B and 9B metadata reproduce the same accounting/report. The course
+model remains 4B; original positive/negative thesis archives remain unchanged.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.course_attainability_checks -v
+python -X utf8 -m tests.tokenizer_course_attainability --tokenizer LOCAL_4B_METADATA
+python -X utf8 -m tests.tokenizer_course_capacity --tokenizer LOCAL_4B_METADATA --comparison-tokenizer LOCAL_9B_METADATA
+```
+
+The native course runs pass 18 checks, reproduced in a fresh hash-seed-37 process
+and outside the checkout with the installed package. New native archives require
+`--write-fixture NEW_ARCHIVE.json.gz`; existing paths are rejected. JSON/gzip
+encoding is canonical and deterministic. The
+[course M2 gate evidence](../../docs/validation/course-m2-attainability-and-capacity.md)
+records exact commands, metadata, passing regressions, retained failures/fixes,
+installed module provenance and preservation audits. This is CPU scripted
+attainability and complete native-token capacity. No model weights, GPU/model
+memory/headroom, capability, pilot, main outcomes or freeze are accepted here.

@@ -1,0 +1,212 @@
+{
+  "status": "passed",
+  "stage": "completion",
+  "preparation_baseline": "1dfb1e50090ae70c78a18e5ece03482a6f9dc6c1",
+  "audited_head": "913da21ff93e467a4fac588398adc7bf2716308d",
+  "python": "3.11.9",
+  "platform": "win32",
+  "course_master_seed": 20261009,
+  "course_cohorts": {
+    "main": 20,
+    "receipt": 8,
+    "q": 8,
+    "preserving": 8,
+    "repeat": 5
+  },
+  "owner_counts": {
+    "top_k": {
+      "3": 1,
+      "0": 1,
+      "2": 1,
+      "1": 1
+    },
+    "prefix_sum": {
+      "1": 1,
+      "3": 1,
+      "0": 1,
+      "2": 1
+    },
+    "difference_array": {
+      "3": 1,
+      "1": 1,
+      "0": 1,
+      "2": 1
+    },
+    "distributed_sort": {
+      "3": 1,
+      "1": 1,
+      "0": 1,
+      "2": 1
+    },
+    "bfs_distance": {
+      "2": 1,
+      "0": 1,
+      "1": 1,
+      "3": 1
+    }
+  },
+  "rejections": {
+    "main-top_k-01": [
+      {
+        "attempt": 1,
+        "reasons": [
+          "no_owner_changing_edit"
+        ]
+      }
+    ],
+    "main-bfs_distance-02": [
+      {
+        "attempt": 1,
+        "reasons": [
+          "no_owner_changing_edit"
+        ]
+      }
+    ]
+  },
+  "course_main_components": {
+    "prefix": [
+      320,
+      320
+    ],
+    "controls": [
+      40,
+      40
+    ],
+    "revised": [
+      1600,
+      1600
+    ],
+    "sham": [
+      960,
+      960
+    ],
+    "masks": [
+      960,
+      1280
+    ],
+    "preserving": [
+      384,
+      384
+    ],
+    "repeat": [
+      720,
+      800
+    ],
+    "receipts": [
+      384,
+      384
+    ],
+    "prose_delay": [
+      384,
+      512
+    ]
+  },
+  "course_main": [
+    5752,
+    6280,
+    528
+  ],
+  "course_development_components": {
+    "prefix": [
+      80,
+      80
+    ],
+    "controls": [
+      10,
+      10
+    ],
+    "revised": [
+      400,
+      400
+    ],
+    "sham": [
+      240,
+      240
+    ],
+    "preserving": [
+      96,
+      96
+    ],
+    "masks": [
+      96,
+      128
+    ],
+    "receipts": [
+      96,
+      96
+    ],
+    "prose_delay": [
+      96,
+      128
+    ]
+  },
+  "course_development": [
+    1114,
+    1178,
+    64
+  ],
+  "main_assigned_seeds_including_owner": 865,
+  "development_assigned_seeds_including_owner": 200,
+  "course_main_development_thesis_seed_domains_disjoint": true,
+  "thesis_totals": {
+    "target/60": [
+      16152,
+      17656
+    ],
+    "target/40": [
+      11504,
+      12560
+    ],
+    "fallback/60": [
+      16152,
+      17656
+    ],
+    "fallback/40": [
+      11504,
+      12560
+    ]
+  },
+  "raw_protected_files_identical": 1148,
+  "preexisting_user_edit_sha256": "c071fbb83438a9831b073fd80da4d60f92eed3d5945674d2f84fbd8348b55dca",
+  "thesis_roadmap_sections_1_to_10_preserved": true,
+  "local_references_checked": 612,
+  "markdown_fragments_checked": 269,
+  "course_task_states": {
+    "done": 2,
+    "ready": 1,
+    "blocked": 18
+  },
+  "suites": {
+    "core-validation-pass.txt": {
+      "log": "core-validation-pass.txt",
+      "tests": 342,
+      "skipped": 8,
+      "seconds": 218.758,
+      "status": "passed"
+    },
+    "full-validation-pass.txt": {
+      "log": "full-validation-pass.txt",
+      "tests": 534,
+      "skipped": 0,
+      "seconds": 2219.782,
+      "status": "passed"
+    },
+    "installed-validation.txt": {
+      "log": "installed-validation.txt",
+      "tests": 73,
+      "skipped": 0,
+      "seconds": 60.322,
+      "status": "passed"
+    },
+    "installed-hash37-validation.txt": {
+      "log": "installed-hash37-validation.txt",
+      "tests": 14,
+      "skipped": 0,
+      "seconds": 10.546,
+      "status": "passed"
+    }
+  },
+  "model_calls": 0,
+  "input_or_runtime_freeze": false,
+  "scope": "Course CPU inputs/schedules; later protocol, runtime, model, resource, freeze and empirical gates remain open."
+}

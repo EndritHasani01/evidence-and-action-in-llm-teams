@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "tests.tokenizer_course_capacity",
+    "--tokenizer",
+    "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp/recovery-capacity-wr5ya_42/4B",
+    "--comparison-tokenizer",
+    "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp/recovery-capacity-wr5ya_42/9B",
+    "--write-fixture",
+    "tests/fixtures/course_capacity.json.gz",
+    "--environment",
+    "notebooks/validation/course-m2-capacity/native-capacity-environment.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T10:27:24.852057+00:00",
+  "seconds": 52.57799999997951,
+  "exit_code": 0,
+  "log": "native-capacity-corrected.txt.gz",
+  "hash_seed": null
+}

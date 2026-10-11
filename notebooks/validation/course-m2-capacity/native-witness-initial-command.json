@@ -1,0 +1,22 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "tests.tokenizer_course_attainability",
+    "--tokenizer",
+    "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp/recovery-capacity-wr5ya_42/4B",
+    "--write-fixture",
+    "tests/fixtures/course_attainability.json.gz",
+    "--environment",
+    "notebooks/validation/course-m2-capacity/native-witness-environment.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T10:26:29.227364+00:00",
+  "seconds": 185.5470000000205,
+  "exit_code": 0,
+  "log": "native-witness-initial.txt.gz",
+  "hash_seed": null
+}

@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "command": [
+    "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "tests.test_tasks",
+    "tests.test_truth_contracts",
+    "tests.test_edits",
+    "tests.test_populations",
+    "tests.test_schedules",
+    "tests.test_schedule_manifests",
+    "tests.test_cpu_entrypoint",
+    "tests.test_course_inputs",
+    "tests.test_course_schedules",
+    "tests.test_course_preparation",
+    "-q"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\recovery-course-m1-t02-installed-31c42ca79e4b405cbfa2e246d0eaaf87",
+  "source_pythonpath": false,
+  "interpreter": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint\\.venv\\Scripts\\python.exe",
+  "python": "3.11.9",
+  "hash_seed": null,
+  "returncode": 0,
+  "matching_modules": 29,
+  "module_path": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\recovery-course-m1-t02-installed-31c42ca79e4b405cbfa2e246d0eaaf87\\recovery\\__init__.py",
+  "scope": "Installed M1 mathematical/population/schedule and course CLI checks; no inference."
+}

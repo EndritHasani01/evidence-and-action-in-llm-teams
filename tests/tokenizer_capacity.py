@@ -13,7 +13,7 @@ from pathlib import Path
 import unittest
 
 from recovery.events import start_continuation
-from recovery.prompts import (MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, RenderedRequest,
+from recovery.prompts import (MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, THESIS_LIMITS, RenderedRequest,
                               render_request, rendered_data, tokenize_request)
 from recovery.protocol import GeneratedReply, validate_reply
 from recovery.rounds import initial_branch, run_prefix, run_round
@@ -34,8 +34,8 @@ CYRILLIC = 224227
 SLOTS = tuple(Slot("prefix", r) for r in range(1, 5)) + tuple(Slot("recovery", r) for r in range(1, 4))
 
 
-def native_measure(view, tokenizer):
-    request = render_request(view)
+def native_measure(view, tokenizer, *, limits=THESIS_LIMITS):
+    request = render_request(view, limits=limits)
     text = tokenizer.apply_chat_template(request.messages(), tokenize=False,
                                          add_generation_prompt=True, enable_thinking=False)
     # Count an overflowing fixture independently; the production path rejects it.
@@ -43,12 +43,13 @@ def native_measure(view, tokenizer):
                         padding=False, return_attention_mask=True)
     count = len(encoded["input_ids"])
     return {"request": asdict(request), "input_tokens": count,
-            "with_output_reserve": count + MAX_OUTPUT_TOKENS,
-            "fits": count + MAX_OUTPUT_TOKENS <= MAX_CONTEXT_TOKENS,
+            "with_output_reserve": count + limits.output_tokens,
+            "fits": count + limits.output_tokens <= limits.context_tokens,
             "template_wrapper_bytes": len(text.encode("utf-8")) - len(request.content.encode("utf-8"))}
 
 
-def retained_view(world, own_text, prose_text, *, valid_candidate=None):
+def retained_view(world, own_text, prose_text, *, valid_candidate=None,
+                  limits=THESIS_LIMITS, scheduled_branches=None):
     """A permitted seven-slot envelope, not an executed adversarial trajectory.
 
     The real witness supplies acquired source/delivery evidence and the event
@@ -56,9 +57,11 @@ def retained_view(world, own_text, prose_text, *, valid_candidate=None):
     Each sender can legally direct its entire 128-token text allowance here.
     """
 
-    branch = next(b for b in _prepare_branches((world,)) if b.phase == "prefix")
-    prefix = run_prefix(world.world, branch.branch_id, TOKENIZER, witness_provider(TOKENIZER))
-    boundary = start_continuation(prefix.snapshot, world, scheduled(world, "revision", "B"))
+    branches = _prepare_branches((world,)) if scheduled_branches is None else scheduled_branches
+    branch = next(b for b in branches if b.phase == "prefix")
+    prefix = run_prefix(world.world, branch.branch_id, TOKENIZER, witness_provider(TOKENIZER), limits=limits)
+    boundary = start_continuation(prefix.snapshot, world, next(b for b in branches
+        if (b.phase, b.event, b.policy, b.replicate) == ("continuation", "revision", "B", 0)))
     base = boundary.peers[3].view(boundary.task, boundary.size, 3, Slot("recovery", 1), boundary.manifest)
     history = tuple(h for slot in SLOTS for h in
                     (OwnReply(slot, own_text), *(ReceivedProse(slot, p, prose_text) for p in PEERS if p != 3)))
@@ -69,7 +72,7 @@ def retained_view(world, own_text, prose_text, *, valid_candidate=None):
                    feedback=tuple(Feedback(s, code) for s in SLOTS) if valid_candidate is None else ())
 
 
-def accounting(view, tokenizer, audit):
+def accounting(view, tokenizer, audit, *, limits=THESIS_LIMITS):
     """Full-horizon weighted byte proof, including the compact K alternative.
 
     Seven own replies and 21 received texts dominate every policy. K's one
@@ -101,36 +104,37 @@ def accounting(view, tokenizer, audit):
     valid = CandidateState.valid(view.task, view.size, view.peer, SLOTS[-1],
                                  ({str(j): 0 for j in range(view.size.node_count)} if view.task is Task.BFS
                                   else [0] * len(candidate_contract(view.task, view.size, view.peer).coordinates)))
-    nontext = max(len(render_request(v).content.encode("utf-8")) for v in (empty, replace(empty, candidate=valid)))
+    nontext = max(len(render_request(v, limits=limits).content.encode("utf-8"))
+                  for v in (empty, replace(empty, candidate=valid)))
     old = replace(valid, slot=Slot("prefix", 4), historical=True)
     compact_view = replace(empty, history=(), feedback=(), candidate=old)
-    compact = rendered_data(render_request(compact_view))["latest_candidate"]
+    compact = rendered_data(render_request(compact_view, limits=limits))["latest_candidate"]
     compact["kind"] = "historical_candidate"
     # Pay both possible metadata layouts, although K keeps this only once.
     nontext += 2 * len(json.dumps(compact, ensure_ascii=True, separators=(",", ":")))
     # Empty fixtures have one-digit text lengths in each row. Pay
     # the maximum original-text length: own <=384*128 scalars; prose <=128*128*4
     # scalars, including non-NFC spellings. Both have at most five digits.
-    max_length = max(384 * audit["payload_bytes_per_token_upper"],
-                     128 * audit["payload_bytes_per_token_upper"] * audit["max_nfd_scalars"])
+    max_length = max(limits.output_tokens * audit["payload_bytes_per_token_upper"],
+                     limits.prose_tokens * audit["payload_bytes_per_token_upper"] * audit["max_nfd_scalars"])
     nontext += 28 * (len(str(max_length)) - 1)
     # Generated/usable recovery labels are widest; rows already pay them. A
     # null sender costs three more bytes than a peer ID, and event vs peer
     # origin costs one more. Overpay independently for every source row.
     nontext += len(sources) * 4
     control = initial_view(case_world(view.task, view.size).world, None)
-    nontext = max(nontext, len(render_request(control).content.encode("utf-8")))
-    wrapper = native_measure(empty, tokenizer)["template_wrapper_bytes"]
+    nontext = max(nontext, len(render_request(control, limits=limits).content.encode("utf-8")))
+    wrapper = native_measure(empty, tokenizer, limits=limits)["template_wrapper_bytes"]
     expanded_bytes_per_token = {"own_replies": audit["own_tokens_per_physical_token_upper"],
                                "received_prose": audit["prose_tokens_per_counted_token_upper"]}
-    allowances = {"own_replies": 7 * 384, "received_prose": 7 * 3 * 128}
+    allowances = {"own_replies": 7 * limits.output_tokens, "received_prose": 7 * 3 * limits.prose_tokens}
     upper = nontext + wrapper + sum(allowances[k] * expanded_bytes_per_token[k] for k in allowances)
     return {"task": view.task.value, "size": view.size.value,
             "nontext_bytes": nontext, "template_wrapper_bytes": wrapper,
             "payload_token_allowances": allowances,
             "input_tokens_per_payload_token_upper": expanded_bytes_per_token,
-            "input_tokens_upper": upper, "with_output_reserve_upper": upper + 384,
-            "bound_fits": upper + 384 <= MAX_CONTEXT_TOKENS}
+            "input_tokens_upper": upper, "with_output_reserve_upper": upper + limits.output_tokens,
+            "bound_fits": upper + limits.output_tokens <= limits.context_tokens}
 
 
 def counterexample(size, tokenizer):

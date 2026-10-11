@@ -1,0 +1,26 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.test_course_limits",
+    "tests.course_protocol_checks",
+    "tests.course_settings_checks",
+    "tests.round_checks",
+    "tests.event_checks",
+    "tests.replay_checks",
+    "tests.course_intervention_checks",
+    "tests.test_course_inputs",
+    "tests.test_course_schedules",
+    "tests.test_course_preparation",
+    "tests.durable_checks",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-10T21:02:23.244476+00:00",
+  "seconds": 160.34299999999348,
+  "exit_code": 0,
+  "log": "integration-checks.txt.gz"
+}

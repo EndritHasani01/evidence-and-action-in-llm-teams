@@ -9,7 +9,8 @@ from dataclasses import asdict, dataclass
 import os
 import sys
 
-from .prompts import MAX_CONTEXT_TOKENS, MAX_OUTPUT_TOKENS, render_request, tokenize_request
+from .prompts import (COURSE_LIMITS, THESIS_LIMITS, ProtocolLimits, limits_from_settings,
+                      render_request, tokenize_request)
 from .t4_attention import PREFILL_CHUNK_SIZE, T4_ATTENTION
 
 
@@ -38,8 +39,12 @@ PAD_ID = 248044
 TRANSPORT_ID = 248046
 
 
-def candidate_settings(tokenizer, candidate=QWEN_9B):
+def candidate_settings(tokenizer, candidate=QWEN_9B, *, limits: ProtocolLimits = THESIS_LIMITS):
     """Save actual template inputs and all deliberate sampling/termination choices."""
+    if type(limits) is not ProtocolLimits:
+        raise ValueError("settings require adopted protocol limits")
+    if limits == COURSE_LIMITS and candidate.model != QWEN_4B.model:
+        raise ValueError("course settings require the adopted pinned 4B candidate")
     if (tokenizer.eos_token_id != TRANSPORT_ID or tokenizer.pad_token_id != PAD_ID
             or tokenizer.convert_ids_to_tokens(TRANSPORT_ID) != "<|im_end|>"
             or tokenizer.convert_ids_to_tokens(PAD_ID) != "<|endoftext|>"
@@ -48,14 +53,14 @@ def candidate_settings(tokenizer, candidate=QWEN_9B):
     settings = {
         "model": candidate.model, "revision": candidate.revision,
         "chat_template": tokenizer.chat_template, "enable_thinking": False,
-        "max_context_tokens": MAX_CONTEXT_TOKENS,
+        "max_context_tokens": limits.context_tokens,
         "quantization": {"load_in_4bit": True, "bnb_4bit_quant_type": "nf4",
                          "bnb_4bit_use_double_quant": True, "bnb_4bit_compute_dtype": "float16"},
         "dtype": "float16", "attention": candidate.attention, "batch_size": 1,
         "generation": {
             "do_sample": True, "temperature": 0.7, "top_p": 0.8, "top_k": 20,
             "min_p": 0.0, "repetition_penalty": 1.0, "num_beams": 1,
-            "max_new_tokens": MAX_OUTPUT_TOKENS, "eos_token_id": list(EOS_IDS),
+            "max_new_tokens": limits.output_tokens, "eos_token_id": list(EOS_IDS),
             "pad_token_id": PAD_ID, "use_cache": True,
             "return_dict_in_generate": True, "output_scores": False,
             "remove_invalid_values": False,
@@ -64,14 +69,16 @@ def candidate_settings(tokenizer, candidate=QWEN_9B):
     }
     if candidate.attention == T4_ATTENTION:
         settings["generation"]["prefill_chunk_size"] = PREFILL_CHUNK_SIZE
+    if limits != THESIS_LIMITS:
+        settings["protocol_limits"] = asdict(limits)
     return settings
 
 
-def decode_suffix(tokenizer, token_ids):
+def decode_suffix(tokenizer, token_ids, *, limits: ProtocolLimits = THESIS_LIMITS):
     """Keep exact generated IDs/raw suffix; remove one verified terminal framing ID."""
     from .protocol import GeneratedReply
 
-    if (type(token_ids) is not tuple or not token_ids or len(token_ids) > MAX_OUTPUT_TOKENS
+    if (type(token_ids) is not tuple or not token_ids or len(token_ids) > limits.output_tokens
             or any(type(i) is not int or i < 0 for i in token_ids)):
         raise ValueError("expected one nonempty generated suffix within the output cap")
     raw = tokenizer.decode(list(token_ids), skip_special_tokens=False,
@@ -84,7 +91,7 @@ def decode_suffix(tokenizer, token_ids):
                      or raw != text + "<|im_end|>"):
         raise ValueError("terminal framing has not been verified; never normalize the suffix")
     termination = "eos" if token_ids[-1] in EOS_IDS else "length"
-    if termination == "length" and len(token_ids) != MAX_OUTPUT_TOKENS:
+    if termination == "length" and len(token_ids) != limits.output_tokens:
         raise ValueError("unexplained early stop; no extra stopping criterion is permitted")
     # A cap stop does not establish content loss. Whole JSON validation decides.
     return GeneratedReply(text, token_ids, termination), raw
@@ -132,6 +139,7 @@ def audit_language_load(model, loading_info):
 class TokenizerFactory:
     candidate: Candidate = QWEN_9B
     local_directory: str | None = None
+    limits: ProtocolLimits = THESIS_LIMITS
 
     def __call__(self):
         from transformers import AutoTokenizer
@@ -142,7 +150,7 @@ class TokenizerFactory:
         else:
             tokenizer = AutoTokenizer.from_pretrained(self.local_directory,
                 local_files_only=True, trust_remote_code=False)
-        candidate_settings(tokenizer, self.candidate)
+        candidate_settings(tokenizer, self.candidate, limits=self.limits)
         return tokenizer
 
 
@@ -151,6 +159,7 @@ class ModelFactory:
     """Spawn-picklable loader. Calling it requires separately authorized GPU work."""
     candidate: Candidate = QWEN_9B
     cuda_visible_devices: str = "0"
+    limits: ProtocolLimits = THESIS_LIMITS
 
     def __call__(self):
         if (type(self.cuda_visible_devices) is not str or not self.cuda_visible_devices
@@ -173,7 +182,7 @@ class ModelFactory:
             from .t4_attention import register_t4_attention
             register_t4_attention()
         from transformers import AutoModelForCausalLM, BitsAndBytesConfig
-        tokenizer = TokenizerFactory(self.candidate)()
+        tokenizer = TokenizerFactory(self.candidate, limits=self.limits)()
         quantization = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
             bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=torch.float16)
         model, info = AutoModelForCausalLM.from_pretrained(self.candidate.model,
@@ -200,10 +209,11 @@ class ModelFactory:
                       device_name=torch.cuda.get_device_name(0), cuda=torch.version.cuda)
         report.update(attention=getattr(model.config, "_attn_implementation", None),
             recurrent_fast_path=getattr(source_module, "is_fast_path_available", None),
-            generation_config=GenerationConfig(**candidate_settings(tokenizer, self.candidate)["generation"]).to_dict(),
+            generation_config=GenerationConfig(**candidate_settings(
+                tokenizer, self.candidate, limits=self.limits)["generation"]).to_dict(),
             packages={name: importlib.metadata.version(name) for name in
                       ("torch", "transformers", "accelerate", "bitsandbytes", "tokenizers", "huggingface-hub")})
-        return TransformersBackend(torch, model, tokenizer, self.candidate, report)
+        return TransformersBackend(torch, model, tokenizer, self.candidate, report, limits=self.limits)
 
 
 class _FiniteScores:
@@ -220,9 +230,10 @@ class _FiniteScores:
 class TransformersBackend:
     """One resident model, fresh cache and per-call CPU/CUDA RNG assignment."""
 
-    def __init__(self, torch, model, tokenizer, candidate, load_report):
+    def __init__(self, torch, model, tokenizer, candidate, load_report, *, limits: ProtocolLimits = THESIS_LIMITS):
         self.torch, self.model, self.tokenizer = torch, model, tokenizer
-        self.settings = candidate_settings(tokenizer, candidate)
+        self.settings = candidate_settings(tokenizer, candidate, limits=limits)
+        self.limits = limits_from_settings(self.settings)
         self.load_report = load_report
         self.pid = os.getpid()
         self.active = False
@@ -238,9 +249,10 @@ class TransformersBackend:
             raise ValueError("use the saved nonnegative per-call seed")
         if settings_json(settings) != settings_json(self.settings):
             raise ValueError("exact model/template/decoding settings differ")
-        if (len(tokenized.input_ids) + MAX_OUTPUT_TOKENS > MAX_CONTEXT_TOKENS
-                or render_request(view) != rendered
-                or record_json(asdict(tokenize_request(rendered, self.tokenizer))) != record_json(asdict(tokenized))):
+        if (len(tokenized.input_ids) + self.limits.output_tokens > self.limits.context_tokens
+                or render_request(view, limits=self.limits) != rendered
+                or record_json(asdict(tokenize_request(rendered, self.tokenizer, limits=self.limits)))
+                != record_json(asdict(tokenized))):
             raise ValueError("exact permitted request/tokenization/capacity equality failed before generation")
         torch = self.torch
         self.active = True
@@ -279,7 +291,7 @@ class TransformersBackend:
                     or not cache_checks["calls"] or not scores.steps):
                 raise ValueError("one exact prompt prefix and observed cache/finite scores are required")
             ids = tuple(sequences[0][len(tokenized.input_ids):])
-            reply, raw_suffix = decode_suffix(self.tokenizer, ids)
+            reply, raw_suffix = decode_suffix(self.tokenizer, ids, limits=self.limits)
             free, total = torch.cuda.mem_get_info(0)
             diagnostics = {"raw_suffix_text": raw_suffix,
                 "removed_terminal_id": TRANSPORT_ID if ids[-1] == TRANSPORT_ID else None,

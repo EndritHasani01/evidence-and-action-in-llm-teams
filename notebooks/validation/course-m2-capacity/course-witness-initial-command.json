@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "tests.course_attainability_checks",
+    "tests.attainability_checks",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T10:21:17.790113+00:00",
+  "seconds": 34.18700000003446,
+  "exit_code": 1,
+  "log": "course-witness-initial.txt.gz",
+  "hash_seed": null
+}

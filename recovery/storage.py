@@ -14,7 +14,7 @@ import os
 import sqlite3
 
 from .manifests import _branch
-from .prompts import RenderedRequest, TokenizedRequest
+from .prompts import RenderedRequest, TokenizedRequest, limits_from_settings
 from .protocol import GeneratedReply
 from .replay import SavedRound
 from .rounds import RoundRequests, deserialize_state, snapshot_bytes, validate_round
@@ -544,7 +544,8 @@ class WorkerStore:
                 raise ValueError("missing saved validation for pre-delivery parent")
             response = self.response(call.call_id)
             generated.append(response if type(response) is GeneratedReply else None)
-        barrier = validate_round(requests, tuple(generated), tokenizer)
+        barrier = validate_round(requests, tuple(generated), tokenizer,
+                                  limits=limits_from_settings(json.loads(settings)))
         for call, reply in zip(calls, barrier.replies):
             if self.call(call.call_id)["validation_json"] != record_json(asdict(reply)):
                 raise ValueError("replayed validation differs from the recorded parent outcome")

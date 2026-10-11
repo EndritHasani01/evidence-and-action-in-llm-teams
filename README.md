@@ -99,6 +99,36 @@ and the [implementation plan](docs/IMPLEMENTATION_PLAN.md#10-living-handoff).
 
 Four peers perform four rounds of collaborative work before an announced factual revision, then receive four recovery rounds. The study targets 60 worlds, with a 40-world resource fallback. The specification defines the retention and complementary team-reset comparisons, focused receipt/prose interventions, two primary estimands, exact evaluation, repetition, and measured feasibility gates.
 
+The separate [ABS/IIS course contract](PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
+was explicitly adopted on 9 October 2026: direct 4B, smaller instances, 20 main
+worlds, four rounds per phase, 256/64 reply/prose caps and a cumulative 30-hour
+course subceiling. Its [course tasks](docs/todos/course/README.md) and
+[engineering handoff](docs/IMPLEMENTATION_PLAN.md#11-course-living-handoff)
+track the remaining adaptations and acceptance. Thesis defaults and evidence
+remain intact; course adoption supplies no model or execution acceptance.
+
+Course [M1 input/schedule evidence](docs/validation/course-m1-inputs-and-schedules.md)
+now passes on CPU: the separate saved bundle has 20 main/five development worlds,
+5,752 new/6,280 logical main slots and 1,114/1,178 development slots. Preparation
+requires `--regime course --config configs/course-inputs.toml`; see the
+[fixture commands](tests/fixtures/README.md) for reproducible preparation.
+Course [protocol and limits acceptance](docs/validation/course-m2-protocol-and-limits.md)
+now verifies explicit 256/64 rendering, full output reservation, strict validation
+and exact saved settings with the pinned 4B tokenizer. Use `COURSE_LIMITS` from
+`recovery.prompts` explicitly; default calls retain thesis 384/128 limits. The
+course [intervention/replay acceptance](docs/validation/course-m2-interventions-and-replay.md)
+now passes all saved starts and exact parents, literal retention, synchrony and
+Q release, with 127 affected CPU, 95 installed and 18 repeated native checks.
+`run_prefix(..., limits=COURSE_LIMITS)` applies the caps throughout the prefix.
+The course [local witness and complete capacity gate](docs/validation/course-m2-attainability-and-capacity.md)
+now passes: all 139 affected source/139 installed CPU checks and 18 native
+checks pass, with exact fresh-process reproduction. The full course bound is
+156,251 tokens including 256 output tokens; correct candidates/controls and
+useful one-shard replies have a universal 189-token output bound. The next task
+is [course durable workers](docs/todos/course/M3/M3-T01-course-durable-workers-and-failures.md).
+Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
+remain open. CPU admission supplies no experiment execution authorization.
+
 ## CPU installation and validation
 
 Use Python 3.11. Strict reply validation requires Pydantic 2, declared as a CPU

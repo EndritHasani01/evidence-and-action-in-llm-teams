@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-S",
+    "-B",
+    "notebooks/validation/course-m2-capacity/verify_capacity.py",
+    "--output",
+    "notebooks/validation/course-m2-capacity/evidence-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T10:52:03.465387+00:00",
+  "seconds": 12.51500000001397,
+  "exit_code": 0,
+  "log": "evidence-audit.txt.gz",
+  "hash_seed": null
+}

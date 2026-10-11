@@ -1,0 +1,18 @@
+Processing c:\users\endrithasani\downloads\recovery_blueprint\recovery_blueprint
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: evidence-and-action-in-llm-teams
+  Building wheel for evidence-and-action-in-llm-teams (pyproject.toml): started
+  Building wheel for evidence-and-action-in-llm-teams (pyproject.toml): finished with status 'done'
+  Created wheel for evidence-and-action-in-llm-teams: filename=evidence_and_action_in_llm_teams-0.1.0-py3-none-any.whl size=160713 sha256=5c719cc799bd2ae17c5bc59101c6cefe20bd979128a6bc9c0582e10d55f36e18
+  Stored in directory: C:\Users\EndritHasani\AppData\Local\Temp\pip-ephem-wheel-cache-lyrvhp95\wheels\cb\e4\03\8b39a15bc9c5ff44e9b07fa99a3d7512463ff070b570e95263
+Successfully built evidence-and-action-in-llm-teams
+Installing collected packages: evidence-and-action-in-llm-teams
+Successfully installed evidence-and-action-in-llm-teams-0.1.0
+
+[notice] A new release of pip is available: 24.0 -> 26.2.1
+[notice] To update, run: C:\Users\EndritHasani\Downloads\recovery_blueprint\recovery_blueprint\.venv\Scripts\python.exe -m pip install --upgrade pip

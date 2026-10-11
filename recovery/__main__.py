@@ -14,7 +14,7 @@ from .schedule import SMOKE_MAX_CALLS, component_counts, prepare_schedules
 
 
 def _schedule_summary(schedules, population) -> None:
-    for count in (60, 40):
+    for count in population.main_counts:
         rows = component_counts(schedules.main_for(population, count)).values()
         distinct, logical = (sum(row[i] for row in rows) for i in (0, 1))
         print(f"Main {count}: {distinct:,} distinct / {logical:,} logical slots.")
@@ -66,6 +66,8 @@ def main() -> int:
     analyze.add_argument("--tokenizer", type=Path, help="local matching tokenizer metadata for exact diagnostic history counts; no weights/downloads")
     for command in (validate, prepare):
         command.add_argument("--config", type=Path, default=root / "configs" / "study.toml")
+        command.add_argument("--regime", choices=("thesis", "course"), default="thesis",
+                             help="explicit population scope; course requires fallback size; default thesis")
         command.add_argument("--authoritative", type=Path, help="saved population authority for exact input/configuration equality")
     source = prepare.add_mutually_exclusive_group(required=True)
     source.add_argument("--seed", type=int, help="prepare a new population with this seed")
@@ -143,6 +145,8 @@ def main() -> int:
         return 0
     try:
         size = load_size(args.config)
+        if args.regime == "course" and size is not Size.FALLBACK:
+            raise ValueError("course requires the fallback mathematical size")
     except (OSError, ValueError) as error:
         parser.error(str(error))
     if args.authoritative and not args.manifest:
@@ -154,10 +158,12 @@ def main() -> int:
                 population = load_population(args.manifest, authoritative=authority)
                 if population.size is not size:
                     raise ValueError("manifest mathematical size differs from configuration")
+                if population.regime != args.regime:
+                    raise ValueError("manifest regime differs from configuration")
                 schedules = prepare_schedules(population)
                 save_schedules(schedules, population, args.output)
             else:
-                population = prepare_population(args.seed, size)
+                population = prepare_population(args.seed, size, regime=args.regime)
                 save_population(population, args.output)
         except PopulationExhausted as error:
             # Fail explicitly and emit every failed attempt; no accepted manifest
@@ -169,10 +175,11 @@ def main() -> int:
         except (OSError, ValueError) as error:
             parser.error(str(error))
         if args.manifest:
-            print(f"Prepared schedules {args.output}: size={size.value}; not an M5 freeze.")
+            print(f"Prepared schedules {args.output}: size={size.value}, regime={args.regime}; not an M5 freeze.")
             _schedule_summary(schedules, population)
         else:
-            print(f"Prepared {args.output}: size={size.value}, main=60 (nested 40), development=5; not an M5 freeze.")
+            main_scope = "20" if args.regime == "course" else "60 (nested 40)"
+            print(f"Prepared {args.output}: size={size.value}, regime={args.regime}, main={main_scope}, development=5; not an M5 freeze.")
         return 0
     if args.schedule and not args.manifest:
         parser.error("--schedule requires --manifest")
@@ -182,6 +189,8 @@ def main() -> int:
             population = load_population(args.manifest, authoritative=authority)
             if population.size is not size:
                 raise ValueError("manifest mathematical size differs from configuration")
+            if population.regime != args.regime:
+                raise ValueError("manifest regime differs from configuration")
         except (OSError, ValueError) as error:
             parser.error(str(error))
         print(f"Saved population verified without resampling: {args.manifest}.", flush=True)
@@ -207,6 +216,10 @@ def main() -> int:
     suite = unittest.defaultTestLoader.discover(str(root / "tests"), top_level_dir=str(root))
     if not args.core_only:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.protocol_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_protocol_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_settings_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_intervention_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_attainability_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.round_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.event_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.replay_checks"))

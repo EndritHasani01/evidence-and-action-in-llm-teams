@@ -1,8 +1,9 @@
 """Prepared host populations, not an accepted M5 freeze (spec §§2.2–2.3, 6).
 
-No model outcomes are accepted by this API. Target/fallback WORLD COUNTS are
-views of one 60-world preparation, independent of the declared mathematical
-Size (m=8/6). Full raw worlds and future edits stay host-side, never in views.
+No model outcomes are accepted by this API. Thesis world counts are views of
+one 60-world preparation, independent of mathematical Size (m=8/6). The course
+regime prepares a separate 20-world fallback-size bundle (spec §11). Full raw
+worlds and future edits stay host-side, never in views.
 """
 
 from dataclasses import dataclass
@@ -14,6 +15,11 @@ from .tasks import PEERS, Size, Task, World, generate_world
 MAX_ATTEMPTS = 1_000
 FAMILIES = tuple(Task)
 PARTITIONS = (((0, 1), (2, 3)), ((0, 2), (1, 3)), ((0, 3), (1, 2)))
+
+
+def _check_regime(regime: str) -> None:
+    if type(regime) is not str or regime not in ("thesis", "course"):
+        raise ValueError("regime must be thesis or course")
 
 
 def _root(master_seed: int) -> int:
@@ -28,10 +34,11 @@ def owner_seed(master_seed: int, task: Task, *, development: bool = False) -> in
     return _root(master_seed) + 1 + FAMILIES.index(task) + (5 if development else 0)
 
 
-def owner_order(master_seed: int, task: Task) -> tuple[int, ...]:
+def owner_order(master_seed: int, task: Task, *, regime: str = "thesis") -> tuple[int, ...]:
+    _check_regime(regime)
     rng = Random(owner_seed(master_seed, task))
     result = []
-    for _ in range(3):
+    for _ in range(1 if regime == "course" else 3):
         block = list(PEERS)
         rng.shuffle(block)
         result.extend(block)
@@ -76,15 +83,18 @@ def _check_slot(round_number: int, peer: int) -> None:
         raise ValueError("invalid round/peer")
 
 
-def streams_for(master_seed: int, task: Task, index: int, *, development: bool = False) -> Streams:
+def streams_for(master_seed: int, task: Task, index: int, *, development: bool = False,
+                regime: str = "thesis") -> Streams:
+    _check_regime(regime)
     if not isinstance(task, Task) or type(development) is not bool:
         raise ValueError("invalid task/development domain")
-    if type(index) is not int or not 1 <= index <= (1 if development else 12):
+    limit = 1 if development else (4 if regime == "course" else 12)
+    if type(index) is not int or not 1 <= index <= limit:
         raise ValueError("world index outside the prepared population")
     slot = 60 + FAMILIES.index(task) if development else FAMILIES.index(task) * 12 + index - 1
     base = _root(master_seed) + (slot + 1) * 4096
     prefix = tuple(tuple(base + 16 + 4 * r + p for p in PEERS) for r in range(4))
-    replicates = 1 if development or index > 2 else 2
+    replicates = 2 if not development and index <= (1 if regime == "course" else 2) else 1
     continuation = tuple(tuple(tuple(base + 32 + 16 * k + 4 * r + p for p in PEERS)
                                for r in range(4)) for k in range(replicates))
     return Streams(base, base + 1, base + 2, base + 3, base + 4,
@@ -142,10 +152,13 @@ class PopulationExhausted(ValueError):
 
 
 def prepare_world(master_seed: int, task: Task, size: Size, index: int,
-                  edited_owner: int, *, development: bool = False) -> PreparedWorld:
+                  edited_owner: int, *, development: bool = False,
+                  regime: str = "thesis") -> PreparedWorld:
+    if regime == "course" and size is not Size.FALLBACK:
+        raise ValueError("course requires the fallback mathematical size")
     if type(edited_owner) is not int or edited_owner not in PEERS:
         raise ValueError("invalid edited owner")
-    streams = streams_for(master_seed, task, index, development=development)
+    streams = streams_for(master_seed, task, index, development=development, regime=regime)
     domain = "dev" if development else "main"
     world_id = f"{domain}-{task.value}-{index:02d}"
     generation, ownership = Random(streams.generation), Random(streams.ownership)
@@ -181,13 +194,21 @@ class Population:
     development_owner_seeds: tuple[int, ...]
     main: tuple[PreparedWorld, ...]
     development: tuple[PreparedWorld, ...]
+    regime: str = "thesis"
 
-    def worlds(self, count: int = 60) -> tuple[PreparedWorld, ...]:
-        if type(count) is not int or count not in (60, 40):
-            raise ValueError("world count must be 60 or the nested 40")
+    @property
+    def main_counts(self) -> tuple[int, ...]:
+        _check_regime(self.regime)
+        return (20,) if self.regime == "course" else (60, 40)
+
+    def worlds(self, count: int | None = None) -> tuple[PreparedWorld, ...]:
+        if count is None:
+            count = self.main_counts[0]
+        if type(count) is not int or count not in self.main_counts:
+            raise ValueError(f"world count must be one of {self.main_counts} for {self.regime}")
         return tuple(w for w in self.main if w.index <= count // 5)
 
-    def subsets(self, count: int = 60) -> dict[str, tuple[str, ...]]:
+    def subsets(self, count: int | None = None) -> dict[str, tuple[str, ...]]:
         worlds = self.worlds(count)
         return {
             "main": tuple(w.world_id for w in worlds),
@@ -195,27 +216,30 @@ class Population:
             "q": tuple(w.world_id for w in worlds if w.world.task in (Task.SORT, Task.BFS)),
             "preserving": tuple(w.world_id for w in worlds
                                 if w.world.task in (Task.TOP_K, Task.BFS) and w.index <= 8),
-            "repeat": tuple(w.world_id for w in worlds if w.index <= 2),
+            "repeat": tuple(w.world_id for w in worlds if len(w.streams.continuation) == 2),
         }
 
 
-def prepare_population(master_seed: int, size: Size) -> Population:
-    """Prepare all 60 + five disjoint development worlds; 40 is a saved view."""
+def prepare_population(master_seed: int, size: Size, *, regime: str = "thesis") -> Population:
+    """Prepare thesis 60 (+ nested 40), or course 20, plus five development worlds."""
 
+    _check_regime(regime)
     _root(master_seed)
     if not isinstance(size, Size):
         raise ValueError("invalid mathematical size")
+    if regime == "course" and size is not Size.FALLBACK:
+        raise ValueError("course requires the fallback mathematical size")
     # Owner orders are fixed before any eligibility-conditioned world generation.
-    orders = {task: owner_order(master_seed, task) for task in FAMILIES}
-    main = tuple(prepare_world(master_seed, task, size, index, owner)
+    orders = {task: owner_order(master_seed, task, regime=regime) for task in FAMILIES}
+    main = tuple(prepare_world(master_seed, task, size, index, owner, regime=regime)
                  for task in FAMILIES for index, owner in enumerate(orders[task], 1))
     development = tuple(prepare_world(master_seed, task, size, 1,
                                      Random(owner_seed(master_seed, task, development=True)).randrange(4),
-                                     development=True) for task in FAMILIES)
+                                     development=True, regime=regime) for task in FAMILIES)
     return Population(1, master_seed, size,
                       tuple(owner_seed(master_seed, task) for task in FAMILIES),
                       tuple(owner_seed(master_seed, task, development=True) for task in FAMILIES),
-                      main, development)
+                      main, development, regime)
 
 
 def validate_population(population: Population) -> None:
@@ -227,8 +251,11 @@ def validate_population(population: Population) -> None:
     """
 
     p = population
+    _check_regime(p.regime)
     if type(p.format_version) is not int or p.format_version != 1 or not isinstance(p.size, Size):
         raise ValueError("unsupported population configuration")
+    if p.regime == "course" and p.size is not Size.FALLBACK:
+        raise ValueError("course requires the fallback mathematical size")
     _root(p.master_seed)
     if (any(type(values) is not tuple for values in
             (p.owner_seeds, p.development_owner_seeds, p.main, p.development))
@@ -237,21 +264,21 @@ def validate_population(population: Population) -> None:
     if (p.owner_seeds != tuple(owner_seed(p.master_seed, t) for t in FAMILIES)
             or p.development_owner_seeds != tuple(owner_seed(p.master_seed, t, development=True) for t in FAMILIES)):
         raise ValueError("owner seed assignments differ")
-    if len(p.main) != 60 or len(p.development) != 5:
-        raise ValueError("population must contain 60 main and five development worlds")
-    expected = [(False, t, i) for t in FAMILIES for i in range(1, 13)]
+    if len(p.main) != p.main_counts[0] or len(p.development) != 5:
+        raise ValueError(f"population must contain {p.main_counts[0]} main and five development worlds")
+    expected = [(False, t, i) for t in FAMILIES for i in range(1, p.main_counts[0] // 5 + 1)]
     expected += [(True, t, 1) for t in FAMILIES]
     for w, (development, task, index) in zip(p.main + p.development, expected):
         domain = "dev" if development else "main"
         owner = (Random(owner_seed(p.master_seed, task, development=True)).randrange(4)
-                 if development else owner_order(p.master_seed, task)[index - 1])
+                 if development else owner_order(p.master_seed, task, regime=p.regime)[index - 1])
         if (type(w.index) is not int or type(w.development) is not bool
                 or type(w.edited_owner) is not int or type(w.world_id) is not str
                 or w.world_id != f"{domain}-{task.value}-{index:02d}" or w.index != index
                 or w.development != development or w.world.task is not task
                 or w.world.size is not p.size or w.edited_owner != owner):
             raise ValueError("world identity/configuration/edited owner differs")
-        if w.streams != streams_for(p.master_seed, task, index, development=development):
+        if w.streams != streams_for(p.master_seed, task, index, development=development, regime=p.regime):
             raise ValueError("world random stream assignments differ")
         scalar_seeds = (w.streams.generation, w.streams.ownership, w.streams.main_edit,
                         w.streams.preserving_edit, w.streams.partition)

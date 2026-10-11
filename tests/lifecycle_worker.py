@@ -69,7 +69,7 @@ def main():
         runner.store.finish_attempt = commit_raw
 
         validate = replay.validate_round
-        def during_validation(requests, generated, tokenizer):
+        def during_validation(requests, generated, tokenizer, **kwargs):
             if args.point == "validation" and requests.before.branch_id == branch.branch_id and requests.slot.round_number == args.round:
                 one = rounds.validate_reply
                 def checked(*a, **kw):
@@ -77,8 +77,8 @@ def main():
                     pause(validated_peer=a[0].peer)
                     return result
                 with patch.object(rounds, "validate_reply", checked):
-                    return validate(requests, generated, tokenizer)
-            return validate(requests, generated, tokenizer)
+                    return validate(requests, generated, tokenizer, **kwargs)
+            return validate(requests, generated, tokenizer, **kwargs)
 
         stage = replay.stage_effects
         def during_staging(barrier):

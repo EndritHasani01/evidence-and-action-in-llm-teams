@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-S",
+    "-B",
+    "notebooks/validation/course-m2-capacity/verify_capacity.py",
+    "--output",
+    "notebooks/validation/course-m2-capacity/review-audit-corrected.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T10:45:02.343896+00:00",
+  "seconds": 13.21799999999348,
+  "exit_code": 0,
+  "log": "review-audit-corrected.txt.gz",
+  "hash_seed": null
+}
