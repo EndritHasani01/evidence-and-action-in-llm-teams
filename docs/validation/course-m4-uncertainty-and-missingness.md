@@ -83,3 +83,67 @@ Earlier fault/native scopes, ten real controller kills, full core regression
 and unchanged diagnostic audits are reused from M4-T02. This task changes only
 reporting scope and accepts uncertainty on the original course populations.
 Full focused source/installed acceptance and completion audits remain pending.
+
+## Completion and handoff
+
+Course/M4-T03 passes CPU acceptance on 11 October 2026 from implementation
+`4ac7982`. Both complete focused suites started and finished from that same
+committed source. Statistical formulas, population/configuration artifacts and
+thesis defaults remain unchanged; only explicit course reporting scope is added.
+
+| Executed check | Result | Unittest seconds |
+|---|---|---:|
+| [Course/thesis formulas](../../notebooks/validation/course-m4-uncertainty/formulas-accepted-command.json) | 44 passed; zero skips | 10.817 |
+| [Complete affected source suite](../../notebooks/validation/course-m4-uncertainty/source-accepted-command.json) | 70 passed; zero skips | 764.120 |
+| [Outside-checkout installed suite](../../notebooks/validation/course-m4-uncertainty/installed-accepted-command.json) | 70 passed; zero skips | 765.086 |
+| [Focused dependency-free course checks](../../notebooks/validation/course-m4-uncertainty/core-focused-command.json) | 19 passed; zero skips | 17.511 |
+
+Each receipt records its exact command, lossless log, committed source and hash
+seed. Source/installed use hash seed 37; dependency-free and fresh archive
+processes use 73. Saved bootstrap seed `20261011` and accounting clock
+`2026-10-11T23:59:59+00:00` reproduce every course scope. These durations are
+CPU test timings. The environment is unchanged from M4-T02: Windows, Python
+3.11.9, SQLite 3.45.1 and the same declared CPU package versions. The
+[installed provenance](../../notebooks/validation/course-m4-uncertainty/installed-provenance.json)
+records the wheel, outside-checkout import path, all 29 matching production
+modules, tested packages and absence of source `PYTHONPATH` injection.
+[Dependency consistency](../../notebooks/validation/course-m4-uncertainty/pip-check-command.json)
+and [compilation](../../notebooks/validation/course-m4-uncertainty/compile-check-command.json)
+pass. No new statistical or runtime dependency is added.
+
+Sixteen course formula methods and five archive/CLI/consumer methods establish
+correct four-world family clustering, fixed eight-world focal cohorts, five
+conditional repeats, paired quality/preservation/cost cohorts, primary 97.5%
+and secondary 95% type-7 intervals, weighted bounded companions and eligible
+family binomial counts. Independent saved-seed draws, closed-form/tail
+references and tiny shared-variable enumeration agree. Empty denominators,
+unknown eligibility, safely stopped trajectories and unavailable future costs
+remain explicit. The original partial missingness joins preserve execution
+counts even when known physical parents constrain unexecuted logical copies.
+
+All seven course scopes reproduce from unchanged workers and agree with the
+accepted prerequisite outcome/cost joins. Independent rational coefficients
+verify 11,422 linear bounds. Full main preserves 2,170 recorded/4,110 unknown
+uses; theta/phi sensitivity remains [-1.5,1.5]/[-0.75,0.75], intended intervals
+are unavailable and five-world complete-case zeros are descriptive. Neither
+10,000 draws nor five repeats add independent worlds, achieved power or an
+equivalence margin. All sixteen original thesis uncertainty scopes and all
+thesis report scopes reproduce unchanged; report scopes are rebuilt twice in
+each source/installed suite. Prior full core, native/fault and controller-kill
+evidence is reused without new execution.
+
+[Course/M4-T04](../todos/course/M4/M4-T04-course-report-and-cpu-gate.md) is ready
+for the complete integrated report/CPU gate. Use the original course workers,
+accepted derived tables and explicit course reporting scope. The narrow report
+precision check establishes parameter forwarding, not that complete course
+report gate. Actual model/GPU capability, memory/headroom, pilot, resources,
+freeze, main execution and publication remain separate. This task performs
+offline CPU validation with no inference or scientific/frozen-configuration change.
+
+The [completion/preservation audit](../../notebooks/validation/course-m4-uncertainty/completion-audit.json)
+passes all 1,575 protected starting files, thesis plan Sections 1-10, original
+bundles, passing receipts, installed provenance, local links/anchors and
+consistent course readiness. The M5 evidence edit remains byte-identical and
+unstaged. Course progress is ten done/two ready/nine blocked; M4-T03 is done and
+M4-T04 is ready. `git diff --check` passes. Completion closes this task's CPU
+uncertainty acceptance and leaves the complete report and execution gates explicit.

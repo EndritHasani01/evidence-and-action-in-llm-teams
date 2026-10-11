@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m4-uncertainty/verify_uncertainty.py",
+    "--completion",
+    "--output",
+    "notebooks/validation/course-m4-uncertainty/completion-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T17:40:17.375937+00:00",
+  "source_head": "4ac7982c064f32e534ea6fe65da9cc321bdac6d0",
+  "seconds": 7.686999999918044,
+  "exit_code": 0,
+  "log": "completion-audit.txt.gz",
+  "hash_seed": null,
+  "temporary_root": null
+}

@@ -1014,7 +1014,9 @@ the [local witness and complete capacity gate](validation/course-m2-attainabilit
 [outcome/estimand acceptance](validation/course-m4-outcomes-and-estimands.md#completion-and-handoff).
 [Course/M4-T02](todos/course/M4/M4-T02-course-diagnostics-and-policy-costs.md) now passes
 [diagnostic/policy-cost acceptance](validation/course-m4-diagnostics-and-policy-costs.md#completion-and-handoff).
-The combined course M3 CPU gate is complete; course/M4-T03 is next. Course/M5-T01
+[Course/M4-T03](todos/course/M4/M4-T03-course-uncertainty-and-missingness.md) now passes
+[paired uncertainty/missingness acceptance](validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff).
+The combined course M3 CPU gate is complete; course/M4-T04 is next. Course/M5-T01
 is also ready for CPU packet preparation. Later course CPU gates, GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
@@ -1224,18 +1226,34 @@ the hand case independently retains 261-263 attempt-seconds and 400 synthetic
 allocated seconds. Native nonempty history counts remain unavailable without
 a matching tokenizer. Original thesis M4 outputs reproduce twice, all 29
 installed production modules match and 1,519 protected starting files remain
-unchanged, including the local M5 edit and prior archives. Course/M4-T03 is ready;
-uncertainty and the complete report/CPU gate still precede GPU use. Scientific
+unchanged, including the local M5 edit and prior archives. This prerequisite
+made course/M4-T03 ready; the complete report/CPU gate still precedes GPU use. Scientific
 parameters, runtime defaults and frozen configuration remain unchanged; this
 task performs CPU offline validation.
+
+Course/M4-T03 passes [CPU uncertainty acceptance](validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff)
+from `4ac7982`: 70 source/70 installed methods with zero skips and nineteen
+focused dependency-free methods. Statistical formulas are reused unchanged;
+an explicit course reporting scope supplies exploratory N=20/eight precision
+references and small-sample caveats, while thesis defaults stay identical.
+Seven original-worker scopes reproduce with 11,422 independently calculated
+linear bounds, original shared reply/cost identities and fixed 20/eight/five-world
+cohorts. Full main retains 2,170 recorded/4,110 unknown uses; theta/phi sensitivity
+is [-1.5,1.5]/[-0.75,0.75], with intended intervals unavailable and five-world
+complete cases separately descriptive. Empty/unknown eligibility, incomplete
+trajectories and unbounded future costs remain explicit. All original thesis
+uncertainty/report scopes reproduce unchanged; 1,575 protected starting files,
+including the local M5 edit, remain intact. Course/M4-T04 is ready for integrated
+report/CPU-gate acceptance; model/GPU, resources, freeze and empirical gates
+remain separate.
 
 ### Course unresolved gates
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2
 protocol/intervention/replay/witness/native-capacity gate are verified. Course
 M3 durable workers/bounded failures/accounting and portable combined lifecycle
-gate, M4 outcomes/estimands and diagnostics/policy costs are verified;
-uncertainty and the complete M4 report gate remain open. Actual runtime
+gate, M4 outcomes/estimands, diagnostics/policy costs and uncertainty are verified;
+the complete M4 report gate remains open. Actual runtime
 environment/configuration acceptance remains M5. Status now infers the manifest
 regime and declared main count; analysis CLI now follows the same saved scope
 and preserves thesis 60/40 behavior. The
@@ -1246,5 +1264,5 @@ layout on T4 or the course pretrained model. Actual host/package/source assets,
 smoke requests, capability, complete pilot, resource reconciliation and freeze
 remain course M5 gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
-index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03, M3-T01/T02 and M4-T01/T02
+index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03, M3-T01/T02 and M4-T01/T02/T03
 performed no GPU, pretrained-model or empirical run and accepted no freeze.

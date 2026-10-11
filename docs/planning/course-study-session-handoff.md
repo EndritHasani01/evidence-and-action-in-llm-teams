@@ -1,6 +1,6 @@
 # Course study: lessons and fresh-session handoff
 
-Updated 11 October 2026 through course/M4-T02. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
+Updated 11 October 2026 through course/M4-T03. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
 
 Current course contract handoff, 9 October 2026: the user explicitly approved
 design/resource adoption after preparation at `ef4c3f6` and the earlier pending
@@ -44,7 +44,16 @@ twelve expected checkpoint-package skips and 26 final focused course methods.
 Seven derived scopes, sixteen earlier fault scopes and the full saved native
 binding reproduce from original records, with conservative source annotations,
 wrong-candidate residuals, original policy charges and unavailable costs intact.
-Course/M4-T03 is next, and course/M5-T01 CPU preparation is also ready.
+Course/M4-T03 now passes
+[paired uncertainty/missingness acceptance](../validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff):
+70 affected source/70 installed methods with zero skips and nineteen focused
+dependency-free methods. Seven original-worker scopes and independent
+draw/quantile/binomial/bounded-mean/shared-variable references pass. Full intended
+scope retains 2,170 recorded/4,110 unknown uses, theta/phi sensitivity
+[-1.5,1.5]/[-0.75,0.75], unavailable intended intervals and separately described
+five-world complete cases. Course reporting is exploratory; all original thesis
+uncertainty/report scopes reproduce unchanged. Course/M4-T04 is next, and
+course/M5-T01 CPU preparation is also ready.
 Actual runtime/resource, remaining M4 and GPU/model gates remain separate.
 Thesis runtime defaults and all original
 todos/evidence remain unchanged.
@@ -69,7 +78,7 @@ Read in this order:
 3. The [course index](../todos/course/README.md), then one selected course task and its prerequisite evidence. Qualify IDs as `course/M2-T01`: the [thesis tree](../todos/README.md) uses the same short ID format for different tasks.
 4. The [course proposal](abs-iis-course-study-proposal.md) for proposed scope, and the [research synthesis](../implementation-research/SYNTHESIS.md) plus only the investigations relevant to that task.
 
-The next engineering task is [course/M4-T03](../todos/course/M4/M4-T03-course-uncertainty-and-missingness.md), following verified outcome/estimand and diagnostic/policy-cost acceptance. Read its linked handoff before accepting paired uncertainty/shared-response missingness on the actual course cohorts. Reuse the original workers and saved derived tables, including unknown selected costs and intended diagnostic denominators. Keep saved course inputs, explicit `COURSE_LIMITS`, pinned 4B settings, literal `run_inputs` bindings and exact original-prefix/B/C parent identities. Status and analysis CLI now infer the declared main count from the manifest (20 course, 60 thesis; nested thesis 40 remains explicit); analysis repeats follow the assigned continuation streams. [Course/M5-T01](../todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md) is ready for CPU packet preparation, with course M4 required before GPU use. The task index owns current readiness and counts; this document does not duplicate them.
+The next engineering task is [course/M4-T04](../todos/course/M4/M4-T04-course-report-and-cpu-gate.md), following verified diagnostic/policy-cost and uncertainty/missingness acceptance. Read its linked handoff before accepting the integrated course report/CPU gate. Reuse the original workers and saved derived tables, including unknown selected costs, intended diagnostic denominators and shared-response bounds. Direct uncertainty/report API consumers pass `regime="course"`; the CLI forwards the saved manifest regime. Keep saved course inputs, explicit `COURSE_LIMITS`, pinned 4B settings, literal `run_inputs` bindings and exact original-prefix/B/C parent identities. Status and analysis CLI infer the declared main count from the manifest (20 course, 60 thesis; nested thesis 40 remains explicit); analysis repeats follow the assigned continuation streams. [Course/M5-T01](../todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md) is ready for CPU packet preparation, with course M4 required before GPU use. The task index owns current readiness and counts; this document does not duplicate them.
 
 ## Reuse evidence within its actual scope
 

@@ -25,7 +25,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**9/21 course tasks done; 12 remaining; 1 active; 1 ready; 10 blocked.**
+**10/21 course tasks done; 11 remaining; 0 active; 2 ready; 9 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -71,17 +71,25 @@ independent coordinate/inventory/source/receipt/transport/cost references.
 Whole C/K selection uses initial coverage only; unknown selected branches and
 future costs remain unavailable. All 1,519 protected starting files are
 unchanged, including thesis defaults/todos, earlier fixtures and the local M5
-edit. Uncertainty and the complete course M4 report gate remain open.
+edit. Course/M4-T03 is done:
+[paired uncertainty/missingness acceptance](../../validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff)
+passes 70 affected source/70 installed methods with zero skips and nineteen
+focused dependency-free methods. Seven original-worker scopes retain fixed
+20/eight/five-world cohorts, shared-response constraints, incomplete trajectories
+and unknown future costs. Independent arithmetic, tiny enumeration and 11,422
+linear bounds agree. Course precision references are exploratory; original
+thesis uncertainty/report outputs and 1,575 protected starting files remain
+unchanged. The complete course M4 report gate remains open.
 Inherited foundation tasks are not counted as course acceptance.
 
-The next safe task is [course/M4-T03](M4/M4-T03-course-uncertainty-and-missingness.md), following completed outcome/estimand and diagnostic/policy-cost acceptance. [Course/M5-T01](M5/M5-T01-course-inference-and-smoke-preparation.md) is also ready for CPU preparation; GPU use still requires course M4 and the applicable later gates/authorization. **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
+The next safe task is [course/M4-T04](M4/M4-T04-course-report-and-cpu-gate.md), following completed diagnostic/policy-cost and uncertainty/missingness acceptance. [Course/M5-T01](M5/M5-T01-course-inference-and-smoke-preparation.md) is also ready for CPU preparation; GPU use still requires course M4 and the applicable later gates/authorization. **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
 | M2 | 3/3 | 0 | 0 | 0 | CPU gate passed: lawful protocol/replay, locally informed witness and complete 156,251-token native bound |
 | M3 | 2/2 | 0 | 0 | 0 | CPU gate passed: durable workers, honest accounting/status, cumulative resource refusal and portable all-family lifecycle |
-| M4 | 2/4 | 1 | 0 | 1 | Outcomes/estimands and diagnostics/policy costs verified; uncertainty active and reproducible report gate remains open |
+| M4 | 3/4 | 0 | 1 | 0 | Outcomes/estimands, diagnostics/policy costs and uncertainty verified; reproducible course report/CPU gate ready |
 | M5 | 0/5 | 0 | 1 | 4 | CPU packet preparation ready; actual-host smoke, capability, complete pilot, resources and authorized course freeze remain gated |
 | M6 | 0/5 | 0 | 0 | 5 | Complete frozen execution, independent audit, claims review, clean local reproduction and agreed delivery |
 
@@ -100,8 +108,8 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | done | M3-T01 |
 | [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | done | M3-T02 |
 | [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | done | M4-T01 |
-| [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | active | M4-T01, M4-T02 |
-| [M4-T04 — Course report and CPU gate](M4/M4-T04-course-report-and-cpu-gate.md) | blocked | M4-T02, M4-T03 |
+| [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | done | M4-T01, M4-T02 |
+| [M4-T04 — Course report and CPU gate](M4/M4-T04-course-report-and-cpu-gate.md) | ready | M4-T02, M4-T03 |
 | [M5-T01 — Course inference and smoke preparation](M5/M5-T01-course-inference-and-smoke-preparation.md) | ready | M2-T03, M3-T02 |
 | [M5-T02 — Course hardware smoke and memory](M5/M5-T02-course-hardware-smoke-and-memory.md) | blocked | M4-T04, M5-T01 |
 | [M5-T03 — Course capability-first pilot](M5/M5-T03-course-capability-first-pilot.md) | blocked | M5-T02 |

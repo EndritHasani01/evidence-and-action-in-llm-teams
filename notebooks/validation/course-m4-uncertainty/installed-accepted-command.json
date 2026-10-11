@@ -1,0 +1,18 @@
+{
+  "command": [
+    ".\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m4-uncertainty/verify_installed.py",
+    "--output",
+    "notebooks/validation/course-m4-uncertainty/installed-provenance.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T17:23:36.157766+00:00",
+  "source_head": "4ac7982c064f32e534ea6fe65da9cc321bdac6d0",
+  "seconds": 783.155999999959,
+  "exit_code": 0,
+  "log": "installed-accepted.txt.gz",
+  "hash_seed": "37",
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m4-uncertainty-20261011\\installed"
+}
