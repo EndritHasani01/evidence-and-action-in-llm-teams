@@ -1,0 +1,21 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.test_course_inference_preparation",
+    "tests.course_settings_checks",
+    "tests.test_inference_preparation",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T19:11:46.969440+00:00",
+  "source_head": "16e939565806733c665ac27d515ee126c301ffe3",
+  "seconds": 4.140999999828637,
+  "exit_code": 1,
+  "log": "focused-corrected.txt.gz",
+  "hash_seed": null,
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m5-preparation-20261011"
+}
