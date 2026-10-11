@@ -1,6 +1,6 @@
 # Course M5-T01 — Course inference and smoke preparation
 
-**Status:** blocked
+**Status:** active
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md), [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md). This is CPU preparation; actual GPU work also requires the course M4 gate.
 
@@ -75,3 +75,10 @@ M5-T02 admission are withheld. The delivered notebook runs only the safe CPU
 review. Resolve R7, then renew any affected source/request/host provenance and
 resource checks before preparing an executable model smoke. No terminal M5
 failure or M6 limited-report route is accepted by this checkpoint.
+
+**Offline continuation, 11 October 2026:** The user explicitly requested R7
+resolution without GPU execution. Resume only capacity/source/meta-device
+analysis, preserving the existing protocol and accepted evidence. Follow
+[the offline R7 record](../../../validation/course-m5-r7-offline-review.md).
+The preparation gate remains withheld until a sufficient reviewed argument or
+concrete terminal blocker exists; active work does not admit model assets.

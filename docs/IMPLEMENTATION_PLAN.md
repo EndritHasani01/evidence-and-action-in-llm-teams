@@ -1276,6 +1276,13 @@ packet preparation is the next safe task; later gates still precede GPU use.
 
 ### Course unresolved gates
 
+The user requested an [offline R7 continuation](validation/course-m5-r7-offline-review.md)
+at `2c566b4`, preserving the scientific contract and avoiding GPU execution.
+Course/M5-T01 is active for tighter capacity/source/meta-device analysis only;
+its memory preparation gate remains withheld. Reuse accepted checks and preserve
+historical packets; any sufficient proof still leaves actual host/headroom,
+resource reconciliation and authorization as separate gates.
+
 Course/M5-T01's [safe CPU preparation](validation/course-m5-inference-and-smoke-preparation.md)
 is verified at `0260ca6`: 64 affected source/64 ordinary installed checks,
 four pinned-native source/four native installed checks and the literal new-source
