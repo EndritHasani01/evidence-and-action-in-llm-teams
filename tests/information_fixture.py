@@ -3,7 +3,7 @@
 from dataclasses import asdict, replace
 import json
 
-from recovery.prompts import render_request
+from recovery.prompts import COURSE_LIMITS, THESIS_LIMITS, render_request
 from recovery.state import CandidateState, HistoricalReceipt, OwnReply, RevisionNotice, Slot, initial_view
 from recovery.tasks import Task, source_manifest
 from tests.estimand_fixture import prepared
@@ -23,6 +23,7 @@ def fixture(task=Task.PREFIX, policies=("B", "C", "F", "K", "B_delta", "C_delta"
     branches = tuple(b for b in schedules.main if b.world_id == world.world_id and (b.phase == "prefix" or
         b.phase == "continuation" and b.event == "revision" and b.policy in policies and b.replicate == 0))
     records, inputs, attempts = saved_records(worlds, branches)
+    limits = COURSE_LIMITS if size == "course" else THESIS_LIMITS
     if wrong_prefix:
         for branch in branches:
             if branch.phase == "prefix":
@@ -84,13 +85,15 @@ def fixture(task=Task.PREFIX, policies=("B", "C", "F", "K", "B_delta", "C_delta"
                     slot=Slot(state["phase"], number), history=history, candidate=candidate,
                     notice=notice, receipt=receipt, source_deliveries=())
                 peers.append({k: asdict(view)[k] for k in ("sources", "history", "candidate", "feedback", "notice", "receipt", "source_deliveries")})
-                request = asdict(render_request(view))
+                request = asdict(render_request(view, limits=limits))
                 rendered.append(request)
                 tokenized.append({"text": request["content"], "input_ids": list(map(ord, request["content"]))})
             state["peers"] = peers
             for d in state["deliveries"]:
                 d.update(message_id=d["delivery_id"].split("/x")[0], text=None, sender=None, generated=None, acquired=True)
             saved["requests"].update(before=encode(state), rendered=rendered, tokenized=tokenized)
+            if size == "course":
+                saved["settings_json"] = encode({"protocol_limits": asdict(limits), "max_new_tokens": 256})
     for row in records.values():
         validation = json.loads(row["validation_json"])
         validation.update(messages=[], prose_tokens=0, feedback=None, feedback_tokens=0)

@@ -28,3 +28,21 @@ At this preparation checkpoint, diagnostic/cost acceptance and course fixtures
 are pending. Uncertainty and the complete course report/CPU gate remain later
 M4 tasks. This work authorizes no model/GPU/pilot/main execution, scientific or
 frozen-configuration change, external submission or publication.
+
+## Formula and failure-mode checkpoint
+
+[Focused course/thesis checks](../../notebooks/validation/course-m4-diagnostics/formulas-corrected-command.json)
+pass 76 methods with zero skips in 110.855 seconds. Twenty new independent
+course methods cover D/U coordinates and peer-copy counts, collateral versus
+old-error repair, malformed/empty/unknown denominators, all trajectory
+categories and fragmentation, six overlapping annotations, source association,
+receipt censoring, wrong-candidate residuals and whole C/K selection.
+The existing hand fixtures now accept an explicit course scope and course
+protocol limits; their thesis defaults remain unchanged.
+
+The initial failed command is retained. Its two fixture assertions used the
+wrong strata field name and omitted P_G's measured uncertain parent attempt.
+The corrected expectation charges that parent in both P_G and Q_B; no production
+guard or scientific formula was changed. Original-worker reconstruction,
+retained table reproduction, affected M4/core regression, installed acceptance
+and final preservation/link audits are still pending at this checkpoint.
