@@ -118,7 +118,7 @@ all instrumentation calls use the same shared envelope; there are no extra warmu
 | 20–23 | A, intervening B, A, then A after a confirmed process restart. A is slot 02's Prefix request/seed; B is slot 05's BFS request/seed. | Identical saved A request/settings/seed after different prior calls and a fresh process; log all outputs and stochastic differences, do not demand seed-based exact regeneration. Restart loading counts in setup and total allocation. |
 | 24 | Slot 01's Top-K request/seed with the existing test-controlled process hang/deadline interruption, while retaining the actual host process/device identity. | Exercise durable timeout-before-termination and confirmed exit. A test-injected hang is labeled infrastructure validation, not an observed model latency or capability failure. |
 
-Before reservation, T02 must materialize and review all 24 exact rendered/tokenized
+Before model loading/inference, T02 must materialize and review all 24 exact rendered/tokenized
 requests, seeds and intended infrastructure probes from these named inputs using
 the existing runner/ledger. CPU fixtures validate special markers, suffixes and
 exact cap endings without spending additional model calls. They do not pretend
@@ -136,15 +136,19 @@ executing uploads. The
 [NVIDIA Kaggle guidance](https://docs.nvidia.com/datascience/deployment/latest/platforms/kaggle/)
 notes that starting a GPU session consumes quota and instructs stopping it after
 work. Neither source proves this account's availability, remaining quota,
-session durability, release latency or monetary terms. Those facts are pending
-and must be recorded before an authorized reservation. No fixed weekly quota,
+session durability, release latency or monetary terms. Account terms are recorded
+before assignment; the brief inspection supplies device/runtime facts before
+model loading. Storage/export and confirmed release still need validation. No fixed weekly quota,
 price, GPU UUID or passing storage service is assumed.
 
 Run package/native checks and focused CPU checkpoint/crash/backup checks in
-the private notebook's CPU mode before GPU assignment, retaining its host lock
-and storage evidence. Compare that lock after selecting the GPU mode; any host
-change reopens affected checks. CPU verification while GPUs are allocated still
-counts as allocated idle time and must fit the same smoke ceiling.
+the actual candidate host lock before model loading/inference. CPU mode can
+supply preparation evidence; compare its lock after selecting GPU mode, since
+any host change reopens affected checks. The user's GPU-host preference and
+reported CPU image require a brief [hardware inspection](m5-kaggle-preflight.md#first-gpu-cell)
+before selecting the CUDA build. Hardware inspection may precede exact smoke
+request materialization; allocated inspection and CPU checks still count as
+assigned idle time within the same smoke ceiling. No model admission gate is waived.
 
 | Resource or convention | Concrete proposal / required observation |
 |---|---|
