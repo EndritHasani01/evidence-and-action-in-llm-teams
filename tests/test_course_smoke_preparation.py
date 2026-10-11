@@ -9,12 +9,13 @@ from pathlib import Path
 import tempfile
 import unittest
 import zipfile
+from unittest.mock import patch
 
 from recovery.manifests import load_population
 from recovery.prompts import COURSE_LIMITS
 from recovery.state import OwnReply, ReceivedProse
 from recovery.tasks import Task
-from scripts.build_course_smoke_packet import notebook
+from scripts.build_course_smoke_packet import notebook, preparation_review
 from scripts.build_kaggle_bundle import BASELINE_COMMIT, archive_manifest
 from scripts.m5_course_preparation import course_envelope, memory_review, peer_view, read, verify_requests
 
@@ -155,3 +156,38 @@ class CourseSmokePreparationTests(unittest.TestCase):
         self.assertIn("weight_staging_permitted", text)
         self.assertNotIn("ModelFactory", text)
         self.assertNotIn("run_preflight", text)
+
+    def test_preparation_completion_keeps_physical_acceptance_and_execution_pending(self):
+        review = preparation_review(ROOT)
+        self.assertEqual(review["status"], "prepared")
+        self.assertTrue(review["preparation_complete"])
+        self.assertEqual(review["complete_input_tokens_upper"], 109851)
+        self.assertEqual(review["complete_resident_tokens_upper"], 110107)
+        self.assertEqual(review["conditional_tensor_component_sum_bytes"], 7400914336)
+        self.assertEqual(review["conditional_loading_tensor_allowance_bytes"], 3214021348)
+        self.assertEqual(review["physical_memory_acceptance_task"], "course/M5-T02")
+        for key in ("physical_memory_accepted", "weight_staging_permitted", "gpu_admission",
+                    "terminal_model_feasibility_failure"):
+            self.assertIs(review[key], False)
+        self.assertIsNone(review["complete_live_memory_upper_bound_bytes"])
+        self.assertIsNone(review["actual_headroom_acceptance"])
+
+    def test_preparation_rejects_proof_drift_and_invented_hardware_acceptance(self):
+        cases = (("native-tightening-source.json", "revision", "different"),
+                 ("native-tightening-source.json", "tokenizer_sha256", "0"*64),
+                 ("outside-provenance.json", "proof_sha256", "0"*64),
+                 ("outside-provenance.json", "source_pythonpath", True),
+                 ("loading-review-source.json", "skips", 1),
+                 ("offline-memory-review.json", "actual_headroom_acceptance", True),
+                 ("offline-memory-review.json", "preparation_admitted", True),
+                 ("loading-review-source.json", "weight_staging_permitted", True),
+                 ("loading-review-source.json", "terminal_model_feasibility_failure", True))
+        for filename, key, value in cases:
+            def changed(path):
+                result = read(path)
+                if Path(path).name == filename:
+                    result[key] = value
+                return result
+            with self.subTest(filename=filename, key=key), \
+                    patch("scripts.build_course_smoke_packet.read", side_effect=changed), self.assertRaises(ValueError):
+                preparation_review(ROOT)

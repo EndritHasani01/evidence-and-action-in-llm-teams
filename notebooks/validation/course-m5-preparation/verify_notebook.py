@@ -60,12 +60,21 @@ def main():
     nbformat.write(notebook, work/"executed.ipynb")
     output = work/"review"
     report = json.loads((output/"report.json").read_bytes())
-    assert report["status"] == "blocked" and report["prepared_requests"] == 24
+    preparation = expected.get("preparation")
+    assert report["status"] == ("prepared" if preparation else "blocked") and report["prepared_requests"] == 24
+    if preparation:
+        assert report["preparation"] == preparation and preparation["preparation_complete"]
+        assert preparation["physical_memory_acceptance_task"] == "course/M5-T02"
+        assert preparation["complete_resident_tokens_upper"] == 110107
+        assert not preparation["physical_memory_accepted"] and not preparation["weight_staging_permitted"]
+        assert preparation["complete_live_memory_upper_bound_bytes"] is None
+        assert preparation["actual_headroom_acceptance"] is None
     assert report["model_generations"] == 0 and not report["pretrained_weights_staged"]
     assert not report["gpu_admission"] and not report["runtime_freeze"]
     assert all(report[k] is None for k in ("provider_quota", "provider_duration", "prior_allocation", "provider_release"))
-    assert report["r7"]["complete_live_memory_upper_bound_bytes"] is None
-    assert not report["r7"]["terminal_model_feasibility_failure"]
+    memory = report["historical_memory_review"] if preparation else report["r7"]
+    assert memory["complete_live_memory_upper_bound_bytes"] is None
+    assert not memory["terminal_model_feasibility_failure"]
     assert report["source_verification"]["baseline_commit"] == expected["source_baseline_commit"]
     archive_path = output/"preflight-results.zip"
     exported = {}
@@ -124,7 +133,10 @@ def main():
         payload_bytes=payload.stat().st_size, payload_sha256=payload_hash,
         export_zip_bytes=archive_path.stat().st_size, export_zip_sha256=digest(archive_path),
         reopened_closed_exports=exported, wrong_source_rejected=True, existing_output_preserved=True,
-        model_generations=0, gpu_admission=False, r7_status="blocked", work=str(work))
+        model_generations=0, gpu_admission=False, r7_status="pending M5-T02", work=str(work))
+    if preparation:
+        receipt["preparation_complete"] = True
+        receipt["complete_resident_tokens_upper"] = 110107
     evidence.mkdir(parents=True)
     shutil.copyfile(packet/"course_m5_cpu_review.ipynb", evidence/"course_m5_cpu_review.ipynb")
     shutil.copyfile(work/"executed.ipynb", evidence/"executed.ipynb")
