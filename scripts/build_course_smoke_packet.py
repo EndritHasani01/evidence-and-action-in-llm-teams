@@ -30,6 +30,10 @@ def preparation_review(root):
     memory = read(evidence / "offline-memory-review.json")
     loading = read(evidence / "loading-review-source.json")
     requests = read(root / "notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
+    # The old receipt hashes checkout text; Git archive can change its line endings.
+    # Only this Python source comparison permits LF/CRLF; artifact/request bytes stay exact.
+    proof_source = (root/"tests/course_capacity_tightening.py").read_bytes().replace(b"\r\n", b"\n")
+    proof_digests = {hashlib.sha256(data).hexdigest() for data in (proof_source, proof_source.replace(b"\n", b"\r\n"))}
     for item in (proof, memory, loading):
         if (item["model"], item["revision"]) != (requests["settings"]["model"], requests["settings"]["revision"]):
             raise ValueError("supplemental candidate identity differs")
@@ -40,7 +44,7 @@ def preparation_review(root):
     if (outside["source_pythonpath"] is not False or outside["matching_installed_modules"] != 29
             or outside["report_matches_source"] is not True
             or json.dumps(outside["report"], sort_keys=True) != json.dumps(proof, sort_keys=True)
-            or outside["proof_sha256"] != hashlib.sha256((root/"tests/course_capacity_tightening.py").read_bytes()).hexdigest()):
+            or outside["proof_sha256"] not in proof_digests):
         raise ValueError("supplemental installed proof differs")
     rows = proof["accounting"]
     if {row["task"] for row in rows} != {task.value for task in Task} or len(rows) != 5:

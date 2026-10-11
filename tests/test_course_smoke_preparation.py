@@ -191,3 +191,20 @@ class CourseSmokePreparationTests(unittest.TestCase):
             with self.subTest(filename=filename, key=key), \
                     patch("scripts.build_course_smoke_packet.read", side_effect=changed), self.assertRaises(ValueError):
                 preparation_review(ROOT)
+
+    def test_git_archive_proof_line_endings_preserve_identity_but_code_changes_do_not(self):
+        original = Path.read_bytes
+        for endings, changed_code in ((b"\n", False), (b"\r\n", False), (b"\n", True)):
+            def transported(path):
+                data = original(path)
+                if path.name == "course_capacity_tightening.py":
+                    data = data.replace(b"\r\n", b"\n").replace(b"\n", endings)
+                    if changed_code:
+                        data += b"# changed proof\n"
+                return data
+            with self.subTest(endings=endings, changed_code=changed_code), patch.object(Path, "read_bytes", transported):
+                if changed_code:
+                    with self.assertRaisesRegex(ValueError, "installed proof differs"):
+                        preparation_review(ROOT)
+                else:
+                    self.assertTrue(preparation_review(ROOT)["preparation_complete"])
