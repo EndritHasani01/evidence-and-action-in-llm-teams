@@ -1,0 +1,18 @@
+{
+  "command": [
+    "python",
+    "-S",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m3-workers/verify_workers.py",
+    "--completion",
+    "--output",
+    "notebooks/validation/course-m3-workers/handoff-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T12:22:58.317706+00:00",
+  "seconds": 1.9219999999040738,
+  "exit_code": 0,
+  "log": "handoff-audit.txt.gz",
+  "hash_seed": null
+}
