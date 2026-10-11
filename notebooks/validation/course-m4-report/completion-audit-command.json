@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m4-report/verify_report.py",
+    "--completion",
+    "--output",
+    "notebooks/validation/course-m4-report/completion-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T18:49:05.239460+00:00",
+  "source_head": "a068af95ca1f5bbd4103d01a4206554601bb1f7a",
+  "seconds": 3.577999999979511,
+  "exit_code": 0,
+  "log": "completion-audit.txt.gz",
+  "hash_seed": "37",
+  "temporary_root": null
+}

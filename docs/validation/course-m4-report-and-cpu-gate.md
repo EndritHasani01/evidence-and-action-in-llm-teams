@@ -21,7 +21,8 @@ completion audits pass. Their accepted full CPU, native token, real kill and
 analysis evidence is reused; reporting changes require focused source,
 outside-checkout installed and original-worker/export/figure checks.
 
-The integrated report/CPU gate remains pending at this checkpoint. GPU/model
+At the initial preparation checkpoint the integrated report/CPU gate was pending;
+[completion below](#completion-and-handoff) records its subsequent acceptance. GPU/model
 acceptance, complete-envelope headroom, bounded smoke/capability/pilot,
 cumulative allocation reconciliation, freeze, main execution and external
 delivery remain separate gates. No inference or original-worker writes occur.
@@ -146,4 +147,68 @@ checks all seven complete-scope exhibits and incomplete, stopped and terminal
 views. Labels, axes, denominators and unavailable panels are legible. The first
 portable method also rerenders all 35 pairs byte-identically. Final complete
 affected source/installed suites will include these methods together; their
-passing receipts and the final preservation/status audit still precede gate closure.
+passing receipts and the final preservation/status audit still preceded gate closure
+at that checkpoint.
+
+## Completion and handoff
+
+Course/M4-T04 and the combined course M1–M4 CPU gate pass on 11 October 2026.
+Source and outside-checkout installed acceptance use committed `a068af9`, hash
+seed 37 and the repository `.venv`; no production, test-code, configuration or
+fixture bytes changed afterward. Final documentation and acceptance records
+are the only subsequent task changes. The installed package uses no source
+`PYTHONPATH`; all 29 production module hashes and its actual import path match
+the built wheel. [Installed provenance](../../notebooks/validation/course-m4-report/installed-provenance.json)
+records the wheel, module paths, package versions and exact acceptance command.
+
+| Accepted check | Executed result / retained command |
+|---|---|
+| Affected source suite | [52 methods, zero skips](../../notebooks/validation/course-m4-report/source-accepted-command.json), 603.164 test seconds |
+| Same suites from installed wheel outside checkout | [52 methods, zero skips](../../notebooks/validation/course-m4-report/installed-accepted-command.json), 597.910 test seconds; build/install/acceptance 612.719 wall seconds |
+| Dependency-free report/case/table suite | [33 methods, zero skips](../../notebooks/validation/course-m4-report/core-focused-command.json), 28.980 test seconds, `python -S` |
+| Dependency consistency | [pip check](../../notebooks/validation/course-m4-report/pip-check-command.json): no broken requirements; also passes inside installed acceptance |
+| Changed-module compilation | [py_compile](../../notebooks/validation/course-m4-report/compile-check-command.json): passes |
+| Preservation, links, coverage and task handoff | [verify_report.py](../../notebooks/validation/course-m4-report/verify_report.py) with `--completion`: 1,616 protected files identical; 22 plan rows/seven categories and course status consistent; `completion-audit.json` and its exact command/log retained in the [acceptance folder](../../notebooks/validation/course-m4-report) |
+
+The source/installed suites run `tests.test_course_report`,
+`tests.test_course_report_archive`, `tests.test_report`, `tests.test_report_run`,
+`tests.test_report_figures`, `CourseRepairTests` and `CourseSharedMissingnessTests`.
+They reproduce all eight scopes twice in a fresh process with execution/model/
+plot imports blocked; compare every accepted scientific prerequisite join;
+verify unchanged original workers and absent missing workers; rerender all 35
+portable SVG/PNG pairs byte-identically in clean scratch; and preserve all five
+accepted thesis portable reports byte-for-byte. The real saved-worker CLI uses
+the manifest's main count and retains unavailable history counts without a
+matching tokenizer. Exact medians, ties, sign absence, duplicate/empty/fallback
+cases, primary-only selection, unaltered Unicode/control-character traces,
+wrong identical answers, regression/fragmentation, shared unknowns and paired
+quality/preservation costs pass. Rendering is Matplotlib 3.11.0/Agg/DejaVu Sans;
+the ten inspected PNG views and plotting-environment records supplement the
+automated byte/structure/link checks.
+
+Scope/status and optional `--terminal-feasibility` delivery are implemented and
+verified. Terminal documentation is preserved literally, changes no tables or
+case selection and grants no execution admission. Its retained fixture is
+explicitly synthetic, with all 6,280 uses unknown, not an actual M5 failure.
+Full main remains incomplete at 2,170 recorded/4,110 unknown uses; intended
+intervals remain unavailable, theta/phi sensitivity stays [-1.5,1.5]/[-0.75,0.75]
+and five-world complete cases stay descriptive. Complete selected scopes do not
+claim empirical completion or model capability; freeze/headroom remain unavailable.
+
+The audit reuses all nine unchanged prerequisite completion audits, the complete
+native-token proof, 394 accepted core methods and ten real controller kills.
+It checks plan Sections 1–10, original todos/defaults/fixtures, saved course
+inputs/scientific modules and the unrelated M5 edit against starting bytes.
+The M5 edit stays unstaged. The first preparation-audit receipt retains its
+helper-import failure; supplying the existing link helper's directory corrects
+the check, and the corrected preparation audit passes. Earlier failed receipts
+remain distinct from subsequent accepted results. `git diff --check` passes.
+
+The course index now records 11/21 done, zero active, one ready and nine blocked;
+M4 is 4/4. Course/M5-T01 is ready for CPU packet preparation. Actual supported
+runtime/source/host assets, complete model-memory/headroom, numerical behavior,
+bounded smoke, capability/pilot, measured resource reconciliation, explicit
+freeze/main authorization, empirical execution and agreed external delivery
+remain later gates. No GPU allocation, pretrained-model generation, main run,
+paid compute, scientific amendment, freeze or publication occurred. Synthetic
+terminal evidence does not supply M6's required actual evidence handoff.

@@ -1367,10 +1367,67 @@ references are in [course formula tests](../test_course_uncertainty.py).
 ```
 
 See [course acceptance](../../docs/validation/course-m4-uncertainty-and-missingness.md).
-The complete course report gate and all model/GPU/empirical gates stay separate.
+At that uncertainty checkpoint, the complete course report gate remained separate;
+the following report acceptance records its subsequent evidence.
+
+## Course synthetic reports and CPU gate
+
+[course_report_tables.json.gz](course_report_tables.json.gz) retains eight
+reports from the unchanged [course lifecycle](course_lifecycle_run.zip): seven
+accepted prerequisite scopes plus an explicitly synthetic terminal-feasibility
+example. Every report/table/case/plotting input and ordinary HTML/JSON/CSV/gzip
+export is reproduced twice by [course_report_archive.py](../course_report_archive.py).
+Outcome/estimand, diagnostic/cost and uncertainty joins match the accepted
+prerequisite archives exactly; original workers are read-only and missing ones
+remain absent. Seed `20261011` and accounting clock
+`2026-10-11T23:59:59+00:00` are explicit derived-analysis inputs, not a main freeze.
+
+[course_scripted_reports.zip](course_scripted_reports.zip) holds five portable
+reports: a complete selected scope, incomplete 20-world main, safely stopped
+prefix, unexecuted development and synthetic terminal-feasibility report.
+Each has seven SVG/PNG exhibit pairs, all scientific tables, supporting world
+contrasts/intervals, exact trace strings and ID-linked case cards. Open its
+`INDEX.md` and each `report.html` locally. All 35 pairs are rendered deterministically
+with the recorded plotting environment and reopened from clean CPU scratch.
+
+Complete means all slots in the supplied synthetic scope are recorded, including
+failures; it does not mean empirical completion of the 20-world course study.
+Full intended main keeps 2,170 recorded/4,110 unknown uses; theta/phi sensitivity
+remains [-1.5,1.5]/[-0.75,0.75]. Intended intervals are unavailable and five-world
+complete-case zeros descriptive. The terminal example is not an actual GPU/model
+failure: all 6,280 main uses remain unknown, with freeze/model/headroom unavailable.
+Replicate zero determines primary displays/cases; five conditional repeats add
+no independent worlds. Four-per-family/eight-world focal precision stays exploratory.
+
+The original scripted word counter supplies explicitly synthetic history counts.
+CLI consumers without a matching tokenizer retain unavailable nonempty counts;
+no native Qwen token measurement is invented. Direct report/assembly APIs pass
+`regime="course"`; the CLI uses the manifest's regime/count automatically. The
+report regime must match its accepted uncertainty population scope.
+
+```powershell
+.venv/Scripts/python.exe -m tests.course_report_archive
+.venv/Scripts/python.exe -m tests.course_report_archive --export NEW_REPORT_DIRECTORY --figures
+.venv/Scripts/python.exe -m unittest tests.test_course_report tests.test_course_report_archive -v
+```
+
+To attach a documented terminal gate failure verbatim, use existing saved course
+inputs/workers, an explicit accounting clock/seed and a fresh export destination:
+
+```powershell
+.venv/Scripts/python.exe -m recovery analyze --report --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker PATH_TO_ORIGINAL_WORKER --output NEW_REPORT_DIRECTORY --as-of 2026-10-11T23:59:59+00:00 --resampling-seed 20261011 --terminal-feasibility PATH_TO_DOCUMENTED_FAILURE
+```
+
+That option labels supplied evidence without changing coverage, treating unknowns
+as negative results or passing a gate. Preparing fresh inputs still requires
+`--regime course --config configs/course-inputs.toml`; report analysis does not
+resample them. [Course report/CPU acceptance](../../docs/validation/course-m4-report-and-cpu-gate.md#completion-and-handoff)
+passes 52 source/52 installed methods and 33 dependency-free methods with zero skips.
+Model/runtime, resources, smoke/capability/pilot, accepted freeze, main execution
+and external delivery remain separate.
 
 Default execution compares the retained tables; `--write-fixture NEW_PATH`
 exclusively creates a new derived export. [Course acceptance evidence](../../docs/validation/course-m4-diagnostics-and-policy-costs.md)
-owns executed results, preservation checks and the remaining uncertainty/report
-and model/GPU gates. No empirical course population, runtime freeze or execution
+owns its executed diagnostic results; the report acceptance above records the
+combined CPU gate and remaining model/GPU gates. No empirical course population, runtime freeze or execution
 authorization is established by these fixtures.

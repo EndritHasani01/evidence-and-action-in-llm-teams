@@ -144,10 +144,16 @@ now passes 217 affected source/217 installed checks with zero skips, plus 394
 core methods with twelve expected checkpoint-package skips. Independent course
 references reproduce seven table scopes, sixteen earlier fault scopes and
 original native requests; diagnostic unknowns, wrong-candidate residuals and
-full-policy charges remain explicit. The next task is
-[course uncertainty/missingness](docs/todos/course/M4/M4-T03-course-uncertainty-and-missingness.md);
-[inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
-is also ready, with course M4 still required before GPU use.
+full-policy charges remain explicit. Course
+[uncertainty/missingness acceptance](docs/validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff)
+passes 70 source/70 installed methods with zero skips and nineteen focused
+dependency-free methods. Course
+[report and M1–M4 CPU acceptance](docs/validation/course-m4-report-and-cpu-gate.md#completion-and-handoff)
+passes 52 affected source/52 installed methods and 33 dependency-free methods
+with zero skips. Eight scopes reproduce twice; five portable reports retain
+35 deterministic SVG/PNG pairs, with original thesis exports unchanged.
+[Inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
+is the next safe task.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
 remain open. CPU admission supplies no experiment execution authorization.
 
@@ -479,8 +485,8 @@ CPU dependencies. Nonempty history token counts remain unavailable without
 a tokenizer that reproduces the exact saved input IDs. The
 [course diagnostic/cost evidence](docs/validation/course-m4-diagnostics-and-policy-costs.md)
 records independent references, literal source provenance, full-policy costs
-and the whole C/K rule. Course uncertainty acceptance is described below;
-the complete course report gate remains separate.
+and the whole C/K rule. Course uncertainty/report acceptance is described below;
+actual model/runtime and resource acceptance remains separate.
 
 [analysis.py](recovery/analysis.py) adds every prespecified contrast to the
 full offline outcome join. Use the saved complete schedule and original workers:
@@ -652,7 +658,8 @@ claims. Direct API calls pass `regime="course"` to `uncertainty_run`,
 [Course uncertainty evidence](docs/validation/course-m4-uncertainty-and-missingness.md)
 reuses original CPU workers and accepted prerequisite joins, preserving unknown
 logical uses, shared physical replies and unavailable future policy costs.
-The course report/CPU gate remains course/M4-T04 work.
+The [course report/CPU gate](docs/validation/course-m4-report-and-cpu-gate.md#completion-and-handoff)
+passes with the scope and export checks described below.
 
 [uncertainty.py](recovery/uncertainty.py) derives paired intervals, frozen-population
 sensitivity and completion coverage from the same original worker snapshots.
@@ -764,6 +771,18 @@ includes sixteen repeated original-worker scopes and five portable complete,
 incomplete and stopped reports with all exhibits. The
 [coverage/category audit](docs/validation/m4-cpu-gate.md) records named CPU
 evidence and the remaining hardware, capability, host and resource gates.
+
+Course reports use the saved manifest's regime/count; direct `report_run` and
+`assemble_report` consumers pass `regime="course"`, matching their uncertainty
+scope. [Eight retained course scopes and five portable reports](tests/fixtures/README.md#course-synthetic-reports-and-cpu-gate)
+include complete selected, incomplete main, stopped, unexecuted and synthetic
+terminal-feasibility cases. Complete refers to the supplied synthetic scope,
+including controls and repeats; main freeze, model capability and GPU headroom
+stay unavailable. `--terminal-feasibility PATH` attaches a documented failure
+verbatim to a course `--report` without changing tables or coverage. Missing
+workers alone supply no terminal failure, and the saved synthetic example is
+not an actual model result. All course figures state the exploratory scope
+and coverage status. These checks close course M4's CPU gate only.
 
 ## Protocol attainability and capacity
 

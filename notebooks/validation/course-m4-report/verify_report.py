@@ -112,7 +112,7 @@ def main():
         source = read(FOLDER / "source-accepted-command.json")
         installed = read(FOLDER / "installed-accepted-command.json")
         assert source["source_head"] == installed["source_head"] == package["source_head"]
-        assert not git("diff", "--name-only", source["source_head"], "HEAD", "--", "recovery", "tests", "configs", "pyproject.toml")
+        assert not git("diff", "--name-only", source["source_head"], "HEAD", "--", "recovery", "tests", "configs", "pyproject.toml", ":(exclude)tests/fixtures/README.md")
         assert suites["source-accepted"]["tests"] == suites["installed-accepted"]["tests"] == [52]
         assert suites["core-focused"]["tests"] == [33]
     reports = read(ROOT / "tests/fixtures/course_report_tables.json.gz")
