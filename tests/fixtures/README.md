@@ -1201,6 +1201,11 @@ GPU/runtime, pilot, freeze, main-experiment or publication acceptance.
 
 ## Course accounting and scripted lifecycle
 
+The downstream [course outcomes/estimands archive](course_analysis_tables.json.gz)
+is a derived export from this original lifecycle, not another run or an
+authoritative worker store. See the [course analysis section](#course-outcomes-and-estimands)
+for read-only reproduction.
+
 [course_lifecycle_run.zip](course_lifecycle_run.zip) retains three ordinary CPU
 cases with saved course population/schedules, literal selected IDs, worker
 SQLite records, backup copies, progress and an offline correctness preview.
@@ -1241,3 +1246,46 @@ Course/M3-T02's full CPU acceptance passes 607 source/91 installed checks with
 zero skips and 13 final focused accounting checks. The combined course M3 gate
 is complete; course M4 owns complete cohort analysis/reporting. Actual prior
 spending and remaining smoke/quota must be recovered at their later gate.
+
+## Course outcomes and estimands
+
+[course_analysis_tables.json.gz](course_analysis_tables.json.gz) retains seven
+derived CPU validation scopes from the untouched
+[course lifecycle bundle](course_lifecycle_run.zip): its three ordinary cases,
+the stopped snapshot, the full intended 20-world join using the original
+five-family workers, and completely unexecuted main/development joins. The
+[reconstruction helper](../course_analysis_archive.py) imports no runtime,
+protocol parser, provider, tokenizer or inference stack. It reads original
+worker files with SQLite read-only/query-only access; backup copies are never
+pooled with their originals. Independent insertion-order numeric references
+and synchronous edge relaxation score literal raw replies; separate hand
+formulas check AUC, final joint completion, theta and phi.
+
+The full main join retains 6,280 slots: 2,170 recorded and 4,110 unknown, including
+135 failed and 270 invalid recorded replies at zero credit. It preserves all
+20 main worlds, eight receipt/Q/preserving worlds and five repeated prefixes.
+Its 6,824 replicate-zero world contrasts, 1,240 repeated contrasts, 80 conditional
+comparison rows and 50 trajectory pairs reproduce exactly. Five observed main
+worlds do not complete the intended estimands; both intended primaries remain
+unknown with fixed four-per-family denominators. Separate complete-case zeros
+are descriptions of scripted fixtures. The stopped snapshot preserves sixteen
+unknown opportunities, and absent main/development workers remain absent.
+
+The intact [earlier worker bundle](course_worker_run.zip) separately reproduces
+all sixteen original failure/replay/kill scopes: 1,422 recorded and 312 unknown
+uses. Its controls-only ledger spans main and development inputs; those slots
+are checked individually and pooling them for estimands is explicitly rejected.
+The five-family lifecycle supplies the primary course contrast reconstruction.
+These validation scopes supply no independent empirical worlds or model results.
+
+```powershell
+python -S -m tests.course_analysis_archive
+python -S -m tests.course_analysis_archive --worker-audit
+python -S -m unittest tests.test_course_analysis tests.test_course_analysis_archive -v
+```
+
+The helper exclusively creates a new derived file only when explicitly given
+`--write-fixture path`; default execution compares every table with the retained
+export. Raw source ZIPs, manifests, schedules, physical-response identities,
+settings and seeds remain unchanged. [Acceptance evidence](../../docs/validation/course-m4-outcomes-and-estimands.md)
+records commands, independent expectations and remaining course gates.

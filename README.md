@@ -439,6 +439,22 @@ records the report gate and remaining M5 requirements.
 
 ## Offline contrasts and conditional repeats
 
+Course outcomes and estimands use the same read-only analysis. The saved
+population supplies the default main count: 20 course or 60 thesis; `--count 40`
+retains the nested thesis scope. Course repeats follow the five saved paired
+continuation streams; thesis repeats retain ten. No regeneration or inference
+is needed:
+
+```powershell
+python -S -m recovery analyze --estimands --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker course-worker-0.sqlite --worker course-worker-1.sqlite --output course-analysis.json.gz
+```
+
+Supply only the original physical worker files from one bound run. Missing files
+remain unknown. The [course analysis evidence](docs/validation/course-m4-outcomes-and-estimands.md)
+rejoins selected CPU scripted records against every intended 20/eight/five-world
+denominator; it establishes no empirical course result. Course diagnostics,
+costs, uncertainty and report acceptance remain separate tasks.
+
 [analysis.py](recovery/analysis.py) adds every prespecified contrast to the
 full offline outcome join. Use the saved complete schedule and original workers:
 

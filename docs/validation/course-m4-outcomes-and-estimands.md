@@ -55,5 +55,41 @@ records after removing replies. Corrected fixtures honor the existing contracts;
 no production guard was relaxed.
 
 Original-worker reconstruction, fresh-process reproduction, affected M4/core
-regressions, installed verification and completion audits remain pending at this
-checkpoint; these focused tests alone do not close the task.
+regressions, installed verification and completion audits remained pending at this
+checkpoint; these focused tests alone did not close the task.
+
+## Original-worker reconstruction checkpoint
+
+[Seven retained scopes](../../tests/fixtures/course_analysis_tables.json.gz)
+reconstruct from the untouched course M3 lifecycle using
+[course_analysis_archive.py](../../tests/course_analysis_archive.py).
+They retain all three ordinary cases, the stopped snapshot, the full intended
+main join with the five-family workers and completely missing main/development
+workers. Independent raw SQLite joins use the existing insertion-order numeric
+references and synchronous edge-relaxation gold, with separate direct AUC,
+all-four and theta/phi calculations. No scorer, truth solver, runtime, parser,
+tokenizer or inference provider is used by that independent reference.
+
+[Archive acceptance](../../notebooks/validation/course-m4-outcomes/archive-worker-final-command.json)
+passes all three methods in 53.744 seconds under hash seed 37. Every derived
+table matches the saved export. A fresh subprocess blocks runtime/model imports
+and reproduces the complete export. Original SQLite bytes and ZIPs remain
+unchanged. The full main join has 2,170 recorded/4,110 unknown slots; recorded
+135 failures and 270 invalid replies remain zero. Intended theta/phi stay
+unknown over all 20 worlds, with four-per-family denominators and only five
+complete worlds. Their separately labeled complete-case values are zero.
+Receipts/Q/preserving retain eight worlds, and repeats retain five fixed prefixes.
+
+The earlier course worker bundle is audited separately across all sixteen
+original scopes: 1,422 recorded/312 unknown slots. These fault probes execute
+selected rounds; acceptance of restart mechanics did not execute their complete
+schedules. Its controls-only ledger spans main/development; slot-level evaluation
+passes while the original domain-pooling guard rejects estimand aggregation.
+Backups/baselines are never pooled with original physical workers.
+
+Initial reference failures remain in the command logs. The independent helper
+now uses actual `bfs_distance` labels, skips deleted edges, keeps unordered Top-K
+records and explicitly closes SQLite handles. The worker audit preserves its
+intentional unknowns and domain guard. No production guard was relaxed and no
+original fixture was edited. Affected M4/core regression, installed acceptance
+and final documentation/protected-byte audits remain pending here.

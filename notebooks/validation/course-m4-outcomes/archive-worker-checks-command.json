@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.test_course_analysis_archive",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T15:11:34.604505+00:00",
+  "source_head": "8e25ba8edeeb1ec147fd2e2ea81a4d843ce30b10",
+  "seconds": 45.32799999997951,
+  "exit_code": 1,
+  "log": "archive-worker-checks.txt.gz",
+  "hash_seed": "37",
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m4-outcomes-20261011"
+}
