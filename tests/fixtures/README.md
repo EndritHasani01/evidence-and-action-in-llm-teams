@@ -1114,3 +1114,46 @@ These are finite fixture measurements. The locally informed witness, complete
 course retained-context bound and model/GPU feasibility remain separate gates.
 The [course intervention evidence](../../docs/validation/course-m2-interventions-and-replay.md)
 records commands, environments, installed verification and preservation audits.
+
+## Course local witness and complete capacity
+
+[course_attainability.json.gz](course_attainability.json.gz) retains the locally
+informed course strategy across all 25 saved worlds: 100 prefix rounds, all
+1,752 continuation rounds, 50 controls and 7,458 logical opportunities,
+including 592 exact B/C parent joins. Existing raw record shapes preserve
+permitted views, rendered/native strings/IDs/masks, replies, settings, seeds,
+committed states and Q queues/release metadata. The script forwards each current
+own shard to a different peer in rounds 1–3 and computes only from acquired
+records. Early legal placeholders are allowed; every final prefix/continuation
+and full-information control is exactly correct. Its 225 worst-width correct
+candidate/control/useful-shard fixtures have maximum measured output 162 and
+a universal 189-token serialization bound within 256, with useful prose within 64.
+
+[course_capacity.json.gz](course_capacity.json.gz) retains the renewed complete
+vocabulary/Unicode audit, all five structural accounting rows and 110 raw native
+adversarial envelopes, including invalid own text, maximal ASCII/dash and
+non-NFC prose, partial/invalid UTF-8, template-like strings, quoting/controls,
+fake block headers, bounded feedback and large valid wrong integers. A real
+invalid 256-token slot receives three valid 64-token texts. The largest archived
+native envelope uses 22,247 input tokens; this supports the
+[complete proof](../../docs/implementation-research/course-m2-capacity-proof.md),
+which independently bounds **155,995 input + 256 output = 156,251**.
+Seventeen additional compact/pending/receipt measurements are in the native logs.
+Both pinned 4B and 9B metadata reproduce the same accounting/report. The course
+model remains 4B; original positive/negative thesis archives remain unchanged.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.course_attainability_checks -v
+python -X utf8 -m tests.tokenizer_course_attainability --tokenizer LOCAL_4B_METADATA
+python -X utf8 -m tests.tokenizer_course_capacity --tokenizer LOCAL_4B_METADATA --comparison-tokenizer LOCAL_9B_METADATA
+```
+
+The native course runs pass 18 checks, reproduced in a fresh hash-seed-37 process
+and outside the checkout with the installed package. New native archives require
+`--write-fixture NEW_ARCHIVE.json.gz`; existing paths are rejected. JSON/gzip
+encoding is canonical and deterministic. The
+[course M2 gate evidence](../../docs/validation/course-m2-attainability-and-capacity.md)
+records exact commands, metadata, passing regressions, retained failures/fixes,
+installed module provenance and preservation audits. This is CPU scripted
+attainability and complete native-token capacity. No model weights, GPU/model
+memory/headroom, capability, pilot, main outcomes or freeze are accepted here.

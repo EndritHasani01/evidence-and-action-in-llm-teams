@@ -1,6 +1,6 @@
 # Course M3-T01 — Course durable workers and bounded failures
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md).
 
@@ -31,3 +31,16 @@ Existing worker/checkpoint/attempt machinery executes and resumes the course sco
 Run affected installed-library worker/durable/attempt checks and focused course crashes before/after raw persistence, staging and delivery commit; include cross-worker parents, invalid completed replies, held Q prose and concurrent ownership rejection. Compare uninterrupted/resumed states and original parent records, isolating genuine physical-attempt differences. Reuse unchanged failure fixtures; retain course artifacts in the existing bundle format.
 
 **Evidence:** Not yet recorded. Durable foundations are implemented and verified; course propagation/resume is pending.
+
+**Prerequisite handoff, 11 October 2026:** Course/M2-T03 passes the
+[M2 witness/capacity gate](../../../validation/course-m2-attainability-and-capacity.md#completion-and-handoff).
+Reuse saved course inputs/schedules, explicit `COURSE_LIMITS`, pinned 4B
+`candidate_settings`, existing prefix snapshots and exact B/C `SavedRound`
+parents. Native traces cover all 25 worlds/7,458 logical opportunities/592
+parent joins. The complete permitted input upper bound is 155,995 with the full
+256 output reserve (156,251 resident tokens), within the unchanged 262,144
+window. Keep overflow as a visible defect; no cap, truncation or new fallback
+is authorized. Continue with the existing worker/SQLite/checkpoint/attempt
+machinery and focused course interruption/resume checks. This prerequisite
+accepts CPU protocol capacity, not course durability, GPU/model feasibility,
+resource admission, a freeze or execution authorization.

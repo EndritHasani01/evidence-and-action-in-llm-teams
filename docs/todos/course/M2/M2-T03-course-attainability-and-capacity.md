@@ -1,6 +1,6 @@
 # Course M2-T03 — Course attainability and complete token capacity
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M2-T02](M2-T02-course-interventions-and-replay.md).
 
@@ -30,9 +30,12 @@ The complete declared course channel/horizon is legally sufficient for every tas
 
 Use existing witness/capacity machinery with course inputs/settings and both pinned tokenizer metadata comparisons where relevant. Record exact commands/environment, raw native measurements, complete accounting rows and witness/replay evidence. Preserve the original positive/negative capacity archives and thesis defaults. Metadata downloads/CPU checks are allowed; no model weights or GPU execution here.
 
-**Evidence:** Acceptance is underway in
-[course capacity evidence](../../../validation/course-m2-attainability-and-capacity.md).
-The old complete proof and new proposal arithmetic do not close this course gate.
+**Evidence:** The
+[course witness/capacity acceptance](../../../validation/course-m2-attainability-and-capacity.md)
+and [complete native proof](../../../implementation-research/course-m2-capacity-proof.md)
+pass. All 139 affected source checks, 139 outside-checkout installed checks and
+18 native course checks pass with zero skips; native archives reproduce in a
+fresh hash-seed-37 process and with both pinned metadata comparisons.
 
 **Prerequisite handoff, 10 October 2026:** Course/M2-T02 passes its
 [intervention/replay acceptance](../../../validation/course-m2-interventions-and-replay.md#completion-and-handoff).
@@ -43,3 +46,29 @@ All scheduled starts, parent scopes and four-round delivery/retention semantics
 are verified on CPU/native and in the installed package. The retained native
 fixtures are finite scripted traffic; neither their small maxima nor the original
 thesis proof establishes this task's complete course bound or local witness.
+
+## Completion and handoff
+
+11 October 2026: Course M2's CPU gate passes. The existing locally informed
+witness reaches exact prefix, revised/sham/preserving and control answers for
+all 25 saved worlds and 7,458 logical opportunities, including 592 exact parent
+joins. It forwards only acquired current own shards, reacquires F evidence,
+forwards L replacements and preserves literal masks, receipts and Q release.
+All 225 correct-width candidate/control/one-shard shapes fit: 162 measured native
+tokens, with a universal output bound of 189 within 256 and useful prose within 64.
+
+The complete permitted-view bound is **155,995 input + 256 output = 156,251**,
+within the unchanged 262,144 native window. Exhaustive vocabulary/Unicode audits,
+110 adversarial envelopes, 17 structural probes, raw native requests/IDs and
+independent 4B/9B metadata reproduction support the proof. The proposal's
+conditional 157,772 is superseded. Original thesis archives/defaults/todos,
+scientific authority, saved course inputs/schedules and the user's unrelated
+M5 edit remain unchanged.
+
+[Course/M3-T01](../M3/M3-T01-course-durable-workers-and-failures.md) is ready.
+Continue with existing workers/checkpoints/attempt records, course settings and
+saved scope/parent identities; no new store or runtime is needed. This task
+establishes legal scripted attainability and CPU tokenizer capacity. Complete
+T4 memory/headroom, model capability/timing, resource reconciliation, pilot,
+freeze, main execution and external delivery remain separate gates. No weights,
+model calls, GPU allocation, experiment, freeze or publication occurred.

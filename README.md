@@ -120,8 +120,14 @@ course [intervention/replay acceptance](docs/validation/course-m2-interventions-
 now passes all saved starts and exact parents, literal retention, synchrony and
 Q release, with 127 affected CPU, 95 installed and 18 repeated native checks.
 `run_prefix(..., limits=COURSE_LIMITS)` applies the caps throughout the prefix.
-The next task is [course attainability/capacity](docs/todos/course/M2/M2-T03-course-attainability-and-capacity.md).
-The local witness, complete context capacity and later runtime/model gates remain open.
+The course [local witness and complete capacity gate](docs/validation/course-m2-attainability-and-capacity.md)
+now passes: all 139 affected source/139 installed CPU checks and 18 native
+checks pass, with exact fresh-process reproduction. The full course bound is
+156,251 tokens including 256 output tokens; correct candidates/controls and
+useful one-shard replies have a universal 189-token output bound. The next task
+is [course durable workers](docs/todos/course/M3/M3-T01-course-durable-workers-and-failures.md).
+Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
+remain open. CPU admission supplies no experiment execution authorization.
 
 ## CPU installation and validation
 

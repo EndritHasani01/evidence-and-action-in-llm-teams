@@ -37,9 +37,31 @@ zero skips in the repository `.venv`; the installed dependency check passes.
 
 ## Completion and handoff
 
-Implementation and acceptance are underway. Course M2's complete capacity gate
-remains open until the local witness, full proof, native/installed reproduction,
-affected regressions and completion audit pass. Course/M3-T01 remains blocked.
+Course/M2-T03 is done and **course M2's CPU gate passes**. The locally informed
+witness, all candidate/control/useful-shard contracts and the complete permitted
+native-token bound are verified, with canonical raw archives, independent
+metadata/fresh-process reproduction, 139 source/139 installed CPU checks and
+18 native course checks passing. The complete bound is 156,251 resident tokens,
+including the full 256-token output reserve; the universal correct-output bound
+is 189. The final audit checks all course statuses/counts, original thesis
+defaults/todos/archives, 1,260 protected starting files, Sections 1-10 and the
+user's byte-identical, unstaged M5 edit.
+
+The [completion audit](../../notebooks/validation/course-m2-capacity/completion-audit.json)
+passes with five course tasks done, one ready and 15 blocked, all required
+successful command logs and installed module provenance verified. Its first
+completion pass checks 660 local references and 276 heading fragments;
+the final handoff recheck follows this added audit link.
+
+[Course/M3-T01](../todos/course/M3/M3-T01-course-durable-workers-and-failures.md)
+is ready. Reuse existing workers/checkpoints/attempt records, saved course scope
+and parent identities, explicit course limits and pinned 4B settings. No new
+store, runtime, dependency or scientific configuration is required. Durable
+course execution/accounting and later analysis gates remain open. Complete
+T4 memory/headroom, model capability/timing, resource admission, pilot, freeze,
+main execution and external delivery remain separately scoped and authorized.
+This task performed no model-weight download/loading, model inference, GPU
+allocation, pilot/main experiment, freeze or publication.
 
 ## Implementation checkpoint
 
@@ -92,7 +114,7 @@ underway at this review checkpoint.
 | Installed package outside checkout | Fresh wheel target, no source `PYTHONPATH`, hash seed 37 | 139 CPU checks and all 18 native course checks pass, zero skips; all 29 production modules match source |
 | Full/core CLI registration with saved course inputs | `.venv`, actual loader inspection | 580/348 unique checks, seven course witness checks only in full mode; no test bodies executed |
 | Dependency consistency | Repository `.venv` | `pip check` passes |
-| Preservation, statuses and local links | Site-disabled Python | Final completion audit pending installed evidence and handoff |
+| Preservation, statuses and local links | Site-disabled Python | Completion audit checks 1,260 protected files, original defaults/archives, all 21 course statuses/counts and local links |
 
 The native environment is CPython 3.11.9, Pydantic 2.12.5, Transformers 5.12.0,
 Tokenizers 0.22.2, Jinja2 3.1.6 and Hugging Face Hub 1.19.0. Its

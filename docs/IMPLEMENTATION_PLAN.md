@@ -1004,7 +1004,9 @@ the [M1 input/schedule CPU gate](validation/course-m1-inputs-and-schedules.md).
 [protocol/limits acceptance](validation/course-m2-protocol-and-limits.md).
 [Course/M2-T02](todos/course/M2/M2-T02-course-interventions-and-replay.md) now passes
 [intervention/replay acceptance](validation/course-m2-interventions-and-replay.md).
-[Course/M2-T03](todos/course/M2/M2-T03-course-attainability-and-capacity.md) is the next
+[Course/M2-T03](todos/course/M2/M2-T03-course-attainability-and-capacity.md) now passes
+the [local witness and complete capacity gate](validation/course-m2-attainability-and-capacity.md).
+[Course/M3-T01](todos/course/M3/M3-T01-course-durable-workers-and-failures.md) is the next
 engineering task. Later course CPU gates, GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
@@ -1090,6 +1092,28 @@ execution and applicable authorization remain separate.
   read-only analysis. Renew the affected 20/eight/five-world population, cost,
   missingness and reporting checks using the owners in the reuse audit. Inherited
   thesis CPU results remain reusable evidence, not new course acceptance.
+- Course/M2-T03 reuses the local-view witness and vocabulary/Unicode/structural
+  audit with explicit saved course schedules, settings and limits. The strategy
+  covers every saved world and all 7,458 logical opportunities; final answers are exact, including
+  592 exact parent joins, L forwarding, F reacquisition and masks/receipts/Q.
+  All 225 correct-width candidate/control/useful-shard shapes fit: maximum native
+  length 162 and universal serialization bound 189 within 256. The renewed
+  complete bound is 155,995 input plus all 256 output tokens, 156,251 resident
+  tokens within the unchanged 262,144 window; the conditional proposal value
+  157,772 is superseded. Exhaustive native audits, 110 adversarial envelopes,
+  17 compact/pending/receipt probes and independent pinned 9B metadata support
+  the pinned 4B proof. Native maxima alone are not admission evidence.
+  All 139 affected source/139 installed CPU checks and 18 native course checks
+  pass with zero skips, including fresh-process reproduction. Original native
+  thesis witness/capacity archives reproduce unchanged. Production changes only
+  register the course witness in full CPU validation; the renderer, validator,
+  interventions, replay, workers and default scientific settings are unchanged.
+  The installed packet's missing test configurations were copied and the full
+  corrected packet passed. Preservation/status/link audits retain 1,260 protected
+  starting files, Sections 1-10, original todos/defaults/archives, saved course
+  inputs and the user's unrelated M5 edit. This closes course M2's CPU gate and
+  hands off course M3-T01. The 4.768 GiB static full-attention KV lower bound at
+  the resident upper bound admits no T4 model, peak memory or headroom claim.
 - Apply Section 11.3's cumulative course subceiling, shared prior spending and
   reserves through existing budget/accounting records in course/M3-T02, and
   independently check the measured complete-main forecast in course/M5-T05.
@@ -1101,16 +1125,17 @@ execution and applicable authorization remain separate.
 
 ### Course unresolved gates
 
-The course population/schedule, M1 input/schedule CPU gate, M2 protocol/limits
-and intervention/replay acceptance are verified. The complete course witness and
-capacity gate remain M2-T03, and actual runtime
+The course population/schedule, M1 input/schedule CPU gate and complete M2
+protocol/intervention/replay/witness/native-capacity gate are verified. Course
+M3 durability/accounting and M4 analysis/reporting remain open; actual runtime
 environment/configuration acceptance remains M5. Existing status/analysis count
-choices still address thesis 60/40 until their course M3/M4 adaptations. The pinned 4B/256/64 witness,
-full permitted-input bound and complete model-memory/headroom argument must be
-renewed. Standalone run 6 and the CPU attention integration do not accept the new
+choices still address thesis 60/40 until their course M3/M4 adaptations. The
+pinned 4B/256/64 complete input bound passes; the complete model-memory/headroom
+argument still needs actual supported-runtime evidence. Standalone run 6 and
+the CPU attention integration do not accept the new
 layout on T4 or the course pretrained model. Actual host/package/source assets,
 smoke requests, capability, complete pilot, resource reconciliation and freeze
 remain course M5 gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
-index with named executed evidence. M1-T01/T02 and M2-T01/T02 performed no GPU, model or
+index with named executed evidence. M1-T01/T02 and M2-T01/T02/T03 performed no GPU, model or
 empirical run and accepted no freeze.
