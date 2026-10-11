@@ -1006,7 +1006,9 @@ the [M1 input/schedule CPU gate](validation/course-m1-inputs-and-schedules.md).
 [intervention/replay acceptance](validation/course-m2-interventions-and-replay.md).
 [Course/M2-T03](todos/course/M2/M2-T03-course-attainability-and-capacity.md) now passes
 the [local witness and complete capacity gate](validation/course-m2-attainability-and-capacity.md).
-[Course/M3-T01](todos/course/M3/M3-T01-course-durable-workers-and-failures.md) is the next
+[Course/M3-T01](todos/course/M3/M3-T01-course-durable-workers-and-failures.md) now passes
+[durable-worker acceptance](validation/course-m3-durable-workers-and-failures.md).
+[Course/M3-T02](todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md) is the next
 engineering task. Later course CPU gates, GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
@@ -1124,7 +1126,21 @@ execution and applicable authorization remain separate.
   Supplied world/branch/settings must match the bound run, and local prefix
   parents now check exact settings as cross-worker parents already did. These
   checks use existing records; no identity, transfer service or extra store is
-  added. Focused course crash/backup acceptance and final regressions are underway.
+  added. The [durable-worker evidence](validation/course-m3-durable-workers-and-failures.md)
+  passes 591 full source checks, 95 outside-checkout installed checks and 11
+  focused course methods without skips. Ten real kills cover raw persistence,
+  validation, staging, checkpoint/boundary delivery and completed timeout;
+  resumed scientific state and original parents remain exact. Completed valid,
+  invalid and failed replies never resample, infrastructure interruption permits
+  only one identical retry, held Q prose remains branch-local and overflow stops
+  before inference. Sixteen ordinary CPU scenarios retain 1,422 logical calls,
+  144 replays and exact hash-seed-37 reproduction. Twenty exact native request
+  comparisons/eight replays and safe backup/reopen checks pass without weights.
+  Original attempt/worker archives reproduce and original lifecycle records
+  audit unchanged. An additive null optional backend-diagnostics field is treated
+  like absence by the old worker comparator, preserving all non-null records
+  and original archive bytes. Course accounting/resource adaptation and the
+  complete all-family lifecycle remain M3-T02; this does not close the M3 gate.
 - Apply Section 11.3's cumulative course subceiling, shared prior spending and
   reserves through existing budget/accounting records in course/M3-T02, and
   independently check the measured complete-main forecast in course/M5-T05.
@@ -1138,7 +1154,8 @@ execution and applicable authorization remain separate.
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2
 protocol/intervention/replay/witness/native-capacity gate are verified. Course
-M3 durability/accounting and M4 analysis/reporting remain open; actual runtime
+M3 durable workers/bounded failures are verified; M3 accounting/combined
+lifecycle and M4 analysis/reporting remain open. Actual runtime
 environment/configuration acceptance remains M5. Existing status/analysis count
 choices still address thesis 60/40 until their course M3/M4 adaptations. The
 pinned 4B/256/64 complete input bound passes; the complete model-memory/headroom
@@ -1148,5 +1165,5 @@ layout on T4 or the course pretrained model. Actual host/package/source assets,
 smoke requests, capability, complete pilot, resource reconciliation and freeze
 remain course M5 gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
-index with named executed evidence. M1-T01/T02 and M2-T01/T02/T03 performed no GPU, model or
-empirical run and accepted no freeze.
+index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03 and M3-T01
+performed no GPU, pretrained-model or empirical run and accepted no freeze.

@@ -1,6 +1,6 @@
 # Course study: lessons and fresh-session handoff
 
-Updated 11 October 2026 through course/M2-T03. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
+Updated 11 October 2026 through course/M3-T01. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
 
 Current course contract handoff, 9 October 2026: the user explicitly approved
 design/resource adoption after preparation at `ef4c3f6` and the earlier pending
@@ -22,7 +22,13 @@ status/counts belong to the course index. Course/M2-T03 now passes the
 139 affected source/139 installed CPU checks and all 18 native course checks
 pass, including exact fresh-process reproduction. The full resident bound is
 156,251 including 256 output tokens; the correct-width candidate/control/shard
-output bound is 189. Course/M3-T01 is the next ready task.
+output bound is 189. Course/M3-T01 now passes
+[durable-worker acceptance](../validation/course-m3-durable-workers-and-failures.md):
+591 full source checks, 95 installed checks and 11 focused course methods pass
+with zero skips, including ten real controller kills. All 16 ordinary CPU worker
+scenarios reproduce exactly with hash seed 37; the native request/replay and
+backup/reopen checks pass. Course/M3-T02 is the next ready task. The combined M3
+accounting/lifecycle gate remains open.
 Thesis runtime defaults and all original
 todos/evidence remain unchanged.
 
@@ -46,7 +52,7 @@ Read in this order:
 3. The [course index](../todos/course/README.md), then one selected course task and its prerequisite evidence. Qualify IDs as `course/M2-T01`: the [thesis tree](../todos/README.md) uses the same short ID format for different tasks.
 4. The [course proposal](abs-iis-course-study-proposal.md) for proposed scope, and the [research synthesis](../implementation-research/SYNTHESIS.md) plus only the investigations relevant to that task.
 
-The next engineering task is [course/M3-T01](../todos/course/M3/M3-T01-course-durable-workers-and-failures.md), following verified [course/M2-T03](../todos/course/M2/M2-T03-course-attainability-and-capacity.md). Read its linked witness/capacity evidence before adapting existing durable workers and bounded failure/resume paths. Keep saved course inputs, explicit `COURSE_LIMITS`, pinned 4B settings and exact original-prefix/B/C parent identities. The task index owns current readiness and counts; this document does not duplicate them.
+The next engineering task is [course/M3-T02](../todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md), following verified [course/M3-T01](../todos/course/M3/M3-T01-course-durable-workers-and-failures.md). Read its linked durable-worker evidence before adapting existing accounting/status/resource admission and the course lifecycle. Keep saved course inputs, explicit `COURSE_LIMITS`, pinned 4B settings, literal `run_inputs` bindings and exact original-prefix/B/C parent identities. Status/analysis CLI counts still use thesis 60/40 until their owning course tasks adapt them. The task index owns current readiness and counts; this document does not duplicate them.
 
 ## Reuse evidence within its actual scope
 
@@ -57,6 +63,7 @@ The next engineering task is [course/M3-T01](../todos/course/M3/M3-T01-course-du
 | [Course M2 interventions/replay](../validation/course-m2-interventions-and-replay.md): every course start/parent, four-round traffic, installed/native reproduction and raw artifacts | Reuse unchanged event/retention/replay/delivery code and original IDs/record shapes. The prefix helper now accepts course limits. All 438 starts/592 parent joins pass; the archive retains 25 prefixes and 630 continuation rounds, including full Q and inactive cases. These finite scripted fixtures establish no local attainability witness, full context bound or model result. |
 | [M1–M4 CPU acceptance](../validation/m4-cpu-gate.md) | Generators/truth, protocol, interventions, durable workers/accounting and offline analysis already exist. Audit reuse and renew affected course checks; do not rebuild the project or repeat every unchanged suite. |
 | [Course M2 local witness/native capacity](../validation/course-m2-attainability-and-capacity.md): all saved worlds/opportunities/parents, full Unicode/vocabulary accounting and installed/native reproduction | Reuse the unchanged production witness and explicit course helper limits/settings. The 156,251 resident upper bound supersedes conditional 157,772; the largest adversarial fixture is supporting evidence, not the proof. It provides no complete model-memory/headroom or competence acceptance. The installed test packet must include the unchanged course/study TOMLs when checking CLI preparation outside the checkout. |
+| [Course M3 durable workers/failures](../validation/course-m3-durable-workers-and-failures.md): exact bound course inputs, read-only original parents, ten real kills and ordinary bundle reproduction | Reuse existing SQLite/checkpoint/attempt records. Manifest workers select the saved regime/count; direct course subsets pass `regime="course"`. Equal literal bindings protect parents even when local IDs/seeds match. The 120-second timeout and one-second termination graces are retained; shorter fault probes verify bounded mechanics, not model timing. The 16 scenarios are validation evidence, not empirical world coverage. Accounting, resource admission and the all-family lifecycle gate remain M3-T02. |
 | [Kaggle run 5](../validation/m5-kaggle-full-preparation-run-5.md): 97 CPU checks pass, zero skips, installed provenance and off-host snapshots checked | The earlier unchanged CPU preparation is accepted. Course/source/environment changes need relevant new checks; they do not invalidate unrelated evidence or justify another generic preflight by default. |
 | [Kaggle run 6](../validation/m5-t4-compatibility-run-6.md): standalone attention/NF4 diagnostic passes on both T4s | This is actual library evidence, with a host environment different from the full candidate. It contains no pretrained-model generation and does not establish full candidate, language loading, state, memory or capability acceptance. |
 | [Offline attention/memory audit](../validation/m5-attention-memory.md) | The opt-in adapter and bounded prefill are CPU/source verified. Its new head/mask/chunk layout still needs actual candidate CUDA validation. Smaller prefill chunks preserve all input/cache content; they do not shorten the scientific context or prove complete-envelope fit. |
@@ -90,6 +97,7 @@ The exact definitions remain in the specification and selected task. These remin
 - **Separate machine receipts from ordinary stdout.** Library documentation messages previously broke JSON parsing despite a successful child command. Use the existing dedicated evidence path. A warning such as the historical missing-`wrapt` hook needs an identified causal failure before changing the base environment or package pins.
 - **Validate the installed candidate, not accidentally the source tree.** Use its explicit interpreter outside the checkout without source `PYTHONPATH` injection; inspect module provenance. Recreate environments from the passing closure rather than copying a populated venv or broadly upgrading packages.
 - **Use explicit UTF-8 on Windows.** Read Unicode documents with `Get-Content -Encoding UTF8` and run Python text checks with `python -X utf8`. PowerShell's default pipe encoding can alter Unicode embedded in inline scripts before Python sees it; ASCII scripts with explicit Unicode escapes avoid that ambiguity.
+- **Confirm Windows child/lock release after a kill.** Controller exit can precede OS lock cleanup. Poll for confirmed release with a bounded wait in kill-test instrumentation; keep concurrent live-owner rejection strict. Close SQLite test handles explicitly before temporary-directory cleanup.
 - **Plan disk and export separately from VRAM.** NF4 does not shrink original weight downloads; temporary/cache copies and export creation consume disk. Two devices do not supply one combined replica-memory pool. Preserve off-host reopen checks for actual retained snapshots.
 - **Count allocated time, including idle/setup/release.** Two assigned T4s for 15 minutes consume 0.5 aggregate GPU-hour. Another account does not erase scientific spending, and an unknown historical interval is not zero. Reconcile available resources before admission and confirm allocation release afterward.
 - **Do not rerun model work merely to save it.** Kaggle Save & Run All can execute a new session. Use the prepared export path and retrieve the actual evidence; session-local files, notebook source and a verified off-host bundle are different durability claims.

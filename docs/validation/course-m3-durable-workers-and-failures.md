@@ -19,7 +19,8 @@ main experiment or publication is authorized by this task.
 preserve thesis specification/defaults/todos, all earlier fixtures and the
 pre-existing unstaged M5 evidence edit. Executed commands/logs are retained in
 the [existing validation layout](../../notebooks/validation/course-m3-workers/).
-Acceptance is pending the full source regression and completion audit.
+The focused, native, retained-bundle, installed and full source checks pass.
+The final documentary acceptance audit is recorded below before handoff.
 
 ## Implementation checkpoint
 
@@ -68,7 +69,7 @@ attempt outcomes. Installed verification also passes. These scenario
 totals are not empirical coverage of course main or development worlds.
 
 Each case reuses saved course world/branch/call IDs and original physical
-parents. Scientific comparisons include literal inputs/outputs, native arrays,
+parents. Scientific comparisons include literal inputs/outputs, request token arrays,
 settings/seeds, validation, committed transitions, queues/cursors and deliveries;
 clock/PID/checkpoint identifiers and placement remain measured observations.
 Recorded invalid/failed slots remain finished zero-credit outcomes; the rest of
@@ -93,18 +94,19 @@ codes and lossless output are retained in
 
 | Check | Current result |
 |---|---|
-| Original durable/course-settings checks | 24 passed |
-| Focused course workers | 11 passed, including ten real kills |
-| Course bundle creation / fresh hash-seed-37 reproduction | 11 / 11 passed; all 16 cases match |
-| Read-only course bundle audit | Passed; all 16 cases reconstruct |
+| [Original durable/course-settings checks](../../notebooks/validation/course-m3-workers/baseline-durable-command.json) | 24 passed |
+| [Focused course workers](../../notebooks/validation/course-m3-workers/course-final-command.json) | 11 passed, including ten real kills |
+| [Course bundle creation](../../notebooks/validation/course-m3-workers/course-archive-command.json) / [fresh hash-seed-37 reproduction](../../notebooks/validation/course-m3-workers/course-reproduction-command.json) | 11 / 11 passed; all 16 cases match |
+| [Read-only course bundle audit](../../notebooks/validation/course-m3-workers/offline-audit-command.json) | Passed; all 16 cases reconstruct |
 | Native 4B worker probe | 20 exact request comparisons, eight replays, backup/reopen equality passed |
-| Unchanged original failure archive | 22 passed; 12 cases/78 attempts reproduce |
+| [Unchanged original failure archive](../../notebooks/validation/course-m3-workers/unchanged-attempts-command.json) | 22 passed; 12 cases/78 attempts reproduce |
 | Unchanged original worker archive, installed reproduction | 14 passed; eight cases/666 logical calls/48 replays reproduce |
-| Unchanged original lifecycle bundle audit | Passed; 14 cases/4,340 logical calls/384 replays |
-| Dependency-free core | 348 run, 340 passed, eight expected optional-library skips |
-| Full source regression | Pending |
+| [Unchanged original lifecycle bundle audit](../../notebooks/validation/course-m3-workers/unchanged-lifecycle-audit-command.json) | Passed; 14 cases/4,340 logical calls/384 replays |
+| [Dependency-free core](../../notebooks/validation/course-m3-workers/core-checks-command.json) | 348 run, 340 passed, eight expected optional-library skips |
+| [Full source regression](../../notebooks/validation/course-m3-workers/source-full-command.json) | 591 passed, zero skips |
 | Installed affected-library/child checks | 95 passed, zero skips; 29 production modules match source |
-| Repository `pip check` | Passed |
+| [Repository `pip check`](../../notebooks/validation/course-m3-workers/pip-check-command.json) | Passed |
+| [Completion audit](../../notebooks/validation/course-m3-workers/completion-audit-command.json) | Passed; 1,323 protected files remain byte-identical |
 
 The CPU environment is Windows, Python 3.11.9, SQLite 3.45.1, Pydantic 2.13.5,
 LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1 and core 1.6.6. The native
@@ -120,3 +122,33 @@ the unchanged failure and worker archives, audits the original lifecycle bundle
 and checks installed dependencies. The
 [provenance receipt](../../notebooks/validation/course-m3-workers/installed-provenance.json)
 retains the actual wheel, source/module hashes, interpreter and package versions.
+
+The full source CLI finishes all 591 tests in 2,957.335 seconds, with zero skips;
+its complete recorded command takes 2,960.734 seconds. It covers the unchanged
+thesis analysis/report reproduction and existing protocol, replay, durable,
+attempt, scheduling, accounting, lifecycle and scripted inference checks as
+well as the registered course worker checks. These counts overlap the focused
+and installed suites; they are not additive unique-test totals.
+
+## Completion and handoff
+
+Course/M3-T01's implementation and CPU behavioral acceptance are complete.
+The [completion audit](../../notebooks/validation/course-m3-workers/completion-audit.json)
+passes: all 1,323 protected starting files remain byte-identical, task/index
+counts agree, local references/anchors resolve, executed receipts pass and
+installed module bytes still match source. Ten retained kills confirm inference
+children exited. Thesis specification/defaults/todos, plan Sections 1–10,
+earlier fixtures and saved course inputs remain unchanged; the unrelated M5
+edit retains its original SHA-256 and stays unstaged. Course progress is six
+done, one ready and fourteen blocked tasks.
+
+[Course/M3-T02](../todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md)
+is ready for honest accounting/progress, cumulative resource admission and the
+tiny all-family scripted lifecycle. Reuse this ordinary worker bundle and
+existing records; status/analysis CLI count choices still address thesis 60/40
+until the owning course adaptation. The overall course M3 gate remains open.
+CPU fault probes establish durability and retry mechanics, not model timeout,
+throughput, CUDA memory/headroom, pretrained-model capability, a pilot or main
+results. No dependencies/configuration were installed into the repository
+environment, no model weights were loaded, and no GPU, paid compute, runtime
+freeze, empirical execution or external publication was performed.

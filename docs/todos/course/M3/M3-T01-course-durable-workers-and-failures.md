@@ -1,6 +1,6 @@
 # Course M3-T01 — Course durable workers and bounded failures
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md).
 
@@ -30,10 +30,21 @@ Existing worker/checkpoint/attempt machinery executes and resumes the course sco
 
 Run affected installed-library worker/durable/attempt checks and focused course crashes before/after raw persistence, staging and delivery commit; include cross-worker parents, invalid completed replies, held Q prose and concurrent ownership rejection. Compare uninterrupted/resumed states and original parent records, isolating genuine physical-attempt differences. Reuse unchanged failure fixtures; retain course artifacts in the existing bundle format.
 
-**Evidence:** Implementation started 11 October 2026. The prerequisite
-[M2 handoff audit](../../../../notebooks/validation/course-m2-capacity/handoff-audit.json)
-passes. [Starting tracked bytes](../../../../notebooks/validation/course-m3-workers/baseline-files.json.gz)
-retain the unrelated thesis M5 edit. Course propagation/resume acceptance remains pending.
+**Evidence:** Completed 11 October 2026 on Windows/Python 3.11.9. The
+[durable-worker acceptance](../../../validation/course-m3-durable-workers-and-failures.md#completion-and-handoff)
+records 591 full source checks, 95 outside-checkout installed checks and 11
+focused course checks, all passing without skips. Ten real controller kills,
+completed valid/invalid/failed reuse, cross-worker original parents, scope
+rejection, held Q prose, ownership and backup/reopen equality pass. The ordinary
+[course worker bundle](../../../../tests/fixtures/course_worker_run.zip)
+retains 16 CPU scenarios with 1,422 completed logical calls and 144 replay uses;
+fresh hash-seed-37 reproduction and read-only reconstruction pass. The native
+4B metadata probe passes 20 exact request comparisons/eight replays without
+loading weights. Original failure/worker archives reproduce and the original
+lifecycle bundle audits unchanged. Thesis defaults/todos and the unrelated M5
+edit are preserved. Course accounting and the combined M3 gate remain
+[M3-T02](M3-T02-course-accounting-and-lifecycle-gate.md); model/GPU, pilot,
+resource admission, freeze and empirical execution are separate gates.
 
 **Prerequisite handoff, 11 October 2026:** Course/M2-T03 passes the
 [M2 witness/capacity gate](../../../validation/course-m2-attainability-and-capacity.md#completion-and-handoff).

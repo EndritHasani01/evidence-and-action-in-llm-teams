@@ -124,8 +124,12 @@ The course [local witness and complete capacity gate](docs/validation/course-m2-
 now passes: all 139 affected source/139 installed CPU checks and 18 native
 checks pass, with exact fresh-process reproduction. The full course bound is
 156,251 tokens including 256 output tokens; correct candidates/controls and
-useful one-shard replies have a universal 189-token output bound. The next task
-is [course durable workers](docs/todos/course/M3/M3-T01-course-durable-workers-and-failures.md).
+useful one-shard replies have a universal 189-token output bound. Course
+[durable-worker acceptance](docs/validation/course-m3-durable-workers-and-failures.md)
+now passes: 591 full source/95 installed checks, ten real controller kills and
+exact reproduction of 16 ordinary CPU scenarios. Workers carry the explicit
+course binding and reject foreign parents/configuration drift. The next task is
+[course accounting and lifecycle](docs/todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md).
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
 remain open. CPU admission supplies no experiment execution authorization.
 

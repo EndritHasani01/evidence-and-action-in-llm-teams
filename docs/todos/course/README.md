@@ -9,7 +9,8 @@ Fresh sessions can start with the [course handoff and practical lessons](../../p
 Course scientific/resource adoption was explicitly approved on 9 October 2026.
 Existing M1–M4 and thesis M5-T01 retain completion evidence: 21/29 original tasks.
 Course inputs/schedules, their M1 CPU gate, M2 protocol/limits and
-interventions/exact replay, local attainability and complete native capacity are verified.
+interventions/exact replay, local attainability, complete native capacity and
+durable workers/bounded failures are verified.
 Runtime configuration, later CPU gates, pretrained-model admission, pilot, freeze and empirical execution
 remain pending. Task creation and design/resource adoption authorize no execution.
 
@@ -23,7 +24,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**5/21 course tasks done; 16 remaining; 1 active; 0 ready; 15 blocked.**
+**6/21 course tasks done; 15 remaining; 0 active; 1 ready; 14 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -44,16 +45,22 @@ All 139 affected source/139 installed CPU checks and 18 native course checks
 pass, with fresh-process reproduction and unchanged original thesis archives.
 The full bound is 156,251 tokens including the complete 256 output reserve;
 the universal correct candidate/control/one-shard output bound is 189.
-Runtime and later course CPU/model gates remain open.
+Course/M3-T01 is done: [durable-worker acceptance](../../validation/course-m3-durable-workers-and-failures.md#completion-and-handoff)
+passes 591 full source checks, 95 outside-checkout installed checks and 11
+focused course checks with zero skips, including ten real controller kills.
+All 16 ordinary CPU worker scenarios reproduce with hash seed 37; native
+request/replay and backup/reopen checks pass. Accounting and the combined M3
+course lifecycle gate remain M3-T02. Runtime and later course CPU/model gates
+remain open.
 Inherited foundation tasks are not counted as course acceptance.
 
-The next safe task is [course/M3-T01](M3/M3-T01-course-durable-workers-and-failures.md), following completed [course/M2-T03](M2/M2-T03-course-attainability-and-capacity.md). **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
+The next safe task is [course/M3-T02](M3/M3-T02-course-accounting-and-lifecycle-gate.md), following completed [course/M3-T01](M3/M3-T01-course-durable-workers-and-failures.md). **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
 | M2 | 3/3 | 0 | 0 | 0 | CPU gate passed: lawful protocol/replay, locally informed witness and complete 156,251-token native bound |
-| M3 | 0/2 | 1 | 0 | 1 | Durable workers, bounded failures, honest accounting and crash-safe lifecycle |
+| M3 | 1/2 | 0 | 1 | 0 | Durable workers/bounded failures passed; accounting and combined lifecycle gate remain open |
 | M4 | 0/4 | 0 | 0 | 4 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
 | M5 | 0/5 | 0 | 0 | 5 | Actual-host smoke, capability, complete pilot, conservative resources and authorized course freeze |
 | M6 | 0/5 | 0 | 0 | 5 | Complete frozen execution, independent audit, claims review, clean local reproduction and agreed delivery |
@@ -69,8 +76,8 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M2-T01 — Course protocol and limits](M2/M2-T01-course-protocol-and-limits.md) | done | M1-T02 |
 | [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | done | M2-T01 |
 | [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | done | M2-T02 |
-| [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | active | M2-T03 |
-| [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | blocked | M3-T01 |
+| [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | done | M2-T03 |
+| [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | ready | M3-T01 |
 | [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | blocked | M3-T02 |
 | [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | blocked | M4-T01 |
 | [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | blocked | M4-T01, M4-T02 |

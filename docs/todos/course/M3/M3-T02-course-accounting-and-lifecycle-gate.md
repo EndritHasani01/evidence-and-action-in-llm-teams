@@ -1,6 +1,6 @@
 # Course M3-T02 — Course accounting, progress and lifecycle gate
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M3-T01](M3-T01-course-durable-workers-and-failures.md).
 
@@ -31,3 +31,18 @@ Course execution has honest reconstructible progress, physical versus policy cos
 Use synthetic allocation/setup/idle/uncertain-attempt scenarios, replay and failed-slot costs, controller-kill/held-prose cases, changed input/config rejection and database backup reopen. Compare uninterrupted/resumed logical states and allowed physical differences; verify read-only progress creates no effect or inference. Record commands/environment and ordinary course lifecycle artifacts for M4. No GPU.
 
 **Evidence:** Not yet recorded. Existing accounting/lifecycle machinery is reused; course acceptance is pending.
+
+**Prerequisite handoff, 11 October 2026:** Course/M3-T01 passes
+[durable-worker acceptance](../../../validation/course-m3-durable-workers-and-failures.md#completion-and-handoff).
+Reuse explicit course `run_inputs` bindings, manifest-selected 20/five-world
+scope, pinned 4B `candidate_settings` with `COURSE_LIMITS`, original read-only
+parents and existing attempt/checkpoint/worker records. The
+[ordinary CPU bundle](../../../../tests/fixtures/course_worker_run.zip)
+retains 16 scenarios, ten real kills and exact fresh-process reproduction;
+it supports accounting/restart checks, not empirical population coverage.
+Timeout defaults remain 120 seconds with bounded one-second termination graces.
+Status/analysis CLI count choices still address thesis 60/40 and need their
+course adaptation. Apply the adopted cumulative resource rules without
+inventing available quota; complete the tiny all-family course lifecycle and
+independent accounting/progress reconstruction required above. The full M3
+course gate, resource admission and actual-host/model gates remain open.
