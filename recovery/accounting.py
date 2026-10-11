@@ -492,6 +492,16 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                 raise ValueError("committed checkpoint has missing raw/validation records")
         policy_costs = ledger_policy_costs(branches, records, generation_costs)
         resources = _allocation_resources(allocations, attempts, processes, now, budget)
+        if budget is not None and budget.allocation_mode == "gpu":
+            # A stopped process without a ready receipt may have been loading
+            # or computing. Its allocated total is known, but setup versus
+            # interruption attribution cannot establish either unused reserve.
+            resources["unknown_setup_allocation"] = any(p["ready_at"] is None
+                and (p["stopped_at"] or p["recovered_at"]) and any(a["worker"] == p["worker"]
+                    and timestamp(p["started_at"]) < timestamp(a["stopped_at"] or now)
+                    and timestamp(p["stopped_at"] or p["recovered_at"]) > timestamp(a["started_at"])
+                    for a in allocations) for p in processes) or any(
+                        h["resources"].get("unknown_setup_allocation", False) for h in history)
         if history:
             all_devices = resources["devices"] + [a for h in history for a in h["resources"]["devices"]]
             seen = defaultdict(list)
@@ -552,6 +562,11 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
                     or any(not a["budget_json"] or json.loads(a["budget_json"])["allocation_mode"] != "gpu"
                            for a in resources["devices"])):
                 resources.update(admission_available=False, admission_reason="unknown_allocation_classification")
+            elif resources.get("unknown_setup_allocation"):
+                resources.update(admission_available=False, admission_reason="unknown_setup_allocation")
+                for category in ("setup", "interruption"):
+                    resources["spending_bounds_gpu_hours"][category] = None
+                    resources["remaining_reserves_gpu_hours"][category] = None
         finished = sum(r["finished"] for r in logical)
         outcomes = Counter(r["protocol_outcome"] or "unvalidated" for r in logical if r["finished"])
         current = []

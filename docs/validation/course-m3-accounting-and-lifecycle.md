@@ -79,7 +79,7 @@ without editing or duplicating that artifact. The original thesis lifecycle
 [offline audit](../../notebooks/validation/course-m3-accounting/unchanged-lifecycle-audit-command.json)
 also passes unchanged.
 
-[Thirteen final course accounting checks](../../notebooks/validation/course-m3-accounting/accounting-review-final-command.json)
+[Thirteen course accounting checks](../../notebooks/validation/course-m3-accounting/accounting-review-final-command.json)
 pass after two production review fixes. A course GPU forecast excludes measured
 loading intersecting the attempt, using original process/ready clocks and
 resident reuse; full physical and policy attempt costs stay charged. Missing
@@ -97,3 +97,12 @@ passes 348 checks with eight declared-package skips under `python -S`. Source
 and installed runs begun before the review fixes were stopped and retained as
 partial evidence; they are not acceptance. Final-code full source/installed
 validation and the completion audit remain pending.
+
+The subsequent [reserve-attribution review](../../notebooks/validation/course-m3-accounting/accounting-reserve-review-command.json)
+passes all 13 checks. A stopped GPU-classified process without a ready receipt
+can have been loading or computing: its recorded allocation total is still
+charged once, but remaining setup/interruption allowances are unknown and
+admission is withheld. The same refusal survives historical-worker joins and
+restart. Active loading remains bounded by the original independent deadline.
+Synthetic records exercise this condition without a GPU. Broad runs from the
+earlier commit are retained as partials and renewed for this final behavior.

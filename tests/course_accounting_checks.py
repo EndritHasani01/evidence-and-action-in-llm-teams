@@ -252,6 +252,33 @@ class CourseAccountingTests(unittest.TestCase):
             self.assertIsNone(_setup_free_seconds(attempts, unknown, clock(10))[cid])
         generation["forecast_seconds_excluding_setup"] = None
         self.assertFalse(_forecast(selected, {cid: dict(status="completed")}, {cid: generation}, ["fixture-device"], budget, gpu_generations={cid})["available"])
+        # Synthetic GPU-classified records exercise attribution, not a GPU.
+        dev = next(w for w in p.development if w.world.task is Task.SORT)
+        controls = tuple(b for b in s.development if b.world_id == dev.world_id and b.phase == "control")
+        path = self.root / "unknown-loading.sqlite"
+        with DurableRunner(path, TOKENIZER, provide, scripted=True) as runner:
+            runner.store.bind_run((dev,), controls, SETTINGS, BOUNDS, budget=budget, regime="course")
+            runner.run_control(dev, controls[0], settings=SETTINGS)
+            original = controls[0].calls[0].call_id
+            runner.store.process_started(original, 1, 42)
+            with runner.store.connection:
+                runner.store.connection.execute("UPDATE attempts SET started_at=?,finished_at=?,elapsed_seconds=1,observed_seconds=1,worker_pid=42",
+                                                (clock(0), clock(1)))
+                runner.store.connection.execute("UPDATE provider_processes SET started_at=?,last_observed_at=?,stopped_at=?",
+                                                (clock(0), clock(3), clock(3)))
+            number = runner.store.allocation_started("fixture-device", "development", budget=budget, started_at=clock(0))
+            runner.store.allocation_stopped(number, "synthetic missing ready receipt", released_at=clock(4))
+        snapshot = progress_snapshot((dev,), controls, (path,), now=clock(4), regime="course")
+        resources = snapshot["resources"]
+        self.assertEqual(resources["course_gpu_hours"], [4/3600, 4/3600])
+        self.assertEqual(resources["admission_reason"], "unknown_setup_allocation")
+        self.assertIsNone(resources["remaining_reserves_gpu_hours"]["setup"])
+        self.assertIsNone(resources["remaining_reserves_gpu_hours"]["interruption"])
+        self.assertEqual(course_admission(resources, snapshot["forecast"], budget, "development", 1)[0], "unknown_setup_allocation")
+        historical = progress_snapshot((dev,), controls, (self.root / "absent-loading.sqlite",), prior_paths=(path,),
+            settings=SETTINGS, budget=budget, now=clock(4), regime="course")
+        self.assertEqual(historical["resources"]["admission_reason"], "unknown_setup_allocation")
+        self.assertEqual(historical["resources"]["course_gpu_hours"], [4/3600, 4/3600])
 
     def test_unknown_smoke_and_spent_envelope_never_create_a_new_allowance(self):
         p, s = course_inputs()

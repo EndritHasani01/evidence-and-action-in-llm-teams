@@ -1198,3 +1198,41 @@ fixtures remain unchanged. See the
 for commands and execution boundaries. Course accounting and the combined
 lifecycle/resource gate remain M3-T02; these records are no pretrained-model,
 GPU/runtime, pilot, freeze, main-experiment or publication acceptance.
+
+## Course accounting and scripted lifecycle
+
+[course_lifecycle_run.zip](course_lifecycle_run.zip) retains three ordinary CPU
+cases with saved course population/schedules, literal selected IDs, worker
+SQLite records, backup copies, progress and an offline correctness preview.
+One main world per family executes all interventions, controls and repeat paths:
+145 branches, 2,170 logical calls, 1,978 generations and 192 exact replays. Across
+all three validation cases there are 2,332 completed logical calls, 2,124 distinct
+generations, 2,126 attempts, 208 replays and two uncertain attempts. The existing
+course worker bundle supplies ten independently audited real kill scenarios.
+
+The hand case assigns 261–263 physical attempt seconds and 400 allocated
+synthetic seconds, partitioned into setup 2, interruption 1, attempts 258,
+uncertain work 2 and assigned idle 137. Provider billing and optional memory
+remain separate. Hypothetical policies pay the original prefix and all sixteen
+logical continuations, including original replay costs and F's abandoned prefix.
+The stopped case retains sixteen unknown opportunities and one uncertain attempt;
+release is acknowledged and resume uses the same scope/settings with one retry.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.course_accounting_checks -v
+.venv/Scripts/python.exe -X utf8 -m tests.course_lifecycle_archive --audit-only
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -X utf8 -m tests.course_lifecycle_archive
+```
+
+Fresh-process reproduction compares scientific inputs, requests/tokens/settings,
+seeds, raw/validation outcomes, replay identities and committed branch-local
+states. Operational clocks/PIDs may differ. Backup/reopen and packaged offline
+audits are exact; `--write-fixture NEW_BUNDLE.zip` rejects an existing destination.
+The complete 5,752/6,280 main and 1,114/1,178 development schedules are enumerated
+independently, with all missing worker slots unknown and no worker files created.
+This is a tiny scripted selection and synthetic resource evidence. See the
+[course accounting/lifecycle evidence](../../docs/validation/course-m3-accounting-and-lifecycle.md)
+for commands, environment and the final acceptance state; actual model/runtime,
+GPU throughput, historical quota, smoke/pilot, freeze and main execution remain
+separate gates.

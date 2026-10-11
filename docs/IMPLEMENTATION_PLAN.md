@@ -1164,6 +1164,14 @@ execution and applicable authorization remain separate.
   Twelve focused course checks and the original 23-check accounting archive pass;
   the all-family lifecycle and full acceptance remain underway in the linked
   [accounting/lifecycle evidence](validation/course-m3-accounting-and-lifecycle.md).
+  The lifecycle bundle now passes packaged/offline and fresh-process
+  reproduction. Review excludes recorded loading from the course GPU main
+  forecast while retaining full physical/policy costs, and uses the recorded
+  allocation release for device ownership during concurrent status reads.
+  A stopped process with unknown loading completion retains known total
+  allocation but unknown setup/interruption allowances; it cannot establish
+  admission, including through historical-worker joins. Thirteen focused checks
+  pass. Final full source/installed verification still precedes M3 completion.
 
 ### Course unresolved gates
 

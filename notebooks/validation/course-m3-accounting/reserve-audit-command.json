@@ -1,0 +1,18 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m3-accounting/verify_accounting.py",
+    "--output",
+    "notebooks/validation/course-m3-accounting/reserve-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T13:38:24.253333+00:00",
+  "source_head": "d90f166f7645824618494ee6d18a67bbaea57d98",
+  "seconds": 2.984000000054948,
+  "exit_code": 0,
+  "log": "reserve-audit.txt.gz",
+  "hash_seed": null,
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m3-accounting-20261011"
+}

@@ -305,6 +305,34 @@ matching saved generation settings supply timing samples. Physical IDs are
 scoped by the existing saved settings when configurations differ. Repeated
 copies of the same physical records are rejected.
 
+Course status selects the declared 20-world main population by default, or the
+five development worlds with `--stage development`. Thesis status still defaults
+to 60; `--count 40` selects its nested scope. A zoned `--as-of` timestamp makes
+saved status/cost reconstruction reproducible:
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m recovery status --regime course --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker worker-0.sqlite --json
+```
+
+For course scheduling use `regime="course"` and `CourseBudget` from
+`recovery.accounting`. The existing saved binding adds cumulative 30/100-hour
+limits, 8/2/2-hour allowances and documented lower/upper bounds only for prior
+spending absent from supplied original ledgers. Shared preparation is counted
+once overall; historical smoke is a checked subset. Default prior bounds and
+smoke usage are unknown, so they grant no admission. A verified zero needs
+evidence. Saved bounds cannot change on restart, and every prior/failed
+configuration stays chargeable. Actual quota and release terms require their
+later gate.
+
+Course main admission requires matching GPU settings/phase/condition/device
+measurements for every planned device, both cumulative ceilings, unused
+reserves and one 25% margin. Recorded loading is excluded from that main
+forecast because setup is reserved separately; full physical and policy
+attempt costs remain charged. CPU timing and unknown loading supply no GPU
+forecast. The existing deadline protects remaining setup/interruption allowances
+and releases safely while retaining every scheduled unknown slot. See the
+[course accounting/lifecycle evidence](docs/validation/course-m3-accounting-and-lifecycle.md).
+
 `LocalScheduler(..., report=terminal_progress)` reports call/round transitions
 and bounded heartbeats while `run`/`advance` operates. Import `terminal_progress`
 and `Budget` from `recovery.accounting`. For budgeted execution each `WorkerSpec`

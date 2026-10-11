@@ -25,6 +25,7 @@ def main():
     if not command or receipt.exists() or log.exists():
         parser.error("provide a command and a fresh evidence label")
     started = datetime.now(timezone.utc).isoformat()
+    source_head = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
     before = time.monotonic()
     environment = dict(os.environ)
     if args.hash_seed is not None:
@@ -42,6 +43,7 @@ def main():
     exit_code = process.wait()
     log.write_bytes(gzip.compress(b"".join(lines), mtime=0))
     record = dict(command=command, cwd=str(Path.cwd()), started_utc=started,
+                  source_head=source_head,
                   seconds=time.monotonic() - before, exit_code=exit_code,
                   log=log.name, hash_seed=environment.get("PYTHONHASHSEED"),
                   temporary_root=str(args.temporary_root.resolve()) if args.temporary_root else None)
