@@ -164,3 +164,9 @@ checks protected baseline bytes, unchanged pre-course plan/specification and
 thesis defaults/todos, task counts/links, source/installed report agreement and
 all withheld admission/unknown fields. This audit verifies the limited offline
 outcome; it does not mark M5-T01 complete.
+
+Final audit at `91705ae` passes: **1,734 protected files**, unchanged pre-course
+plan, **364 local links**, matching course task counts and four rejection cases
+for wrong identity/partial coverage/relabelled GPU or headroom evidence. The
+working tree is committed in separate scope, proof, memory-review and evidence
+checkpoints. No broad prerequisite rerun or GPU work was needed for this audit.
