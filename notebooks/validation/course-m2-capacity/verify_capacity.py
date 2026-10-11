@@ -121,14 +121,15 @@ def main():
             assert all(c["equal"].values()) and calls[c["call_id"]] == calls[c["parent"]]
         assert all(r["protocol_valid"] and r["correct_value_token_upper"] <= 256 for r in witness["output_shapes"])
         witness_summary = dict(worlds=len(witness["cases"]), logical_opportunities=len(calls), replay_joins=len(comparisons),
-            correct_output_upper=max(r["correct_value_token_upper"] for r in witness["output_shapes"]))
+            correct_output_upper=max(r["correct_value_token_upper"] for r in witness["output_shapes"]),
+            largest_native_output=max(len(r["generated"]["token_ids"]) for r in calls.values()))
     elif args.completion:
         raise AssertionError("native witness evidence missing")
 
     suites = {}
     labels = ("baseline-checks", "course-witness-corrected", "integration-checks", "native-witness-initial",
               "native-capacity-corrected", "native-witness-hash37", "native-capacity-hash37",
-              "thesis-native-witness", "thesis-native-capacity", "installed-checks", "cli-discovery", "pip-check")
+              "thesis-native-witness", "thesis-native-capacity", "installed-checks-corrected", "cli-discovery", "pip-check")
     for label in labels:
         receipt = FOLDER / f"{label}-command.json"
         if not receipt.exists() and not args.completion:
@@ -151,6 +152,7 @@ def main():
         production_diff_limited_to_cpu_suite_registration=True, thesis_defaults_and_plan_sections_1_to_10_preserved=True,
         course_task_states=dict(Counter(states.values())), local_references=references, markdown_fragments=fragments,
         resident_tokens_upper=capacity["resident_tokens_upper"], adversarial_envelopes=len(capacity["rendered_fixtures"]),
+        largest_adversarial_native_input=max(r["input_tokens"] for r in capacity["rendered_fixtures"]),
         witness=witness_summary, suites=suites, model_calls=0, gpu_admission=False, runtime_freeze=False)
     with args.output.open("x", encoding="utf-8", newline="\n") as output:
         json.dump(report, output, indent=2)

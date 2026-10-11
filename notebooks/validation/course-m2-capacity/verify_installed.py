@@ -37,6 +37,9 @@ def main():
     wheel, = target.glob("*.whl")
     run([str(interpreter), "-m", "pip", "install", "--no-deps", "--target", str(target), str(wheel)], target, environment)
     shutil.copytree(ROOT / "tests", target / "tests", ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+    (target / "configs").mkdir()
+    for name in ("course-inputs.toml", "study.toml"):
+        shutil.copy2(ROOT / "configs" / name, target / "configs" / name)
     modules = {}
     for source in (ROOT / "recovery").glob("*.py"):
         digest = hashlib.sha256(source.read_bytes()).hexdigest()
