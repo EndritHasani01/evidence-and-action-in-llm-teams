@@ -106,6 +106,7 @@ def main() -> int:
                 from .report import report_run, write_report
                 from .uncertainty import DEFAULT_SEED
                 result = report_run(worlds, branches, args.worker, now=args.as_of,
+                    regime=population.regime,
                     seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed, tokenizer=tokenizer,
                     provenance=dict(manifest=args.manifest.name, schedule=args.schedule.name,
                         workers=[p.name for p in args.worker], stage=args.stage, count=count if args.stage == "main" else None))
@@ -114,6 +115,7 @@ def main() -> int:
             elif args.uncertainty:
                 from .uncertainty import DEFAULT_SEED, uncertainty_run
                 tables = uncertainty_run(worlds, branches, args.worker, now=args.as_of,
+                    regime=population.regime,
                     seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed,
                     diagnostics=args.diagnostics, tokenizer=tokenizer)
             elif args.costs:

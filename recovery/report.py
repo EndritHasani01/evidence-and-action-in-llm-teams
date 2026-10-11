@@ -329,7 +329,7 @@ def assemble_report(worlds, branches, tables, traces, *, provenance=None):
         cpu_gate="A report is derived evidence, not a gate decision. The named repository M1–M4 audit must pass; M5 hardware/capability/resource gates and execution authorization remain separate.")
 
 
-def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, provenance=None):
+def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, provenance=None, regime="thesis"):
     """One read-only worker snapshot feeds every table and unaltered excerpt."""
     from .analysis import analyze_estimands, prose_activity
     from .costs import cost_records, timestamp
@@ -352,7 +352,7 @@ def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, p
         committed=committed, tokenizer=tokenizer, tables=tables)
     tables["estimands"] = analyze_estimands(worlds, branches, tables)
     tables["estimands"]["prose_activity"] = prose_activity(worlds, branches, inputs)
-    tables["uncertainty"] = uncertainty_records(worlds, branches, tables, seed=seed)
+    tables["uncertainty"] = uncertainty_records(worlds, branches, tables, seed=seed, regime=regime)
     traces = trace_records(tables, records, inputs)
     report = assemble_report(worlds, branches, tables, traces, provenance=provenance)
     report["settings"]["generation_settings"] = sorted({r["settings_json"] for r in inputs.values()})

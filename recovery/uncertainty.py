@@ -13,12 +13,16 @@ from math import comb, fsum, isfinite, log, sqrt
 from random import Random
 
 from .analysis import MAIN_FAMILIES, SUMMARY_KEYS, _exact, _fraction
+from .populations import _check_regime
 
 DRAWS = 10_000
 DEFAULT_SEED = 20261006
 QUANTILE = "linear interpolation at (B-1)*p; Hyndman-Fan type 7"
 LIMITATION = ("Approximate percentile coverage; families are fixed tasks. The bounded-mean "
               "companion assumes independent generated worlds and does not cover systematic errors.")
+COURSE_LIMITATION = ("Exploratory 20-world course regime: four worlds per family and eight in each "
+    "focal cohort. Five repeated continuations assess conditional stability, not additional independent "
+    "worlds. 10,000 resamples do not guarantee small-sample coverage, achieved power or equivalence.")
 
 
 def percentile(values, probability):
@@ -297,8 +301,16 @@ def contrast_uncertainty(estimands, known, *, seed=DEFAULT_SEED, cache=None):
     return dict(world_bounds=bounds, summaries=summaries)
 
 
-def reporting_references():
+def reporting_references(*, regime="thesis"):
     """The specification's rough power/fallback arithmetic, never achieved power."""
+    _check_regime(regime)
+    if regime == "course":
+        return dict(practical_difference=0.10,
+            main=[dict(N=20, sd=sd, multiplier=3.08, reference=3.08 * sd / sqrt(20)) for sd in (0.35, 0.60)],
+            focal=[dict(N=8, sd=sd, multiplier=2.80, reference=2.80 * sd / sqrt(8)) for sd in (0.35, 0.60)],
+            course_to_thesis_standard_error_ratio=sqrt(60 / 20),
+            interpretation="Normal-approximation sensitivity references; not achieved power, a detection "
+                "promise, or an equivalence margin. " + COURSE_LIMITATION)
     return dict(practical_difference=0.10, main=[dict(N=n, sd=sd, multiplier=3.08,
         reference=3.08 * sd / sqrt(n)) for n in (60, 40) for sd in (0.35, 0.60)],
         focal=[dict(N=n, sd=sd, multiplier=2.80, reference=2.80 * sd / sqrt(n))
@@ -605,9 +617,10 @@ def policy_display_summaries(rows, populations, *, seed=DEFAULT_SEED, cache=None
     return result
 
 
-def uncertainty_records(worlds, branches, tables, *, seed=DEFAULT_SEED):
+def uncertainty_records(worlds, branches, tables, *, seed=DEFAULT_SEED, regime="thesis"):
     """Use the existing validated joins; derive all §6 tables without new I/O."""
     from .analysis import analyze_estimands
+    _check_regime(regime)
     if type(seed) is not int or seed < 0:
         raise ValueError("resampling seed must be a nonnegative integer")
     worlds, branches = tuple(worlds), tuple(branches)
@@ -628,14 +641,18 @@ def uncertainty_records(worlds, branches, tables, *, seed=DEFAULT_SEED):
             quantile=QUANTILE, primary_probabilities=[0.0125, 0.9875], secondary_probabilities=[0.025, 0.975],
             cluster="Generated world and one realized prefix; all siblings, peers, rounds, groups, controls and repeats travel together",
             population_estimates_use_replicate=0, weighting="equal eligible-family means", limitation=LIMITATION),
-        reporting_references=reporting_references(), populations=estimands["populations"], coverage=tables.get("coverage"))
+        reporting_references=reporting_references(regime=regime), populations=estimands["populations"], coverage=tables.get("coverage"))
+    if regime == "course":
+        result["kind"] = "Exploratory course paired uncertainty and missingness; scripted data are CPU validation, not empirical findings"
+        result["settings"].update(regime=regime, limitation=LIMITATION + " " + COURSE_LIMITATION)
     return result
 
 
-def uncertainty_run(worlds, branches, paths, *, seed=DEFAULT_SEED, now=None, diagnostics=False, tokenizer=None):
+def uncertainty_run(worlds, branches, paths, *, seed=DEFAULT_SEED, now=None, diagnostics=False, tokenizer=None, regime="thesis"):
     """One original-worker read; costs/estimands accompany uncertainty exports."""
     from .costs import costs_run
+    _check_regime(regime)
     worlds, branches = tuple(worlds), tuple(branches)
     tables = costs_run(worlds, branches, paths, now=now, diagnostics=diagnostics, estimands=True, tokenizer=tokenizer)
-    tables["uncertainty"] = uncertainty_records(worlds, branches, tables, seed=seed)
+    tables["uncertainty"] = uncertainty_records(worlds, branches, tables, seed=seed, regime=regime)
     return tables

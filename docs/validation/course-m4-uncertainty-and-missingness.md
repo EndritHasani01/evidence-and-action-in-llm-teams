@@ -30,3 +30,28 @@ lifecycle/controller-kill, native tokenizer or broad core run is required.
 At this preparation checkpoint, course uncertainty acceptance is pending. The
 complete report/CPU gate, model/GPU/pilot, resources, freeze, main execution and
 publication remain later gates. No inference or original-worker writes occur.
+
+## Formula checkpoint
+
+[Focused course/thesis arithmetic](../../notebooks/validation/course-m4-uncertainty/formulas-accepted-command.json)
+passes 44 methods with zero skips in 10.817 seconds, including sixteen new
+course methods. Independent saved-seed draws and type-7 quantiles agree for
+four worlds per family; overlapping eight-world cohorts retain the same family
+IDs/draws. Primary/secondary ranges, weighted Hoeffding companions and four-world
+binomial extremes agree with hand arithmetic. Five conditional repeats remain
+five original clusters. Shared replay/failure constraints, tiny nonlinear
+enumeration, stopped trajectories, empty/unknown preservation, paired cost
+cohorts and unbounded future costs pass.
+
+The [initial failed receipt](../../notebooks/validation/course-m4-uncertainty/formulas-initial-command.json)
+is retained. Its two assertions included both E_keep events when counting the
+revision primary and demanded bitwise equality of independently summed floats.
+They now select revision and use numerical tolerance; no statistical formula
+or production guard changed.
+
+Only explicit reporting scope changed: API callers pass `regime="course"`;
+the analysis CLI forwards the saved manifest regime through uncertainty and its
+report consumer. Course exports state the exploratory small-sample limits and
+N=20/eight precision references; thesis calls retain identical defaults. Original
+worker reconstruction, focused consumer/source/installed checks and the final
+preservation/handoff audit remain pending at this checkpoint.
