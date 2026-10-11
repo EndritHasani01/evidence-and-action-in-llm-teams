@@ -1,0 +1,17 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.course_worker_checks",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T11:22:26.009188+00:00",
+  "seconds": 227.35999999998603,
+  "exit_code": 0,
+  "log": "course-final.txt.gz",
+  "hash_seed": null
+}

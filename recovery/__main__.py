@@ -227,6 +227,7 @@ def main() -> int:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.durable_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.attempt_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.worker_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_worker_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.accounting_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.lifecycle_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.inference_checks"))

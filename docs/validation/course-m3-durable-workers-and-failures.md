@@ -19,4 +19,38 @@ main experiment or publication is authorized by this task.
 preserve thesis specification/defaults/todos, all earlier fixtures and the
 pre-existing unstaged M5 evidence edit. Executed commands/logs will be retained in
 the [existing validation layout](../../notebooks/validation/course-m3-workers/).
-Acceptance is pending.
+Acceptance is pending the retained bundle, installed verification and final regression.
+
+## Implementation checkpoint
+
+The existing worker `run_inputs` row now binds the course regime, saved
+worlds/branches, exact pinned 4B settings and attempt bounds. Manifest scheduling
+selects the declared 20-world course main scope while retaining the default
+60-world thesis selection. Course parents require equal literal bindings;
+unbound or foreign records cannot supply prefixes or raw/replay results.
+Bound starts/controls reject input drift, including host fields absent from the
+peer view. Local prefix parents now check exact settings too. Old standalone
+round files remain readable without a migration.
+
+[Focused verification](../../notebooks/validation/course-m3-workers/course-final-command.json)
+passes all 11 course methods, including ten actual controller kills across raw,
+validation, staging, boundary and delivery commit points. The
+[native verification](../../notebooks/validation/course-m3-workers/native-workers-corrected-command.json)
+passes 20 exact native request comparisons, eight original-parent replay uses
+and backup/reopen equality using local pinned 4B metadata. This auxiliary CPU
+check combines the repository SQLite environment with existing host tokenizer
+packages; it is not an accepted inference environment. No weights are loaded.
+
+The unchanged original failure archive reproduces all 12 cases/78 attempts.
+The original worker archive comparator encounters a pre-existing additive
+`backend_json=null` attempt field absent from its 619 archived attempts. Its
+comparison now treats absent and null optional diagnostics identically, as the
+attempt comparator already does, retaining every non-null field and the
+original fixture bytes. Final reproduction remains to be checked.
+
+Failed commands are retained separately. Test integration corrections cover
+derived branch IDs, the actual `output_tokens` field, closing SQLite test handles,
+excluding the target C branch from parent construction, forwarding provider
+keywords and bounded confirmation of Windows owner-lock release after exit.
+Runtime ownership, scientific outcomes and retry rules are unchanged by these
+test corrections.

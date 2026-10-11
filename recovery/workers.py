@@ -20,7 +20,7 @@ import traceback
 
 from .attempts import ProcessProvider, _die_with_owner
 from .manifests import load_population, load_schedules
-from .populations import FAMILIES
+from .populations import FAMILIES, _check_regime
 from .rounds import deserialize_state
 from .runner import DurableRunner, WorkerReader
 from .schedule import _prepare_branches, dependency_order
@@ -181,7 +181,9 @@ class LocalScheduler:
     def __init__(self, workers, worlds, branches, tokenizer_factory, *, settings,
                  reverse=False, worker_rotation=0, invocation_order=PEERS,
                  timeout_seconds=120, termination_seconds=1, heartbeat_seconds=1,
-                 budget=None, release_device=None, allocation_stage=None, report=None, prior_paths=()):
+                 budget=None, release_device=None, allocation_stage=None, report=None, prior_paths=(), regime="thesis"):
+        _check_regime(regime)
+        self.regime = regime
         self.specs = tuple(workers)
         self.paths = tuple(Path(w.database).resolve() for w in self.specs)
         self.worlds, self.branches = tuple(worlds), tuple(branches)
@@ -238,16 +240,18 @@ class LocalScheduler:
 
     @classmethod
     def from_manifests(cls, workers, population_path, schedule_path, tokenizer_factory, *,
-                       stage="development", count=60, **kwargs):
+                       stage="development", count=None, **kwargs):
         population = load_population(population_path)
         schedules = load_schedules(schedule_path, population)
+        if kwargs.pop("regime", population.regime) != population.regime:
+            raise ValueError("worker regime differs from the saved population/schedule")
         if stage == "development":
             worlds, branches = population.development, schedules.development
         elif stage == "main":
             worlds, branches = population.worlds(count), schedules.main_for(population, count)
         else:
             raise ValueError("choose the saved development or complete main schedule")
-        return cls(workers, worlds, branches, tokenizer_factory, **kwargs)
+        return cls(workers, worlds, branches, tokenizer_factory, regime=population.regime, **kwargs)
 
     def __enter__(self):
         try:
@@ -257,7 +261,8 @@ class LocalScheduler:
                     if path.exists():
                         self._confirm_provider_exit(path)
                     with DurableRunner(path, None) as runner:
-                        runner.store.bind_run(self.worlds, self.branches, self.settings, self.bounds, budget=self.budget)
+                        runner.store.bind_run(self.worlds, self.branches, self.settings, self.bounds,
+                                              budget=self.budget, regime=self.regime)
             self.readers = [WorkerReader(path) for path in self.paths]
             self.status()  # Reject old drift/duplicate ownership before providers can run.
             if self.budget is not None:

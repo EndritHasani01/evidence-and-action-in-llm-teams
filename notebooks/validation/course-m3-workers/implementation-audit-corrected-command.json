@@ -1,0 +1,17 @@
+{
+  "command": [
+    "python",
+    "-S",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m3-workers/verify_workers.py",
+    "--output",
+    "notebooks/validation/course-m3-workers/implementation-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T11:27:23.167426+00:00",
+  "seconds": 2.062000000034459,
+  "exit_code": 0,
+  "log": "implementation-audit-corrected.txt.gz",
+  "hash_seed": null
+}

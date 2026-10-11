@@ -1114,6 +1114,17 @@ execution and applicable authorization remain separate.
   inputs and the user's unrelated M5 edit. This closes course M2's CPU gate and
   hands off course M3-T01. The 4.768 GiB static full-attention KV lower bound at
   the resident upper bound admits no T4 model, peak memory or headroom claim.
+- Course/M3-T01 binds the explicit course regime in the existing `run_inputs`
+  row with the literal saved worlds/branches/settings/attempt bounds. Thesis
+  bindings omit the field and retain their prior representation. Manifest-based
+  workers select the population's declared main count (20 course; 60 thesis
+  by default) and reject an inconsistent regime. Course cross-worker prefixes
+  and raw/replay parents require the same binding; equal IDs/seeds/requests are
+  insufficient. Standalone old round files remain readable without a migration.
+  Supplied world/branch/settings must match the bound run, and local prefix
+  parents now check exact settings as cross-worker parents already did. These
+  checks use existing records; no identity, transfer service or extra store is
+  added. Focused course crash/backup acceptance and final regressions are underway.
 - Apply Section 11.3's cumulative course subceiling, shared prior spending and
   reserves through existing budget/accounting records in course/M3-T02, and
   independently check the measured complete-main forecast in course/M5-T05.
