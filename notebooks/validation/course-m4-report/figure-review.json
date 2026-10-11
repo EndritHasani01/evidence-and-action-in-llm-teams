@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "artifact": "tests/fixtures/course_scripted_reports.zip",
+  "inspected_pngs": [
+    "complete-selected-scope/figures/context.png",
+    "complete-selected-scope/figures/effects.png",
+    "complete-selected-scope/figures/repair.png",
+    "complete-selected-scope/figures/receipts.png",
+    "complete-selected-scope/figures/collaborators.png",
+    "complete-selected-scope/figures/prose.png",
+    "complete-selected-scope/figures/quality_cost.png",
+    "incomplete-main-20/figures/effects.png",
+    "terminal-feasibility/figures/quality_cost.png",
+    "stopped-prefix/figures/context.png"
+  ],
+  "observations": [
+    "All seven complete-scope exhibits are legible with synthetic/course labels and observed/scheduled denominators.",
+    "Incomplete main effects show hollow complete-case markers and shared missingness sensitivity; no intended population estimate is fabricated.",
+    "Terminal quality/cost panels state unavailable and retain incomplete coverage.",
+    "Stopped prefix correctness and controls are unavailable; its saved initial source inventory remains separately observable.",
+    "Titles, legends, axes and unavailable repair/preservation panels have no clipping or misleading zero substitutions."
+  ],
+  "limits": "Visual layout review of retained synthetic PNGs. Automated source/installed checks reproduce all 35 SVG/PNG pairs; this does not establish model capability or GPU timing."
+}

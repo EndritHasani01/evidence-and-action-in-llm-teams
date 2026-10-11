@@ -124,8 +124,36 @@ The course [local witness and complete capacity gate](docs/validation/course-m2-
 now passes: all 139 affected source/139 installed CPU checks and 18 native
 checks pass, with exact fresh-process reproduction. The full course bound is
 156,251 tokens including 256 output tokens; correct candidates/controls and
-useful one-shard replies have a universal 189-token output bound. The next task
-is [course durable workers](docs/todos/course/M3/M3-T01-course-durable-workers-and-failures.md).
+useful one-shard replies have a universal 189-token output bound. Course
+[durable-worker acceptance](docs/validation/course-m3-durable-workers-and-failures.md)
+now passes: 591 full source/95 installed checks, ten real controller kills and
+exact reproduction of 16 ordinary CPU scenarios. Workers carry the explicit
+course binding and reject foreign parents/configuration drift. Course
+[accounting/lifecycle acceptance](docs/validation/course-m3-accounting-and-lifecycle.md)
+now closes the M3 CPU gate: 607 full source/91 installed checks pass with zero
+skips, independent counts/costs and cumulative resource refusal pass, and the
+three-case all-family lifecycle reproduces with portable original records.
+Course [outcome/estimand acceptance](docs/validation/course-m4-outcomes-and-estimands.md#completion-and-handoff)
+now passes 191 affected source/191 installed checks with zero skips, plus 368
+core checks with eight expected optional-package skips. The read-only analysis
+uses the manifest's 20-world scope and five paired continuation streams, retains
+all eight-world focal populations and unknown intended outcomes, and reproduces
+thesis M4 artifacts unchanged. Course
+[diagnostic/policy-cost acceptance](docs/validation/course-m4-diagnostics-and-policy-costs.md#completion-and-handoff)
+now passes 217 affected source/217 installed checks with zero skips, plus 394
+core methods with twelve expected checkpoint-package skips. Independent course
+references reproduce seven table scopes, sixteen earlier fault scopes and
+original native requests; diagnostic unknowns, wrong-candidate residuals and
+full-policy charges remain explicit. Course
+[uncertainty/missingness acceptance](docs/validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff)
+passes 70 source/70 installed methods with zero skips and nineteen focused
+dependency-free methods. Course
+[report and M1–M4 CPU acceptance](docs/validation/course-m4-report-and-cpu-gate.md#completion-and-handoff)
+passes 52 affected source/52 installed methods and 33 dependency-free methods
+with zero skips. Eight scopes reproduce twice; five portable reports retain
+35 deterministic SVG/PNG pairs, with original thesis exports unchanged.
+[Inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
+is the next safe task.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
 remain open. CPU admission supplies no experiment execution authorization.
 
@@ -301,6 +329,35 @@ matching saved generation settings supply timing samples. Physical IDs are
 scoped by the existing saved settings when configurations differ. Repeated
 copies of the same physical records are rejected.
 
+Status infers the regime from the saved population. With `--stage main`, its
+default count is the declared 20 course worlds or 60 thesis worlds; `--count 40`
+selects the nested thesis scope. The unchanged default stage is development
+(five worlds). A zoned `--as-of` timestamp makes saved status/cost reconstruction
+reproducible:
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m recovery status --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker worker-0.sqlite --stage main --json
+```
+
+For course scheduling use `regime="course"` and `CourseBudget` from
+`recovery.accounting`. The existing saved binding adds cumulative 30/100-hour
+limits, 8/2/2-hour allowances and documented lower/upper bounds only for prior
+spending absent from supplied original ledgers. Shared preparation is counted
+once overall; historical smoke is a checked subset. Default prior bounds and
+smoke usage are unknown, so they grant no admission. A verified zero needs
+evidence. Saved bounds cannot change on restart, and every prior/failed
+configuration stays chargeable. Actual quota and release terms require their
+later gate.
+
+Course main admission requires matching GPU settings/phase/condition/device
+measurements for every planned device, both cumulative ceilings, unused
+reserves and one 25% margin. Recorded loading is excluded from that main
+forecast because setup is reserved separately; full physical and policy
+attempt costs remain charged. CPU timing and unknown loading supply no GPU
+forecast. The existing deadline protects remaining setup/interruption allowances
+and releases safely while retaining every scheduled unknown slot. See the
+[course accounting/lifecycle evidence](docs/validation/course-m3-accounting-and-lifecycle.md).
+
 `LocalScheduler(..., report=terminal_progress)` reports call/round transitions
 and bounded heartbeats while `run`/`advance` operates. Import `terminal_progress`
 and `Budget` from `recovery.accounting`. For budgeted execution each `WorkerSpec`
@@ -399,6 +456,37 @@ described below. The completed [M4 CPU audit](docs/validation/m4-cpu-gate.md)
 records the report gate and remaining M5 requirements.
 
 ## Offline contrasts and conditional repeats
+
+Course outcomes and estimands use the same read-only analysis. The saved
+population supplies the default main count: 20 course or 60 thesis; `--count 40`
+retains the nested thesis scope. Course repeats follow the five saved paired
+continuation streams; thesis repeats retain ten. No regeneration or inference
+is needed:
+
+```powershell
+python -S -m recovery analyze --estimands --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker course-worker-0.sqlite --worker course-worker-1.sqlite --output course-analysis.json.gz
+```
+
+Supply only the original physical worker files from one bound run. Missing files
+remain unknown. The [course analysis evidence](docs/validation/course-m4-outcomes-and-estimands.md)
+rejoins selected CPU scripted records against every intended 20/eight/five-world
+denominator; it establishes no empirical course result. The course diagnostic
+and cost export uses the same original workers, manifest and declared count:
+
+```powershell
+.venv/Scripts/python.exe -m recovery analyze --costs --diagnostics --estimands --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker course-worker-0.sqlite --worker course-worker-1.sqlite --as-of 2026-10-11T23:59:59+00:00 --output course-diagnostics.json.gz
+.venv/Scripts/python.exe -m tests.course_diagnostics_archive
+```
+
+Use an explicit zoned accounting clock for interrupted/open-work bounds; it
+does not filter outcomes. The example clock is the retained CPU fixture's
+reproduction clock. The public saved-checkpoint decoder needs the declared
+CPU dependencies. Nonempty history token counts remain unavailable without
+a tokenizer that reproduces the exact saved input IDs. The
+[course diagnostic/cost evidence](docs/validation/course-m4-diagnostics-and-policy-costs.md)
+records independent references, literal source provenance, full-policy costs
+and the whole C/K rule. Course uncertainty/report acceptance is described below;
+actual model/runtime and resource acceptance remains separate.
 
 [analysis.py](recovery/analysis.py) adds every prespecified contrast to the
 full offline outcome join. Use the saved complete schedule and original workers:
@@ -555,6 +643,24 @@ passes; actual GPU timing/resource admission remains M5 work.
 
 ## Offline uncertainty and missingness
 
+The course CLI forwards the saved manifest's regime. It retains the declared
+20-world/eight-world populations, five conditional repeats and actual executed
+coverage. Its precision references explicitly describe the exploratory course
+design, with four worlds per family; they are not measured power or equivalence
+claims. Direct API calls pass `regime="course"` to `uncertainty_run`,
+`uncertainty_records` or `report_run`; their default remains `"thesis"`.
+
+```powershell
+.venv/Scripts/python.exe -m recovery analyze --uncertainty --resampling-seed 20261011 --as-of 2026-10-11T23:59:59+00:00 --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker course-worker-0.sqlite --worker course-worker-1.sqlite --output course-uncertainty.json.gz
+.venv/Scripts/python.exe -m tests.course_uncertainty_archive
+```
+
+[Course uncertainty evidence](docs/validation/course-m4-uncertainty-and-missingness.md)
+reuses original CPU workers and accepted prerequisite joins, preserving unknown
+logical uses, shared physical replies and unavailable future policy costs.
+The [course report/CPU gate](docs/validation/course-m4-report-and-cpu-gate.md#completion-and-handoff)
+passes with the scope and export checks described below.
+
 [uncertainty.py](recovery/uncertainty.py) derives paired intervals, frozen-population
 sensitivity and completion coverage from the same original worker snapshots.
 `--uncertainty` includes estimands and costs; diagnostics remain optional:
@@ -665,6 +771,18 @@ includes sixteen repeated original-worker scopes and five portable complete,
 incomplete and stopped reports with all exhibits. The
 [coverage/category audit](docs/validation/m4-cpu-gate.md) records named CPU
 evidence and the remaining hardware, capability, host and resource gates.
+
+Course reports use the saved manifest's regime/count; direct `report_run` and
+`assemble_report` consumers pass `regime="course"`, matching their uncertainty
+scope. [Eight retained course scopes and five portable reports](tests/fixtures/README.md#course-synthetic-reports-and-cpu-gate)
+include complete selected, incomplete main, stopped, unexecuted and synthetic
+terminal-feasibility cases. Complete refers to the supplied synthetic scope,
+including controls and repeats; main freeze, model capability and GPU headroom
+stay unavailable. `--terminal-feasibility PATH` attaches a documented failure
+verbatim to a course `--report` without changing tables or coverage. Missing
+workers alone supply no terminal failure, and the saved synthetic example is
+not an actual model result. All course figures state the exploratory scope
+and coverage status. These checks close course M4's CPU gate only.
 
 ## Protocol attainability and capacity
 

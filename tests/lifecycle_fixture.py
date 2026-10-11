@@ -50,15 +50,16 @@ def provider_factory(trace=None, mode="normal", timeout=8):
     return partial(provide, trace=trace, mode=mode, timeout=timeout)
 
 
-def provide(view, rendered, tokenized, *, seed, settings, trace=None, mode="normal", timeout=8):
+def provide(view, rendered, tokenized, *, seed, settings, trace=None, mode="normal", timeout=8,
+            tokenizer=TOKENIZER):
     # Only permitted inputs influence scripted replies. No world or gold access.
     if trace:
         append_trace(trace, {"event": "generation", "seed": seed, "settings": settings,
             "view": asdict(view), "rendered": asdict(rendered), "tokenized": asdict(tokenized)})
     if view.slot.phase == "control":
-        raw = reply(TOKENIZER, view)
+        raw = reply(tokenizer, view)
     elif view.slot.phase == "prefix":
-        raw = event_provider(TOKENIZER)(view, rendered, tokenized)
+        raw = event_provider(tokenizer)(view, rendered, tokenized)
     elif view.slot.round_number == 2 and view.peer == 0 and mode == "hang":
         while True:
             sleep(0.05)
@@ -67,11 +68,11 @@ def provide(view, rendered, tokenized, *, seed, settings, trace=None, mode="norm
     elif view.slot.round_number == 2 and view.peer == 0 and mode == "exhausted":
         raw = RecordedFailure("infrastructure_failure", EXHAUSTED_REASON)
     elif view.slot.round_number == 2 and view.peer == 1:
-        raw = raw_reply(TOKENIZER, "{invalid lifecycle literal \ud800")
+        raw = raw_reply(tokenizer, "{invalid lifecycle literal \ud800")
     elif view.slot.round_number == 1 and view.peer == 3:
         raw = RecordedFailure("timeout", "scripted known timeout outcome")
     else:
-        raw = replay_provider(TOKENIZER, "unicode")(view, rendered, tokenized, seed=seed, settings=settings)
+        raw = replay_provider(tokenizer, "unicode")(view, rendered, tokenized, seed=seed, settings=settings)
     if raw is None:
         raw = RecordedFailure("infrastructure_failure", "provider recorded an exhausted failed slot")
     if trace:

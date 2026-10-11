@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 import sqlite3
 
-from .prompts import MAX_OUTPUT_TOKENS
+from .prompts import limits_from_settings
 from .schedule import dependency_order
 from .tasks import PEERS, Task, candidate_contract
 from .truth import changed_coordinates, exact_candidate, solve_world
@@ -349,7 +349,8 @@ def _recorded_outcome(branch, call, size, records, inputs):
     if candidate["status"] == "valid":
         value = candidate_payload(branch.task, size, call.peer, candidate)
         if (not all(validation[k] is True for k in ("json_valid", "schema_valid", "permissions_valid"))
-                or raw["truncated"] or len(raw["token_ids"]) > MAX_OUTPUT_TOKENS
+                or raw["truncated"] or len(raw["token_ids"]) >
+                    limits_from_settings(json.loads(barrier["settings_json"])).output_tokens
                 or json.loads(raw["text"])["candidate"] != value):
             raise ValueError("saved valid candidate differs from literal reply/validity")
     elif candidate["value"] is not None:

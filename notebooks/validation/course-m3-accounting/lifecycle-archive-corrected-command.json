@@ -1,0 +1,17 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "tests.course_lifecycle_archive",
+    "--write-fixture",
+    "tests/fixtures/course_lifecycle_run.zip"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T13:02:14.825735+00:00",
+  "seconds": 503.81199999991804,
+  "exit_code": 0,
+  "log": "lifecycle-archive-corrected.txt.gz",
+  "hash_seed": null
+}

@@ -1,10 +1,12 @@
 """Hand-measured ordinary ledger fixtures; no providers or execution decisions."""
 
+from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
 import json
 import sqlite3
 
 from recovery.tasks import Task
+from recovery.prompts import COURSE_LIMITS
 from tests.outcome_fixture import encode, saved_records, selection
 
 BASE = datetime(2026, 10, 6, tzinfo=timezone.utc)
@@ -14,9 +16,12 @@ def clock(seconds):
     return (BASE + timedelta(seconds=seconds)).isoformat()
 
 
-def fixture(task=Task.SORT, policies=("B", "C", "K", "F", "P_G", "Q_B", "Q_C")):
-    worlds, branches = selection(task, policies)
+def fixture(task=Task.SORT, policies=("B", "C", "K", "F", "P_G", "Q_B", "Q_C"), *, size="target"):
+    worlds, branches = selection(task, policies, size=size)
     records, inputs, attempts = saved_records(worlds, branches)
+    if size == "course":
+        for saved in inputs.values():
+            saved["settings_json"] = encode({"protocol_limits": asdict(COURSE_LIMITS), "max_new_tokens": 256})
     for row in records.values():
         row["request_tokens"] = 2
     for n, attempt in enumerate(attempts):

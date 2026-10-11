@@ -1,6 +1,6 @@
 # Course M4-T01 — Course exact outcomes and all estimands
 
-**Status:** blocked
+**Status:** done
 
 **Dependencies:** [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md).
 
@@ -29,4 +29,46 @@ Existing read-only analysis scores the course manifest and produces every prescr
 
 Reuse existing analysis fixtures plus course cohort/contract cases: duplicates, canonical keys, invalid/timeouts, incomplete parents, equal revised/sham effects, no/beneficial/harmful teammate influence and phi positive with phi_corr zero. Record exact independent expectations and commands. Analysis must not import inference, mutate worker data or provide evaluator results to peers.
 
-**Evidence:** Not yet recorded. Existing estimands are verified; course-cohort integration is pending.
+**Evidence:** Completed and verified on CPU on 11 October 2026.
+[Executed acceptance and independent expectations](../../../validation/course-m4-outcomes-and-estimands.md#completion-and-handoff)
+record 191 affected source/191 outside-checkout installed checks with zero skips,
+368 core checks with eight expected optional-package skips, seven retained
+course table scopes and all sixteen original worker scopes. Thesis analysis
+reproduces unchanged. These checks establish course outcome/estimand behavior;
+empirical outcomes and the remaining course M4 gates remain separate.
+
+**Prerequisite handoff, 11 October 2026:**
+[Course M3 accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)
+retains the [ordinary three-case bundle](../../../../tests/fixtures/course_lifecycle_run.zip)
+with saved population/schedules, literal selection IDs, original worker SQLite
+records, exact backup copies, progress and an offline correctness preview.
+The five-family selection covers every intervention/control/repeat path;
+the stopped case preserves sixteen unknown opportunities before exact resume.
+The intact earlier course worker bundle supplies ten real kill scenarios.
+These are CPU scripted records, not empirical 20-world outcomes or completed
+course estimands. Reuse existing read-only joins, original physical-response
+identities and all intended 20/eight/five-world denominators. Status main count
+already defaulted to the manifest's 20 at this prerequisite handoff; analysis
+CLI still used 60/40. Course M3's final broad acceptance made this task ready.
+The completion below records the subsequent analysis adaptation/acceptance.
+No GPU or empirical execution is authorized here.
+
+## Completion and handoff
+
+Course/M4-T01 is done. Main-count selection and repeat eligibility now follow
+saved declarations; valid raw replies honor their recorded protocol limits.
+All specified formulas and 20/eight/five-world cohorts are verified through
+independent matrices and original read-only SQLite joins. Seven derived scopes
+retain the complete course matrix, fixed family denominators and explicit
+unknowns; sixteen prerequisite fault scopes retain their incomplete schedules.
+Both source and installed acceptance pass all 191 affected methods, including
+thesis tables/reports reproduced twice. Final evidence and environment are
+[retained here](../../../validation/course-m4-outcomes-and-estimands.md#completion-and-handoff).
+
+[Course/M4-T02](M4-T02-course-diagnostics-and-policy-costs.md) is ready to verify
+course diagnostics/costs/rule behavior. Course uncertainty and the complete M4
+report/CPU gate remain open; M5 CPU packet preparation is separately ready.
+Thesis todos/defaults, approved inputs/configuration, earlier fixtures and the
+pre-existing unstaged M5 evidence edit remain preserved. This is CPU scripted
+implementation acceptance; model/GPU/pilot/main/freeze/publication gates remain
+separate.

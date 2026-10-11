@@ -20,7 +20,7 @@ import traceback
 
 from .attempts import ProcessProvider, _die_with_owner
 from .manifests import load_population, load_schedules
-from .populations import FAMILIES
+from .populations import FAMILIES, _check_regime
 from .rounds import deserialize_state
 from .runner import DurableRunner, WorkerReader
 from .schedule import _prepare_branches, dependency_order
@@ -181,7 +181,9 @@ class LocalScheduler:
     def __init__(self, workers, worlds, branches, tokenizer_factory, *, settings,
                  reverse=False, worker_rotation=0, invocation_order=PEERS,
                  timeout_seconds=120, termination_seconds=1, heartbeat_seconds=1,
-                 budget=None, release_device=None, allocation_stage=None, report=None, prior_paths=()):
+                 budget=None, release_device=None, allocation_stage=None, report=None, prior_paths=(), regime="thesis"):
+        _check_regime(regime)
+        self.regime = regime
         self.specs = tuple(workers)
         self.paths = tuple(Path(w.database).resolve() for w in self.specs)
         self.worlds, self.branches = tuple(worlds), tuple(branches)
@@ -227,7 +229,12 @@ class LocalScheduler:
         self.stop_reason = None
         self._reported_signature = self._last_reported = None
         if budget is not None:
-            from .accounting import Budget
+            from .accounting import Budget, CourseBudget
+            if (regime == "course") != isinstance(budget, CourseBudget):
+                raise ValueError("course execution requires CourseBudget; thesis retains Budget")
+            if isinstance(budget, CourseBudget) and budget.allocation_mode == "gpu" and self.allocation_stage != (
+                    "development" if all(w.development for w in self.worlds) else "main"):
+                raise ValueError("course GPU allocation stage must match the saved development/main scope")
             devices = [w.allocated_device for w in self.specs]
             if (not isinstance(budget, Budget) or not callable(release_device) or not all(devices)
                     or len(set(devices)) != len(devices)
@@ -238,16 +245,18 @@ class LocalScheduler:
 
     @classmethod
     def from_manifests(cls, workers, population_path, schedule_path, tokenizer_factory, *,
-                       stage="development", count=60, **kwargs):
+                       stage="development", count=None, **kwargs):
         population = load_population(population_path)
         schedules = load_schedules(schedule_path, population)
+        if kwargs.pop("regime", population.regime) != population.regime:
+            raise ValueError("worker regime differs from the saved population/schedule")
         if stage == "development":
             worlds, branches = population.development, schedules.development
         elif stage == "main":
             worlds, branches = population.worlds(count), schedules.main_for(population, count)
         else:
             raise ValueError("choose the saved development or complete main schedule")
-        return cls(workers, worlds, branches, tokenizer_factory, **kwargs)
+        return cls(workers, worlds, branches, tokenizer_factory, regime=population.regime, **kwargs)
 
     def __enter__(self):
         try:
@@ -257,7 +266,8 @@ class LocalScheduler:
                     if path.exists():
                         self._confirm_provider_exit(path)
                     with DurableRunner(path, None) as runner:
-                        runner.store.bind_run(self.worlds, self.branches, self.settings, self.bounds, budget=self.budget)
+                        runner.store.bind_run(self.worlds, self.branches, self.settings, self.bounds,
+                                              budget=self.budget, regime=self.regime)
             self.readers = [WorkerReader(path) for path in self.paths]
             self.status()  # Reject old drift/duplicate ownership before providers can run.
             if self.budget is not None:
@@ -388,28 +398,36 @@ class LocalScheduler:
                               settings=self.settings, inflight=self.inflight)
 
     def progress(self):
-        from .accounting import progress_snapshot
+        from .accounting import CourseBudget, progress_snapshot
         return progress_snapshot(self.worlds, self.branches, self.paths, budget=self.budget,
             inflight=self.inflight, settings=self.settings, prior_paths=self.prior_paths,
+            regime=self.regime,
+            planned_devices=tuple(s.allocated_device for s in self.specs) if isinstance(self.budget, CourseBudget) else (),
             gate=self.stop_reason or "M3 CPU verification; M5 inference gate open")
 
     def _allocate(self):
-        from .accounting import BudgetStop, timestamp
+        from .accounting import BudgetStop, CourseBudget, course_admission, timestamp
         from .storage import WorkerStore
         snapshot = self.progress()
         resources = snapshot["resources"]
         if resources["active_devices"]:
             raise BudgetStop("preceding allocations require confirmed provider release")
-        available = (resources["remaining_ceiling_gpu_hours"]
-                     - sum(resources["remaining_reserves_gpu_hours"].values())) * 3600 - self.budget.overhead_seconds
+        if isinstance(self.budget, CourseBudget):
+            self.stop_reason, available = course_admission(resources, snapshot["forecast"], self.budget,
+                                                         self.allocation_stage, len(self.specs))
+        else:
+            available = (resources["remaining_ceiling_gpu_hours"]
+                         - sum(resources["remaining_reserves_gpu_hours"].values())) * 3600 - self.budget.overhead_seconds
         now = datetime.now(timezone.utc)
         previous_idle = sum(now.timestamp() - timestamp(spec.allocated_at) for spec in self.specs if spec.allocated_at)
         if any(spec.allocated_at and timestamp(spec.allocated_at) > now.timestamp() for spec in self.specs):
             raise ValueError("provider allocation cannot start in the future")
         available -= previous_idle
         duration = available / len(self.specs) - self.budget.shutdown_seconds
-        if duration <= 0:
+        if duration <= 0 and not self.stop_reason:
             self.stop_reason = "budget_exhausted_before_allocation"
+        if self.stop_reason:
+            duration = 0
         self.deadline = monotonic() + max(0, duration)
         deadline_at = (now + timedelta(seconds=duration)).isoformat() if duration > 0 else None
         for index, spec in enumerate(self.specs):
@@ -436,14 +454,22 @@ class LocalScheduler:
         self._check_deadline()
         if self.budget is None:
             return
-        from .accounting import BudgetStop
+        from .accounting import BudgetStop, CourseBudget, course_admission
         snapshot = self.progress()
         forecast, resources = snapshot["forecast"], snapshot["resources"]
-        available = resources["remaining_ceiling_gpu_hours"] - sum(resources["remaining_reserves_gpu_hours"].values())
+        available_seconds = None
+        if isinstance(self.budget, CourseBudget):
+            self.stop_reason, available_seconds = course_admission(resources, forecast, self.budget,
+                                                  self.allocation_stage, len(resources["active_devices"]))
+            if self.stop_reason:
+                self._report(force=True)
+                raise BudgetStop(self.stop_reason)
+        available = (available_seconds + self.budget.overhead_seconds) / 3600 if available_seconds is not None else (
+            resources["remaining_ceiling_gpu_hours"] - sum(resources["remaining_reserves_gpu_hours"].values()))
         shutdown = len(resources["active_devices"]) * self.budget.shutdown_seconds / 3600
-        if self.allocation_stage == "main" and not forecast["available"]:
+        if not isinstance(self.budget, CourseBudget) and self.allocation_stage == "main" and not forecast["available"]:
             self.stop_reason = "remaining_forecast_unavailable"
-        elif forecast["available"] and forecast["remaining_gpu_hours"][1] + shutdown >= available:
+        elif not isinstance(self.budget, CourseBudget) and forecast["available"] and forecast["remaining_gpu_hours"][1] + shutdown >= available:
             self.stop_reason = "remaining_forecast_exceeds_budget"
         else:
             # Serial workers can use two attempts only for interrupted calls.

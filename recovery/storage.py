@@ -14,7 +14,7 @@ import os
 import sqlite3
 
 from .manifests import _branch
-from .prompts import RenderedRequest, TokenizedRequest, limits_from_settings
+from .prompts import COURSE_LIMITS, RenderedRequest, TokenizedRequest, limits_from_settings
 from .protocol import GeneratedReply
 from .replay import SavedRound
 from .rounds import RoundRequests, deserialize_state, snapshot_bytes, validate_round
@@ -89,6 +89,7 @@ class WorkerStore:
         self.parents = tuple(parents)
         self.connection = connect(self.path, readonly=readonly)
         if readonly:
+            self._read_run_inputs()
             return
         self.connection.executescript("""
             CREATE TABLE IF NOT EXISTS round_inputs (
@@ -164,19 +165,40 @@ class WorkerStore:
                 self.connection.execute("ALTER TABLE provider_processes ADD COLUMN device_visibility TEXT")
             if "backend_json" not in process_columns:
                 self.connection.execute("ALTER TABLE provider_processes ADD COLUMN backend_json TEXT")
+        self._read_run_inputs()
+
+    def _read_run_inputs(self):
+        # Older standalone round files need no migration to remain readable.
+        exists = self.connection.execute("SELECT 1 FROM sqlite_master WHERE name='run_inputs'").fetchone()
+        row = self.connection.execute("SELECT inputs_json FROM run_inputs WHERE singleton=1").fetchone() if exists else None
+        self.run_inputs = json.loads(row[0]) if row else None
 
     def close(self):
         self.connection.close()
 
-    def bind_run(self, worlds, branches, settings, bounds, *, budget=None):
+    def bind_run(self, worlds, branches, settings, bounds, *, budget=None, regime="thesis"):
         """Reject restart input drift before admitting any new scheduled work.
 
         The same literal run inputs bind each worker file; placement/order are
         operational choices and do not change these scientific inputs.
         """
+        from .populations import _check_regime
+        _check_regime(regime)
+        if budget is not None:
+            from .accounting import CourseBudget
+            if (regime == "course") != isinstance(budget, CourseBudget):
+                raise ValueError("course bindings require CourseBudget; thesis retains its budget representation")
+        if regime == "course":
+            from .inference import QWEN_4B
+            if (limits_from_settings(settings) != COURSE_LIMITS
+                    or (settings.get("model"), settings.get("revision")) != (QWEN_4B.model, QWEN_4B.revision)
+                    or settings.get("generation", {}).get("max_new_tokens") != COURSE_LIMITS.output_tokens):
+                raise ValueError("course workers require explicit course limits and pinned 4B settings")
         inputs = {"worlds": [asdict(w) for w in sorted(worlds, key=lambda w: w.world_id)],
             "branches": [asdict(b) for b in sorted(branches, key=lambda b: b.branch_id)],
             "settings": json.loads(settings_json(settings)), "bounds": bounds}
+        if regime == "course":
+            inputs["regime"] = regime  # Old thesis bindings retain their exact representation.
         if budget is not None:
             inputs["budget"] = asdict(budget)
         payload = record_json(inputs)
@@ -185,6 +207,25 @@ class WorkerStore:
             if previous is not None and previous[0] != payload:
                 raise ValueError("worker run inputs/settings/attempt bounds differ; resume the saved configuration")
             self.connection.execute("INSERT OR IGNORE INTO run_inputs VALUES (1,?)", (payload,))
+        self._read_run_inputs()
+
+    def check_run(self, world, branch, settings):
+        """Check supplied inputs against the existing worker binding, if present."""
+        if self.run_inputs is not None:
+            worlds = {w["world_id"]: w for w in self.run_inputs["worlds"]}
+            branches = {_branch(b).branch_id: b for b in self.run_inputs["branches"]}
+            if (record_json(worlds.get(world.world_id)) != record_json(asdict(world))
+                    or record_json(branches.get(branch.branch_id)) != record_json(asdict(branch))
+                    or settings_json(self.run_inputs["settings"]) != settings_json(settings)):
+                raise ValueError("worker input/settings/schedule differ from the saved configuration")
+
+    def assert_parent_scope(self, parent, *, required=False):
+        """Course parents must belong to the same literal run, regardless of IDs."""
+        course = any(s.run_inputs is not None and s.run_inputs.get("regime", "thesis") == "course"
+                     for s in (self, parent))
+        if (required or course) and (self.run_inputs is None or parent.run_inputs is None
+                                    or self.run_inputs != parent.run_inputs):
+            raise ValueError("foreign or unbound worker bundle/configuration cannot supply a course parent")
 
     def allocation_started(self, device, stage, *, budget=None, deadline_at=None,
                            billing=None, started_at=None):
@@ -234,6 +275,8 @@ class WorkerStore:
         for store in (self, *self.parents):
             row = store.connection.execute(f"SELECT * FROM {table} WHERE {where}", values).fetchone()
             if row is not None:
+                if store is not self:
+                    self.assert_parent_scope(store)
                 matches.append((store, dict(row)))
         if len(matches) != 1:
             raise ValueError(f"{'missing' if not matches else 'duplicate'} saved {table} identity: {values}")

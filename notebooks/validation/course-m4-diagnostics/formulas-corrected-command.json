@@ -1,0 +1,23 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.test_course_diagnostics",
+    "tests.test_information",
+    "tests.test_information_run",
+    "tests.test_costs",
+    "tests.test_costs_run",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T16:15:08.245675+00:00",
+  "source_head": "edcaa2b2adda68bb6876f5b8c130915759ce5d4f",
+  "seconds": 111.43699999991804,
+  "exit_code": 0,
+  "log": "formulas-corrected.txt.gz",
+  "hash_seed": null,
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m4-diagnostics-20261011"
+}

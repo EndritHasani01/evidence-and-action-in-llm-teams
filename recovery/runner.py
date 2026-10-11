@@ -17,7 +17,7 @@ from langgraph.graph import END, START, StateGraph
 from .attempts import ProcessProvider
 from .events import start_continuation
 from .manifests import _branch
-from .prompts import limits_from_settings, render_request, tokenize_request
+from .prompts import COURSE_LIMITS, limits_from_settings, render_request, tokenize_request
 from .protocol import GeneratedReply, failed_reply, validate_reply
 from .replay import commit_continuation_round, obtain_continuation_round
 from .rounds import (RoundResult, commit_round, deserialize_state, initial_branch,
@@ -148,7 +148,8 @@ class DurableRunner:
 
     def start(self, world, branch, *, settings: dict):
         """Commit a new original prefix or single applied event in a fresh thread."""
-        limits_from_settings(settings)
+        limits = limits_from_settings(settings)
+        self.store.check_run(world, branch, settings)
         if branch not in _prepare_branches((world,)) or branch.phase not in ("prefix", "continuation"):
             raise ValueError("durable rounds require a scheduled four-peer branch")
         if branch.phase == "prefix":
@@ -156,10 +157,13 @@ class DurableRunner:
         else:
             parents = []
             if self.saver.get_tuple(self._config(branch.prefix_parent)) is not None:
+                if self._checkpoint(branch.prefix_parent).values["settings_json"] != settings_json(settings):
+                    raise ValueError("prefix parent settings differ")
                 parents.append(self.state(branch.prefix_parent))
             for reader in self.dependencies:
                 values = reader.values(branch.prefix_parent)
                 if values is not None:
+                    self.store.assert_parent_scope(reader.store, required=limits == COURSE_LIMITS)
                     if values["settings_json"] != settings_json(settings):
                         raise ValueError("prefix parent settings differ")
                     parents.append(deserialize_state(values["committed"]))
@@ -201,6 +205,7 @@ class DurableRunner:
         """One durable full-information call; no peer thread or delivery effects."""
         if branch not in _prepare_branches((world,)) or branch.phase != "control":
             raise ValueError("control requires its scheduled original/revised world")
+        self.store.check_run(world, branch, settings)
         view = initial_view(world.world if branch.event == "original" else world.event_world(branch.event), None)
         limits = limits_from_settings(settings)
         rendered = render_request(view, limits=limits)

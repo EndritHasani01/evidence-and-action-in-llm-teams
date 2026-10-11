@@ -1,0 +1,18 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.course_lifecycle_checks.CourseLifecycleTests.test_hand_costs_uncertain_retry_replays_failed_slots_and_reopened_backups",
+    "tests.course_lifecycle_checks.CourseLifecycleTests.test_budget_deadline_preserves_unknowns_releases_and_resumes_original_course_scope",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T12:52:41.464893+00:00",
+  "seconds": 18.95299999997951,
+  "exit_code": 0,
+  "log": "lifecycle-focused-initial.txt.gz",
+  "hash_seed": null
+}

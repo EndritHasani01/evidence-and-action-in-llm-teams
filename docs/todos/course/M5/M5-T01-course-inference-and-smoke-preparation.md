@@ -1,6 +1,6 @@
 # Course M5-T01 — Course inference and smoke preparation
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md), [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md). This is CPU preparation; actual GPU work also requires the course M4 gate.
 
@@ -34,3 +34,21 @@ The existing direct backend supports the adopted 4B course regime, and a concret
 Use native 4B metadata/tokenizer and saved generated-token fixtures, mocks for load/state/device ownership, installed-source verification and the course capacity proof. Check current maintained loader/package/provider sources only where needed. Record commands, source/candidate identities, limits, packet locations and pending actual-host checks; do not rerun unchanged generic preflight without an affected requirement.
 
 **Evidence:** Not yet recorded. Existing preparation is reusable; course support, complete-envelope admission and model smoke remain pending.
+
+**Prerequisite handoff, 11 October 2026:**
+[Course M3 accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)
+supplies the existing saved `CourseBudget` contract, original attempt/process/
+allocation joins, conservative planned-device forecast admission, independent
+deadline and confirmed-release semantics. Pass `regime="course"`; preserve
+literal 4B/256/64 settings and run bindings. Supplemental documented prior bounds
+cover only spending absent from supplied historical worker ledgers. Unknown
+prior/smoke usage or setup attribution withholds admission; synthetic CPU
+timings and assigned zero-prior test inputs establish no T4 throughput or quota.
+The complete main forecast excludes recorded loading reserved separately while
+physical/policy costs retain it. Recover actual prior allocation and cumulative
+smoke usage, verify provider/billing/release terms, and prepare a new committed
+course source packet without changing historical source-v2/results. The complete
+156,251-token native bound is preparation input, not accepted model memory.
+Course M3's final broad acceptance passes; CPU preparation is ready.
+Course M4 and the runtime/resource/authorization gates still precede
+any GPU allocation/inference.

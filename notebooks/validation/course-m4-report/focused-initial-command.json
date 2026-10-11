@@ -1,0 +1,20 @@
+{
+  "command": [
+    ".\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.test_course_report",
+    "tests.test_report",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T18:16:37.972796+00:00",
+  "source_head": "7541d0cf051cd3f37cd6b320e9fc5f35bc6ca29c",
+  "seconds": 8.687999999849126,
+  "exit_code": 1,
+  "log": "focused-initial.txt.gz",
+  "hash_seed": "37",
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m4-report-20261011\\focused"
+}

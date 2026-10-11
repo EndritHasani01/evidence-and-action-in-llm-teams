@@ -1,0 +1,22 @@
+{
+  "command": [
+    ".\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "tests.course_report_archive",
+    "--write-fixture",
+    "tests/fixtures/course_report_tables.json.gz",
+    "--export",
+    "E:\\CodexTemp\\recovery-course-m4-report-20261011\\portable-corrected",
+    "--figures"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T18:20:40.228490+00:00",
+  "source_head": "7541d0cf051cd3f37cd6b320e9fc5f35bc6ca29c",
+  "seconds": 297.2819999998901,
+  "exit_code": 0,
+  "log": "archive-create-corrected.txt.gz",
+  "hash_seed": "37",
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m4-report-20261011\\archive"
+}

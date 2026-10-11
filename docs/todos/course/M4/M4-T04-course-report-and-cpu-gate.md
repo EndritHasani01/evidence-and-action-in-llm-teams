@@ -1,6 +1,6 @@
 # Course M4-T04 — Course synthetic report and pre-GPU CPU gate
 
-**Status:** blocked
+**Status:** done
 
 **Dependencies:** [M4-T02](M4-T02-course-diagnostics-and-policy-costs.md), [M4-T03](M4-T03-course-uncertainty-and-missingness.md).
 
@@ -31,4 +31,32 @@ Complete, incomplete and terminal-feasibility course records produce reproducibl
 
 Use the course scripted lifecycle bundle and focused synthetic ties, empty/duplicate case selections, wrong identical answers, regression/fragmentation, shared unknowns and stop/feasibility reports. Reopen exports in a clean CPU environment and verify source links, plotting data and lack of inference imports/writes. Record the audit/reproduction locations and outstanding hardware limits.
 
-**Evidence:** Not yet recorded. Existing reports/CPU gates are reusable; course integrated acceptance remains pending.
+**Evidence:** [Report and course M1–M4 CPU acceptance](../../../validation/course-m4-report-and-cpu-gate.md#completion-and-handoff).
+Completed on 11 October 2026 from `b858d99`, with accepted source `a068af9`:
+52 affected source/52 outside-checkout installed methods and 33 dependency-free
+methods pass with zero skips. Eight original-worker/synthetic scopes reproduce
+twice; five portable reports retain 35 byte-identical SVG/PNG pairs. All five
+accepted thesis portable reports reassemble/export byte-identically. The audit
+links all 22 plan coverage rows and seven consistency categories to accepted
+course evidence; 1,616 protected starting files and the unrelated unstaged M5
+edit remain unchanged. Original workers stay read-only; missing workers remain
+absent, recorded failures stay zero and intended unknowns stay unavailable.
+Course/M5-T01 CPU preparation is ready. GPU/model admission, resources, smoke,
+capability, pilot, freeze, main execution and delivery remain separate gates.
+The synthetic terminal-feasibility example does not unblock empirical M6 work.
+
+**Prerequisite handoff, 11 October 2026:**
+[M4-T03 uncertainty acceptance](../../../validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff)
+passes 70 source/70 installed methods with zero skips and nineteen focused
+dependency-free methods. Reuse the original lifecycle workers and the
+[seven uncertainty scopes](../../../../tests/fixtures/course_uncertainty_tables.json.gz),
+with seed `20261011`, raw world/family contrasts, original response identities
+and intended 20/eight/five-world cohorts. The full main join retains 2,170
+recorded/4,110 unknown uses; theta/phi sensitivity is [-1.5,1.5]/[-0.75,0.75].
+Intended intervals are unavailable and five-world complete-case zeros remain
+descriptive. Unknown eligibility, incomplete trajectories and future policy
+costs remain explicit. API report consumers pass `regime="course"`; the CLI
+forwards the manifest regime and exploratory precision references. Narrow
+report-scope checks do not close this integrated report/CPU gate. Original
+thesis report/uncertainty outputs reproduce unchanged, with no inference or
+scientific/frozen-configuration change.

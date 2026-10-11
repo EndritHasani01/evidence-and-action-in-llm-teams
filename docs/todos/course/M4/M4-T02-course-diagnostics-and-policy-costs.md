@@ -1,6 +1,6 @@
 # Course M4-T02 — Course diagnostics, retained work and policy costs
 
-**Status:** blocked
+**Status:** done
 
 **Dependencies:** [M4-T01](M4-T01-course-outcomes-and-estimands.md).
 
@@ -31,4 +31,27 @@ Course records explain repair, preserved work, interaction and cost with the exi
 
 Read the course M3 bundle and original checkpoints without mutation or inference. Compare independent coordinate/inventory/cost references and reject mismatched source provenance. Record commands, raw unchanged excerpts, rubric/counterexample scope and derived table locations; retain synthetic labels.
 
-**Evidence:** Not yet recorded. Existing diagnostic/cost code is reused; course-cohort verification is pending.
+**Evidence:** [Completed CPU acceptance](../../../validation/course-m4-diagnostics-and-policy-costs.md#completion-and-handoff), 11 October 2026.
+Existing diagnostic/cost code is reused unchanged. Independent course formulas,
+seven retained lifecycle table scopes, sixteen original fault scopes and the
+native binding pass read-only reconstruction. Complete affected source and
+outside-checkout installed suites each pass 217 methods with zero skips; 394
+core methods complete with twelve expected checkpoint-package skips. The fixed
+20/eight/five-world populations, unknown diagnostics/costs, conservative source
+rubric and complete initial-coverage C/K selection remain explicit. Original
+thesis M4 outputs reproduce twice; thesis defaults/todos and the local M5 edit
+are preserved. Course/M4-T03 is ready; uncertainty/report and model/GPU/empirical
+gates remain separate.
+
+**Prerequisite handoff, 11 October 2026:**
+[Course outcome/estimand acceptance](../../../validation/course-m4-outcomes-and-estimands.md#completion-and-handoff)
+passes 191 source/191 installed methods with zero skips and 368 core methods
+with eight expected skips. Reuse the original course lifecycle/worker ZIPs and
+[seven derived table scopes](../../../../tests/fixtures/course_analysis_tables.json.gz),
+with 20/eight/five-world populations, literal raw/validated joins and original
+physical-response IDs. The full intended join has 2,170 recorded/4,110 unknown
+slots; intended primaries remain unknown, with complete-case zeros separately
+labeled. Earlier fault probes retain 312 unknown uses; unexecuted uses remain
+unknown in intended populations. Analysis CLI now infers the manifest's count.
+Course-specific diagnostic/cost/rule acceptance remains this task's work;
+remaining M4/M5 gates and GPU/empirical authorization remain separate.

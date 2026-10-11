@@ -1,0 +1,16 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "tests.lifecycle_archive",
+    "--audit-only"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T11:23:34.768993+00:00",
+  "seconds": 86.23399999993853,
+  "exit_code": 0,
+  "log": "unchanged-lifecycle-audit.txt.gz",
+  "hash_seed": null
+}

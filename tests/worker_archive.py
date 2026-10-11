@@ -26,7 +26,7 @@ def stable_cases(archive):
         inputs = sorted((row for w in case["workers"] for row in w["round_inputs"]),
                         key=lambda r: (r["branch_id"], r["round_number"]))
         attempts = sorted(({k: v for k, v in row.items() if k not in clocks
-                            and not (k == "peak_memory_bytes" and v is None)}
+                            and not (k in ("peak_memory_bytes", "backend_json") and v is None)}
                            for w in case["workers"] for row in w["attempts"]), key=lambda r: (r["call_id"], r["number"]))
         instrumentation = sorted(record_json({k: e[k] for k in
             ("seed", "rng_probe", "view", "rendered", "tokenized", "settings")})

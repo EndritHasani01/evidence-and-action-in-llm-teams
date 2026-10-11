@@ -1,0 +1,18 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m4-diagnostics/verify_diagnostics.py",
+    "--output",
+    "notebooks/validation/course-m4-diagnostics/implementation-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T16:32:12.835724+00:00",
+  "source_head": "a106941b69d75aea5514e89a2679787f2e1a1052",
+  "seconds": 2.25,
+  "exit_code": 0,
+  "log": "implementation-audit.txt.gz",
+  "hash_seed": null,
+  "temporary_root": null
+}

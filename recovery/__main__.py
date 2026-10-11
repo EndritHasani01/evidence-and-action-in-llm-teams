@@ -46,14 +46,17 @@ def main() -> int:
     status.add_argument("--worker", action="append", required=True, type=Path, help="one path per physical worker; missing files remain unknown")
     status.add_argument("--prior-worker", action="append", default=[], type=Path, help="previous measured run files, charged once")
     status.add_argument("--stage", choices=("development", "main"), default="development")
-    status.add_argument("--count", choices=(60, 40), type=int, default=60)
+    status.add_argument("--count", choices=(20, 60, 40), type=int,
+                        help="complete declared main scope (default from the saved population)")
+    status.add_argument("--as-of", help="explicit zoned timestamp for reproducible read-only accounting")
     status.add_argument("--json", action="store_true", help="include every scheduled slot, parent, cost and resumable branch")
     analyze = commands.add_parser("analyze", help="offline exact outcomes, coordinate diagnostics and trajectories")
     analyze.add_argument("--manifest", required=True, type=Path)
     analyze.add_argument("--schedule", required=True, type=Path)
     analyze.add_argument("--worker", action="append", required=True, type=Path, help="authoritative workers only; missing files leave unknown slots")
     analyze.add_argument("--stage", choices=("development", "main"), default="main")
-    analyze.add_argument("--count", choices=(60, 40), type=int, default=60)
+    analyze.add_argument("--count", choices=(20, 60, 40), type=int,
+                         help="complete declared main scope (default from the saved population)")
     analyze.add_argument("--output", required=True, type=Path, help="new derived JSON or JSON.gz table export")
     analyze.add_argument("--estimands", action="store_true", help="include prespecified contrasts and conditional repeatability")
     analyze.add_argument("--diagnostics", action="store_true", help="include information/work inventories and deterministic references")
@@ -61,6 +64,7 @@ def main() -> int:
     analyze.add_argument("--uncertainty", action="store_true", help="include paired intervals/missingness; also includes estimands and costs")
     analyze.add_argument("--report", action="store_true", help="export seven synthetic-validation exhibits, all M4 tables and exact cases to a new directory; requires --as-of")
     analyze.add_argument("--figures", action="store_true", help="render report SVG/PNG figures with optional Matplotlib; requires --report")
+    analyze.add_argument("--terminal-feasibility", type=Path, help="attach a documented terminal gate failure verbatim; requires a course --report; does not change coverage or admit execution")
     analyze.add_argument("--resampling-seed", type=int, help="saved nonnegative world-bootstrap seed; requires --uncertainty or --report (default 20261006)")
     analyze.add_argument("--as-of", help="explicit zoned accounting timestamp for reproducible costs; required for --report")
     analyze.add_argument("--tokenizer", type=Path, help="local matching tokenizer metadata for exact diagnostic history counts; no weights/downloads")
@@ -84,8 +88,9 @@ def main() -> int:
         try:
             population = load_population(args.manifest)
             schedules = load_schedules(args.schedule, population)
-            worlds = population.development if args.stage == "development" else population.worlds(args.count)
-            branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
+            count = population.main_counts[0] if args.count is None else args.count
+            worlds = population.development if args.stage == "development" else population.worlds(count)
+            branches = schedules.development if args.stage == "development" else schedules.main_for(population, count)
             if args.tokenizer and not (args.diagnostics or args.report):
                 raise ValueError("--tokenizer requires --diagnostics or --report")
             if args.as_of and not (args.costs or args.uncertainty or args.report):
@@ -94,6 +99,8 @@ def main() -> int:
                 raise ValueError("--resampling-seed requires --uncertainty or --report")
             if args.figures and not args.report:
                 raise ValueError("--figures requires --report")
+            if args.terminal_feasibility and (not args.report or population.regime != "course"):
+                raise ValueError("--terminal-feasibility requires a course --report")
             tokenizer = None
             if args.tokenizer:
                 from transformers import AutoTokenizer
@@ -102,14 +109,18 @@ def main() -> int:
                 from .report import report_run, write_report
                 from .uncertainty import DEFAULT_SEED
                 result = report_run(worlds, branches, args.worker, now=args.as_of,
+                    regime=population.regime,
+                    terminal_feasibility=dict(source=args.terminal_feasibility.name,
+                        text=args.terminal_feasibility.read_bytes().decode("utf-8")) if args.terminal_feasibility else None,
                     seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed, tokenizer=tokenizer,
                     provenance=dict(manifest=args.manifest.name, schedule=args.schedule.name,
-                        workers=[p.name for p in args.worker], stage=args.stage, count=args.count if args.stage == "main" else None))
+                        workers=[p.name for p in args.worker], stage=args.stage, count=count if args.stage == "main" else None))
                 write_report(args.output, result, figures=args.figures)
                 tables = result["tables"]
             elif args.uncertainty:
                 from .uncertainty import DEFAULT_SEED, uncertainty_run
                 tables = uncertainty_run(worlds, branches, args.worker, now=args.as_of,
+                    regime=population.regime,
                     seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed,
                     diagnostics=args.diagnostics, tokenizer=tokenizer)
             elif args.costs:
@@ -133,13 +144,15 @@ def main() -> int:
         return 0
     if args.command == "status":
         from .accounting import format_status, progress_snapshot
+        from sqlite3 import Error as SQLiteError
         try:
             population = load_population(args.manifest)
             schedules = load_schedules(args.schedule, population)
             worlds = population.development if args.stage == "development" else population.worlds(args.count)
             branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
-            snapshot = progress_snapshot(worlds, branches, args.worker, prior_paths=args.prior_worker)
-        except (OSError, ValueError) as error:
+            snapshot = progress_snapshot(worlds, branches, args.worker, prior_paths=args.prior_worker,
+                                         now=args.as_of, regime=population.regime)
+        except (OSError, ValueError, SQLiteError) as error:
             parser.error(str(error))
         print(json.dumps(snapshot, ensure_ascii=True, allow_nan=False, sort_keys=True) if args.json else format_status(snapshot))
         return 0
@@ -227,8 +240,11 @@ def main() -> int:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.durable_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.attempt_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.worker_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_worker_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.accounting_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_accounting_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.lifecycle_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_lifecycle_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.inference_checks"))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     return 0 if result.wasSuccessful() else 1

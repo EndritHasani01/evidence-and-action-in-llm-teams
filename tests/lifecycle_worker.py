@@ -33,18 +33,26 @@ def main():
     parser.add_argument("--marker", type=Path, required=True)
     parser.add_argument("--trace", type=Path, required=True)
     parser.add_argument("--policy", required=True)
+    parser.add_argument("--regime", choices=("thesis", "course"), default="thesis")
     parser.add_argument("--round", type=int, required=True)
     parser.add_argument("--peer", type=int, default=0)
     parser.add_argument("--point", choices=("before_raw", "after_raw", "validation", "staging",
                         "before_checkpoint", "after_checkpoint", "after_boundary", "after_timeout"), required=True)
     args = parser.parse_args()
-    world = case_world(Task.SORT)
-    branch = scheduled(world, "revision", args.policy)
+    tokenizer, settings, factory = TOKENIZER, SETTINGS, provider_factory
+    if args.regime == "course":
+        from tests import course_worker_cases as course
+        world = course.sort_world()
+        branch = course.scheduled(world, "revision", args.policy)
+        tokenizer, settings, factory = course.TOKENIZER, course.SETTINGS, course.provider_factory
+    else:
+        world = case_world(Task.SORT)
+        branch = scheduled(world, "revision", args.policy)
     timeout = 2 if args.point == "after_timeout" else BOUNDS["timeout_seconds"]
     bounds = dict(BOUNDS, timeout_seconds=timeout)
-    provider = ProcessProvider(partial(provider_factory, str(args.trace),
+    provider = ProcessProvider(partial(factory, str(args.trace),
                                "hang" if args.point == "after_timeout" else "normal", timeout), **bounds)
-    with _own_file(args.path), DurableRunner(args.path, TOKENIZER, provider, dependencies=(args.parent,)) as runner:
+    with _own_file(args.path), DurableRunner(args.path, tokenizer, provider, dependencies=(args.parent,)) as runner:
         def pause(**detail):
             write_json(args.marker, {"point": args.point, "branch_id": branch.branch_id,
                 "round": args.round, "bounds": bounds,
@@ -103,7 +111,7 @@ def main():
             return result
         runner.saver.put = checkpoint
         with patch.object(replay, "validate_round", during_validation), patch.object(replay, "stage_effects", during_staging):
-            runner.start(world, branch, settings=SETTINGS)
+            runner.start(world, branch, settings=settings)
             runner.run_round(branch.branch_id, args.round)
     raise AssertionError("controller did not reach requested lifecycle boundary")
 

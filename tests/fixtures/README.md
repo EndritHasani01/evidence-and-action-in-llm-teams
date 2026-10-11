@@ -1157,3 +1157,277 @@ records exact commands, metadata, passing regressions, retained failures/fixes,
 installed module provenance and preservation audits. This is CPU scripted
 attainability and complete native-token capacity. No model weights, GPU/model
 memory/headroom, capability, pilot, main outcomes or freeze are accepted here.
+
+## Course durable workers and bounded failures
+
+[course_worker_run.zip](course_worker_run.zip) uses the existing ordinary bundle
+layout: saved population/schedule JSON, worker SQLite backups and derived
+selection/progress/kill evidence. Its 16 CPU scenarios retain 1,422 completed
+logical calls, 1,278 physical generation slots, 1,281 attempts, 144 exact parent
+replays and five uncertain attempts. Ten real controller kills cover raw
+persistence, validation/staging, event-boundary and delivery commits, held Q
+prose, a known timeout and two interrupted attempts without a third. These are
+validation scenario totals, not coverage of the 5,752/6,280 main schedule.
+
+The checks exercise explicit course bindings, equal-looking foreign/unbound
+parent rejection, all 50 saved control shapes, serial workers with reversed
+order/placement, idle ownership exclusion, overflow without truncation, and
+exact valid/invalid/failed resume. Original parent records remain read-only;
+branch-local queues/effects and native request arrays remain in existing records.
+Backups reopen with equal scientific/progress records.
+
+[course_native_worker_run.zip](course_native_worker_run.zip) separately retains
+four prefix rounds, two B/C parent rounds, eight P_G/Q_B replay uses and all four
+Q_B rounds with the local pinned 4B tokenizer. Twenty re-rendered native requests
+and backup/reopen equality pass. The check uses existing auxiliary CPU tokenizer
+packages with the repository SQLite environment; no weights or GPU are loaded.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.course_worker_checks -v
+.venv/Scripts/python.exe -X utf8 -m tests.course_worker_archive --audit-only
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -X utf8 -m tests.course_worker_archive
+```
+
+`--write-fixture NEW_BUNDLE.zip` exclusively creates a new ordinary bundle.
+Reproduction compares literal calls, requests/tokens/settings/seeds/parents,
+committed transitions and attempt outcomes; observed clocks/PIDs/placement are
+retained but need not be identical. Existing failure, worker and lifecycle
+fixtures remain unchanged. See the
+[course durability evidence](../../docs/validation/course-m3-durable-workers-and-failures.md)
+for commands and execution boundaries. The later M3-T02 evidence below closes
+the combined CPU lifecycle gate; these records are no pretrained-model,
+GPU/runtime, pilot, freeze, main-experiment or publication acceptance.
+
+## Course accounting and scripted lifecycle
+
+The downstream [course outcomes/estimands archive](course_analysis_tables.json.gz)
+is a derived export from this original lifecycle, not another run or an
+authoritative worker store. See the [course analysis section](#course-outcomes-and-estimands)
+for read-only reproduction.
+
+[course_lifecycle_run.zip](course_lifecycle_run.zip) retains three ordinary CPU
+cases with saved course population/schedules, literal selected IDs, worker
+SQLite records, backup copies, progress and an offline correctness preview.
+One main world per family executes all interventions, controls and repeat paths:
+145 branches, 2,170 logical calls, 1,978 generations and 192 exact replays. Across
+all three validation cases there are 2,332 completed logical calls, 2,124 distinct
+generations, 2,126 attempts, 208 replays and two uncertain attempts. The existing
+course worker bundle supplies ten independently audited real kill scenarios.
+
+The hand case assigns 261–263 physical attempt seconds and 400 allocated
+synthetic seconds, partitioned into setup 2, interruption 1, attempts 258,
+uncertain work 2 and assigned idle 137. Provider billing and optional memory
+remain separate. Hypothetical policies pay the original prefix and all sixteen
+logical continuations, including original replay costs and F's abandoned prefix.
+The stopped case retains sixteen unknown opportunities and one uncertain attempt;
+release is acknowledged and resume uses the same scope/settings with one retry.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.course_accounting_checks -v
+.venv/Scripts/python.exe -X utf8 -m tests.course_lifecycle_archive --audit-only
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -X utf8 -m tests.course_lifecycle_archive
+```
+
+Fresh-process reproduction compares scientific inputs, requests/tokens/settings,
+seeds, raw/validation outcomes, replay identities and committed branch-local
+states. Operational clocks/PIDs may differ. Backup/reopen and packaged offline
+audits are exact; `--write-fixture NEW_BUNDLE.zip` rejects an existing destination.
+The complete 5,752/6,280 main and 1,114/1,178 development schedules are enumerated
+independently, with all missing worker slots unknown and no worker files created.
+This is a tiny scripted selection and synthetic resource evidence. See the
+[course accounting/lifecycle evidence](../../docs/validation/course-m3-accounting-and-lifecycle.md)
+for commands, environment and the final acceptance state; actual model/runtime,
+GPU throughput, historical quota, smoke/pilot, freeze and main execution remain
+separate gates.
+
+Course/M3-T02's full CPU acceptance passes 607 source/91 installed checks with
+zero skips and 13 final focused accounting checks. The combined course M3 gate
+is complete; course M4 owns complete cohort analysis/reporting. Actual prior
+spending and remaining smoke/quota must be recovered at their later gate.
+
+## Course outcomes and estimands
+
+[course_analysis_tables.json.gz](course_analysis_tables.json.gz) retains seven
+derived CPU validation scopes from the untouched
+[course lifecycle bundle](course_lifecycle_run.zip): its three ordinary cases,
+the stopped snapshot, the full intended 20-world join using the original
+five-family workers, and completely unexecuted main/development joins. The
+[reconstruction helper](../course_analysis_archive.py) imports no runtime,
+protocol parser, provider, tokenizer or inference stack. It reads original
+worker files with SQLite read-only/query-only access; backup copies are never
+pooled with their originals. Independent insertion-order numeric references
+and synchronous edge relaxation score literal raw replies; separate hand
+formulas check AUC, final joint completion, theta and phi.
+
+The full main join retains 6,280 slots: 2,170 recorded and 4,110 unknown, including
+135 failed and 270 invalid recorded replies at zero credit. It preserves all
+20 main worlds, eight receipt/Q/preserving worlds and five repeated prefixes.
+Its 6,824 replicate-zero world contrasts, 1,240 repeated contrasts, 80 conditional
+comparison rows and 50 trajectory pairs reproduce exactly. Five observed main
+worlds do not complete the intended estimands; both intended primaries remain
+unknown with fixed four-per-family denominators. Separate complete-case zeros
+are descriptions of scripted fixtures. The stopped snapshot preserves sixteen
+unknown opportunities, and absent main/development workers remain absent.
+
+The intact [earlier worker bundle](course_worker_run.zip) separately reproduces
+all sixteen original failure/replay/kill scopes: 1,422 recorded and 312 unknown
+uses. Its controls-only ledger spans main and development inputs; those slots
+are checked individually and pooling them for estimands is explicitly rejected.
+The five-family lifecycle supplies the primary course contrast reconstruction.
+These validation scopes supply no independent empirical worlds or model results.
+
+```powershell
+python -S -m tests.course_analysis_archive
+python -S -m tests.course_analysis_archive --worker-audit
+python -S -m unittest tests.test_course_analysis tests.test_course_analysis_archive -v
+```
+
+The helper exclusively creates a new derived file only when explicitly given
+`--write-fixture path`; default execution compares every table with the retained
+export. Raw source ZIPs, manifests, schedules, physical-response identities,
+settings and seeds remain unchanged. [Acceptance evidence](../../docs/validation/course-m4-outcomes-and-estimands.md)
+records commands, independent expectations and remaining course gates.
+
+## Course diagnostics and policy costs
+
+[course_diagnostic_cost_tables.json.gz](course_diagnostic_cost_tables.json.gz)
+retains seven derived diagnostic/cost scopes from the same untouched course M3
+lifecycle: three ordinary cases, the stopped snapshot, the full intended
+20-world join and missing main/development joins. It contains coordinate rates,
+trajectory/annotation tables, initial inventories, receipt timing and conservative
+source association, actual-last-candidate transport, physical/full-policy costs
+and the frozen whole C/K rule. Raw unchanged excerpts name original calls and
+generations; the six existing atlas witnesses keep their stated views and
+correct-summary assumptions. All data are synthetic CPU validation.
+
+[course_diagnostics_archive.py](../course_diagnostics_archive.py) reads only
+original SQLite ledgers/checkpoints, never backups alongside originals. Its
+independent SQL joins, insertion/relaxation gold, coordinate eligibility,
+inventories, message attempts/acquisitions, source payloads, receipt boundaries,
+literal spans, transport residuals and original attempt sums check the exports.
+The public checkpoint serializer decodes existing bytes without saver setup.
+No protocol execution, model, runtime store or new scientific identity is used.
+
+The full intended join retains 2,170 recorded/4,110 unknown uses, 320 prefix rows,
+212 scheduled L/B peer receipt alignments, 864 receipt-information peer-call rows
+and 28 revision/preserving exposure rows. Across its 58 world/event/replicate
+boundary choices, 22 observed complete branches select K and 36 unobserved
+boundaries remain unknown. This is not 58 independent worlds. Hand fixtures
+also test constant C and incomplete selected branches without fallback. Shared
+prefixes/generations are charged once physically; each deployed policy pays
+its prefix and all sixteen continuation uses, including F's abandoned prefix,
+original replay costs, failed and uncertain attempts. The hand cost case is
+261-263 attempt-seconds and 400 synthetic allocated seconds; no model/GPU speed
+is measured.
+
+The scripted word counter must reproduce each saved input ID sequence before
+history is counted. Those counts are not native tokenizer evidence. The
+separate original native-worker audit retains measured request IDs and leaves
+34 nonempty history counts unavailable without a matching tokenizer. Earlier
+worker fault probes retain their 312 unknown uses and are audited separately.
+
+```powershell
+.venv/Scripts/python.exe -m tests.course_diagnostics_archive
+.venv/Scripts/python.exe -m tests.course_diagnostics_archive --worker-audit
+.venv/Scripts/python.exe -m tests.course_diagnostics_archive --native-audit
+.venv/Scripts/python.exe -m unittest tests.test_course_diagnostics tests.test_course_diagnostic_archive -v
+```
+
+## Course paired uncertainty and missingness
+
+[course_uncertainty_tables.json.gz](course_uncertainty_tables.json.gz) retains
+seven derived scopes from the unchanged course lifecycle workers: complete
+selected records, hand costs, resumed/stopped work, full intended 20-world joins
+and wholly unexecuted main/development populations. These are exploratory CPU
+validation tables, not model results. The saved resampling seed is `20261011`,
+with 10,000 within-family world draws and type-7 97.5% primary/95% secondary
+intervals. Four main worlds per family, eight-world focal/preserving cohorts
+and five conditional repeated prefixes keep their original IDs.
+
+The full intended join retains 2,170 recorded/4,110 unknown uses. Its theta/phi
+sensitivity is [-1.5,1.5]/[-0.75,0.75]; intended statistical intervals remain
+unavailable, while five-world complete-case zeros are separately descriptive.
+Raw contrasts, family means, paired coverage, completion bounds, trajectories
+and whole-policy quality/preservation/cost displays remain explicit.
+
+[course_uncertainty_archive.py](../course_uncertainty_archive.py) rejoins the
+original SQLite snapshots read-only and checks unchanged accepted outcome/cost
+tables. Independent exact rational coefficients verify 11,422 eligible linear
+rows across the seven scopes, with original generation IDs combined before
+extrema. Missing logical uses are never fabricated from recorded parents.
+Unknown eligibility and future costs retain conditional/conservative or
+unbounded labels. Tiny nonlinear enumeration and independent draws/binomial
+references are in [course formula tests](../test_course_uncertainty.py).
+
+```powershell
+.venv/Scripts/python.exe -m tests.course_uncertainty_archive
+.venv/Scripts/python.exe -m unittest tests.test_course_uncertainty tests.test_course_uncertainty_archive -v
+```
+
+See [course acceptance](../../docs/validation/course-m4-uncertainty-and-missingness.md).
+At that uncertainty checkpoint, the complete course report gate remained separate;
+the following report acceptance records its subsequent evidence.
+
+## Course synthetic reports and CPU gate
+
+[course_report_tables.json.gz](course_report_tables.json.gz) retains eight
+reports from the unchanged [course lifecycle](course_lifecycle_run.zip): seven
+accepted prerequisite scopes plus an explicitly synthetic terminal-feasibility
+example. Every report/table/case/plotting input and ordinary HTML/JSON/CSV/gzip
+export is reproduced twice by [course_report_archive.py](../course_report_archive.py).
+Outcome/estimand, diagnostic/cost and uncertainty joins match the accepted
+prerequisite archives exactly; original workers are read-only and missing ones
+remain absent. Seed `20261011` and accounting clock
+`2026-10-11T23:59:59+00:00` are explicit derived-analysis inputs, not a main freeze.
+
+[course_scripted_reports.zip](course_scripted_reports.zip) holds five portable
+reports: a complete selected scope, incomplete 20-world main, safely stopped
+prefix, unexecuted development and synthetic terminal-feasibility report.
+Each has seven SVG/PNG exhibit pairs, all scientific tables, supporting world
+contrasts/intervals, exact trace strings and ID-linked case cards. Open its
+`INDEX.md` and each `report.html` locally. All 35 pairs are rendered deterministically
+with the recorded plotting environment and reopened from clean CPU scratch.
+
+Complete means all slots in the supplied synthetic scope are recorded, including
+failures; it does not mean empirical completion of the 20-world course study.
+Full intended main keeps 2,170 recorded/4,110 unknown uses; theta/phi sensitivity
+remains [-1.5,1.5]/[-0.75,0.75]. Intended intervals are unavailable and five-world
+complete-case zeros descriptive. The terminal example is not an actual GPU/model
+failure: all 6,280 main uses remain unknown, with freeze/model/headroom unavailable.
+Replicate zero determines primary displays/cases; five conditional repeats add
+no independent worlds. Four-per-family/eight-world focal precision stays exploratory.
+
+The original scripted word counter supplies explicitly synthetic history counts.
+CLI consumers without a matching tokenizer retain unavailable nonempty counts;
+no native Qwen token measurement is invented. Direct report/assembly APIs pass
+`regime="course"`; the CLI uses the manifest's regime/count automatically. The
+report regime must match its accepted uncertainty population scope.
+
+```powershell
+.venv/Scripts/python.exe -m tests.course_report_archive
+.venv/Scripts/python.exe -m tests.course_report_archive --export NEW_REPORT_DIRECTORY --figures
+.venv/Scripts/python.exe -m unittest tests.test_course_report tests.test_course_report_archive -v
+```
+
+To attach a documented terminal gate failure verbatim, use existing saved course
+inputs/workers, an explicit accounting clock/seed and a fresh export destination:
+
+```powershell
+.venv/Scripts/python.exe -m recovery analyze --report --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker PATH_TO_ORIGINAL_WORKER --output NEW_REPORT_DIRECTORY --as-of 2026-10-11T23:59:59+00:00 --resampling-seed 20261011 --terminal-feasibility PATH_TO_DOCUMENTED_FAILURE
+```
+
+That option labels supplied evidence without changing coverage, treating unknowns
+as negative results or passing a gate. Preparing fresh inputs still requires
+`--regime course --config configs/course-inputs.toml`; report analysis does not
+resample them. [Course report/CPU acceptance](../../docs/validation/course-m4-report-and-cpu-gate.md#completion-and-handoff)
+passes 52 source/52 installed methods and 33 dependency-free methods with zero skips.
+Model/runtime, resources, smoke/capability/pilot, accepted freeze, main execution
+and external delivery remain separate.
+
+Default execution compares the retained tables; `--write-fixture NEW_PATH`
+exclusively creates a new derived export. [Course acceptance evidence](../../docs/validation/course-m4-diagnostics-and-policy-costs.md)
+owns its executed diagnostic results; the report acceptance above records the
+combined CPU gate and remaining model/GPU gates. No empirical course population, runtime freeze or execution
+authorization is established by these fixtures.
