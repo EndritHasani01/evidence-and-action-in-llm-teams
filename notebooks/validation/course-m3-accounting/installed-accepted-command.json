@@ -1,0 +1,18 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m3-accounting/verify_installed.py",
+    "--output",
+    "notebooks/validation/course-m3-accounting/installed-provenance.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T13:38:43.354665+00:00",
+  "source_head": "ff6d543ada76464575e3a2215b8238e7575a7cc5",
+  "seconds": 2722.6410000000615,
+  "exit_code": 0,
+  "log": "installed-accepted.txt.gz",
+  "hash_seed": null,
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m3-accounting-20261011"
+}

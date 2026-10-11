@@ -30,3 +30,18 @@ Existing read-only analysis scores the course manifest and produces every prescr
 Reuse existing analysis fixtures plus course cohort/contract cases: duplicates, canonical keys, invalid/timeouts, incomplete parents, equal revised/sham effects, no/beneficial/harmful teammate influence and phi positive with phi_corr zero. Record exact independent expectations and commands. Analysis must not import inference, mutate worker data or provide evaluator results to peers.
 
 **Evidence:** Not yet recorded. Existing estimands are verified; course-cohort integration is pending.
+
+**Prepared prerequisite handoff, 11 October 2026:**
+[Course M3 accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)
+retains the [ordinary three-case bundle](../../../../tests/fixtures/course_lifecycle_run.zip)
+with saved population/schedules, literal selection IDs, original worker SQLite
+records, exact backup copies, progress and an offline correctness preview.
+The five-family selection covers every intervention/control/repeat path;
+the stopped case preserves sixteen unknown opportunities before exact resume.
+The intact earlier course worker bundle supplies ten real kill scenarios.
+These are CPU scripted records, not empirical 20-world outcomes or completed
+course estimands. Reuse existing read-only joins, original physical-response
+identities and all intended 20/eight/five-world denominators. Status main count
+now defaults to the manifest's 20; analysis CLI count choices remain 60/40 and
+are part of this task's course integration. Course M3's final broad acceptance
+is pending; this task remains blocked until its linked gate passes.

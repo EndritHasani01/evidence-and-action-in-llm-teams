@@ -24,8 +24,8 @@ available quota, smoke allowance, model/pilot acceptance or runtime freeze.
 
 ## Implementation checkpoint
 
-The existing status CLI selects the saved declared main population (20 course,
-60 thesis by default; nested thesis 40 remains explicit), validates regime and
+The existing status CLI uses the saved declared count for `--stage main` (20
+course, 60 thesis; nested thesis 40 remains explicit), validates regime and
 supports a zoned `--as-of` clock. Analysis CLI adaptation remains M4. Missing
 current workers remain unknown and are never created by status.
 
@@ -106,3 +106,46 @@ admission is withheld. The same refusal survives historical-worker joins and
 restart. Active loading remains bounded by the original independent deadline.
 Synthetic records exercise this condition without a GPU. Broad runs from the
 earlier commit are retained as partials and renewed for this final behavior.
+
+## Independent acceptance checks
+
+| Requirement | Executed evidence and interpretation |
+|---|---|
+| Full intended scope | Independent manifest enumeration and missing-worker status reconcile main 5,752/6,280 and development 1,114/1,178. No missing worker is created; all scheduled missing uses remain unknown. Cohorts retain 20 main, eight receipt/Q/preserving worlds and five repeated prefixes. |
+| Physical versus policy cost | Literal SQLite calls/attempts are rejoined without the production count/cost helpers. Shared prefixes/replies are physical once; all real retries/uncertain work are charged. Each policy pays its prefix and all sixteen logical continuations, original replay cost and F's prefix. |
+| Allocation and uncertainty | The hand case has 261–263 physical attempt seconds and 400 synthetic allocated seconds: setup 2, interruption 1, attempts 258, uncertain work 2, assigned idle 137. Billing is a separate provider record; optional memory is not inferred. Unknown duration uses its observation/clock bounds, never an exact zero. |
+| Cumulative resources | Documented prior lower/upper bounds, shared costs once, separate non-course overall costs, spent/unspent reserves, both ceilings and smoke exhaustion are checked. Two idle assigned devices for fifteen minutes cost 0.5 aggregate hour. CPU, unknown classification and unknown loading cannot establish GPU throughput/admission. |
+| Progress and concurrency | Read-only snapshots reconstruct active stage/world/branch/peer/device, elapsed attempts, checkpoint, ready/waiting work, outcomes, counts and matched coverage. Heartbeats expose fixed call transitions; slot completion is not a runtime percentage. Input/regime/settings/budget drift fails before providers. |
+| Stop/release/restart | A real independent allocation deadline stops the delayed scripted provider, acknowledges release, and leaves sixteen unknown slots plus one uncertain attempt. Reopen resumes the same original scope with one permitted retry and exact scientific state. Unconfirmed release remains open/chargeable and blocks another allocation. |
+| Crash and delivery semantics | The intact prerequisite worker bundle supplies ten real kills, including persistence, validation/staging, held prose and boundary/delivery commits. The new all-family lifecycle verifies C/F clearing, exact invalid/failed replay, Q's chronological branch-local release and all controls/repeats. |
+| Portable offline handoff | Packaged worker SQLite snapshots and backups reopen with identical scientific/progress records. Fresh hash-seed-37 execution reproduces the archived selection; offline preview is supporting input evidence for M4, not a completed course analysis/report. |
+
+The executed environment is Windows build 26200, Python 3.11.9, SQLite 3.45.1,
+Pydantic 2.13.5, LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1 and
+langchain-core 1.6.6. These are CPU validation packages, not a frozen inference
+configuration. Native course request/replay evidence from M3-T01 is reused
+because rendering/tokenization/replay behavior did not change here.
+
+Resource check inputs are not quota or authorization. Actual prior allocation,
+provider/session/billing/release terms, T4/model timings and memory/headroom,
+capability, complete pilot, course M4 reporting and the concrete course runtime
+packet remain later gates. No model weights, GPU allocation/inference, pilot,
+main experiment, scientific/frozen-configuration change or publication occurred.
+
+## Installed acceptance
+
+The [installed command](../../notebooks/validation/course-m3-accounting/installed-accepted-command.json)
+passes from committed production code `ff6d543`: 91 affected methods in
+2,579.166 seconds with zero skips, then audits of the new three-case lifecycle,
+the unchanged 16-case course worker bundle and the original 14-case thesis
+lifecycle. Installed dependency checking passes. The complete command takes
+2,722.641 seconds. Test counts overlap focused/source checks and are not additive
+unique totals. CPU test durations include scripted delays, process/SQLite work
+and validation; they are not model/GPU throughput samples.
+
+The [provenance receipt](../../notebooks/validation/course-m3-accounting/installed-provenance.json)
+records a fresh wheel/target, hash seed 37, interpreter/module paths and matching
+bytes for all 29 production modules. Checks execute outside the checkout with
+no source `PYTHONPATH`, using the declared CPU packages and copied unchanged
+tests/configurations. No dependency was installed into the repository environment.
+Full source completion and the final course handoff audit remain pending.

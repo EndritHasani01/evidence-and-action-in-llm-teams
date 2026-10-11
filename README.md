@@ -305,13 +305,14 @@ matching saved generation settings supply timing samples. Physical IDs are
 scoped by the existing saved settings when configurations differ. Repeated
 copies of the same physical records are rejected.
 
-Course status selects the declared 20-world main population by default, or the
-five development worlds with `--stage development`. Thesis status still defaults
-to 60; `--count 40` selects its nested scope. A zoned `--as-of` timestamp makes
-saved status/cost reconstruction reproducible:
+Status infers the regime from the saved population. With `--stage main`, its
+default count is the declared 20 course worlds or 60 thesis worlds; `--count 40`
+selects the nested thesis scope. The unchanged default stage is development
+(five worlds). A zoned `--as-of` timestamp makes saved status/cost reconstruction
+reproducible:
 
 ```powershell
-.venv/Scripts/python.exe -X utf8 -m recovery status --regime course --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker worker-0.sqlite --json
+.venv/Scripts/python.exe -X utf8 -m recovery status --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker worker-0.sqlite --stage main --json
 ```
 
 For course scheduling use `regime="course"` and `CourseBudget` from

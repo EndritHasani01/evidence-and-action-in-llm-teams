@@ -6,7 +6,7 @@
 
 ## References
 
-- [Specification quality/cost](../../../../PROJECT_SPECIFICATION.md#73-quality-retained-work-and-cost), [resources](../../../../PROJECT_SPECIFICATION.md#84-resource-gate-and-freeze), accepted course clause and [plan M3](../../../IMPLEMENTATION_PLAN.md#5-milestone-m3--durable-runner-failures-cost-and-progress).
+- [Specification quality/cost](../../../../PROJECT_SPECIFICATION.md#73-quality-retained-work-and-cost), [resources](../../../../PROJECT_SPECIFICATION.md#84-resource-gate-and-freeze), [adopted cumulative course resources](../../../../PROJECT_SPECIFICATION.md#113-cumulative-resources-and-admission) and [plan M3](../../../IMPLEMENTATION_PLAN.md#5-milestone-m3--durable-runner-failures-cost-and-progress).
 - Existing [accounting/status/budget evidence](../../M3/M3-T04-accounting-progress-and-budget.md) and [lifecycle acceptance](../../M3/M3-T05-crash-safe-scripted-lifecycle.md).
 
 ## Intended outcome
@@ -36,7 +36,7 @@ M3-T01 evidence. [Accounting/lifecycle evidence](../../../validation/course-m3-a
 records the reuse boundary and protected starting bytes. Course acceptance is
 pending; no GPU or empirical execution is included.
 
-**Prerequisite handoff, 11 October 2026:** Course/M3-T01 passes
+**Prerequisite handoff before M3-T02, 11 October 2026:** Course/M3-T01 passes
 [durable-worker acceptance](../../../validation/course-m3-durable-workers-and-failures.md#completion-and-handoff).
 Reuse explicit course `run_inputs` bindings, manifest-selected 20/five-world
 scope, pinned 4B `candidate_settings` with `COURSE_LIMITS`, original read-only
@@ -45,8 +45,8 @@ parents and existing attempt/checkpoint/worker records. The
 retains 16 scenarios, ten real kills and exact fresh-process reproduction;
 it supports accounting/restart checks, not empirical population coverage.
 Timeout defaults remain 120 seconds with bounded one-second termination graces.
-Status/analysis CLI count choices still address thesis 60/40 and need their
-course adaptation. Apply the adopted cumulative resource rules without
+At that handoff, status/analysis CLI count choices addressed thesis 60/40 and
+needed their course adaptation. Apply the adopted cumulative resource rules without
 inventing available quota; complete the tiny all-family course lifecycle and
 independent accounting/progress reconstruction required above. The full M3
-course gate, resource admission and actual-host/model gates remain open.
+course gate, resource admission and actual-host/model gates were still open.
