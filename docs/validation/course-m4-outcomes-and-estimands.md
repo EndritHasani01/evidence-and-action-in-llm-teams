@@ -1,6 +1,6 @@
 # Course exact outcomes and estimands
 
-Started 11 October 2026 for [course/M4-T01](../todos/course/M4/M4-T01-course-outcomes-and-estimands.md)
+Completed and verified on CPU 11 October 2026 for [course/M4-T01](../todos/course/M4/M4-T01-course-outcomes-and-estimands.md), started
 from `adaceac` on `feat/course-m3-m4-durable-execution-and-analysis`.
 Authority is [specification outcomes](../../PROJECT_SPECIFICATION.md#5-outcomes-and-prespecified-estimands),
 [repetition/missingness](../../PROJECT_SPECIFICATION.md#6-statistical-analysis-repetition-and-missingness),
@@ -155,3 +155,67 @@ langchain-core 1.6.6. No dependency was added or changed. CPU test durations
 include archive reconstruction and concurrent tests; they are not model/GPU
 timing evidence or an accepted inference freeze. Test counts overlap across
 commands and are not additive independent checks.
+
+## Completion and handoff
+
+Course/M4-T01 is implemented and verified on CPU.
+[Complete affected source acceptance](../../notebooks/validation/course-m4-outcomes/source-m4-accepted-command.json)
+passes all 191 methods in 1,171.766 seconds with zero skips.
+[Outside-checkout installed acceptance](../../notebooks/validation/course-m4-outcomes/installed-accepted-command.json)
+passes the same 191 methods in 1,176.501 seconds with zero skips; its complete
+build/install/provenance/dependency command takes 1,195.953 seconds. Both runs
+cover outcomes, all estimands, independent course cohorts/signs/nulls/companions,
+record/CLI integration, every affected M4 consumer and original thesis archives.
+All sixteen original thesis report scopes reproduce twice with exact tables,
+case IDs and deterministic plotting inputs. Seven course table scopes and all
+sixteen earlier course worker scopes reconstruct independently without inference
+or worker mutation.
+
+The [installed provenance](../../notebooks/validation/course-m4-outcomes/installed-provenance.json)
+verifies a fresh wheel/target, outside-checkout imports with no source PYTHONPATH,
+and all 29 production module bytes. Both acceptance commands began from
+`c6dc31a`; the installed completion receipt records later documentation commit
+`5d4ff6c`. Production, tests, inputs and configurations are identical between
+those commits and throughout acceptance. The final audit checks that distinction
+and every installed module byte, rather than treating a documentation commit
+as changed production. Installation used the existing declared CPU packages
+and changed no repository dependency environment.
+
+| Executed acceptance | Result |
+|---|---|
+| [Focused formulas/records/CLI](../../notebooks/validation/course-m4-outcomes/formulas-corrected-command.json) | 68 passed; 17 new course cases plus thesis regressions |
+| [Course archive and import guard](../../notebooks/validation/course-m4-outcomes/archive-worker-final-command.json) | Three methods passed under hash seed 37; every retained table, original-worker scope and inference-free fresh process checked |
+| [Complete affected source M4](../../notebooks/validation/course-m4-outcomes/source-m4-accepted-command.json) | 191 passed, zero skips |
+| [Installed M4 packet](../../notebooks/validation/course-m4-outcomes/installed-accepted-command.json) | 191 passed, zero skips; exact 29-module provenance and dependency check |
+| [Core/config/input/schedule](../../notebooks/validation/course-m4-outcomes/core-accepted-command.json) | 368 run: 360 passed, eight expected optional-package skips; hash seed 73 |
+| [Dependency check](../../notebooks/validation/course-m4-outcomes/pip-check-command.json) / [compilation](../../notebooks/validation/course-m4-outcomes/compile-check-command.json) | Passed |
+
+Commands, literal argv, clocks, exit status and lossless logs are retained beside
+the receipts. The affected integrated checks supply optional checkpoint/plot
+coverage skipped under `-S`. Unchanged M3 runtime/replay/native/kill acceptance is
+reused from the [passing prerequisite](course-m3-accounting-and-lifecycle.md#completion-and-handoff);
+its code, inputs, settings and original artifacts remain protected. No GPU/model
+or main experiment execution is required for this offline task.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.test_course_analysis tests.test_course_analysis_archive -v
+.venv/Scripts/python.exe -S -X utf8 -m recovery validate --core-only --regime course --config configs/course-inputs.toml --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --authoritative tests/fixtures/population_course.json
+python -S -m tests.course_analysis_archive
+python -S -m tests.course_analysis_archive --worker-audit
+```
+
+Course/M4-T01 is done; [M4-T02](../todos/course/M4/M4-T02-course-diagnostics-and-policy-costs.md)
+is ready. Progress is eight done, two ready and eleven blocked. Course diagnostics,
+costs/rule, uncertainty and complete report/CPU acceptance remain open. M5 CPU
+packet preparation is separately ready; model/runtime/headroom, capability, pilot,
+resource reconciliation, authorized freeze/main execution and publication remain
+later gates. Intended course outcomes remain unknown where records are absent;
+the selected scripted scopes establish no empirical 20-world result.
+
+The [completion audit](../../notebooks/validation/course-m4-outcomes/completion-audit.json)
+and [exact command](../../notebooks/validation/course-m4-outcomes/completion-audit-command.json)
+pass: final statuses/counts, local links/anchors, accepted logs/module provenance,
+seven retained scopes and all 1,469 protected starting files, including the
+unchanged unstaged M5 edit. Thesis defaults/todos, specification/configuration,
+old fixtures and plan Sections 1-10 remain intact. No inference configuration
+was frozen, and no model/GPU/pilot/main run or publication occurred.

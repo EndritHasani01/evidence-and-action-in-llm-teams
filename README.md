@@ -133,7 +133,13 @@ course binding and reject foreign parents/configuration drift. Course
 now closes the M3 CPU gate: 607 full source/91 installed checks pass with zero
 skips, independent counts/costs and cumulative resource refusal pass, and the
 three-case all-family lifecycle reproduces with portable original records.
-The next task is [course outcomes/estimands](docs/todos/course/M4/M4-T01-course-outcomes-and-estimands.md);
+Course [outcome/estimand acceptance](docs/validation/course-m4-outcomes-and-estimands.md#completion-and-handoff)
+now passes 191 affected source/191 installed checks with zero skips, plus 368
+core checks with eight expected optional-package skips. The read-only analysis
+uses the manifest's 20-world scope and five paired continuation streams, retains
+all eight-world focal populations and unknown intended outcomes, and reproduces
+thesis M4 artifacts unchanged. The next task is
+[course diagnostics/costs](docs/todos/course/M4/M4-T02-course-diagnostics-and-policy-costs.md);
 [inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
 is also ready, with course M4 still required before GPU use.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates

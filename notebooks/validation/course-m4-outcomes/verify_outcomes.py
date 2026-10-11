@@ -98,7 +98,13 @@ def main():
         assert installed["exit_code"] == 0 and not installed["source_pythonpath"]
         assert installed["hash_seed"] == 37 and installed["matching_modules"] == 29
         source = read(FOLDER / "source-m4-accepted-command.json")
-        assert source["source_head"] == installed["source_head"]
+        installed_command = read(FOLDER / "installed-accepted-command.json")
+        # The wrapper records the starting head; the installed receipt records
+        # the head when its checks finish. Documentation commits can proceed
+        # meanwhile, but production, tests and scientific inputs must match.
+        assert source["source_head"] == installed_command["source_head"]
+        assert not git("diff", "--name-only", source["source_head"], installed["source_head"],
+                       "--", "recovery", "tests", "configs", "pyproject.toml")
         for label, count in {"formulas-corrected": 68, "archive-worker-final": 3,
                 "source-m4-accepted": 191, "installed-accepted": 191, "core-accepted": 368}.items():
             assert suites[label]["tests"] == [count], label

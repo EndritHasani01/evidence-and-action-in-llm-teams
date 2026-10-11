@@ -1010,7 +1010,9 @@ the [local witness and complete capacity gate](validation/course-m2-attainabilit
 [durable-worker acceptance](validation/course-m3-durable-workers-and-failures.md).
 [Course/M3-T02](todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md) now passes
 [accounting/lifecycle acceptance](validation/course-m3-accounting-and-lifecycle.md).
-The combined course M3 CPU gate is complete. Course/M4-T01 is next; course/M5-T01
+[Course/M4-T01](todos/course/M4/M4-T01-course-outcomes-and-estimands.md) now passes
+[outcome/estimand acceptance](validation/course-m4-outcomes-and-estimands.md#completion-and-handoff).
+The combined course M3 CPU gate is complete; course/M4-T02 is next. Course/M5-T01
 is also ready for CPU packet preparation. Later course CPU gates, GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
@@ -1189,17 +1191,31 @@ Course/M4-T01 preparation from `adaceac` reuses the verified course M3 original
 records and existing read-only outcome/contrast code. Analysis main-count
 selection must follow the saved population, and repeat eligibility must follow
 its assigned continuation seed streams (five course prefixes, ten thesis).
-No new scientific parameter or persistence layer is needed. Acceptance is
-pending in [course outcome evidence](validation/course-m4-outcomes-and-estimands.md).
+No new scientific parameter or persistence layer was needed. The subsequent
+[course outcome acceptance](validation/course-m4-outcomes-and-estimands.md#completion-and-handoff)
+passes 191 affected source/191 installed methods with zero skips, 368 core
+methods with eight expected optional-package skips and all retained course
+outcome/estimand scopes. Valid raw replies now check their saved protocol caps,
+with thesis 384 and course 256 unchanged. Seven lifecycle-derived scopes and all
+sixteen earlier worker scopes reconstruct independently from literal raw replies,
+with fixed 20/eight/five-world cohorts. The full main join retains 2,170 recorded
+and 4,110 unknown uses, so intended theta/phi remain unknown with separately
+labeled five-world complete-case zeros. Repeats add no independent worlds.
+Every original thesis M4 table/report reproduces twice; 1,469 protected starting
+files, including prior fixtures and the user edit, remain byte-identical.
+Course diagnostics/costs/rule acceptance is M4-T02's next work; uncertainty and
+the complete report/CPU gate still precede GPU use.
 
 ### Course unresolved gates
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2
 protocol/intervention/replay/witness/native-capacity gate are verified. Course
 M3 durable workers/bounded failures/accounting and portable combined lifecycle
-gate are verified; M4 analysis/reporting remains open. Actual runtime
+gate and M4 outcomes/estimands are verified; course diagnostics/costs,
+uncertainty and the complete M4 report gate remain open. Actual runtime
 environment/configuration acceptance remains M5. Status now infers the manifest
-regime and declared main count; analysis CLI 60/40 adaptation belongs to M4. The
+regime and declared main count; analysis CLI now follows the same saved scope
+and preserves thesis 60/40 behavior. The
 pinned 4B/256/64 complete input bound passes; the complete model-memory/headroom
 argument still needs actual supported-runtime evidence. Standalone run 6 and
 the CPU attention integration do not accept the new
@@ -1207,5 +1223,5 @@ layout on T4 or the course pretrained model. Actual host/package/source assets,
 smoke requests, capability, complete pilot, resource reconciliation and freeze
 remain course M5 gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
-index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03 and M3-T01/T02
+index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03, M3-T01/T02 and M4-T01
 performed no GPU, pretrained-model or empirical run and accepted no freeze.
