@@ -9,7 +9,7 @@ passes: saved inputs/schedules, explicit 256/64 limits, exact pinned 4B settings
 
 This task reuses serial workers, application SQLite records, replacement
 LangGraph checkpoints, read-only original parents, bounded resident children and
-ownership locks. It will verify course configuration/parent scope, completed
+ownership locks. Verification covers course configuration/parent scope, completed
 valid/invalid/failed reuse, real process kills around persistence and effects,
 held Q prose, and backup/reopen equality. Course accounting, resource admission
 and the combined lifecycle gate remain M3-T02. No GPU, model, pilot, freeze,
@@ -17,9 +17,9 @@ main experiment or publication is authorized by this task.
 
 [Starting tracked bytes](../../notebooks/validation/course-m3-workers/baseline-files.json.gz)
 preserve thesis specification/defaults/todos, all earlier fixtures and the
-pre-existing unstaged M5 evidence edit. Executed commands/logs will be retained in
+pre-existing unstaged M5 evidence edit. Executed commands/logs are retained in
 the [existing validation layout](../../notebooks/validation/course-m3-workers/).
-Acceptance is pending the retained bundle, installed verification and final regression.
+Acceptance is pending the full source regression and completion audit.
 
 ## Implementation checkpoint
 
@@ -42,11 +42,12 @@ check combines the repository SQLite environment with existing host tokenizer
 packages; it is not an accepted inference environment. No weights are loaded.
 
 The unchanged original failure archive reproduces all 12 cases/78 attempts.
-The original worker archive comparator encounters a pre-existing additive
+The original worker archive comparator encountered a pre-existing additive
 `backend_json=null` attempt field absent from its 619 archived attempts. Its
 comparison now treats absent and null optional diagnostics identically, as the
 attempt comparator already does, retaining every non-null field and the
-original fixture bytes. Final reproduction remains to be checked.
+original fixture bytes. The installed reproduction now passes all 14 checks
+and matches all eight original worker cases/666 logical calls/48 replays.
 
 Failed commands are retained separately. Test integration corrections cover
 derived branch IDs, the actual `output_tokens` field, closing SQLite test handles,
@@ -61,8 +62,9 @@ test corrections.
 ordinary CPU worker scenarios: **1,422 completed logical calls, 1,278 generation
 slots, 1,281 attempts, 144 replay uses, five uncertain attempts and ten actual
 controller kills**. The offline audit reconstructs exact progress at its saved
-clock and checks SQLite integrity without inference. Source reproduction and
-installed/full regression remain pending at this checkpoint. These scenario
+clock and checks SQLite integrity without inference. Fresh hash-seed-37 source
+reproduction passes all 11 checks and matches all 16 cases, including physical
+attempt outcomes. Installed verification also passes. These scenario
 totals are not empirical coverage of course main or development worlds.
 
 Each case reuses saved course world/branch/call IDs and original physical
@@ -82,3 +84,39 @@ Attempt defaults remain 120 seconds with one-second terminate/kill graces;
 shorter 2/8-second CPU fault probes establish bounded mechanics, not model
 timeout adequacy. All course accounting/status CLI changes, cumulative resource
 admission and the complete all-family course lifecycle gate remain M3-T02.
+
+## Executed validation
+
+Exact argument arrays, working directories, hash seeds, elapsed times, exit
+codes and lossless output are retained in
+[course-m3-workers](../../notebooks/validation/course-m3-workers/).
+
+| Check | Current result |
+|---|---|
+| Original durable/course-settings checks | 24 passed |
+| Focused course workers | 11 passed, including ten real kills |
+| Course bundle creation / fresh hash-seed-37 reproduction | 11 / 11 passed; all 16 cases match |
+| Read-only course bundle audit | Passed; all 16 cases reconstruct |
+| Native 4B worker probe | 20 exact request comparisons, eight replays, backup/reopen equality passed |
+| Unchanged original failure archive | 22 passed; 12 cases/78 attempts reproduce |
+| Unchanged original worker archive, installed reproduction | 14 passed; eight cases/666 logical calls/48 replays reproduce |
+| Unchanged original lifecycle bundle audit | Passed; 14 cases/4,340 logical calls/384 replays |
+| Dependency-free core | 348 run, 340 passed, eight expected optional-library skips |
+| Full source regression | Pending |
+| Installed affected-library/child checks | 95 passed, zero skips; 29 production modules match source |
+| Repository `pip check` | Passed |
+
+The CPU environment is Windows, Python 3.11.9, SQLite 3.45.1, Pydantic 2.13.5,
+LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1 and core 1.6.6. The native
+probe additionally uses existing Transformers 5.12.0/tokenizers 0.22.2 metadata
+packages. This records actual CPU evidence, not a study environment freeze.
+
+The [installed packet](../../notebooks/validation/course-m3-workers/installed-checks-command.json)
+builds a wheel from committed production code, installs it into a fresh
+temporary target and runs outside the checkout with hash seed 37 and no source
+`PYTHONPATH`. Module and child provenance are asserted. Its 95 affected checks
+take 1,911.444 seconds; the complete 2,185.094-second command also reproduces
+the unchanged failure and worker archives, audits the original lifecycle bundle
+and checks installed dependencies. The
+[provenance receipt](../../notebooks/validation/course-m3-workers/installed-provenance.json)
+retains the actual wheel, source/module hashes, interpreter and package versions.
