@@ -1,6 +1,6 @@
 # Course M3-T01 — Course durable workers and bounded failures
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md).
 
@@ -30,7 +30,10 @@ Existing worker/checkpoint/attempt machinery executes and resumes the course sco
 
 Run affected installed-library worker/durable/attempt checks and focused course crashes before/after raw persistence, staging and delivery commit; include cross-worker parents, invalid completed replies, held Q prose and concurrent ownership rejection. Compare uninterrupted/resumed states and original parent records, isolating genuine physical-attempt differences. Reuse unchanged failure fixtures; retain course artifacts in the existing bundle format.
 
-**Evidence:** Not yet recorded. Durable foundations are implemented and verified; course propagation/resume is pending.
+**Evidence:** Implementation started 11 October 2026. The prerequisite
+[M2 handoff audit](../../../../notebooks/validation/course-m2-capacity/handoff-audit.json)
+passes. [Starting tracked bytes](../../../../notebooks/validation/course-m3-workers/baseline-files.json.gz)
+retain the unrelated thesis M5 edit. Course propagation/resume acceptance remains pending.
 
 **Prerequisite handoff, 11 October 2026:** Course/M2-T03 passes the
 [M2 witness/capacity gate](../../../validation/course-m2-attainability-and-capacity.md#completion-and-handoff).
