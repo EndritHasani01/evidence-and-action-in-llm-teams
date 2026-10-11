@@ -64,6 +64,7 @@ def main() -> int:
     analyze.add_argument("--uncertainty", action="store_true", help="include paired intervals/missingness; also includes estimands and costs")
     analyze.add_argument("--report", action="store_true", help="export seven synthetic-validation exhibits, all M4 tables and exact cases to a new directory; requires --as-of")
     analyze.add_argument("--figures", action="store_true", help="render report SVG/PNG figures with optional Matplotlib; requires --report")
+    analyze.add_argument("--terminal-feasibility", type=Path, help="attach a documented terminal gate failure verbatim; requires a course --report; does not change coverage or admit execution")
     analyze.add_argument("--resampling-seed", type=int, help="saved nonnegative world-bootstrap seed; requires --uncertainty or --report (default 20261006)")
     analyze.add_argument("--as-of", help="explicit zoned accounting timestamp for reproducible costs; required for --report")
     analyze.add_argument("--tokenizer", type=Path, help="local matching tokenizer metadata for exact diagnostic history counts; no weights/downloads")
@@ -98,6 +99,8 @@ def main() -> int:
                 raise ValueError("--resampling-seed requires --uncertainty or --report")
             if args.figures and not args.report:
                 raise ValueError("--figures requires --report")
+            if args.terminal_feasibility and (not args.report or population.regime != "course"):
+                raise ValueError("--terminal-feasibility requires a course --report")
             tokenizer = None
             if args.tokenizer:
                 from transformers import AutoTokenizer
@@ -107,6 +110,8 @@ def main() -> int:
                 from .uncertainty import DEFAULT_SEED
                 result = report_run(worlds, branches, args.worker, now=args.as_of,
                     regime=population.regime,
+                    terminal_feasibility=dict(source=args.terminal_feasibility.name,
+                        text=args.terminal_feasibility.read_bytes().decode("utf-8")) if args.terminal_feasibility else None,
                     seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed, tokenizer=tokenizer,
                     provenance=dict(manifest=args.manifest.name, schedule=args.schedule.name,
                         workers=[p.name for p in args.worker], stage=args.stage, count=count if args.stage == "main" else None))

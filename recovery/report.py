@@ -259,11 +259,25 @@ def _quality_plot_rows(rows):
     return result
 
 
-def assemble_report(worlds, branches, tables, traces, *, provenance=None):
+def _check_report_scope(regime, terminal_feasibility):
+    from .populations import _check_regime
+    _check_regime(regime)
+    if terminal_feasibility is not None:
+        if regime != "course":
+            raise ValueError("terminal feasibility evidence requires a course report")
+        if (not isinstance(terminal_feasibility, dict) or set(terminal_feasibility) != {"source", "text"}
+                or any(type(v) is not str or not v.strip() for v in terminal_feasibility.values())):
+            raise ValueError("terminal feasibility evidence requires nonempty source and literal text")
+
+
+def assemble_report(worlds, branches, tables, traces, *, provenance=None, regime="thesis", terminal_feasibility=None):
     """Seven explicit grouped exhibits, retaining all supporting M4 tables."""
     from .evaluate import ANNOTATIONS
+    _check_report_scope(regime, terminal_feasibility)
     worlds, branches = tuple(worlds), tuple(branches)
     uncertainty, information, estimands, costs = (tables[k] for k in ("uncertainty", "information", "estimands", "costs"))
+    if uncertainty["settings"].get("regime", "thesis") != regime:
+        raise ValueError("report regime differs from saved uncertainty scope")
     pooled = [_interval_row(r) for r in uncertainty["summaries"] if r["level"] == "all_families"]
     effects = [r for r in pooled if r["population"] == "main" and r["round"] is None and (
         r["estimand"] == "theta" and r["endpoint"] == "auc" or
@@ -283,7 +297,7 @@ def assemble_report(worlds, branches, tables, traces, *, provenance=None):
         collaborators=collaborators, prose=prose, synchronization=uncertainty["family_completion"],
         quality_cost=_quality_plot_rows(uncertainty["policy_display_summaries"]),
         world_effects=[{k: r[k] for k in ("world_id", "family", "estimand", "event", "endpoint", "value", "exact")}
-            for r in estimands["world_contrasts"] if r["primary"]],
+            for r in estimands["world_contrasts"] if r["primary"] and r["replicate"] == 0],
         family_effects=[_interval_row(r) for r in uncertainty["summaries"] if r["level"] == "family"
             and (r["estimand"] == "theta" and r["endpoint"] == "auc" or r["estimand"] == "E_keep"
                  and r["event"] == "revision" and r["endpoint"] == "collaborator_accuracy")])
@@ -310,7 +324,7 @@ def assemble_report(worlds, branches, tables, traces, *, provenance=None):
             supports=["costs.physical", "costs.resources", "costs.policy_costs", "costs.selection_frequencies", "uncertainty.policy_world_displays", "uncertainty.policy_display_summaries", "estimands.repeatability", "estimands.trajectory_changes"],
             note="Policy cost includes the abandoned/shared prefix and every continuation use. Paired quality and preservation use their own cost cohorts; allocation and billing are separate. Repeats are conditional on the original prefix."),
     ]
-    return dict(kind=LABEL, coverage=tables["coverage"], provenance=provenance or {},
+    report = dict(kind=LABEL, coverage=tables["coverage"], provenance=provenance or {},
         scope=dict(size=worlds[0].world.size.value, world_ids=sorted(w.world_id for w in worlds),
             scheduled_worlds=len(worlds), scheduled_branches=len(branches),
             domain="development" if worlds[0].development else "supplied main manifest",
@@ -327,15 +341,32 @@ def assemble_report(worlds, branches, tables, traces, *, provenance=None):
         trajectory_changes=estimands["trajectory_changes"], prose_activity=estimands["prose_activity"],
         history_tokenizer=information["history_tokenizer"],
         cpu_gate="A report is derived evidence, not a gate decision. The named repository M1–M4 audit must pass; M5 hardware/capability/resource gates and execution authorization remain separate.")
+    if regime == "course":
+        from .uncertainty import COURSE_LIMITATION
+        complete = tables["coverage"]["unknown"] == 0
+        report["scope"]["regime"] = "course"
+        report["execution"] = dict(
+            status="terminal_feasibility" if terminal_feasibility is not None else "complete" if complete else "incomplete",
+            coverage_status="complete" if complete else "incomplete",
+            coverage_scope="Supplied synthetic validation scope, including scheduled repeats and controls; not empirical completion of the 20-world course study.",
+            terminal_feasibility=dict(terminal_feasibility) if terminal_feasibility is not None else None,
+            accepted_main_freeze=None, model_capability=None, gpu_memory_headroom=None,
+            unavailable_reason="This CPU report provides no accepted main freeze, pretrained-model capability or GPU memory evidence.")
+        report["interpretations"].extend((COURSE_LIMITATION,
+            "Synthetic full-information controls validate the instrument; they do not pass the model capability screen. Unexecuted controls and treatments are unavailable, not negative model results.",
+            "Complete means all slots in the supplied synthetic scope are recorded. Intended main populations, unknown eligibility, missing future costs and inactive/unobserved Q treatments remain visible; a complete selected scope does not establish a completed course experiment.",
+            "Terminal feasibility requires separately supplied documented evidence. An absent worker or incomplete scope alone does not establish a terminal failure; missing main freeze and hardware evidence remain unavailable."))
+    return report
 
 
-def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, provenance=None, regime="thesis"):
+def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, provenance=None, regime="thesis", terminal_feasibility=None):
     """One read-only worker snapshot feeds every table and unaltered excerpt."""
     from .analysis import analyze_estimands, prose_activity
     from .costs import cost_records, timestamp
     from .evaluate import evaluate_records, read_records
     from .information import information_records
     from .uncertainty import uncertainty_records
+    _check_report_scope(regime, terminal_feasibility)
     # An explicit clock is necessary for reproducible uncertain attempt costs.
     if now is None:
         raise ValueError("report requires an explicit zoned accounting --as-of")
@@ -354,7 +385,8 @@ def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, p
     tables["estimands"]["prose_activity"] = prose_activity(worlds, branches, inputs)
     tables["uncertainty"] = uncertainty_records(worlds, branches, tables, seed=seed, regime=regime)
     traces = trace_records(tables, records, inputs)
-    report = assemble_report(worlds, branches, tables, traces, provenance=provenance)
+    report = assemble_report(worlds, branches, tables, traces, provenance=provenance,
+        regime=regime, terminal_feasibility=terminal_feasibility)
     report["settings"]["generation_settings"] = sorted({r["settings_json"] for r in inputs.values()})
     return dict(tables=tables, report=report, traces=traces,
         inputs=dict(worlds=[asdict(w) for w in worlds], branches=[asdict(b) for b in branches]))
@@ -440,6 +472,19 @@ def _calls_html(traces):
 def _report_html(report, figures):
     body = "<p>"+escape(report["cpu_gate"])+"</p><nav><a href='cases.html'>Matched cases</a><a href='tables.json.gz'>All scientific tables</a><a href='world_contrasts.csv'>World contrasts</a><a href='intervals.csv'>Family and pooled intervals</a><a href='plotting.json'>Deterministic plotting inputs</a><a href='inputs.json.gz'>Original input selection</a><a href='report.json'>Settings and provenance</a></nav>"
     body += "<h2>Coverage and interpretation</h2>"+_table([report["coverage"]], ("scheduled", "recorded", "unknown", "protocol_outcomes"))
+    if report["scope"].get("regime") == "course":
+        body += "<h2>Exploratory course scope and execution status</h2>"+_table([report["scope"]], ("regime", "size", "domain", "scheduled_worlds", "populations"))
+        body += _table([report["provenance"]], ("manifest", "schedule", "source_bundle", "source_scope", "workers", "history_counter"))
+        body += _table([report["execution"]], ("status", "coverage_status", "coverage_scope", "accepted_main_freeze", "model_capability", "gpu_memory_headroom", "unavailable_reason"))
+        evidence = report["execution"]["terminal_feasibility"]
+        if evidence is not None:
+            body += "<h3>Supplied terminal feasibility evidence</h3><p>Source: <code>"+escape(evidence["source"])+"</code>. This document does not change execution coverage or pass a gate.</p>"+_literal_html(evidence["text"])
+        references = report["reporting_references"]
+        body += "<p>"+escape(references["interpretation"])+"</p>"
+        body += _table(references["main"]+references["focal"], ("N", "sd", "multiplier", "reference"))
+        body += "<p>Practical difference reference: "+str(references["practical_difference"])+"; not an equivalence margin.</p>"
+        body += "<details><summary>Recorded generation settings; no accepted model freeze</summary>"+_table(
+            [dict(settings=s) for s in report["settings"].get("generation_settings", ())], ("settings",))+"</details>"
     body += "<p>"+escape(report["history_tokenizer"])+". N/A is unavailable or structurally inapplicable, with the reason and denominator retained in the scientific tables.</p>"
     body += "<p>"+escape(report["settings"]["uncertainty"]["cluster"])+"</p>"
     for exhibit in report["exhibits"]:

@@ -209,7 +209,10 @@ def render_figures(directory):
                     _quality(axes[1], data[eid], "final_preservation")
                     axes[0].set_title("Paired quality / original policy cost: 95%")
                     axes[1].set_title("Paired preservation / its eligible-world cost: 95%")
-                fig.suptitle(exhibit["title"]+"\n"+LABEL, fontsize=14)
+                label = LABEL
+                if report["scope"].get("regime") == "course":
+                    label += "\nExploratory course: "+report["execution"]["status"]+"; "+report["execution"]["coverage_status"]+" supplied scope"
+                fig.suptitle(exhibit["title"]+"\n"+label, fontsize=14)
                 fig.savefig(output/(eid+".svg"), metadata={"Date": None, "Creator": "recovery offline report"})
                 fig.savefig(output/(eid+".png"), dpi=180, metadata={"Software": "recovery offline report"})
             finally:
