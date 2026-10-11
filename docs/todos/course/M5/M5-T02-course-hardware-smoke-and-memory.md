@@ -15,10 +15,10 @@ Actual 4B inference on the selected T4 host passes course-envelope memory, langu
 
 ## Scope and boundaries
 
-- Before allocation, confirm the current source packet, course CPU/R7 preparation gates, package/assets/storage, account/provider constraints, durable export and allocation clock. No unrecorded historical allocation becomes zero; another account does not erase cost. Respect the adopted ceiling and remaining shared smoke/development allowance.
+- Before allocation or weight staging, confirm the completed M5-T01/current source packet, course M1–M4 CPU gates, package/assets/storage, account/provider constraints, durable export, allocation clock and explicit authorization. The approved course sequence permits bounded loading/diagnostics to resolve R7 here; it does not presume physical-memory acceptance. No unrecorded historical allocation becomes zero; another account does not erase cost. Respect the adopted ceiling and remaining shared smoke/development allowance.
 - Stop at 24 calls or 0.5 aggregate GPU-hour, whichever comes first, including assigned load/setup/idle/release time. Two assigned T4s allow at most 900 wall seconds before other charged intervals; elapsed time and aggregate device-hours are distinct. Record every failed/interrupted attempt and stop safely if any limit cannot be respected.
 - Verify actual driver/CUDA/packages, full candidate source/environment, one complete text-only replica and one serial worker per device, batch one, NF4/double quantization/FP16 and supported sensitive FP32 paths. Diagnose every language weight and tied head; expected unused vision weights cannot excuse missing/new language weights. No CPU offload, device split, alternate quantizer or custom kernel.
-- Establish at least 1.5 GiB free headroom for the proved complete course envelope, including peak/cache-growth/workspace/allocator occupancy. Validate the selected attention/recurrent path on actual CUDA; if the existing adapter is used, check its zero-stride head layout, masks/causality and chunk boundaries. Combine justified proof and measured coverage; do not replace full-envelope acceptance with short outputs or arbitrary padding.
+- Close R7: establish at least 1.5 GiB free headroom for the proved complete course envelope, including loading, peak/cache-growth/workspace/allocator/context occupancy. Reuse the verified 110,107-token complete input proof and conditional loading/memory reviews. Validate the selected attention/recurrent path on actual CUDA; if the existing adapter is used, check its zero-stride head layout, masks/causality and chunk boundaries. Combine justified proof and measured coverage; do not replace full-envelope acceptance with short outputs or arbitrary padding. Unresolved coverage withholds this gate and pilot admission; it does not establish terminal infeasibility.
 - Cover finite outputs, exact native rendering/generated suffix/terminal handling, complete versus malformed cap endings, forwarding, a corrected continuation, overflow rejection and timeout cleanup. Instrument fresh hybrid state and per-call RNG, perturb call order/resume and record nondeterminism/device limits. Archived parent replies remain the source of exact replay.
 - Rerun affected checkpoint/attempt/isolation checks on the accepted GPU host. Export ordinary closed snapshots/raw receipts, reopen them off-host and verify confirmed provider release. A standalone library diagnostic or successful model answer does not substitute for these checks.
 
@@ -26,7 +26,7 @@ Actual 4B inference on the selected T4 host passes course-envelope memory, langu
 
 - All actual-host smoke thresholds pass for one course candidate, linked to calls, memory measurements, loading diagnostics and host persistence checks.
 - Allocation/attempt costs and prior uncertainty are reconciled; exports independently reopen and session release is confirmed. No pilot or main result is inferred.
-- Failed capability/memory/runtime/resource admission stops inference and records the terminal blocker for limited reporting; changing candidate reopens affected gates and charges both attempts.
+- Failed capability/memory/runtime/resource admission stops inference and records the observed blocker. Only supported terminal feasibility evidence enables the limited-report route; unresolved or unexecuted checks stay incomplete. Changing candidate reopens affected gates and charges both attempts.
 
 ## Validation and evidence
 
@@ -49,3 +49,10 @@ verifies a tighter 110,107-token complete course bound without changing runtime
 caps or requests. Its 7,400,914,336-byte conditional subtotal and meta traces
 still leave native workspace/reservation/occupancy unbounded; this task remains
 blocked. Reuse the input proof; no weight staging or GPU admission is supplied.
+
+**Approved handoff sequence, 11 October 2026:** Physical R7 closure belongs to
+this actual-host task; it is no longer a requirement to finish it entirely
+offline in M5-T01. The earlier blocked packet statements are historical.
+Loading/diagnostics still require the prerequisites above and a separately
+authorized bounded action. Completing CPU preparation grants no execution
+authorization, physical-memory acceptance, pilot admission or terminal failure.

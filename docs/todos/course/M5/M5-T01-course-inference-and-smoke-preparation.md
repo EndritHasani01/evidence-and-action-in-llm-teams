@@ -1,6 +1,6 @@
 # Course M5-T01 — Course inference and smoke preparation
 
-**Status:** blocked
+**Status:** active
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md), [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md). This is CPU preparation; actual GPU work also requires the course M4 gate.
 
@@ -19,15 +19,15 @@ The existing direct backend supports the adopted 4B course regime, and a concret
 - Reuse the maintained text-only Transformers adapter, serial process ownership, existing records and installed-source checks. The proposed 4B revision is `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`; verify model/tokenizer identity and actual metadata before selecting it. Preserve thesis defaults and avoid another serving, quantization or worker framework.
 - Carry adopted course limits through template rendering, settings, raw decoding and overflow admission. Keep non-thinking decoding at temperature 0.7, top_p 0.8, top_k 20, min_p 0 and repetition penalty 1.0, with no presence penalty. Save generated suffix IDs/text unchanged; remove only verified terminal framing for parsing. Accept complete valid cap-ending JSON, retain unexpected/internal markers and reject repair or schema-constrained decoding.
 - Confirm fresh KV/recurrent state, per-call CPU/CUDA seed ownership, device visibility before CUDA initialization, serial RNG use and exact backend-to-attempt fields with CPU/mock/native-metadata checks. These are preparation evidence, not actual model acceptance.
-- Resolve the course R7 preparation gap with a sound complete-envelope argument or tighter legal live-input proof and a sufficient memory argument, or document a terminal feasibility blocker. Include weights, quantization, recurrent state, activations, cache growth, attention layout/workspace, occupancy and required headroom. A largest fixture, short prompt, arbitrary padding or the proposal's conditional 157,772-token estimate cannot substitute for this evidence.
+- Verify a sound complete legal-input bound and review the supported memory components and remaining uncertainty. Carry the R7 physical-memory question to M5-T02, where justified analysis and actual-host coverage must establish weights, quantization, recurrent state, activations, cache growth, attention layout/workspace, occupancy and at least 1.5 GiB free headroom before pilot admission. A largest fixture, short prompt, arbitrary padding or the proposal's conditional 157,772-token estimate cannot substitute for that acceptance.
 - Prepare the existing notebook/runner path and exact smoke matrix, source/assets/package provenance, disk and durable backup/export checks, allocation/release instructions and all development/reserve costs. Preserve old source-v2/results; a changed course source packet needs the new committed source and renewed provenance. Reuse accepted CPU/library evidence only where it covers the candidate; verify the new attention layout on the full candidate GPU host later.
-- Metadata/tokenizer checks may precede the integrated course CPU gate. Stage language weights only after the complete-envelope preparation gate permits it. Leave current quota, provider duration and remaining historical allowance unknown until verified; no GPU reservation, inference or main execution belongs here.
+- Metadata/tokenizer checks may precede the integrated course CPU gate. This task stages no language weights and reserves no GPU. Later bounded loading/diagnostics belong to M5-T02 after its CPU, source, storage, resource and explicit authorization prerequisites pass; unresolved physical memory prevents accepting that task or admitting a pilot. Leave current quota, provider duration and remaining historical allowance unknown until verified.
 
 ## Completion criteria
 
 - Focused course adapter checks pass, with unchanged thesis behavior and exact cap/terminal/state/seed/provenance handling.
-- The complete course input/memory preparation decision and selected supported attention path are explicit. An unresolved blocker leaves the gate unfinished and supplies limited evidence rather than an invented passing smoke plan.
-- A runnable, reviewed packet identifies host/package candidates, storage, exact calls, at most 24 calls/0.5 aggregate GPU-hour, prior-spending treatment and safe release. Refresh it if later course changes alter its committed source or requests.
+- The complete course input proof, analytical memory review, selected supported attention path and unresolved M5-T02 acceptance items are explicit. Preparation completion grants no physical-memory or model admission and establishes no terminal failure.
+- A runnable CPU review packet and concrete hardware-smoke handoff identify host/package candidates, storage, exact calls, at most 24 calls/0.5 aggregate GPU-hour, prior-spending treatment and safe release. Reuse the existing adapter/worker/ledger path; refresh affected provenance if later changes alter committed source or requests.
 
 ## Validation and evidence
 
@@ -66,7 +66,7 @@ package/source manifest and conditional complete-envelope arithmetic are saved
 in [the preparation evidence](../../../validation/course-m5-inference-and-smoke-preparation.md#packet-and-resource-handoff).
 Thesis defaults/todos and prerequisite artifacts remain intact.
 
-**Unresolved requirement:** R7 lacks a complete supported physical memory
+**Historical sequencing, superseded below:** R7 lacks a complete supported physical memory
 upper bound. The original 156,251-token argument and 9,172,843,936-byte
 conditional component sum remain historical preparation evidence. The offline
 continuation below tightens that analysis, but still leaves loading, selected
@@ -102,3 +102,14 @@ conditional on the NF4 layout. See [the retained review](../../../validation/cou
 This narrows loading uncertainty but excludes physical CUDA reservation, native
 workspace and context occupancy. R7 remains unresolved and admission withheld.
 No production implementation, scientific contract or execution gate changed.
+
+**Approved sequencing change, 11 October 2026:** The user approved closing CPU
+preparation and moving remaining physical R7 acceptance to M5-T02. This changes
+the course engineering sequence only. Specification Sections 8 and 11.3 still
+require the complete-envelope memory/headroom gate, actual loading/state/runtime
+checks, capability screen, complete pilot, resource forecast and freeze before
+their dependent work. The preceding blocked decisions and false
+`preparation_admitted` fields remain historical memory-gate receipts. Reuse
+the verified 110,107-token input proof and loading supplement; refresh the
+committed CPU packet and review its handoff before marking this task done.
+No GPU execution, weight staging or scientific change is authorized here.

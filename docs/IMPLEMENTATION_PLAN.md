@@ -1028,7 +1028,16 @@ Course/M5-T01 starts CPU preparation from `2753c18` on 11 October 2026.
 Reuse the accepted course M1–M4 prerequisites and direct adapter; renew the
 course candidate, complete memory decision and committed-source packet in
 [the scoped acceptance record](validation/course-m5-inference-and-smoke-preparation.md).
-No weight staging or GPU/model work precedes the envelope preparation decision.
+The user approved a course engineering sequencing change on 11 October 2026:
+M5-T01 owns the complete input proof, conditional memory review and reviewed
+CPU packet/hardware-smoke handoff. M5-T02 owns remaining physical R7 acceptance,
+combining justified analysis and actual-host coverage under the bounded smoke.
+This supersedes the earlier requirement to close all physical memory costs
+offline before finishing preparation. No scientific limit or gate is waived:
+at least 1.5 GiB free headroom over the complete envelope still precedes pilot
+admission; CPU/source/storage/resource prerequisites and explicit authorization
+still precede GPU allocation or weight staging. Historical failed/blocked
+receipts remain unchanged. Refresh the packet, then record preparation completion.
 
 - Reuse the existing fallback mathematical size, generators/truth/edits,
   stable IDs and manifests; add only explicit course scope to populations,
