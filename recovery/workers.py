@@ -229,7 +229,12 @@ class LocalScheduler:
         self.stop_reason = None
         self._reported_signature = self._last_reported = None
         if budget is not None:
-            from .accounting import Budget
+            from .accounting import Budget, CourseBudget
+            if (regime == "course") != isinstance(budget, CourseBudget):
+                raise ValueError("course execution requires CourseBudget; thesis retains Budget")
+            if isinstance(budget, CourseBudget) and budget.allocation_mode == "gpu" and self.allocation_stage != (
+                    "development" if all(w.development for w in self.worlds) else "main"):
+                raise ValueError("course GPU allocation stage must match the saved development/main scope")
             devices = [w.allocated_device for w in self.specs]
             if (not isinstance(budget, Budget) or not callable(release_device) or not all(devices)
                     or len(set(devices)) != len(devices)
@@ -393,28 +398,36 @@ class LocalScheduler:
                               settings=self.settings, inflight=self.inflight)
 
     def progress(self):
-        from .accounting import progress_snapshot
+        from .accounting import CourseBudget, progress_snapshot
         return progress_snapshot(self.worlds, self.branches, self.paths, budget=self.budget,
             inflight=self.inflight, settings=self.settings, prior_paths=self.prior_paths,
+            regime=self.regime,
+            planned_devices=tuple(s.allocated_device for s in self.specs) if isinstance(self.budget, CourseBudget) else (),
             gate=self.stop_reason or "M3 CPU verification; M5 inference gate open")
 
     def _allocate(self):
-        from .accounting import BudgetStop, timestamp
+        from .accounting import BudgetStop, CourseBudget, course_admission, timestamp
         from .storage import WorkerStore
         snapshot = self.progress()
         resources = snapshot["resources"]
         if resources["active_devices"]:
             raise BudgetStop("preceding allocations require confirmed provider release")
-        available = (resources["remaining_ceiling_gpu_hours"]
-                     - sum(resources["remaining_reserves_gpu_hours"].values())) * 3600 - self.budget.overhead_seconds
+        if isinstance(self.budget, CourseBudget):
+            self.stop_reason, available = course_admission(resources, snapshot["forecast"], self.budget,
+                                                         self.allocation_stage, len(self.specs))
+        else:
+            available = (resources["remaining_ceiling_gpu_hours"]
+                         - sum(resources["remaining_reserves_gpu_hours"].values())) * 3600 - self.budget.overhead_seconds
         now = datetime.now(timezone.utc)
         previous_idle = sum(now.timestamp() - timestamp(spec.allocated_at) for spec in self.specs if spec.allocated_at)
         if any(spec.allocated_at and timestamp(spec.allocated_at) > now.timestamp() for spec in self.specs):
             raise ValueError("provider allocation cannot start in the future")
         available -= previous_idle
         duration = available / len(self.specs) - self.budget.shutdown_seconds
-        if duration <= 0:
+        if duration <= 0 and not self.stop_reason:
             self.stop_reason = "budget_exhausted_before_allocation"
+        if self.stop_reason:
+            duration = 0
         self.deadline = monotonic() + max(0, duration)
         deadline_at = (now + timedelta(seconds=duration)).isoformat() if duration > 0 else None
         for index, spec in enumerate(self.specs):
@@ -441,14 +454,22 @@ class LocalScheduler:
         self._check_deadline()
         if self.budget is None:
             return
-        from .accounting import BudgetStop
+        from .accounting import BudgetStop, CourseBudget, course_admission
         snapshot = self.progress()
         forecast, resources = snapshot["forecast"], snapshot["resources"]
-        available = resources["remaining_ceiling_gpu_hours"] - sum(resources["remaining_reserves_gpu_hours"].values())
+        available_seconds = None
+        if isinstance(self.budget, CourseBudget):
+            self.stop_reason, available_seconds = course_admission(resources, forecast, self.budget,
+                                                  self.allocation_stage, len(resources["active_devices"]))
+            if self.stop_reason:
+                self._report(force=True)
+                raise BudgetStop(self.stop_reason)
+        available = (available_seconds + self.budget.overhead_seconds) / 3600 if available_seconds is not None else (
+            resources["remaining_ceiling_gpu_hours"] - sum(resources["remaining_reserves_gpu_hours"].values()))
         shutdown = len(resources["active_devices"]) * self.budget.shutdown_seconds / 3600
-        if self.allocation_stage == "main" and not forecast["available"]:
+        if not isinstance(self.budget, CourseBudget) and self.allocation_stage == "main" and not forecast["available"]:
             self.stop_reason = "remaining_forecast_unavailable"
-        elif forecast["available"] and forecast["remaining_gpu_hours"][1] + shutdown >= available:
+        elif not isinstance(self.budget, CourseBudget) and forecast["available"] and forecast["remaining_gpu_hours"][1] + shutdown >= available:
             self.stop_reason = "remaining_forecast_exceeds_budget"
         else:
             # Serial workers can use two attempts only for interrupted calls.

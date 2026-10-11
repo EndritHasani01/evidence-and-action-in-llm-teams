@@ -1,0 +1,16 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m3-accounting/verify_accounting.py",
+    "--output",
+    "notebooks/validation/course-m3-accounting/implementation-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T13:05:29.998398+00:00",
+  "seconds": 2.156000000075437,
+  "exit_code": 0,
+  "log": "implementation-audit.txt.gz",
+  "hash_seed": null
+}

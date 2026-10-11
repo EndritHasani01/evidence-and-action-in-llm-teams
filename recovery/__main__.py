@@ -46,7 +46,9 @@ def main() -> int:
     status.add_argument("--worker", action="append", required=True, type=Path, help="one path per physical worker; missing files remain unknown")
     status.add_argument("--prior-worker", action="append", default=[], type=Path, help="previous measured run files, charged once")
     status.add_argument("--stage", choices=("development", "main"), default="development")
-    status.add_argument("--count", choices=(60, 40), type=int, default=60)
+    status.add_argument("--count", choices=(20, 60, 40), type=int,
+                        help="complete declared main scope (default from the saved population)")
+    status.add_argument("--as-of", help="explicit zoned timestamp for reproducible read-only accounting")
     status.add_argument("--json", action="store_true", help="include every scheduled slot, parent, cost and resumable branch")
     analyze = commands.add_parser("analyze", help="offline exact outcomes, coordinate diagnostics and trajectories")
     analyze.add_argument("--manifest", required=True, type=Path)
@@ -133,13 +135,15 @@ def main() -> int:
         return 0
     if args.command == "status":
         from .accounting import format_status, progress_snapshot
+        from sqlite3 import Error as SQLiteError
         try:
             population = load_population(args.manifest)
             schedules = load_schedules(args.schedule, population)
             worlds = population.development if args.stage == "development" else population.worlds(args.count)
             branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
-            snapshot = progress_snapshot(worlds, branches, args.worker, prior_paths=args.prior_worker)
-        except (OSError, ValueError) as error:
+            snapshot = progress_snapshot(worlds, branches, args.worker, prior_paths=args.prior_worker,
+                                         now=args.as_of, regime=population.regime)
+        except (OSError, ValueError, SQLiteError) as error:
             parser.error(str(error))
         print(json.dumps(snapshot, ensure_ascii=True, allow_nan=False, sort_keys=True) if args.json else format_status(snapshot))
         return 0
@@ -229,7 +233,9 @@ def main() -> int:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.worker_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_worker_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.accounting_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_accounting_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.lifecycle_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_lifecycle_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.inference_checks"))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     return 0 if result.wasSuccessful() else 1

@@ -1,0 +1,17 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "tests.course_accounting_checks",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T13:00:06.540444+00:00",
+  "seconds": 19.875,
+  "exit_code": 0,
+  "log": "accounting-admission-final.txt.gz",
+  "hash_seed": null
+}

@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import time
 
 
@@ -23,15 +24,21 @@ def main():
         parser.error("provide a command and a fresh evidence label")
     started = datetime.now(timezone.utc).isoformat()
     before = time.monotonic()
-    result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    log.write_bytes(gzip.compress(result.stdout, mtime=0))
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    lines = []
+    for line in process.stdout:
+        lines.append(line)
+        sys.stdout.buffer.write(line)
+        sys.stdout.buffer.flush()
+    process.stdout.close()
+    exit_code = process.wait()
+    log.write_bytes(gzip.compress(b"".join(lines), mtime=0))
     record = dict(command=command, cwd=str(Path.cwd()), started_utc=started,
-                  seconds=time.monotonic() - before, exit_code=result.returncode,
+                  seconds=time.monotonic() - before, exit_code=exit_code,
                   log=log.name, hash_seed=os.environ.get("PYTHONHASHSEED"))
     receipt.write_text(json.dumps(record, indent=2) + "\n", encoding="utf-8")
-    print(result.stdout.decode("utf-8", errors="replace"))
     print(json.dumps(record, indent=2))
-    return result.returncode
+    return exit_code
 
 
 if __name__ == "__main__":

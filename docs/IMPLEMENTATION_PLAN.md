@@ -1150,6 +1150,21 @@ execution and applicable authorization remain separate.
   GPU/pilot/main execution and scientific/frozen-configuration changes retain
   separate authorization. Unspecified course rubric/deadline is not a blocker.
 
+- Course/M3-T02 adapts status to the manifest-declared main count and exact regime,
+  with reproducible read-only accounting clocks. `CourseBudget` uses the existing
+  budget/run binding and original allocation partitions: course/shared prior is
+  charged once overall, non-course overall spending stays separate, and prior
+  lower/upper bounds cover only missing ledger records. Unknown bounds/smoke or
+  unclassified allocation withhold admission; a new account does not reset them.
+  Main forecasts require matching measured settings and every planned device;
+  CPU timing cannot predict GPU throughput. Unspent cumulative 8/2/2 reserves,
+  both ceilings, one 25% main margin, future overhead once and timeout/release
+  bounds constrain admission. The independent deadline also conservatively
+  protects setup/interruption/development allowances and retains resumable scope.
+  Twelve focused course checks and the original 23-check accounting archive pass;
+  the all-family lifecycle and full acceptance remain underway in the linked
+  [accounting/lifecycle evidence](validation/course-m3-accounting-and-lifecycle.md).
+
 ### Course unresolved gates
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2

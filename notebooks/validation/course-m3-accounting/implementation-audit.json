@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "baseline": "11609f458656a4767fcb1ecce83b6120a1197382",
+  "audited_head": "e2b748aaaaf75f04f110a01dd2bc01c2cc253c4b",
+  "protected_files_identical": 1384,
+  "user_edit_identical_and_unstaged": true,
+  "thesis_spec_defaults_todos_and_plan_sections_1_to_10_preserved": true,
+  "course_task_states": {
+    "done": 6,
+    "active": 1,
+    "blocked": 14
+  },
+  "local_references": 668,
+  "markdown_fragments": 281,
+  "suites": {
+    "accounting-complete": {
+      "tests": [
+        12
+      ],
+      "exit_code": 0
+    },
+    "unchanged-accounting": {
+      "tests": [
+        23
+      ],
+      "exit_code": 0
+    }
+  },
+  "bundle": null,
+  "reused_real_course_kills": 10,
+  "model_calls": 0,
+  "gpu_admission": false,
+  "runtime_freeze": false
+}

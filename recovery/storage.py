@@ -184,6 +184,10 @@ class WorkerStore:
         """
         from .populations import _check_regime
         _check_regime(regime)
+        if budget is not None:
+            from .accounting import CourseBudget
+            if (regime == "course") != isinstance(budget, CourseBudget):
+                raise ValueError("course bindings require CourseBudget; thesis retains its budget representation")
         if regime == "course":
             from .inference import QWEN_4B
             if (limits_from_settings(settings) != COURSE_LIMITS
