@@ -1,6 +1,6 @@
 # Course M4-T03 — Course paired uncertainty and shared-response missingness
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M4-T01](M4-T01-course-outcomes-and-estimands.md), [M4-T02](M4-T02-course-diagnostics-and-policy-costs.md).
 
@@ -29,7 +29,9 @@ Course estimates, cost comparisons and incomplete-run summaries use correct pair
 
 Compare hand-derived and tiny enumerated cases with existing uncertainty functions on course-shaped records. Verify paired bootstrap reproducibility, raw contrast/family counts and unchanged thesis results. Record exact settings, commands, expected bounds and artifacts; no inference or worker-data writes.
 
-**Evidence:** Not yet recorded. Existing statistical implementation is verified; new course populations are not.
+**Evidence:** [Preparation and acceptance record](../../../validation/course-m4-uncertainty-and-missingness.md).
+Existing statistical implementation and prerequisite worker evidence are reused;
+course uncertainty acceptance is pending the focused checks below.
 
 **Prerequisite handoff, 11 October 2026:**
 [Course diagnostic/policy-cost acceptance](../../../validation/course-m4-diagnostics-and-policy-costs.md#completion-and-handoff)
