@@ -1024,6 +1024,12 @@ execution and applicable authorization remain separate.
 
 ### Course implementation decisions
 
+Course/M5-T01 starts CPU preparation from `2753c18` on 11 October 2026.
+Reuse the accepted course M1–M4 prerequisites and direct adapter; renew the
+course candidate, complete memory decision and committed-source packet in
+[the scoped acceptance record](validation/course-m5-inference-and-smoke-preparation.md).
+No weight staging or GPU/model work precedes the envelope preparation decision.
+
 - Reuse the existing fallback mathematical size, generators/truth/edits,
   stable IDs and manifests; add only explicit course scope to populations,
   schedules and their CLI consumers. Preserve target/fallback thesis defaults,

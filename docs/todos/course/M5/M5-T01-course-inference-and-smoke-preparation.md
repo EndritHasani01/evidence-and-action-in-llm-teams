@@ -1,6 +1,6 @@
 # Course M5-T01 — Course inference and smoke preparation
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md), [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md). This is CPU preparation; actual GPU work also requires the course M4 gate.
 
@@ -33,7 +33,12 @@ The existing direct backend supports the adopted 4B course regime, and a concret
 
 Use native 4B metadata/tokenizer and saved generated-token fixtures, mocks for load/state/device ownership, installed-source verification and the course capacity proof. Check current maintained loader/package/provider sources only where needed. Record commands, source/candidate identities, limits, packet locations and pending actual-host checks; do not rerun unchanged generic preflight without an affected requirement.
 
-**Evidence:** Not yet recorded. Existing preparation is reusable; course support, complete-envelope admission and model smoke remain pending.
+**Evidence:** Preparation starts 11 October 2026 from `2753c18` on
+`feat/course-m5-inference-preparation`, with a clean working tree. Follow
+[the scoped acceptance record](../../../validation/course-m5-inference-and-smoke-preparation.md).
+Reuse the accepted course M1–M4 CPU gates and earlier adapter/library evidence;
+renew only course candidate, envelope and packet behavior. GPU/model smoke
+and actual resource admission remain separate gates.
 
 **Prerequisite handoff, 11 October 2026:**
 [Course M3 accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)
