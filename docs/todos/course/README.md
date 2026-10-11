@@ -106,6 +106,8 @@ The next required work remains [course/M5-T01](M5/M5-T01-course-inference-and-sm
 The [offline R7 continuation](../../validation/course-m5-r7-offline-review.md)
 verifies a supplemental complete 110,107-token bound with unchanged bytes/caps,
 five source/five outside-checkout native checks and preserved original evidence.
+Five more CPU checks verify checkpoint header shapes and sequential loading;
+the explicit loading-tensor allowance excludes physical CUDA costs.
 The tightened 7,400,914,336-byte conditional subtotal still lacks a supported
 physical peak; M5-T01 remains unfinished and blocked.
 

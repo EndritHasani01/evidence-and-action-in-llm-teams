@@ -65,6 +65,10 @@ The [offline R7 supplement](../validation/course-m5-r7-offline-review.md)
 verifies a tighter 110,107-token complete input bound with unchanged bytes/caps;
 five source/five outside-checkout native checks pass. Its conditional subtotal
 is 7,400,914,336 bytes, with three meta traces and 12 native source inspections.
+The loading supplement verifies 426 language header shapes and maintained
+sequential materialization/tied-head handling in five CPU checks, with zero
+weight payload read. Its 3,214,021,348-byte explicit loading-tensor allowance
+excludes physical CUDA reservation/workspace/context costs.
 R7 still lacks a complete physical memory upper bound; the task remains blocked.
 Its CPU review notebook stages no weights and admits no GPU work. Resolve
 actual quantized loading, native workspace and allocator/context occupancy

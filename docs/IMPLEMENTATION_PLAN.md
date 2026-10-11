@@ -1284,7 +1284,12 @@ and atomic complete Hangul syllables in the proof only. Five source/five
 outside-checkout native checks pass with zero skips; the original 156,251-token
 archive, rendered bytes, protocol caps and all 29 runtime modules remain intact.
 Three actual meta-device traces and 12 inspected pinned native sources narrow
-the memory question. No GPU or model assets were used. Course/M5-T01 remains
+the memory question. A further loading supplement from `f455522` verifies all
+426 language shapes from 90,240 header-only bytes, plus sequential loading and
+tied-head handling in five focused CPU checks. Five more pinned sources support
+a 3,214,021,348-byte explicit loading-tensor allowance, conditional on the NF4
+layout; physical allocator/workspace/context costs remain excluded.
+No GPU or language weights were used. Course/M5-T01 remains
 blocked: the memory preparation gate is withheld. Reuse these checks and preserve
 historical packets; any sufficient proof still leaves actual host/headroom,
 resource reconciliation and authorization as separate gates.

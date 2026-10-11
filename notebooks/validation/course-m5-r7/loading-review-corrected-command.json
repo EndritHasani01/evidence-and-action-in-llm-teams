@@ -1,0 +1,19 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-B",
+    "notebooks/validation/course-m5-r7/review_loading.py",
+    "--output",
+    "notebooks/validation/course-m5-r7/loading-review-corrected.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T21:10:06.071796+00:00",
+  "source_head": "f4555225cf5d1e393e1c01a8c7433a39def7d1b8",
+  "seconds": 10.563000000081956,
+  "exit_code": 0,
+  "log": "loading-review-corrected.txt.gz",
+  "hash_seed": "317",
+  "temporary_root": null
+}

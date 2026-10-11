@@ -28,6 +28,9 @@ course/M5-T01 remains blocked and unfinished. No terminal model feasibility
 failure is accepted. This continuation used metadata, tokenizer, native source
 and virtual meta tensors only; no language weights were staged or loaded,
 CUDA initialized, GPU reserved or experiment executed.
+The loading supplement below verifies checkpoint header shapes and sequential
+materialization, and bounds explicit parameter/conversion tensor storage. It
+still does not bound physical CUDA reservation/workspace/occupancy.
 
 ## Capacity checkpoint
 
@@ -141,6 +144,65 @@ verifies 722,473 source bytes; it downloads/stages no model assets.
   changed. An allocation cap alone would limit reservations or cause OOM; it
   would not prove that the complete call fits or bound other CUDA occupancy.
 
+## Loading supplement at `f455522`
+
+The user's further continuation remains offline. The
+[metadata fetcher](../../notebooks/validation/course-m5-r7/capture_headers.py)
+requests only each safetensors file's eight-byte length prefix and bounded JSON
+header. It rejects responses without exact HTTP 206 ranges before reading their
+body and limits headers to 512 KiB. The
+[retained headers](../../notebooks/validation/course-m5-r7/checkpoint-headers.json.gz)
+contain **90,240 downloaded metadata bytes and zero tensor payload bytes**.
+All 738 entries match the pinned canonical index, file sizes, contiguous offsets
+and dtype-based lengths; all 426 language shapes match the maintained meta model.
+Language checkpoint dtypes are 378 BF16 and 48 FP32. These are serialization
+dtypes, not acceptance of BF16 computation on T4 or actual weight values/loading.
+
+The [loading review](../../notebooks/validation/course-m5-r7/review_loading.py)
+executes the installed Transformers 5.12.0 loader on tiny synthetic CPU inputs.
+Its on-the-fly quantization branch disables the thread pool, stores lazy
+materialization functions and consumes each input before the next. The check
+requires previous input references to be released and confirms unexpected vision
+keys are not materialized. Quantization is instrumented for ordering, not
+performed by an actual CUDA kernel. A separate native meta-model check exercises
+missing-key placement and tying: the output head is skipped and reuses the input
+embedding rather than allocating another 635,699,200-element tensor.
+[Maintained loader](https://raw.githubusercontent.com/huggingface/transformers/v5.12.0/src/transformers/core_model_loading.py),
+[tying/finalization](https://github.com/huggingface/transformers/blob/v5.12.0/src/transformers/modeling_utils.py).
+
+Five more inspected sources, including the native NF4/blockwise entry points,
+are retained in [the loading-source archive](../../notebooks/validation/course-m5-r7/loading-sources.json.gz).
+The three Transformers sources equal the installed bytes. The inspected NF4
+and nested-statistics native entry points launch their kernels over caller-owned
+output arrays; their wrappers add no separate `cudaMalloc` workspace. This does
+not bound CUDA kernel/module/context occupancy or Torch reduction/GEMM workspace.
+[NF4/blockwise wrappers](https://github.com/bitsandbytes-foundation/bitsandbytes/blob/0.49.2/csrc/ops.cu).
+
+For each linear with n elements, the retained source layout charges
+`ceil(n/2)` packed bytes, `ceil(n/64)` one-byte compressed scales,
+`4 ceil(n/16384)` nested FP32 scales, 64-byte NF4 map, 1,024-byte nested map and
+four-byte offset. Charging each map separately is conservative even when shared.
+Together with the FP16 tied embedding, all ordinary parameters allowed FP32,
+and the shared cached 1,024-byte dynamic map, the parameter tensor storage
+allowance is **3,116,700,064 bytes**. Nonpersistent buffers add at most 256 bytes.
+The active conversion allowance includes two largest FP16 matrix copies, two
+FP32 absmax arrays and the NF4 map's abs/max temporaries: **97,321,028 bytes**.
+The combined explicit loading-tensor allowance is **3,214,021,348 bytes**
+(about 2.99 GiB), conditional on the pinned NF4 layout and accepted language
+inventory. It is not a physical loading peak; allocator rounding/reservations,
+native workspaces and actual GPU loading acceptance remain excluded.
+[Quantization/state construction](https://github.com/bitsandbytes-foundation/bitsandbytes/blob/0.49.2/bitsandbytes/functional.py).
+
+[Five focused checks](../../notebooks/validation/course-m5-r7/loading-review-source.json)
+pass with zero skips under local Torch 2.11.0+cpu/Transformers 5.12.0 and hash
+seed 317. They include four HTTP read guards and six identity/coverage/shape
+rejections. See [the exact receipt](../../notebooks/validation/course-m5-r7/loading-review-source-command.json).
+The initial failed receipt retains a missing `tp_plan` argument in this audit
+harness; the corrected API call passes. The later source check adds the map
+temporaries and corrupt-header rejection. Earlier receipts remain historical.
+No runtime, attention, allocator policy, scientific configuration or thesis
+default changed; the accepted 64 source/64 installed adapter checks are reused.
+
 ## Preparation decision and handoff
 
 The input portion of R7 has advanced: use **110,107** for supplemental course
@@ -151,7 +213,7 @@ it has not become an executable model-smoke packet from this analysis.
 
 No R7 outcome yet supplies a complete supported physical peak/headroom bound
 or proves that the candidate cannot support the required envelope. The remaining
-work needs a supported bound for actual quantized loading/native workspaces and
+work needs a supported bound for physical loading/native workspaces and
 allocator/context occupancy across the full call, including prior serial calls.
 Neither the short stress requests, synthetic meta caches nor arbitrary reserve
 allowances close it. Current task status is blocked; M5-T02 and M6 remain blocked.
@@ -165,7 +227,7 @@ thesis defaults/todos, task counts/links, source/installed report agreement and
 all withheld admission/unknown fields. This audit verifies the limited offline
 outcome; it does not mark M5-T01 complete.
 
-Final audit at `91705ae` passes: **1,734 protected files**, unchanged pre-course
+Previous audit at `91705ae` passes: **1,734 protected files**, unchanged pre-course
 plan, **364 local links**, matching course task counts and four rejection cases
 for wrong identity/partial coverage/relabelled GPU or headroom evidence. The
 working tree is committed in separate scope, proof, memory-review and evidence

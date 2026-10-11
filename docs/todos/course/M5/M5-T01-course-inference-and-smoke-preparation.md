@@ -92,3 +92,13 @@ the whole call. The task remains blocked and unfinished, with weights/model
 smoke withheld and no accepted terminal failure. Reuse the passing proof and
 existing CPU packet; obtain a sufficient complete memory argument before
 refreshing affected provenance. No GPU or weights were used in this continuation.
+
+**Loading supplement from `f455522`:** Header-only range reads (90,240 bytes,
+zero tensor payload) verify all 426 language shapes and 738 checkpoint entries.
+Five focused CPU checks pass without skips: maintained sequential materialization,
+unused-key rejection, tied-head placement and metadata read/identity guards.
+Pinned sources give a 3,214,021,348-byte explicit loading-tensor allowance,
+conditional on the NF4 layout. See [the retained review](../../../validation/course-m5-r7-offline-review.md#loading-supplement-at-f455522).
+This narrows loading uncertainty but excludes physical CUDA reservation, native
+workspace and context occupancy. R7 remains unresolved and admission withheld.
+No production implementation, scientific contract or execution gate changed.
