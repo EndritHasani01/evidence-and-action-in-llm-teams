@@ -97,6 +97,13 @@ def main():
     if args.completion:
         installed = read(FOLDER / "installed-provenance.json")
         assert installed["exit_code"] == 0 and not installed["source_pythonpath"]
+        assert installed["hash_seed"] == 37 and installed["matching_modules"] == 29
+        source = read(FOLDER / "source-full-accepted-command.json")
+        assert source["source_head"] == installed["source_head"]
+        for label, count in {"accounting-reserve-review": 13, "unchanged-accounting": 23,
+                "lifecycle-archive-corrected": 3, "lifecycle-reproduction": 3,
+                "source-full-accepted": 607, "installed-accepted": 91, "core-checks-corrected": 348}.items():
+            assert suites[label]["tests"] == [count], label
         for path, digest in installed["modules"].items():
             assert hashlib.sha256((ROOT / "recovery" / path).read_bytes()).hexdigest() == digest, path
         with ZipFile(ROOT / "tests/fixtures/course_lifecycle_run.zip") as bundle:
@@ -105,6 +112,8 @@ def main():
         command = read(FOLDER / "offline-audit-command.json")
         log = gzip.decompress((FOLDER / command["log"]).read_bytes()).decode()
         bundle_summary = json.loads(next(line for line in log.splitlines() if line.startswith('{"attempts"')))
+        assert bundle_summary == dict(attempts=2126, cases=3, generations=2124, logical_calls=2332,
+                                      replay_uses=208, uncertain_attempts=2)
     record = dict(status="passed", baseline=baseline["head"], audited_head=git("rev-parse", "HEAD"),
         protected_files_identical=len(protected), user_edit_identical_and_unstaged=True,
         thesis_spec_defaults_todos_and_plan_sections_1_to_10_preserved=True, course_task_states=dict(Counter(states.values())),

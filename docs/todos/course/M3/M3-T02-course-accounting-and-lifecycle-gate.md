@@ -1,6 +1,6 @@
 # Course M3-T02 — Course accounting, progress and lifecycle gate
 
-**Status:** active
+**Status:** done
 
 **Dependencies:** [M3-T01](M3-T01-course-durable-workers-and-failures.md).
 
@@ -30,11 +30,13 @@ Course execution has honest reconstructible progress, physical versus policy cos
 
 Use synthetic allocation/setup/idle/uncertain-attempt scenarios, replay and failed-slot costs, controller-kill/held-prose cases, changed input/config rejection and database backup reopen. Compare uninterrupted/resumed logical states and allowed physical differences; verify read-only progress creates no effect or inference. Record commands/environment and ordinary course lifecycle artifacts for M4. No GPU.
 
-**Evidence:** Work started 11 October 2026 from `11609f4` after inspecting the
+**Evidence:** Completed 11 October 2026 from `11609f4` after inspecting the
 course handoff, scientific/resource clause, task references and completed
 M3-T01 evidence. [Accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)
-records the reuse boundary and protected starting bytes. Course acceptance is
-pending; no GPU or empirical execution is included.
+records 607 full source/91 installed checks with zero skips, 13 final focused
+checks, packaged/fresh-process/offline lifecycle acceptance, independent full
+main/development count and cost reconstruction, and protected starting bytes.
+The course M3 CPU gate passes; no GPU or empirical execution is included.
 
 **Prerequisite handoff before M3-T02, 11 October 2026:** Course/M3-T01 passes
 [durable-worker acceptance](../../../validation/course-m3-durable-workers-and-failures.md#completion-and-handoff).
@@ -50,3 +52,16 @@ needed their course adaptation. Apply the adopted cumulative resource rules with
 inventing available quota; complete the tiny all-family course lifecycle and
 independent accounting/progress reconstruction required above. The full M3
 course gate, resource admission and actual-host/model gates were still open.
+
+**Completion handoff, 11 October 2026:** Course/M3-T02 passes
+[accounting/lifecycle acceptance](../../../validation/course-m3-accounting-and-lifecycle.md#completion-and-handoff).
+The ordinary three-case course lifecycle retains all-family interventions,
+controls/repeats, hand costs and safe stop/resume; the intact prerequisite
+bundle supplies ten real kills. Full schedules reconcile 5,752/6,280 main and
+1,114/1,178 development without executing every slot. Read-only status now
+uses the manifest's declared count for main, while analysis CLI adaptation
+belongs to course/M4-T01. `CourseBudget` preserves cumulative bounds and
+unknowns through the existing binding; neither CPU timing nor unknown prior/
+loading/smoke can establish GPU admission. Course/M4-T01 and CPU preparation in
+course/M5-T01 are ready. Actual model/runtime/resource, course M4, pilot/freeze,
+main execution and publication gates remain separate.

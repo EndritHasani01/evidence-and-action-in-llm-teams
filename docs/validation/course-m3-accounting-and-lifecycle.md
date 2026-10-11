@@ -1,11 +1,13 @@
 # Course M3 accounting and scripted lifecycle
 
-Started 11 October 2026 for [course/M3-T02](../todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md)
-from `11609f4`. Authority is [specification Section 11.3](../../PROJECT_SPECIFICATION.md#113-cumulative-resources-and-admission)
+Completed 11 October 2026 for [course/M3-T02](../todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md)
+from `11609f4`. The course M3 CPU gate passes. Authority is [specification Section 11.3](../../PROJECT_SPECIFICATION.md#113-cumulative-resources-and-admission)
 and [plan M3](../IMPLEMENTATION_PLAN.md#5-milestone-m3--durable-runner-failures-cost-and-progress).
 The [durable-worker prerequisite](course-m3-durable-workers-and-failures.md#completion-and-handoff)
 passes with exact course bindings, original parents, ten real kills and portable
-ordinary records. The combined accounting/lifecycle gate remains open.
+ordinary records. Full source acceptance passes 607 checks with zero skips;
+installed acceptance passes 91 with zero skips. Actual runtime/model/resource
+acceptance and course M4 reporting remain later gates.
 
 Reuse existing generation/attempt/allocation joins, replacement checkpoints,
 read-only status, original replay costs, policy prefix attribution and ordinary
@@ -17,8 +19,8 @@ layer is required.
 [Starting tracked bytes](../../notebooks/validation/course-m3-accounting/baseline-files.json.gz)
 include the user's pre-existing unstaged M5 evidence edit. Exact CPU commands
 and logs belong to the [existing validation layout](../../notebooks/validation/course-m3-accounting/).
-Validation will independently reconcile full main/development schedules without
-executing every call, check measured/unknown resource scenarios and retain a
+Validation independently reconciles full main/development schedules without
+executing every call, checks measured/unknown resource scenarios and retains a
 tiny all-family lifecycle for M4. CPU fixtures establish no T4 throughput,
 available quota, smoke allowance, model/pilot acceptance or runtime freeze.
 
@@ -54,8 +56,8 @@ prior failed configurations, new device rejection and release acknowledgement.
 The [unchanged thesis accounting archive](../../notebooks/validation/course-m3-accounting/unchanged-accounting-command.json)
 reproduces all 23 checks and nine cases. Initial failed test commands are retained;
 their corrections use the actual `edited_owner`, `dependency_waiting` and task enum
-contracts. The all-family lifecycle, installed checks and final regression remain
-underway; this checkpoint does not close M3.
+contracts. At this implementation checkpoint, all-family lifecycle, installed
+checks and final regression were still pending; it did not close M3.
 
 ## Lifecycle and review checkpoint
 
@@ -96,7 +98,7 @@ artifact was deleted. Child `TEMP`/`TMP` now use the explicit task-owned
 passes 348 checks with eight declared-package skips under `python -S`. Source
 and installed runs begun before the review fixes were stopped and retained as
 partial evidence; they are not acceptance. Final-code full source/installed
-validation and the completion audit remain pending.
+validation and the completion audit were still pending at that checkpoint.
 
 The subsequent [reserve-attribution review](../../notebooks/validation/course-m3-accounting/accounting-reserve-review-command.json)
 passes all 13 checks. A stopped GPU-classified process without a ready receipt
@@ -148,4 +150,54 @@ records a fresh wheel/target, hash seed 37, interpreter/module paths and matchin
 bytes for all 29 production modules. Checks execute outside the checkout with
 no source `PYTHONPATH`, using the declared CPU packages and copied unchanged
 tests/configurations. No dependency was installed into the repository environment.
-Full source completion and the final course handoff audit remain pending.
+At the installed checkpoint, full source completion and the final course
+handoff audit were still pending.
+
+## Completion and handoff
+
+The [complete source command](../../notebooks/validation/course-m3-accounting/source-full-accepted-command.json)
+passes all **607 methods with zero skips** in 3,632.148 seconds; the command
+takes 3,635.891 seconds. It validates the saved course configuration, actual
+input/schedule bytes, full thesis analysis/report reproduction, protocol/limits,
+replay, workers, accounting, all original and course lifecycle methods, real
+kills and scripted inference mechanics. Both accepted source and installed runs
+started from the same production commit `ff6d543`; later commits update only
+evidence/handoffs. No production or test code changed during acceptance.
+
+| Executed check | Result |
+|---|---|
+| [Final focused accounting](../../notebooks/validation/course-m3-accounting/accounting-reserve-review-command.json) | 13 passed, including unknown prior/loading/reserve refusal |
+| [Full source](../../notebooks/validation/course-m3-accounting/source-full-accepted-command.json) | 607 passed, zero skips |
+| [Outside-checkout installed packet](../../notebooks/validation/course-m3-accounting/installed-accepted-command.json) | 91 passed, zero skips; three packaged audits and dependency check passed |
+| [Core-only, site packages disabled](../../notebooks/validation/course-m3-accounting/core-checks-corrected-command.json) | 348 passed with eight declared-package skips; excluded runtime suites are not accepted by this core run |
+| [Packaged course lifecycle](../../notebooks/validation/course-m3-accounting/lifecycle-archive-corrected-command.json) | Three methods/cases passed, packaged/reopened/fresh-process audit passed |
+| [Hash-seed-37 reproduction](../../notebooks/validation/course-m3-accounting/lifecycle-reproduction-command.json) | Three cases reproduced with exact scientific records |
+| [Course offline audit](../../notebooks/validation/course-m3-accounting/offline-audit-command.json) | Three cases rejoined, backups/stopped snapshot and full-schedule unknowns checked |
+| [Original accounting archive](../../notebooks/validation/course-m3-accounting/unchanged-accounting-command.json) | 23 checks/nine cases reproduced unchanged |
+| [Original lifecycle audit](../../notebooks/validation/course-m3-accounting/unchanged-lifecycle-audit-command.json) | 14 cases/nine checks audited unchanged |
+| [Repository dependency check](../../notebooks/validation/course-m3-accounting/pip-check-command.json) | Passed |
+
+Course/M3-T02 is done and closes the combined course M3 CPU gate. Progress is
+seven done, two ready and twelve blocked tasks. [Course/M4-T01](../todos/course/M4/M4-T01-course-outcomes-and-estimands.md)
+is ready for the existing read-only course outcome/estimand joins and analysis
+CLI adaptation. [Course/M5-T01](../todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
+is ready for CPU packet preparation; course M4 still precedes GPU use. Reuse
+the ordinary three-case lifecycle and original ten-kill worker bundles, exact
+IDs/records/bindings and explicit course limits/settings. Their selected
+scripted scopes do not establish empirical population coverage.
+
+Current actual historical allocation/quota and remaining smoke availability
+remain unknown. The implementation withholds admission until evidence supplies
+sufficient bounds and later runtime/resource gates pass; this CPU gate grants
+no model/GPU/pilot/main/freeze or publication authorization. Thesis defaults,
+todos, specification, earlier fixtures and plan Sections 1–10 remain unchanged;
+the user's pre-existing M5 evidence edit remains unchanged and unstaged.
+
+The [completion audit](../../notebooks/validation/course-m3-accounting/completion-audit.json)
+and its [recorded command](../../notebooks/validation/course-m3-accounting/completion-audit-command.json)
+pass. All 1,384 protected starting files remain byte-identical, including the
+pre-existing user edit and original scientific/configuration/fixture evidence.
+Course task/index states agree, all relevant local links/anchors resolve,
+accepted source/installed commits agree, 29 installed module bytes still match
+source, and every required command completed successfully. `git diff --check`
+passes. The final committed-head audit is retained alongside these receipts.

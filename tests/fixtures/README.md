@@ -1195,8 +1195,8 @@ committed transitions and attempt outcomes; observed clocks/PIDs/placement are
 retained but need not be identical. Existing failure, worker and lifecycle
 fixtures remain unchanged. See the
 [course durability evidence](../../docs/validation/course-m3-durable-workers-and-failures.md)
-for commands and execution boundaries. Course accounting and the combined
-lifecycle/resource gate remain M3-T02; these records are no pretrained-model,
+for commands and execution boundaries. The later M3-T02 evidence below closes
+the combined CPU lifecycle gate; these records are no pretrained-model,
 GPU/runtime, pilot, freeze, main-experiment or publication acceptance.
 
 ## Course accounting and scripted lifecycle
@@ -1236,3 +1236,8 @@ This is a tiny scripted selection and synthetic resource evidence. See the
 for commands, environment and the final acceptance state; actual model/runtime,
 GPU throughput, historical quota, smoke/pilot, freeze and main execution remain
 separate gates.
+
+Course/M3-T02's full CPU acceptance passes 607 source/91 installed checks with
+zero skips and 13 final focused accounting checks. The combined course M3 gate
+is complete; course M4 owns complete cohort analysis/reporting. Actual prior
+spending and remaining smoke/quota must be recovered at their later gate.

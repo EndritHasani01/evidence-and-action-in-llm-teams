@@ -1,6 +1,6 @@
 # Course M5-T01 — Course inference and smoke preparation
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M2-T03](../M2/M2-T03-course-attainability-and-capacity.md), [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md). This is CPU preparation; actual GPU work also requires the course M4 gate.
 
@@ -35,7 +35,7 @@ Use native 4B metadata/tokenizer and saved generated-token fixtures, mocks for l
 
 **Evidence:** Not yet recorded. Existing preparation is reusable; course support, complete-envelope admission and model smoke remain pending.
 
-**Prepared prerequisite handoff, 11 October 2026:**
+**Prerequisite handoff, 11 October 2026:**
 [Course M3 accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)
 supplies the existing saved `CourseBudget` contract, original attempt/process/
 allocation joins, conservative planned-device forecast admission, independent
@@ -49,6 +49,6 @@ physical/policy costs retain it. Recover actual prior allocation and cumulative
 smoke usage, verify provider/billing/release terms, and prepare a new committed
 course source packet without changing historical source-v2/results. The complete
 156,251-token native bound is preparation input, not accepted model memory.
-Course M3's final broad acceptance is pending; once it passes, CPU preparation
-may proceed. Course M4 and the runtime/resource/authorization gates still precede
+Course M3's final broad acceptance passes; CPU preparation is ready.
+Course M4 and the runtime/resource/authorization gates still precede
 any GPU allocation/inference.

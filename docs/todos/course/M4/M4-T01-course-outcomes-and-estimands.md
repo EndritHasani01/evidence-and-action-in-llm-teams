@@ -1,6 +1,6 @@
 # Course M4-T01 — Course exact outcomes and all estimands
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M3-T02](../M3/M3-T02-course-accounting-and-lifecycle-gate.md).
 
@@ -31,7 +31,7 @@ Reuse existing analysis fixtures plus course cohort/contract cases: duplicates, 
 
 **Evidence:** Not yet recorded. Existing estimands are verified; course-cohort integration is pending.
 
-**Prepared prerequisite handoff, 11 October 2026:**
+**Prerequisite handoff, 11 October 2026:**
 [Course M3 accounting/lifecycle evidence](../../../validation/course-m3-accounting-and-lifecycle.md)
 retains the [ordinary three-case bundle](../../../../tests/fixtures/course_lifecycle_run.zip)
 with saved population/schedules, literal selection IDs, original worker SQLite
@@ -44,4 +44,5 @@ course estimands. Reuse existing read-only joins, original physical-response
 identities and all intended 20/eight/five-world denominators. Status main count
 now defaults to the manifest's 20; analysis CLI count choices remain 60/40 and
 are part of this task's course integration. Course M3's final broad acceptance
-is pending; this task remains blocked until its linked gate passes.
+passes; this task is ready. Course outcome/estimand acceptance remains its own
+work, and no GPU or empirical execution is authorized here.

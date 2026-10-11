@@ -10,7 +10,8 @@ Course scientific/resource adoption was explicitly approved on 9 October 2026.
 Existing M1–M4 and thesis M5-T01 retain completion evidence: 21/29 original tasks.
 Course inputs/schedules, their M1 CPU gate, M2 protocol/limits and
 interventions/exact replay, local attainability, complete native capacity and
-durable workers/bounded failures are verified.
+durable workers/bounded failures, accounting/resource refusal and the complete
+scripted M3 lifecycle are verified.
 Runtime configuration, later CPU gates, pretrained-model admission, pilot, freeze and empirical execution
 remain pending. Task creation and design/resource adoption authorize no execution.
 
@@ -24,7 +25,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**6/21 course tasks done; 15 remaining; 1 active; 0 ready; 14 blocked.**
+**7/21 course tasks done; 14 remaining; 0 active; 2 ready; 12 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -49,20 +50,24 @@ Course/M3-T01 is done: [durable-worker acceptance](../../validation/course-m3-du
 passes 591 full source checks, 95 outside-checkout installed checks and 11
 focused course checks with zero skips, including ten real controller kills.
 All 16 ordinary CPU worker scenarios reproduce with hash seed 37; native
-request/replay and backup/reopen checks pass. Accounting and the combined M3
-course lifecycle gate remain M3-T02. Runtime and later course CPU/model gates
-remain open.
+request/replay and backup/reopen checks pass. Course/M3-T02 is done:
+[accounting/lifecycle acceptance](../../validation/course-m3-accounting-and-lifecycle.md#completion-and-handoff)
+passes 607 full source/91 installed checks with zero skips and 13 final focused
+checks. Independent costs/counts, cumulative unknown-aware resources, safe
+release/resume and the three-case all-family lifecycle pass packaged/offline
+audit and fresh-process reproduction. The course M3 CPU gate passes; actual
+runtime/resources and later course CPU/model gates remain open.
 Inherited foundation tasks are not counted as course acceptance.
 
-The next safe task is [course/M3-T02](M3/M3-T02-course-accounting-and-lifecycle-gate.md), following completed [course/M3-T01](M3/M3-T01-course-durable-workers-and-failures.md). **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
+The next safe task is [course/M4-T01](M4/M4-T01-course-outcomes-and-estimands.md), following the completed course M3 gate. [Course/M5-T01](M5/M5-T01-course-inference-and-smoke-preparation.md) is also ready for CPU preparation; GPU use still requires course M4 and the applicable later gates/authorization. **Ready** means safe work can start; any authorization needed to finish remains explicit. **Blocked** means a listed prerequisite, evidence handoff or required authorization is missing. **Active** means implementation is underway. **Done** requires linked passing evidence. Counts describe verified task outcomes, not effort or runtime; a terminal failure is recorded without changing an unmet gate to done.
 
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
 | M2 | 3/3 | 0 | 0 | 0 | CPU gate passed: lawful protocol/replay, locally informed witness and complete 156,251-token native bound |
-| M3 | 1/2 | 1 | 0 | 0 | Durable workers/bounded failures passed; accounting and combined lifecycle gate underway |
-| M4 | 0/4 | 0 | 0 | 4 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
-| M5 | 0/5 | 0 | 0 | 5 | Actual-host smoke, capability, complete pilot, conservative resources and authorized course freeze |
+| M3 | 2/2 | 0 | 0 | 0 | CPU gate passed: durable workers, honest accounting/status, cumulative resource refusal and portable all-family lifecycle |
+| M4 | 0/4 | 0 | 1 | 3 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
+| M5 | 0/5 | 0 | 1 | 4 | CPU packet preparation ready; actual-host smoke, capability, complete pilot, resources and authorized course freeze remain gated |
 | M6 | 0/5 | 0 | 0 | 5 | Complete frozen execution, independent audit, claims review, clean local reproduction and agreed delivery |
 
 ## Task index
@@ -77,12 +82,12 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | done | M2-T01 |
 | [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | done | M2-T02 |
 | [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | done | M2-T03 |
-| [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | active | M3-T01 |
-| [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | blocked | M3-T02 |
+| [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | done | M3-T01 |
+| [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | ready | M3-T02 |
 | [M4-T02 — Course diagnostics and policy costs](M4/M4-T02-course-diagnostics-and-policy-costs.md) | blocked | M4-T01 |
 | [M4-T03 — Course uncertainty and missingness](M4/M4-T03-course-uncertainty-and-missingness.md) | blocked | M4-T01, M4-T02 |
 | [M4-T04 — Course report and CPU gate](M4/M4-T04-course-report-and-cpu-gate.md) | blocked | M4-T02, M4-T03 |
-| [M5-T01 — Course inference and smoke preparation](M5/M5-T01-course-inference-and-smoke-preparation.md) | blocked | M2-T03, M3-T02 |
+| [M5-T01 — Course inference and smoke preparation](M5/M5-T01-course-inference-and-smoke-preparation.md) | ready | M2-T03, M3-T02 |
 | [M5-T02 — Course hardware smoke and memory](M5/M5-T02-course-hardware-smoke-and-memory.md) | blocked | M4-T04, M5-T01 |
 | [M5-T03 — Course capability-first pilot](M5/M5-T03-course-capability-first-pilot.md) | blocked | M5-T02 |
 | [M5-T04 — Course complete pilot and timing](M5/M5-T04-course-complete-pilot-and-timing.md) | blocked | M5-T03 |

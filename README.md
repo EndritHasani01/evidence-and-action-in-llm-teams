@@ -128,8 +128,14 @@ useful one-shard replies have a universal 189-token output bound. Course
 [durable-worker acceptance](docs/validation/course-m3-durable-workers-and-failures.md)
 now passes: 591 full source/95 installed checks, ten real controller kills and
 exact reproduction of 16 ordinary CPU scenarios. Workers carry the explicit
-course binding and reject foreign parents/configuration drift. The next task is
-[course accounting and lifecycle](docs/todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md).
+course binding and reject foreign parents/configuration drift. Course
+[accounting/lifecycle acceptance](docs/validation/course-m3-accounting-and-lifecycle.md)
+now closes the M3 CPU gate: 607 full source/91 installed checks pass with zero
+skips, independent counts/costs and cumulative resource refusal pass, and the
+three-case all-family lifecycle reproduces with portable original records.
+The next task is [course outcomes/estimands](docs/todos/course/M4/M4-T01-course-outcomes-and-estimands.md);
+[inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
+is also ready, with course M4 still required before GPU use.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
 remain open. CPU admission supplies no experiment execution authorization.
 

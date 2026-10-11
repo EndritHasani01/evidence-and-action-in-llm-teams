@@ -1008,8 +1008,10 @@ the [M1 input/schedule CPU gate](validation/course-m1-inputs-and-schedules.md).
 the [local witness and complete capacity gate](validation/course-m2-attainability-and-capacity.md).
 [Course/M3-T01](todos/course/M3/M3-T01-course-durable-workers-and-failures.md) now passes
 [durable-worker acceptance](validation/course-m3-durable-workers-and-failures.md).
-[Course/M3-T02](todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md) is the next
-engineering task. Later course CPU gates, GPU/model acceptance, empirical
+[Course/M3-T02](todos/course/M3/M3-T02-course-accounting-and-lifecycle-gate.md) now passes
+[accounting/lifecycle acceptance](validation/course-m3-accounting-and-lifecycle.md).
+The combined course M3 CPU gate is complete. Course/M4-T01 is next; course/M5-T01
+is also ready for CPU packet preparation. Later course CPU gates, GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
 ### Course implementation decisions
@@ -1139,11 +1141,12 @@ execution and applicable authorization remain separate.
   Original attempt/worker archives reproduce and original lifecycle records
   audit unchanged. An additive null optional backend-diagnostics field is treated
   like absence by the old worker comparator, preserving all non-null records
-  and original archive bytes. Course accounting/resource adaptation and the
-  complete all-family lifecycle remain M3-T02; this does not close the M3 gate.
-- Apply Section 11.3's cumulative course subceiling, shared prior spending and
-  reserves through existing budget/accounting records in course/M3-T02, and
-  independently check the measured complete-main forecast in course/M5-T05.
+  and original archive bytes. At M3-T01's handoff, accounting/resource adaptation
+  and the complete all-family lifecycle still belonged to M3-T02; that worker
+  checkpoint alone did not close M3.
+- Course/M3-T02 applies Section 11.3's cumulative course subceiling, shared prior
+  spending and reserves through existing budget/accounting records; retain the
+  independent measured complete-main forecast check in course/M5-T05.
   Unknown prior allocation withholds resource admission, without preventing CPU
   adaptation. No available quota or fresh smoke allowance is recorded here.
 - Prepare local reporting/reproduction first. External submission/publication,
@@ -1161,8 +1164,10 @@ execution and applicable authorization remain separate.
   both ceilings, one 25% main margin, future overhead once and timeout/release
   bounds constrain admission. The independent deadline also conservatively
   protects setup/interruption/development allowances and retains resumable scope.
-  Twelve focused course checks and the original 23-check accounting archive pass;
-  the all-family lifecycle and full acceptance remain underway in the linked
+  Thirteen final focused course checks and the original 23-check accounting
+  archive pass. Full source acceptance passes 607 methods with zero skips and
+  outside-checkout installed acceptance passes 91 with zero skips, with exact
+  module provenance and packaged audits. The combined course M3 gate passes in
   [accounting/lifecycle evidence](validation/course-m3-accounting-and-lifecycle.md).
   The lifecycle bundle now passes packaged/offline and fresh-process
   reproduction. Review excludes recorded loading from the course GPU main
@@ -1170,17 +1175,24 @@ execution and applicable authorization remain separate.
   allocation release for device ownership during concurrent status reads.
   A stopped process with unknown loading completion retains known total
   allocation but unknown setup/interruption allowances; it cannot establish
-  admission, including through historical-worker joins. Thirteen focused checks
-  pass. Final full source/installed verification still precedes M3 completion.
+  admission, including through historical-worker joins. The ordinary three-case
+  lifecycle retains 2,332 logical calls, 2,124 generations, 2,126 attempts and
+  208 replays. All five families/interventions/controls/repeats, independent hand
+  costs and safe deadline/release/resume pass; ten prerequisite real kills are
+  rejoined from the intact course worker bundle. Complete main/development
+  schedules reconcile 5,752/6,280 and 1,114/1,178 with missing slots unknown.
+  These are tiny CPU scripted scopes, not empirical population coverage. M4
+  outcome/estimand work and M5 CPU packet preparation are ready; course M4 and
+  later runtime/resource/authorization gates still precede GPU use.
 
 ### Course unresolved gates
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2
 protocol/intervention/replay/witness/native-capacity gate are verified. Course
-M3 durable workers/bounded failures are verified; M3 accounting/combined
-lifecycle and M4 analysis/reporting remain open. Actual runtime
-environment/configuration acceptance remains M5. Existing status/analysis count
-choices still address thesis 60/40 until their course M3/M4 adaptations. The
+M3 durable workers/bounded failures/accounting and portable combined lifecycle
+gate are verified; M4 analysis/reporting remains open. Actual runtime
+environment/configuration acceptance remains M5. Status now infers the manifest
+regime and declared main count; analysis CLI 60/40 adaptation belongs to M4. The
 pinned 4B/256/64 complete input bound passes; the complete model-memory/headroom
 argument still needs actual supported-runtime evidence. Standalone run 6 and
 the CPU attention integration do not accept the new
@@ -1188,5 +1200,5 @@ layout on T4 or the course pretrained model. Actual host/package/source assets,
 smoke requests, capability, complete pilot, resource reconciliation and freeze
 remain course M5 gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
-index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03 and M3-T01
+index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03 and M3-T01/T02
 performed no GPU, pretrained-model or empirical run and accepted no freeze.
