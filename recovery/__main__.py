@@ -55,7 +55,8 @@ def main() -> int:
     analyze.add_argument("--schedule", required=True, type=Path)
     analyze.add_argument("--worker", action="append", required=True, type=Path, help="authoritative workers only; missing files leave unknown slots")
     analyze.add_argument("--stage", choices=("development", "main"), default="main")
-    analyze.add_argument("--count", choices=(60, 40), type=int, default=60)
+    analyze.add_argument("--count", choices=(20, 60, 40), type=int,
+                         help="complete declared main scope (default from the saved population)")
     analyze.add_argument("--output", required=True, type=Path, help="new derived JSON or JSON.gz table export")
     analyze.add_argument("--estimands", action="store_true", help="include prespecified contrasts and conditional repeatability")
     analyze.add_argument("--diagnostics", action="store_true", help="include information/work inventories and deterministic references")
@@ -86,8 +87,9 @@ def main() -> int:
         try:
             population = load_population(args.manifest)
             schedules = load_schedules(args.schedule, population)
-            worlds = population.development if args.stage == "development" else population.worlds(args.count)
-            branches = schedules.development if args.stage == "development" else schedules.main_for(population, args.count)
+            count = population.main_counts[0] if args.count is None else args.count
+            worlds = population.development if args.stage == "development" else population.worlds(count)
+            branches = schedules.development if args.stage == "development" else schedules.main_for(population, count)
             if args.tokenizer and not (args.diagnostics or args.report):
                 raise ValueError("--tokenizer requires --diagnostics or --report")
             if args.as_of and not (args.costs or args.uncertainty or args.report):
@@ -106,7 +108,7 @@ def main() -> int:
                 result = report_run(worlds, branches, args.worker, now=args.as_of,
                     seed=DEFAULT_SEED if args.resampling_seed is None else args.resampling_seed, tokenizer=tokenizer,
                     provenance=dict(manifest=args.manifest.name, schedule=args.schedule.name,
-                        workers=[p.name for p in args.worker], stage=args.stage, count=args.count if args.stage == "main" else None))
+                        workers=[p.name for p in args.worker], stage=args.stage, count=count if args.stage == "main" else None))
                 write_report(args.output, result, figures=args.figures)
                 tables = result["tables"]
             elif args.uncertainty:

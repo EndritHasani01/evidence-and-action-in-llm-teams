@@ -257,7 +257,7 @@ def population_table(worlds):
                            ("repeat", MAIN_FAMILIES)):
         selected = [w for w in worlds if w.world.task.value in families and
                     (name != "preserving" or w.index <= 8) and
-                    (name != "repeat" or not w.development and w.index <= 2)]
+                    (name != "repeat" or not w.development and len(w.streams.continuation) == 2)]
         populations.append({"population": name, "families": list(families),
             "world_ids": [w.world_id for w in selected],
             "family_counts": {f: sum(w.world.task.value == f for w in selected) for f in families},
@@ -400,7 +400,7 @@ def analyze_estimands(worlds, branches, tables):
     primary, repeats = [], []
     for world in worlds:
         primary.extend(_world_contrasts(world, by_branch, outcomes, diagnostics))
-        if not world.development and world.index <= 2:
+        if not world.development and len(world.streams.continuation) == 2:
             repeats.extend(_world_contrasts(world, by_branch, outcomes, diagnostics, replicate=1))
     originals = {(r["world_id"], r["estimand"], r["event"], r["endpoint"], r["round"]): r for r in primary}
     repeatability = []
@@ -418,10 +418,10 @@ def analyze_estimands(worlds, branches, tables):
         [r["correct"] for r in sorted(outcomes[b.branch_id], key=lambda r: r["peer"])
          if r["round"] == number] for number in ROUNDS]) for b in branches
         if b.phase == "continuation" and b.event in ("revision", "sham") and b.policy in ("B", "C", "K", "P_G", "P_H")
-        and not by_world[b.world_id].development and by_world[b.world_id].index <= 2}
+        and not by_world[b.world_id].development and len(by_world[b.world_id].streams.continuation) == 2}
     changes = []
     for world in worlds:
-        if world.development or world.index > 2:
+        if world.development or len(world.streams.continuation) != 2:
             continue
         for event in ("revision", "sham"):
             for policy in ("B", "C", "K", "P_G", "P_H"):

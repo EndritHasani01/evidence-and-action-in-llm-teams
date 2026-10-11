@@ -3,7 +3,7 @@
 from recovery.evaluate import trajectory
 from functools import cache
 
-from recovery.manifests import load_population
+from recovery.manifests import load_population, load_schedules
 from recovery.schedule import prepare_schedules
 from recovery.tasks import candidate_contract
 from recovery.truth import changed_coordinates, solve_world
@@ -15,6 +15,8 @@ def prepared(size="target"):
     if size == "target":
         return target_prepared(size)
     population = load_population(ROOT / f"tests/fixtures/population_{size}.json")
+    if size == "course":
+        return population, load_schedules(ROOT / "tests/fixtures/schedules_course.json", population)
     return population, prepare_schedules(population)
 
 

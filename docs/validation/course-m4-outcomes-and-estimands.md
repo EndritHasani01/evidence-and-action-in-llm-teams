@@ -27,7 +27,33 @@ continuation seed streams. Use those existing declarations, preserving thesis
 capture protected files and the user's unrelated local M5 evidence edit.
 Exact executed commands and logs will use the
 [existing validation layout](../../notebooks/validation/course-m4-outcomes/).
-Outcome/estimand acceptance, retained reconstruction and installed verification
-remain pending at this preparation checkpoint. Later course diagnostics, costs,
+At the preparation checkpoint, outcome/estimand acceptance, retained
+reconstruction and installed verification remained pending. Later course diagnostics, costs,
 uncertainty and the complete M4 report gate remain separate work. No GPU/model,
 pilot/main execution, frozen-configuration change or publication is authorized.
+
+## Formula and implementation checkpoint
+
+The analysis CLI now infers the saved population's main count (20 course,
+60 thesis) and permits explicit declared 20/60/40 scopes. Invalid cross-regime
+counts fail before export. Every repeat population/contrast/category join uses
+the world's saved two continuation seed streams: five course prefixes, ten
+thesis prefixes. `evaluate.py` now checks valid raw replies against the exact
+saved protocol limits; accepting a course reply above 256 tokens as valid would
+contradict its archived validation. Old thesis settings retain 384 by default.
+No renderer, runtime protocol or scientific formula changes.
+
+[Focused formula/record/CLI acceptance](../../notebooks/validation/course-m4-outcomes/formulas-corrected-command.json)
+passes 68 methods in 105.118 seconds, including 17 independent course checks and
+the existing thesis outcome/estimand suites. The complete course matrix retains
+6,824 primary contrast rows, 1,240 repeated rows, 80 conditional comparison rows
+and 50 trajectory pairs. All non-preservation summaries keep four worlds per
+eligible family. Preservation's unknown or empty eligibility remains explicit.
+The initial failing test log is retained: test construction used analysis labels
+instead of manifest subset keys, omitted a CLI flag and retained orphan attempt
+records after removing replies. Corrected fixtures honor the existing contracts;
+no production guard was relaxed.
+
+Original-worker reconstruction, fresh-process reproduction, affected M4/core
+regressions, installed verification and completion audits remain pending at this
+checkpoint; these focused tests alone do not close the task.
