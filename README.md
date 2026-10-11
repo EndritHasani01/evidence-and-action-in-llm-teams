@@ -458,8 +458,22 @@ python -S -m recovery analyze --estimands --manifest tests/fixtures/population_c
 Supply only the original physical worker files from one bound run. Missing files
 remain unknown. The [course analysis evidence](docs/validation/course-m4-outcomes-and-estimands.md)
 rejoins selected CPU scripted records against every intended 20/eight/five-world
-denominator; it establishes no empirical course result. Course diagnostics,
-costs, uncertainty and report acceptance remain separate tasks.
+denominator; it establishes no empirical course result. The course diagnostic
+and cost export uses the same original workers, manifest and declared count:
+
+```powershell
+.venv/Scripts/python.exe -m recovery analyze --costs --diagnostics --estimands --manifest tests/fixtures/population_course.json --schedule tests/fixtures/schedules_course.json --worker course-worker-0.sqlite --worker course-worker-1.sqlite --as-of 2026-10-11T23:59:59+00:00 --output course-diagnostics.json.gz
+.venv/Scripts/python.exe -m tests.course_diagnostics_archive
+```
+
+Use an explicit zoned accounting clock for interrupted/open-work bounds; it
+does not filter outcomes. The example clock is the retained CPU fixture's
+reproduction clock. The public saved-checkpoint decoder needs the declared
+CPU dependencies. Nonempty history token counts remain unavailable without
+a tokenizer that reproduces the exact saved input IDs. The
+[course diagnostic/cost evidence](docs/validation/course-m4-diagnostics-and-policy-costs.md)
+records independent references, literal source provenance, full-policy costs
+and the whole C/K rule. Uncertainty and report acceptance remain later tasks.
 
 [analysis.py](recovery/analysis.py) adds every prespecified contrast to the
 full offline outcome join. Use the saved complete schedule and original workers:

@@ -108,3 +108,37 @@ rejects an existing export without changing its bytes or the workers.
 Affected M4/core regression, outside-checkout installed checks and the final
 completion/preservation audit remain pending at this checkpoint. Uncertainty,
 report acceptance and all model/GPU/empirical gates remain separate.
+
+## Acceptance coverage
+
+The [course formula tests](../../tests/test_course_diagnostics.py) contain 21
+independent methods at the final implementation checkpoint. The focused
+76-method checkpoint predates the additional provenance counterexample; the
+later 26-method course run includes it and all five
+[archive acceptance methods](../../tests/test_course_diagnostic_archive.py).
+
+| Contract item | Independent course evidence |
+|---|---|
+| D/U repair and preservation | All five gold/coordinate contracts; valid prefix-four eligibility; old U errors separated from collateral damage; malformed, empty and unknown denominators; peer/world/family weighting and copy counts |
+| Recovery trajectories and labels | All four complete categories, joint versus fragmented correctness, regression, incomplete trajectories and replicated-only identical-wrong agreement; six nonexclusive labels with intersections and original IDs |
+| Prefix and source availability | Every prefix round; actual owner-v1 exposure, literal history and communication; injected revisions excluded; pending versus tombstones; unique acquisitions versus all delivery attempts |
+| Receipt timing and source association | No receipt/no success, same-call/later success and pre-authoritative correctness; host/forwarded origin; source ID/version/value spans; numeric coincidences unresolved; mismatched retained replies and current sources rejected |
+| Retained work and edit descriptors | Explicit correct-summary assumptions and cleared-work unavailability; six stated-view atlas examples; every course Prefix/Difference edit position, direction and peer with wrong-candidate residuals preserved; invalid/failed/unknown last slots never backfilled |
+| Whole-policy cost and C/K rule | Original attempts, retries, failures, replay charges and abandoned F prefixes; complete initial coverage only, tombstones eligible and pending ineligible; later evidence/gold/candidates ignored; constant and unknown selections; unavailable selected costs with no fallback |
+| Original saved records and intended scope | Seven reproducible table scopes, sixteen earlier worker scopes and the complete native binding; independent original SQL/checkpoint references, unchanged raw excerpts and source IDs, full main/development missing-worker exports and exclusive CLI writes |
+
+Production evaluation, information and cost code is reused unchanged. These
+derived tables describe scripted CPU evidence; they do not estimate pretrained
+model performance. The annotation rubric and atlas remain the existing
+specified-view interpretation, with unavailable history token counts explicit
+when a matching saved tokenizer is absent.
+
+[Documentation/preservation audit](../../notebooks/validation/course-m4-diagnostics/documentation-audit-command.json)
+passes all 1,519 protected starting files, 724 local references and 297 Markdown
+fragments. The scientific specification, thesis defaults/todos, prior archives,
+plan Sections 1-10 and pre-existing unstaged M5 edit remain unchanged.
+[Compilation](../../notebooks/validation/course-m4-diagnostics/compile-check-command.json)
+and [dependency consistency](../../notebooks/validation/course-m4-diagnostics/pip-check-command.json)
+pass from committed implementation `d6d0172`. The full affected source, core and
+outside-checkout installed suites are running from that same checkpoint;
+completion and the next-task readiness remain pending their passing receipts.
