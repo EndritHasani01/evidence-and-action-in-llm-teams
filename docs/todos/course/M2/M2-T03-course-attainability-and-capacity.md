@@ -1,6 +1,6 @@
 # Course M2-T03 — Course attainability and complete token capacity
 
-**Status:** ready
+**Status:** active
 
 **Dependencies:** [M2-T02](M2-T02-course-interventions-and-replay.md).
 
@@ -30,7 +30,9 @@ The complete declared course channel/horizon is legally sufficient for every tas
 
 Use existing witness/capacity machinery with course inputs/settings and both pinned tokenizer metadata comparisons where relevant. Record exact commands/environment, raw native measurements, complete accounting rows and witness/replay evidence. Preserve the original positive/negative capacity archives and thesis defaults. Metadata downloads/CPU checks are allowed; no model weights or GPU execution here.
 
-**Evidence:** Not yet recorded. The old complete proof and new proposal arithmetic do not close this course gate.
+**Evidence:** Acceptance is underway in
+[course capacity evidence](../../../validation/course-m2-attainability-and-capacity.md).
+The old complete proof and new proposal arithmetic do not close this course gate.
 
 **Prerequisite handoff, 10 October 2026:** Course/M2-T02 passes its
 [intervention/replay acceptance](../../../validation/course-m2-interventions-and-replay.md#completion-and-handoff).

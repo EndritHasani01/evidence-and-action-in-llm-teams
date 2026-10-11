@@ -23,7 +23,7 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
-**4/21 course tasks done; 17 remaining; 0 active; 1 ready; 16 blocked.**
+**4/21 course tasks done; 17 remaining; 1 active; 0 ready; 16 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)
 are recorded. Course/M1-T02 is done: saved inputs, balanced cohorts, isolated
@@ -46,7 +46,7 @@ The next safe task is [course/M2-T03](M2/M2-T03-course-attainability-and-capacit
 | Milestone | Done / tasks | Active | Ready | Blocked | Gate |
 |---|---:|---:|---:|---:|---|
 | M1 | 2/2 | 0 | 0 | 0 | Adopted contract/reuse audit and complete course input/schedule CPU gate passed |
-| M2 | 2/3 | 0 | 1 | 0 | Protocol/limits, literal interventions and exact replay verified; legal witness and complete course token bound remain |
+| M2 | 2/3 | 1 | 0 | 0 | Protocol/limits, literal interventions and exact replay verified; legal witness and complete course token bound remain |
 | M3 | 0/2 | 0 | 0 | 2 | Durable workers, bounded failures, honest accounting and crash-safe lifecycle |
 | M4 | 0/4 | 0 | 0 | 4 | Course outcomes, uncertainty, costs and reproducible synthetic reporting; pre-GPU CPU gate |
 | M5 | 0/5 | 0 | 0 | 5 | Actual-host smoke, capability, complete pilot, conservative resources and authorized course freeze |
@@ -62,7 +62,7 @@ Dependencies refer only to this course tree. Authorization, resource availabilit
 | [M1-T02 — Course inputs and schedules](M1/M1-T02-course-inputs-and-schedules.md) | done | M1-T01 |
 | [M2-T01 — Course protocol and limits](M2/M2-T01-course-protocol-and-limits.md) | done | M1-T02 |
 | [M2-T02 — Course interventions and replay](M2/M2-T02-course-interventions-and-replay.md) | done | M2-T01 |
-| [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | ready | M2-T02 |
+| [M2-T03 — Course attainability and capacity](M2/M2-T03-course-attainability-and-capacity.md) | active | M2-T02 |
 | [M3-T01 — Course durable workers and failures](M3/M3-T01-course-durable-workers-and-failures.md) | blocked | M2-T03 |
 | [M3-T02 — Course accounting and lifecycle gate](M3/M3-T02-course-accounting-and-lifecycle-gate.md) | blocked | M3-T01 |
 | [M4-T01 — Course outcomes and estimands](M4/M4-T01-course-outcomes-and-estimands.md) | blocked | M3-T02 |

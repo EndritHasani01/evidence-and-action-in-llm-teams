@@ -1,0 +1,20 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "tests.attainability_checks",
+    "tests.course_intervention_checks",
+    "tests.test_course_limits",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T10:17:19.190022+00:00",
+  "seconds": 49.10999999998603,
+  "exit_code": 0,
+  "log": "baseline-checks.txt.gz",
+  "hash_seed": null
+}
