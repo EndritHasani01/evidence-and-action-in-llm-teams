@@ -42,7 +42,7 @@ def main():
     for path, digest in protected.items():
         assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest, path
     assert "docs/validation/m5-inference-preparation.md" not in git("diff", "--cached", "--name-only").splitlines()
-    assert " M docs/validation/m5-inference-preparation.md" in git("status", "--short")
+    assert re.search(r"(?m)^ ?M docs/validation/m5-inference-preparation.md$", git("status", "--short"))
     plan = (ROOT / "docs/IMPLEMENTATION_PLAN.md").read_text(encoding="utf-8")
     old_plan = git("show", baseline["head"] + ":docs/IMPLEMENTATION_PLAN.md")
     assert plan.split("## 11. Course living handoff")[0] == old_plan.split("## 11. Course living handoff")[0]

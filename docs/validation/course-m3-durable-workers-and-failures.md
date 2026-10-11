@@ -54,3 +54,31 @@ excluding the target C branch from parent construction, forwarding provider
 keywords and bounded confirmation of Windows owner-lock release after exit.
 Runtime ownership, scientific outcomes and retry rules are unchanged by these
 test corrections.
+
+## Retained worker evidence
+
+[course_worker_run.zip](../../tests/fixtures/course_worker_run.zip) retains 16
+ordinary CPU worker scenarios: **1,422 completed logical calls, 1,278 generation
+slots, 1,281 attempts, 144 replay uses, five uncertain attempts and ten actual
+controller kills**. The offline audit reconstructs exact progress at its saved
+clock and checks SQLite integrity without inference. Source reproduction and
+installed/full regression remain pending at this checkpoint. These scenario
+totals are not empirical coverage of course main or development worlds.
+
+Each case reuses saved course world/branch/call IDs and original physical
+parents. Scientific comparisons include literal inputs/outputs, native arrays,
+settings/seeds, validation, committed transitions, queues/cursors and deliveries;
+clock/PID/checkpoint identifiers and placement remain measured observations.
+Recorded invalid/failed slots remain finished zero-credit outcomes; the rest of
+the selected fixed schedule remains unknown. Backup checks reconstruct original
+records and progress, and exclusive creation protects existing archives.
+
+Course callers should construct workers from saved manifests, supplying exact
+`candidate_settings(tokenizer, QWEN_4B, limits=COURSE_LIMITS)`. `from_manifests`
+propagates the saved regime and uses its declared main count without changing
+seeds or parents. Direct subset callers pass `regime="course"`. The input-only
+`configs/course-inputs.toml` is unchanged and establishes no runtime freeze.
+Attempt defaults remain 120 seconds with one-second terminate/kill graces;
+shorter 2/8-second CPU fault probes establish bounded mechanics, not model
+timeout adequacy. All course accounting/status CLI changes, cumulative resource
+admission and the complete all-family course lifecycle gate remain M3-T02.

@@ -1157,3 +1157,44 @@ records exact commands, metadata, passing regressions, retained failures/fixes,
 installed module provenance and preservation audits. This is CPU scripted
 attainability and complete native-token capacity. No model weights, GPU/model
 memory/headroom, capability, pilot, main outcomes or freeze are accepted here.
+
+## Course durable workers and bounded failures
+
+[course_worker_run.zip](course_worker_run.zip) uses the existing ordinary bundle
+layout: saved population/schedule JSON, worker SQLite backups and derived
+selection/progress/kill evidence. Its 16 CPU scenarios retain 1,422 completed
+logical calls, 1,278 physical generation slots, 1,281 attempts, 144 exact parent
+replays and five uncertain attempts. Ten real controller kills cover raw
+persistence, validation/staging, event-boundary and delivery commits, held Q
+prose, a known timeout and two interrupted attempts without a third. These are
+validation scenario totals, not coverage of the 5,752/6,280 main schedule.
+
+The checks exercise explicit course bindings, equal-looking foreign/unbound
+parent rejection, all 50 saved control shapes, serial workers with reversed
+order/placement, idle ownership exclusion, overflow without truncation, and
+exact valid/invalid/failed resume. Original parent records remain read-only;
+branch-local queues/effects and native request arrays remain in existing records.
+Backups reopen with equal scientific/progress records.
+
+[course_native_worker_run.zip](course_native_worker_run.zip) separately retains
+four prefix rounds, two B/C parent rounds, eight P_G/Q_B replay uses and all four
+Q_B rounds with the local pinned 4B tokenizer. Twenty re-rendered native requests
+and backup/reopen equality pass. The check uses existing auxiliary CPU tokenizer
+packages with the repository SQLite environment; no weights or GPU are loaded.
+
+```powershell
+.venv/Scripts/python.exe -X utf8 -m unittest tests.course_worker_checks -v
+.venv/Scripts/python.exe -X utf8 -m tests.course_worker_archive --audit-only
+$env:PYTHONHASHSEED = '37'
+.venv/Scripts/python.exe -X utf8 -m tests.course_worker_archive
+```
+
+`--write-fixture NEW_BUNDLE.zip` exclusively creates a new ordinary bundle.
+Reproduction compares literal calls, requests/tokens/settings/seeds/parents,
+committed transitions and attempt outcomes; observed clocks/PIDs/placement are
+retained but need not be identical. Existing failure, worker and lifecycle
+fixtures remain unchanged. See the
+[course durability evidence](../../docs/validation/course-m3-durable-workers-and-failures.md)
+for commands and execution boundaries. Course accounting and the combined
+lifecycle/resource gate remain M3-T02; these records are no pretrained-model,
+GPU/runtime, pilot, freeze, main-experiment or publication acceptance.

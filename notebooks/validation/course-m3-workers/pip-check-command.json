@@ -1,0 +1,14 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-m",
+    "pip",
+    "check"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T11:28:23.318645+00:00",
+  "seconds": 1.4059999999590218,
+  "exit_code": 0,
+  "log": "pip-check.txt.gz",
+  "hash_seed": null
+}
