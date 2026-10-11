@@ -219,6 +219,7 @@ def main() -> int:
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_protocol_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_settings_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_intervention_checks"))
+        suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.course_attainability_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.round_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.event_checks"))
         suite.addTests(unittest.defaultTestLoader.loadTestsFromName("tests.replay_checks"))

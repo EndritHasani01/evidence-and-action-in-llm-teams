@@ -4,7 +4,7 @@ from dataclasses import replace
 import unittest
 
 from recovery.events import start_continuation
-from recovery.prompts import render_request, tokenize_request
+from recovery.prompts import THESIS_LIMITS, limits_from_settings, render_request, tokenize_request
 from recovery.protocol import validate_reply
 from recovery.replay import commit_continuation_round, held_prose_counts, obtain_continuation_round
 from recovery.rounds import run_prefix, snapshot_bytes
@@ -21,33 +21,37 @@ SETTINGS = {"enable_thinking": False, "temperature": 0.7, "top_p": 0.8,
             "max_new_tokens": 384, "do_sample": True}
 
 
-def execute_witness(world, tokenizer=TOKENIZER, *, invocation_order=PEERS):
+def execute_witness(world, tokenizer=TOKENIZER, *, invocation_order=PEERS,
+                    limits=THESIS_LIMITS, settings=None, scheduled_branches=None):
     """Run every scheduled sibling of a saved world, including exact parents.
 
     The host owns scheduling and offline checking, separately from the provider.
     B/C records are retained before delivery; sibling starts use the same bytes.
     """
 
-    branches = _prepare_branches((world,))
+    settings = SETTINGS if settings is None else settings
+    if limits_from_settings(settings) != limits:
+        raise ValueError("witness settings contradict the adopted limits")
+    branches = _prepare_branches((world,)) if scheduled_branches is None else scheduled_branches
     prefix_branch = next(b for b in branches if b.phase == "prefix")
     provider = witness_provider(tokenizer)
     prefix = run_prefix(world.world, prefix_branch.branch_id, tokenizer, provider,
-                        invocation_order=invocation_order)
+                        invocation_order=invocation_order, limits=limits)
     parents, continuations, controls = [], [], []
     for branch in branches:
         if branch.phase == "control":
             view = initial_view(world.world if branch.event == "original" else world.event_world(branch.event), None)
-            rendered = render_request(view)
-            encoded = tokenize_request(rendered, tokenizer)
+            rendered = render_request(view, limits=limits)
+            encoded = tokenize_request(rendered, tokenizer, limits=limits)
             reply = validate_reply(view, provider(view, rendered, encoded,
-                seed=branch.calls[0].seed, settings=SETTINGS), tokenizer)
+                seed=branch.calls[0].seed, settings=settings), tokenizer, limits=limits)
             controls.append((branch, view, encoded, reply))
         elif branch.phase == "continuation":
             state = start_continuation(prefix.snapshot, world, branch)
             saved_rounds = []
             for _ in range(4):
                 saved = obtain_continuation_round(state, branch, tokenizer, provider,
-                    settings=SETTINGS, parents=tuple(parents), invocation_order=invocation_order)
+                    settings=settings, parents=tuple(parents), invocation_order=invocation_order)
                 if saved.barrier.requests.slot == Slot("recovery", 1) and branch.policy in ("B", "C"):
                     parents.append(saved)
                 saved_rounds.append(saved)
