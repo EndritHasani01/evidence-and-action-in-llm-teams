@@ -1012,7 +1012,9 @@ the [local witness and complete capacity gate](validation/course-m2-attainabilit
 [accounting/lifecycle acceptance](validation/course-m3-accounting-and-lifecycle.md).
 [Course/M4-T01](todos/course/M4/M4-T01-course-outcomes-and-estimands.md) now passes
 [outcome/estimand acceptance](validation/course-m4-outcomes-and-estimands.md#completion-and-handoff).
-The combined course M3 CPU gate is complete; course/M4-T02 is next. Course/M5-T01
+[Course/M4-T02](todos/course/M4/M4-T02-course-diagnostics-and-policy-costs.md) now passes
+[diagnostic/policy-cost acceptance](validation/course-m4-diagnostics-and-policy-costs.md#completion-and-handoff).
+The combined course M3 CPU gate is complete; course/M4-T03 is next. Course/M5-T01
 is also ready for CPU packet preparation. Later course CPU gates, GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
@@ -1203,18 +1205,36 @@ and 4,110 unknown uses, so intended theta/phi remain unknown with separately
 labeled five-world complete-case zeros. Repeats add no independent worlds.
 Every original thesis M4 table/report reproduces twice; 1,469 protected starting
 files, including prior fixtures and the user edit, remain byte-identical.
-Course diagnostics/costs/rule acceptance is active in M4-T02; reuse the original
-workers and existing conservative rubric, with independent course references
-and retained commands in [diagnostic/cost preparation](validation/course-m4-diagnostics-and-policy-costs.md).
-Uncertainty and
-the complete report/CPU gate still precede GPU use.
+Course/M4-T02 reuses production diagnostics/cost code unchanged and passes
+[diagnostic/policy-cost acceptance](validation/course-m4-diagnostics-and-policy-costs.md#completion-and-handoff):
+217 affected source/217 outside-checkout installed methods with zero skips,
+394 core methods with twelve expected checkpoint-package skips and 26 final
+focused course methods. Independent references verify D/U eligibility and
+aggregation, collateral versus old-error repair, trajectories/fragmentation,
+six nonexclusive labels, actual prefix exposure, source/receipt association,
+initial inventories and transport residuals of actual wrong candidates. The original
+seven course table scopes, sixteen earlier worker scopes and native binding
+reproduce without mutation, inference or an extra store. Full intended scope
+retains 2,170 recorded/4,110 unknown uses and 58 world/event/replicate boundary
+choices: 22 observed K selections, 36 unknown. Initial complete C and incomplete
+selected costs are independently tested; no branch availability, gold, candidate
+or later source evidence affects the whole-policy rule. Each deployed policy
+pays its original prefix, failed/uncertain attempts and exact replay charges;
+the hand case independently retains 261-263 attempt-seconds and 400 synthetic
+allocated seconds. Native nonempty history counts remain unavailable without
+a matching tokenizer. Original thesis M4 outputs reproduce twice, all 29
+installed production modules match and 1,519 protected starting files remain
+unchanged, including the local M5 edit and prior archives. Course/M4-T03 is ready;
+uncertainty and the complete report/CPU gate still precede GPU use. Scientific
+parameters, runtime defaults and frozen configuration remain unchanged; this
+task performs CPU offline validation.
 
 ### Course unresolved gates
 
 The course population/schedule, M1 input/schedule CPU gate and complete M2
 protocol/intervention/replay/witness/native-capacity gate are verified. Course
 M3 durable workers/bounded failures/accounting and portable combined lifecycle
-gate and M4 outcomes/estimands are verified; course diagnostics/costs,
+gate, M4 outcomes/estimands and diagnostics/policy costs are verified;
 uncertainty and the complete M4 report gate remain open. Actual runtime
 environment/configuration acceptance remains M5. Status now infers the manifest
 regime and declared main count; analysis CLI now follows the same saved scope
@@ -1226,5 +1246,5 @@ layout on T4 or the course pretrained model. Actual host/package/source assets,
 smoke requests, capability, complete pilot, resource reconciliation and freeze
 remain course M5 gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
-index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03, M3-T01/T02 and M4-T01
+index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03, M3-T01/T02 and M4-T01/T02
 performed no GPU, pretrained-model or empirical run and accepted no freeze.

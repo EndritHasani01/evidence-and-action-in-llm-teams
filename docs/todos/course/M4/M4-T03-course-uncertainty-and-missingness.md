@@ -1,6 +1,6 @@
 # Course M4-T03 — Course paired uncertainty and shared-response missingness
 
-**Status:** blocked
+**Status:** ready
 
 **Dependencies:** [M4-T01](M4-T01-course-outcomes-and-estimands.md), [M4-T02](M4-T02-course-diagnostics-and-policy-costs.md).
 
@@ -30,3 +30,21 @@ Course estimates, cost comparisons and incomplete-run summaries use correct pair
 Compare hand-derived and tiny enumerated cases with existing uncertainty functions on course-shaped records. Verify paired bootstrap reproducibility, raw contrast/family counts and unchanged thesis results. Record exact settings, commands, expected bounds and artifacts; no inference or worker-data writes.
 
 **Evidence:** Not yet recorded. Existing statistical implementation is verified; new course populations are not.
+
+**Prerequisite handoff, 11 October 2026:**
+[Course diagnostic/policy-cost acceptance](../../../validation/course-m4-diagnostics-and-policy-costs.md#completion-and-handoff)
+passes 217 affected source/217 installed methods with zero skips and 394 core
+methods with twelve expected checkpoint-package skips. Reuse the original
+course lifecycle/worker ZIPs and
+[seven derived diagnostic/cost scopes](../../../../tests/fixtures/course_diagnostic_cost_tables.json.gz),
+alongside M4-T01's outcome/estimand tables and original physical-response IDs.
+The full intended join keeps 2,170 recorded/4,110 unknown uses, 20 main worlds,
+eight-world focal/preserving cohorts and five assigned repeated prefixes.
+Among 58 world/event/replicate C/K boundaries, 22 observed selections are K and
+36 remain unknown; incomplete selected policies have unavailable costs without
+fallback. Earlier fault scopes keep 312 unknown uses, and native nonempty
+history counts remain unavailable without a matching tokenizer. The hand cost
+case retains 261-263 physical attempt-seconds and 400 synthetic allocated
+seconds. These are CPU/scripted references, not empirical estimates or GPU
+timing. Course uncertainty/missingness acceptance remains this task's work;
+the report and model/GPU/freeze/empirical gates remain separate.

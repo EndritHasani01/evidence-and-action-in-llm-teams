@@ -158,3 +158,68 @@ LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1 and LangChain core 1.6.6.
 Task-owned scratch is on `E:/CodexTemp/recovery-course-m4-diagnostics-20261011`,
 with source execution from this Downloads checkout. These are CPU acceptance
 versions and timings, not the M5 environment freeze or GPU timing evidence.
+
+## Completion and handoff
+
+Course/M4-T02 passes CPU acceptance on 11 October 2026. Existing production
+diagnostic/cost code is reused unchanged; the task adds explicit course test
+scope, independent references and reproducible derived evidence. Both complete
+affected M4 suites started from implementation `d6d0172`. The installed receipt
+finished at documentation checkpoint `3b9a9f1`; no production, test,
+configuration or packaging bytes changed between those commits.
+
+| Executed check | Result | Unittest seconds |
+|---|---|---:|
+| [Focused course/thesis formulas](../../notebooks/validation/course-m4-diagnostics/formulas-corrected-command.json) | 76 passed; zero skips | 110.855 |
+| [Final course formulas and archives](../../notebooks/validation/course-m4-diagnostics/archive-worker-final-command.json) | 26 passed; zero skips | 167.118 |
+| [Complete affected source M4 suite](../../notebooks/validation/course-m4-diagnostics/source-m4-accepted-command.json) | 217 passed; zero skips | 1507.097 |
+| [Outside-checkout installed M4 suite](../../notebooks/validation/course-m4-diagnostics/installed-accepted-command.json) | 217 passed; zero skips | 1506.371 |
+| [Dependency-free course regression](../../notebooks/validation/course-m4-diagnostics/core-accepted-command.json) | 394 methods; 382 passed, twelve expected checkpoint-package skips | 501.452 |
+
+Every receipt links its lossless log and exact command; source/installed hash
+seed is 37 and core hash seed is 73. The
+[installed provenance](../../notebooks/validation/course-m4-diagnostics/installed-provenance.json)
+records the built wheel, outside-checkout import path, matching hashes for all
+29 production modules, tested CPU package versions and absence of source
+`PYTHONPATH` injection. Dependency consistency and compilation pass. All sixteen
+original thesis worker scopes reproduce every M4 output twice, including full
+40/60-world joins, stopped snapshots, controls and repeats; the seven original
+report figures also reproduce. These durations are CPU test timings.
+
+The seven retained course scopes reproduce from the original lifecycle, with
+independent coordinate/inventory/source/receipt/transport/cost checks and
+literal unchanged excerpts. The sixteen earlier course fault scopes and native
+binding are audited separately. Missing workers remain absent, original worker
+bytes remain unchanged, and exclusive exports preserve existing outputs. All
+actual last valid candidates, including wrong ones, retain their residual
+errors; malformed, failed and unexecuted last slots receive no earlier answer.
+
+The full intended main population retains 2,170 recorded/4,110 unknown uses.
+Its 58 world/event/replicate C/K boundaries contain 22 observed K selections and
+36 unknown selections, with no availability fallback or outcome-based choice.
+Initial complete C, pending/tombstone semantics and incomplete selected branch
+costs are independently tested. C/F inventories exclude the injected revision
+while full-manifest completeness includes it. Native nonempty history counts
+remain unavailable without a matching tokenizer, and the annotation rubric
+remains conservative and source-bound. The original ten real controller-kill
+checks are reused from prerequisite evidence; this task performs offline reads
+rather than new execution or kill probes.
+
+[Course/M4-T03](../todos/course/M4/M4-T03-course-uncertainty-and-missingness.md)
+is ready to accept paired uncertainty/shared-response missingness on the actual
+course cohorts and saved physical identities. Reuse this derived fixture and
+the original workers, with intended unknown populations and unavailable future
+costs intact. M4-T03 and the complete course M4 report/CPU gate are not closed
+by regression of their inherited implementations. Actual model/GPU capability,
+memory/headroom, smoke, pilot, resource admission, freeze and empirical
+execution remain separate later gates; no inference or scientific/frozen
+configuration change occurred.
+
+The [completion/preservation audit](../../notebooks/validation/course-m4-diagnostics/completion-audit.json)
+passes all 1,519 protected starting files, thesis plan Sections 1-10, original
+bundles, module provenance, passing receipts, local links/anchors and consistent
+task readiness. The pre-existing M5 evidence edit stays byte-identical and
+unstaged. Course progress is nine done/two ready/ten blocked; M4-T02 is done and
+M4-T03 is ready. `git diff --check` passes. Completion records CPU acceptance
+within this task's scope, with later uncertainty/report and execution gates
+still explicit.

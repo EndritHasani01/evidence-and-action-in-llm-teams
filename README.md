@@ -138,8 +138,14 @@ now passes 191 affected source/191 installed checks with zero skips, plus 368
 core checks with eight expected optional-package skips. The read-only analysis
 uses the manifest's 20-world scope and five paired continuation streams, retains
 all eight-world focal populations and unknown intended outcomes, and reproduces
-thesis M4 artifacts unchanged. The next task is
-[course diagnostics/costs](docs/todos/course/M4/M4-T02-course-diagnostics-and-policy-costs.md);
+thesis M4 artifacts unchanged. Course
+[diagnostic/policy-cost acceptance](docs/validation/course-m4-diagnostics-and-policy-costs.md#completion-and-handoff)
+now passes 217 affected source/217 installed checks with zero skips, plus 394
+core methods with twelve expected checkpoint-package skips. Independent course
+references reproduce seven table scopes, sixteen earlier fault scopes and
+original native requests; diagnostic unknowns, wrong-candidate residuals and
+full-policy charges remain explicit. The next task is
+[course uncertainty/missingness](docs/todos/course/M4/M4-T03-course-uncertainty-and-missingness.md);
 [inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
 is also ready, with course M4 still required before GPU use.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
