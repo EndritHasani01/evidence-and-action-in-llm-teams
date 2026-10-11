@@ -1,0 +1,19 @@
+{
+  "command": [
+    ".\\.venv\\Scripts\\python.exe",
+    "-X",
+    "utf8",
+    "notebooks/validation/course-m4-uncertainty/verify_uncertainty.py",
+    "--completion",
+    "--output",
+    "notebooks/validation/course-m4-uncertainty/handoff-audit.json"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T17:41:00.261494+00:00",
+  "source_head": "bf98b6bdc24c9fe58aac0baf42ff434ef4f9100f",
+  "seconds": 6.358999999938533,
+  "exit_code": 0,
+  "log": "handoff-audit.txt.gz",
+  "hash_seed": null,
+  "temporary_root": null
+}
