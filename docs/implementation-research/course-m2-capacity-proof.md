@@ -113,6 +113,10 @@ quotes/controls/fake headers, maximal ASCII/dash prose, non-NFC prose and large
 valid wrong integers. A real synchronous slot combines a 256-token invalid own
 reply with three valid 64-token incoming texts and bounded feedback. Fixtures
 challenge the argument; their measured maxima do not establish the bound.
+Seventeen additional native structural probes cover large wrong K candidates
+at the boundary and after recovery, pending authority and genuine disclosed
+receipts. Their exact native counts are retained in the fresh-process logs;
+the same family envelopes cover every case without a duplicate candidate copy.
 The independently loaded pinned 9B metadata reproduces the course report because
 the tokenizer/template and relevant native geometry match; this selects no
 9B course model. Original positive/negative thesis archives remain unchanged.

@@ -67,3 +67,14 @@ no legal slot, and dataclass archives do not contain computed `protocol_valid`
 or `own_reply` properties. Corrections respect view chronology and record/check
 those properties explicitly. The failing commands and passing corrections are
 retained separately. No scientific or production behavior changed to pass them.
+
+The review adds 17 native probes of large wrong compact candidates at the
+boundary and after ordinary accumulation, pending current authority and genuine
+before-value receipts. The fresh hash-seed-37 capacity run passes all eight
+checks and reproduces the complete report independently with both pinned
+metadata sets. Four original native witness checks and eight original native
+capacity checks reproduce the unchanged thesis archives, including the original
+261,388/259,868 bounds. Full/core CLI inspection finds 580/348 unique checks,
+including the seven course witness checks only in full mode; it executes no
+test bodies. `pip check` passes. Installed and affected integration runs remain
+underway at this review checkpoint.

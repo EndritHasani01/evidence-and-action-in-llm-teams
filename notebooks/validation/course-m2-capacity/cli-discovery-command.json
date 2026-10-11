@@ -1,0 +1,15 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "notebooks/validation/course-m2-capacity/check_discovery.py"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T10:36:01.651328+00:00",
+  "seconds": 2.968999999924563,
+  "exit_code": 0,
+  "log": "cli-discovery.txt.gz",
+  "hash_seed": null
+}

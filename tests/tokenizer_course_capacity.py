@@ -14,7 +14,7 @@ from recovery.inference import QWEN_4B
 from recovery.prompts import COURSE_LIMITS, RenderedRequest, render_request, rendered_data, tokenize_request
 from recovery.protocol import GeneratedReply, validate_reply
 from recovery.rounds import initial_branch, run_round
-from recovery.state import CandidateState, OwnReply, ReceivedProse, Slot, initial_view
+from recovery.state import CandidateState, OwnReply, PendingSource, Slot, initial_view
 from recovery.tasks import PEERS, Task, candidate_contract
 from tests.capacity_bound import audit_tokenizer, byte_alphabet
 from tests.course_intervention_cases import branches, course_inputs
@@ -225,6 +225,42 @@ class NativeCourseCapacityTests(unittest.TestCase):
         self.assertEqual(canonical(asdict(checked)), reply)
         self.assertEqual(checked.own_reply.text, raw.text)
         self.assertFalse(reply["messages"])
+
+    def test_large_compact_candidates_pending_authority_and_genuine_receipt_structures_fit(self):
+        measured = []
+        for task in Task:
+            world = course_world(task)
+            row = next(r for r in self.current["rendered_fixtures"]
+                       if r["task"] == task.value and r["shape"] == "large_wrong_integer")
+            candidate = json.loads(row["validation"]["generated"]["text"])["candidate"]
+            base = retained_view(world, row["validation"]["generated"]["text"], " x"*64,
+                valid_candidate=candidate, limits=COURSE_LIMITS, scheduled_branches=branches(world))
+            old = CandidateState.valid(task, world.world.size, 3, Slot("prefix", 4), candidate)
+            old = replace(old, historical=True)
+            initial = replace(base, slot=Slot("recovery", 1), history=(), feedback=(), candidate=old)
+            later = replace(base, history=(old,)+tuple(h for h in base.history if h.slot.phase == "recovery"))
+            variants = [("compact_boundary", initial), ("compact_after_recovery", later)]
+            changed = next(s for s in base.sources if s.record_id == world.main_edit.record_id)
+            pending = PendingSource(changed.record_id, changed.owner, changed.position, changed.version)
+            variants.append(("pending_authority", replace(base, receipt=None,
+                sources=tuple(pending if s == changed else s for s in base.sources),
+                source_deliveries=tuple(d for d in base.source_deliveries if d.record_id != changed.record_id))))
+            if base.receipt:
+                before = next(s.value for s in world.world.records if s.record_id == changed.record_id)
+                variants.append(("genuine_receipt", replace(base, receipt=replace(base.receipt, before_value=before))))
+            bound = next(b for b in self.current["accounting"] if b["task"] == task.value)
+            for name, view in variants:
+                actual = native_measure(view, self.tokenizer, limits=COURSE_LIMITS)
+                self.assertLessEqual(actual["input_tokens"], bound["input_tokens_upper"])
+                data = rendered_data(RenderedRequest(**actual["request"]))
+                if name == "compact_boundary":
+                    self.assertEqual(data["latest_candidate"]["candidate"], candidate)
+                if name == "compact_after_recovery":
+                    self.assertEqual(data["history"][0]["candidate"], candidate)
+                    self.assertTrue(data["latest_candidate"]["in_own_reply"])
+                measured.append(dict(task=task.value, shape=name, input_tokens=actual["input_tokens"],
+                                     with_output_reserve=actual["with_output_reserve"]))
+        print(json.dumps(dict(structural_native_probes=measured)), flush=True)
 
     def test_native_run_edges_stay_within_the_inherited_complete_weight_argument(self):
         # Renew the exact original edge/composition checks with this fresh audit.

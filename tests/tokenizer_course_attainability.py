@@ -8,7 +8,6 @@ from pathlib import Path
 import unittest
 
 from recovery.prompts import COURSE_LIMITS, rendered_data
-from recovery.rounds import snapshot_bytes
 from recovery.tasks import PEERS
 from recovery.witness import local_candidate
 from tests.course_attainability_checks import CourseAttainabilityTests
