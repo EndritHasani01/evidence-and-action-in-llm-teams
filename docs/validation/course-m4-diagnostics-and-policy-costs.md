@@ -123,7 +123,7 @@ later 26-method course run includes it and all five
 | Recovery trajectories and labels | All four complete categories, joint versus fragmented correctness, regression, incomplete trajectories and replicated-only identical-wrong agreement; six nonexclusive labels with intersections and original IDs |
 | Prefix and source availability | Every prefix round; actual owner-v1 exposure, literal history and communication; injected revisions excluded; pending versus tombstones; unique acquisitions versus all delivery attempts |
 | Receipt timing and source association | No receipt/no success, same-call/later success and pre-authoritative correctness; host/forwarded origin; source ID/version/value spans; numeric coincidences unresolved; mismatched retained replies and current sources rejected |
-| Retained work and edit descriptors | Explicit correct-summary assumptions and cleared-work unavailability; six stated-view atlas examples; every course Prefix/Difference edit position, direction and peer with wrong-candidate residuals preserved; invalid/failed/unknown last slots never backfilled |
+| Retained work and edit descriptors | Explicit correct-summary assumptions and cleared-work unavailability; six stated-view atlas examples including the CPU-only Max illustration; every course Prefix/Difference edit position, direction and peer with wrong-candidate residuals preserved; invalid/failed/unknown last slots never backfilled |
 | Whole-policy cost and C/K rule | Original attempts, retries, failures, replay charges and abandoned F prefixes; complete initial coverage only, tombstones eligible and pending ineligible; later evidence/gold/candidates ignored; constant and unknown selections; unavailable selected costs with no fallback |
 | Original saved records and intended scope | Seven reproducible table scopes, sixteen earlier worker scopes and the complete native binding; independent original SQL/checkpoint references, unchanged raw excerpts and source IDs, full main/development missing-worker exports and exclusive CLI writes |
 
@@ -142,3 +142,19 @@ and [dependency consistency](../../notebooks/validation/course-m4-diagnostics/pi
 pass from committed implementation `d6d0172`. The full affected source, core and
 outside-checkout installed suites are running from that same checkpoint;
 completion and the next-task readiness remain pending their passing receipts.
+
+## Core regression and environment
+
+[Dependency-free course validation](../../notebooks/validation/course-m4-diagnostics/core-accepted-command.json)
+passes 394 methods in 501.452 seconds with hash seed 73: 382 pass and twelve
+checkpoint-package checks are expected skips under `-S`. The complete affected
+M4 source and installed suites separately include those archive checks. The
+validation command uses the saved course TOML, manifest, schedule and
+authoritative population; the saved population and worker bytes stay unchanged.
+
+The [recorded environment](../../notebooks/validation/course-m4-diagnostics/environment-command.json)
+is Windows build 26200, Python 3.11.9, SQLite 3.45.1, Pydantic 2.13.5,
+LangGraph 1.2.12, checkpoint 4.2.0, SQLite saver 3.1.1 and LangChain core 1.6.6.
+Task-owned scratch is on `E:/CodexTemp/recovery-course-m4-diagnostics-20261011`,
+with source execution from this Downloads checkout. These are CPU acceptance
+versions and timings, not the M5 environment freeze or GPU timing evidence.
