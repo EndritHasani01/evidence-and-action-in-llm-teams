@@ -1289,3 +1289,54 @@ The helper exclusively creates a new derived file only when explicitly given
 export. Raw source ZIPs, manifests, schedules, physical-response identities,
 settings and seeds remain unchanged. [Acceptance evidence](../../docs/validation/course-m4-outcomes-and-estimands.md)
 records commands, independent expectations and remaining course gates.
+
+## Course diagnostics and policy costs
+
+[course_diagnostic_cost_tables.json.gz](course_diagnostic_cost_tables.json.gz)
+retains seven derived diagnostic/cost scopes from the same untouched course M3
+lifecycle: three ordinary cases, the stopped snapshot, the full intended
+20-world join and missing main/development joins. It contains coordinate rates,
+trajectory/annotation tables, initial inventories, receipt timing and conservative
+source association, actual-last-candidate transport, physical/full-policy costs
+and the frozen whole C/K rule. Raw unchanged excerpts name original calls and
+generations; the six existing atlas witnesses keep their stated views and
+correct-summary assumptions. All data are synthetic CPU validation.
+
+[course_diagnostics_archive.py](../course_diagnostics_archive.py) reads only
+original SQLite ledgers/checkpoints, never backups alongside originals. Its
+independent SQL joins, insertion/relaxation gold, coordinate eligibility,
+inventories, message attempts/acquisitions, source payloads, receipt boundaries,
+literal spans, transport residuals and original attempt sums check the exports.
+The public checkpoint serializer decodes existing bytes without saver setup.
+No protocol execution, model, runtime store or new scientific identity is used.
+
+The full intended join retains 2,170 recorded/4,110 unknown uses, 320 prefix rows,
+212 scheduled L/B peer receipt alignments, 864 receipt-information peer-call rows
+and 28 revision/preserving exposure rows. Across its 58 world/event/replicate
+boundary choices, 22 observed complete branches select K and 36 unobserved
+boundaries remain unknown. This is not 58 independent worlds. Hand fixtures
+also test constant C and incomplete selected branches without fallback. Shared
+prefixes/generations are charged once physically; each deployed policy pays
+its prefix and all sixteen continuation uses, including F's abandoned prefix,
+original replay costs, failed and uncertain attempts. The hand cost case is
+261-263 attempt-seconds and 400 synthetic allocated seconds; no model/GPU speed
+is measured.
+
+The scripted word counter must reproduce each saved input ID sequence before
+history is counted. Those counts are not native tokenizer evidence. The
+separate original native-worker audit retains measured request IDs and leaves
+34 nonempty history counts unavailable without a matching tokenizer. Earlier
+worker fault probes retain their 312 unknown uses and are audited separately.
+
+```powershell
+.venv/Scripts/python.exe -m tests.course_diagnostics_archive
+.venv/Scripts/python.exe -m tests.course_diagnostics_archive --worker-audit
+.venv/Scripts/python.exe -m tests.course_diagnostics_archive --native-audit
+.venv/Scripts/python.exe -m unittest tests.test_course_diagnostics tests.test_course_diagnostic_archive -v
+```
+
+Default execution compares the retained tables; `--write-fixture NEW_PATH`
+exclusively creates a new derived export. [Course acceptance evidence](../../docs/validation/course-m4-diagnostics-and-policy-costs.md)
+owns executed results, preservation checks and the remaining uncertainty/report
+and model/GPU gates. No empirical course population, runtime freeze or execution
+authorization is established by these fixtures.

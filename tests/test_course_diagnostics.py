@@ -209,6 +209,23 @@ class CourseInformationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "authority"):
                 source_inventory(current, sources, 0)
 
+    def test_course_retained_reply_and_current_source_provenance_mismatches_fail(self):
+        w, b, r, i, a, c = information_fixture(policies=("B",), size="course")
+        prefix = next(branch for branch in b if branch.phase == "prefix")
+        last = next(call for call in prefix.calls if call.round_number == 4 and call.peer == 0)
+        changed = answer(w[0].world, 0)
+        changed[0] += 1
+        set_answer(r[last.call_id], changed)
+        with self.assertRaisesRegex(ValueError, "original raw call"):
+            information_records(w, b, r, i, a, committed=c)
+        w, b, r, i, a, c = information_fixture(policies=("C",), size="course")
+        saved = next(iter(i.values()))
+        before = json.loads(saved["requests"]["before"])
+        before["peers"][0]["sources"][0]["value"] += 100
+        saved["requests"]["before"] = encode(before)
+        with self.assertRaisesRegex(ValueError, "source.*manifest"):
+            information_records(w, b, r, i, a, committed=c)
+
     def test_censoring_retains_no_receipt_no_success_same_later_and_pre_authoritative_correctness(self):
         def timing(availability, correctness, origin="peer"):
             rows = [dict(round=n, call_id=f"course/r{n}/p0", correct=c, v2_available=a, v2_delivery_ids=["delivery"] if a else [])
