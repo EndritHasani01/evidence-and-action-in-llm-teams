@@ -16,7 +16,8 @@ if not __package__:
     namespace.__path__ = [str(Path(__file__).resolve().parent)]
     sys.modules.setdefault("scripts", namespace)
 
-from scripts.m5_course_smoke_assets import CANDIDATE, download_weights_stdlib
+from scripts.m5_course_preparation import CANDIDATE
+from scripts.m5_course_smoke_assets import download_weights_stdlib
 from scripts.m5_kaggle_preflight import PIP_WHEEL_RUNNER, sha256_file, save_json, download_native_ranges
 
 

@@ -1,9 +1,10 @@
-"""CPU preparation of the existing pinned environment/cache, then offline verification."""
+"""Bounded online preparation and native verification of the pinned candidate."""
 
 import argparse
 import hashlib
 import importlib.metadata
 import json
+import gzip
 from datetime import datetime, timezone
 from math import isfinite
 import os
@@ -24,10 +25,14 @@ if not __package__:
     namespace.__path__ = [str(Path(__file__).resolve().parent)]
     sys.modules.setdefault("scripts",namespace)
 
-from scripts.m5_course_preparation import CANDIDATE, read
 from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, BUILD_RESERVE, EXPORT_SECONDS,
     candidate_environment, command, export_evidence, assigned_preparation_window, source_identity, installed_probe_script,
     installed_provenance, pip_wheel_download_script, require_space, save_json, sha256_file, utc)
+
+
+def read(path):
+    data = Path(path).read_bytes()
+    return json.loads(gzip.decompress(data) if str(path).endswith(".gz") else data)
 
 
 def assigned_device_count():
@@ -35,7 +40,15 @@ def assigned_device_count():
     return len(list(devices.iterdir())) if devices.is_dir() else 0
 
 
+def cpu_candidate_wheels(manifest):
+    """Same pinned tokenizer/rendering/core dependencies, without GPU libraries."""
+    excluded = {"torch","triton","bitsandbytes","accelerate","cuda-bindings","cuda-pathfinder","cuda-toolkit"}
+    return [w for w in manifest["candidate_wheels"]
+        if w["name"] not in excluded and not w["name"].startswith("nvidia-")]
+
+
 def verify_assets(root, launch):
+    from scripts.m5_course_preparation import CANDIDATE
     manifest, assets = read(launch["source_manifest"]), read(launch["assets_receipt"])
     source_identity(root,manifest)
     if assets["source_commit"] != manifest["source_baseline_commit"]:
@@ -66,6 +79,7 @@ def verify_assets(root, launch):
 def download_weights(root, manifest, cache, receipt):
     """Called only by the admitted, bounded CPU child; no model/CUDA loading."""
     from huggingface_hub import HfApi, snapshot_download
+    from scripts.m5_course_preparation import CANDIDATE
     inspection = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
     info = HfApi().model_info(CANDIDATE.model,revision=CANDIDATE.revision,files_metadata=True)
     if info.sha != CANDIDATE.revision:
@@ -91,17 +105,18 @@ def download_weights(root, manifest, cache, receipt):
 
 
 def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None):
-    """Download-only native LFS verification after consuming the setup venv."""
+    """Download-only native LFS verification, without importing inference packages."""
     from urllib.request import Request, urlopen
     inspection = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
-    with urlopen(Request(f"https://huggingface.co/api/models/{CANDIDATE.model}/revision/{CANDIDATE.revision}?blobs=true",
+    model, revision = inspection["model"], inspection["revision"]
+    with urlopen(Request(f"https://huggingface.co/api/models/{model}/revision/{revision}?blobs=true",
             headers={"User-Agent":"recovery-course-asset-preparation"}),timeout=30) as response:
         info = json.load(response)
-    if info.get("sha") != CANDIDATE.revision:
+    if info.get("sha") != revision:
         raise ValueError("immutable checkpoint revision differs")
     files = {s["rfilename"]:s for s in info["siblings"]}
     expected = {}
-    snapshot = cache/("models--"+CANDIDATE.model.replace("/","--"))/"snapshots"/CANDIDATE.revision
+    snapshot = cache/("models--"+model.replace("/","--"))/"snapshots"/revision
     snapshot.mkdir(parents=True,exist_ok=range_bytes is not None)
     ranged = []
     for name in inspection["checkpoint_index"]["shard_files"]:
@@ -113,7 +128,7 @@ def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None)
             ranged.append((name,lfs))
             continue
         temporary = snapshot/(name+".partial")
-        with urlopen(Request(f"https://huggingface.co/{CANDIDATE.model}/resolve/{CANDIDATE.revision}/{name}",
+        with urlopen(Request(f"https://huggingface.co/{model}/resolve/{revision}/{name}",
                 headers={"User-Agent":"recovery-course-asset-preparation"}),timeout=60) as response, temporary.open("xb") as output:
             while block := response.read(1024*1024):
                 output.write(block)
@@ -130,7 +145,7 @@ def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None)
                 if target.stat().st_size != lfs["size"] or sha256_file(target) != lfs["sha256"]:
                     raise ValueError("cached checkpoint differs: "+name)
             else:
-                download_native_ranges(f"https://huggingface.co/{CANDIDATE.model}/resolve/{CANDIDATE.revision}/{name}",
+                download_native_ranges(f"https://huggingface.co/{model}/resolve/{revision}/{name}",
                     target,lfs["size"],lfs["sha256"],chunk_bytes=range_bytes)
         with ThreadPoolExecutor(max_workers=2) as pool:
             list(pool.map(fetch,ranged))
@@ -142,42 +157,48 @@ def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None)
             if (snapshot/name).stat().st_size != wanted["bytes"] or sha256_file(snapshot/name) != wanted["sha256"]:
                 raise ValueError("pinned metadata differs: "+name)
             expected[name] = wanted
-    save_json(receipt,dict(model=CANDIDATE.model,revision=CANDIDATE.revision,
+    save_json(receipt,dict(model=model,revision=revision,
         checkpoint_files=expected,snapshot=str(snapshot),gpu_execution=False,model_weights_loaded=False,
         download_path="stdlib HTTPS; native revision/LFS identities; no weight conversion"))
 
 
-def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, portable_assets=False):
+def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, portable_assets=False,
+        online_config=None, smoke_required=True, cpu_only=False):
     if output.exists() or scratch.exists():
         raise FileExistsError("fresh CPU output/scratch required; preserve prior assets")
     output.mkdir(parents=True)
     report = dict(status="blocked",gpu_execution=False,model_weights_loaded=False,weights_staged=False,root_blocker=None)
     try:
-        if launch.get("stage_weights") is not True:
+        if not cpu_only and launch.get("stage_weights") is not True:
             raise ValueError("CPU weight staging disabled pending concrete authorization/resources")
-        if not launch.get("authorization", "").strip():
+        if not cpu_only and not launch.get("authorization", "").strip():
             raise ValueError("concrete_course_smoke_authorization_missing")
-        if (launch.get("prior_sessions_released") is not True
+        if not cpu_only and (launch.get("prior_sessions_released") is not True
                 or any(launch["budget"].get("prior_"+name+"_gpu_hours") is None
                        for name in ("development","setup","interruption","other_course","other_overall","smoke"))
                 or launch["budget"].get("prior_smoke_attempts") is None):
             raise ValueError("prior_allocation_smoke_or_release_evidence_missing")
         count = assigned_device_count()
         assigned = bool(count or launch.get("allocated_at"))
+        if cpu_only and assigned:
+            raise ValueError("CPU analysis installation requires Accelerator None")
         if portable_assets and assigned:
             raise ValueError("portable asset preparation requires Accelerator None")
         report.update(assigned_device_count=count,provider_assignment_utc=launch.get("allocated_at"),
             provider_release_confirmed=False)
         if count and count != 2:
             raise ValueError("selected_T4_x2_host_required")
-        wall = assigned_preparation_window(launch) if assigned else None
+        wall = assigned_preparation_window(launch,smoke_required=smoke_required) if assigned else None
         source_identity(root,manifest)
         if (platform.system() != "Linux" or platform.machine() != "x86_64" or sys.version_info[:2] != (3,13)):
             raise ValueError("reviewed Linux x86_64 Python 3.13 candidate required")
         scratch.mkdir(parents=True)
-        tools, wheels = manifest["build_tools"],manifest["candidate_wheels"]
-        weight_bytes = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")["checkpoint_index"]["total_checkpoint_bytes"]
-        require_space(scratch,output,(sum(w["bytes"] for w in wheels)+BUILD_RESERVE if portable_assets else
+        tools = manifest["build_tools"]
+        wheels = cpu_candidate_wheels(manifest) if cpu_only else manifest["candidate_wheels"]
+        inspection = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
+        weight_bytes = inspection["checkpoint_index"]["total_checkpoint_bytes"]
+        online = online_config is not None or cpu_only
+        require_space(scratch,output,(sum(w["bytes"] for w in wheels)+BUILD_RESERVE if portable_assets or online else
             4*sum(w["bytes"] for w in wheels)+weight_bytes+BUILD_RESERVE))
         env = candidate_environment(scratch)
         deadline = time.monotonic()+min(workflow_seconds,
@@ -185,7 +206,7 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
         def invoke(name,args,timeout):
             nonlocal deadline
             if assigned:
-                wall = assigned_preparation_window(launch)
+                wall = assigned_preparation_window(launch,smoke_required=smoke_required)
                 deadline = min(deadline,time.monotonic()+wall-launch["budget"]["shutdown_seconds"]-124)
                 timeout = min(timeout,int(deadline-time.monotonic()-EXPORT_SECONDS-8))
                 if timeout < 1:
@@ -220,7 +241,7 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
                 raise ValueError("pinned candidate wheel differs: "+item["filename"])
             with zipfile.ZipFile(path) as archive:
                 expanded += sum(member.file_size for member in archive.infolist())
-        require_space(scratch,output,expanded+BUILD_RESERVE+(0 if portable_assets else weight_bytes))
+        require_space(scratch,output,expanded+BUILD_RESERVE+(0 if portable_assets or online else weight_bytes))
         install = scratch/"install.lock"
         install.write_text("".join(f"{w['name']}=={w['version']} --hash=sha256:{w['sha256']}\n" for w in wheels))
         invoke("install-candidate",pip+["install","--no-deps","--no-index","--find-links",wheel_dir,
@@ -238,14 +259,30 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
         modules = {Path(name).name:item["sha256"] for name,item in manifest["members"].items() if name.startswith("recovery/") and name.endswith(".py")}
         versions = {w["name"]:w["version"] for w in wheels}
         probe = output/"installed.json"
-        invoke("installed-provenance",[interpreter,"-I","-c",installed_probe_script(manifest,versions,probe)],30)
-        installed_provenance(probe,manifest,versions)
+        invoke("installed-provenance",[interpreter,"-I","-c",installed_probe_script(manifest,versions,probe,gpu=not cpu_only)],30)
+        installed_provenance(probe,manifest,versions,gpu=not cpu_only)
+        if cpu_only:
+            report.update(status="prepared",interpreter=str(interpreter),assets_receipt=None,hf_cache=None,
+                environment_only=True,note="Hash-pinned CPU analysis/tokenizer/rendering environment; no torch or model weights")
+            return report
         # Reuse the full resource calculation only inside the installed candidate;
         # the bare CPU bootstrap must not assume LangGraph/Pydantic are installed.
         launch_path = output/"launch.json"
         save_json(launch_path,launch)
-        invoke("prospective-admission",[interpreter,"-I",root/"scripts/m5_course_smoke.py",
-            "--root",root,"--launch",launch_path,"--output",output/"admission.json","--check-admission-only"],30)
+        if not smoke_required:
+            invoke("resume-admission",[interpreter,"-I",root/"scripts/course_kaggle_bootstrap.py","check-resume",
+                "--root",root,"--scratch",scratch,"--output",output,"--config",online_config],30)
+        else:
+            invoke("prospective-admission",[interpreter,"-I",root/"scripts/m5_course_smoke.py",
+                "--root",root,"--launch",launch_path,"--output",output/"admission.json","--check-admission-only"],30)
+        if online:
+            # These are fresh, hash-verified installation downloads, not inputs or
+            # experiment evidence. Reclaim them before the 9.3 GB checkpoint.
+            for path in wheel_dir.glob("*.whl"):
+                if not path.resolve().is_relative_to(scratch.resolve()) or path.is_symlink():
+                    raise ValueError("download cleanup escaped the fresh owned scratch")
+                path.unlink()
+            require_space(scratch,output,weight_bytes+BUILD_RESERVE)
         cache = scratch/"hub"
         env.update(HF_HUB_OFFLINE="0",TRANSFORMERS_OFFLINE="0",HF_HUB_CACHE=str(cache))
         weight_receipt = output/"weights.json"
@@ -261,9 +298,9 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
             weight_interpreter = sys.executable
         invoke("stage-pinned-checkpoint",[weight_interpreter,"-I",root/"scripts/m5_course_smoke_assets.py",
             "weights","--root",root,"--manifest",manifest_path,"--cache",cache,"--receipt",weight_receipt]+
-            (["--stdlib"] if portable_assets else []),600)
+            (["--stdlib","--range-bytes",str(16*1024**2)] if online else ["--stdlib"] if portable_assets else []),600)
         weights = read(weight_receipt)
-        assets = dict(source_commit=manifest["source_baseline_commit"],model=CANDIDATE.model,revision=CANDIDATE.revision,
+        assets = dict(source_commit=manifest["source_baseline_commit"],model=inspection["model"],revision=inspection["revision"],
             versions=versions,installed_modules=modules,checkpoint_files=weights["checkpoint_files"],
             interpreter=str(interpreter),hf_cache=str(cache),weight_staging_authorization=launch["authorization"])
         save_json(output/"prepared-assets.json",assets)
@@ -286,11 +323,15 @@ def main():
     stage.add_argument("--workflow-seconds",type=float,default=1800)
     weights = commands.add_parser("weights")
     weights.add_argument("--stdlib",action="store_true")
+    weights.add_argument("--range-bytes",type=int)
     for name in ("root","manifest","cache","receipt"):
         weights.add_argument("--"+name,type=Path,required=True)
     args = parser.parse_args()
     if args.command == "weights":
-        (download_weights_stdlib if args.stdlib else download_weights)(args.root,read(args.manifest),args.cache,args.receipt)
+        if args.stdlib:
+            download_weights_stdlib(args.root,read(args.manifest),args.cache,args.receipt,range_bytes=args.range_bytes)
+        else:
+            download_weights(args.root,read(args.manifest),args.cache,args.receipt)
     else:
         prepare(args.root.resolve(),read(args.manifest),read(args.launch),args.scratch.resolve(),args.output.resolve(),args.workflow_seconds)
 

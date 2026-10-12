@@ -63,9 +63,10 @@ def notebook(manifest_sha, commit):
         return value
     introduction = """# Course research · Run All on Kaggle T4 ×2
 
-Upload this notebook and the **offline dataset ZIP**, attach the dataset, complete
-one setup cell, select **T4 ×2**, turn Internet **Off**, then **Run All**.
-The notebook installs from the dataset and advances automatically:
+Upload this notebook and the **small research dataset ZIP**, attach the dataset,
+complete one setup cell, select **T4 ×2**, turn Internet **On**, then **Run All**.
+The notebook downloads the pinned dependencies and original model checkpoint,
+verifies their native hashes and versions, and advances automatically:
 
 **Hardware → first 90 slots → full pilot → audit and freeze → complete main matrix
 → independently reproduced analysis ? results and resume ZIPs.**
@@ -90,7 +91,7 @@ ACTION = "run_all"   # advanced read-only alternatives: inspect, status, analyze
 ENABLE_GPU = False
 PACKAGE_DIR = None   # detects the exact attached dataset automatically
 RESUME_ZIP = None    # detects the single attached course-resume.zip automatically
-ASSETS_ZIP = None    # detects bundled assets; no additional upload needed
+ASSETS_ZIP = None    # optional existing offline assets; online downloads are the default
 
 # Current provider facts reset on every resume. Empty dictionaries retain saved
 # authorizations, base bounds and reviews. Unknown duration is never zero.
@@ -100,7 +101,8 @@ RUN_SETTINGS = {
     "provider_session_seconds": None,      # verified maximum duration
     "prior_sessions_released": False,
     "authorizations": {
-        # Add four separate scope statements once:
+        # Add five separate scope statements once:
+        # weights="I authorize downloading the original pinned checkpoint and dependencies...",
         # hardware="I authorize the bounded course hardware screen...",
         # pilot="I authorize the fixed five-world development pilot...",
         # freeze="I authorize one unchanged freeze conditional on all gates...",
@@ -262,13 +264,22 @@ try:
             arguments=[sys.executable,'-I',source/'scripts/course_kaggle_bootstrap.py']
             if ACTION=='setup': arguments+=['setup','--config',config_path]
             elif kind=='gpu-environment':
-                if assets is None: raise ValueError('Use the offline dataset ZIP containing wheels and checkpoint; no separate setup is needed')
-                arguments+=['restore','--assets',assets,'--config',config_path]
+                if assets is None: arguments+=['online','--config',config_path]
+                else: arguments+=['restore','--assets',assets,'--config',config_path]
             else: arguments+=['cpu']
             arguments+=['--root',source,'--scratch',environment/'scratch','--output',environment/'bootstrap']
             if bounded_child(arguments,1800)!=0: raise RuntimeError('Bootstrap failed; its receipt and logs are retained')
         runtime=json.loads(receipt.read_bytes())
         if runtime.get('status')=='blocked': raise RuntimeError(runtime['reason'])
+        # Preserve setup/hash/version evidence in every portable resume export.
+        bootstrap_evidence=bundle/'environment-receipts'/kind
+        bootstrap_evidence.mkdir(parents=True,exist_ok=True)
+        for path in (environment/'bootstrap').glob('*'):
+            if path.is_file() and path.name!='source-manifest.json':
+                target=bootstrap_evidence/path.name
+                if target.exists() and target.read_bytes()!=path.read_bytes():
+                    target=bootstrap_evidence/(time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+path.name)
+                if not target.exists(): shutil.copyfile(path,target)
         if runtime.get('assets_receipt') and not runtime.get('requires_dataset_restore'):
             CONFIG.update(assets_receipt=runtime['assets_receipt'],hf_cache=runtime['hf_cache'])
             shutil.copyfile(runtime['assets_receipt'],bundle/'asset-receipt.json')
@@ -283,6 +294,11 @@ except (Exception,KeyboardInterrupt) as error:
     failure=dict(action=ACTION,status='blocked_or_safely_stopped',reason=type(error).__name__+': '+str(error),
         gates_bypassed=False,assignment_clock=CONFIG.get('allocated_at'),provider_release_confirmed=False)
     (bundle/'last-action.json').write_text(json.dumps(failure,indent=2)+'\\n')
+    if locals().get('environment') and (environment/'bootstrap').is_dir():
+        evidence=bundle/'environment-receipts'/(kind+'-failed-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime()))
+        evidence.mkdir(parents=True,exist_ok=True)
+        for path in (environment/'bootstrap').glob('*'):
+            if path.is_file() and path.name!='source-manifest.json': shutil.copyfile(path,evidence/path.name)
     if locals().get('assigned'):
         try:
             ids=subprocess.check_output(['nvidia-smi','--query-gpu=uuid','--format=csv,noheader'],text=True,timeout=5)
@@ -439,7 +455,7 @@ def build(root, output, *, base_manifest=None, extra_report_wheels=None, assets_
     summary = dict(source_commit=commit, dataset=str(dataset), dataset_bytes=dataset.stat().st_size,
         dataset_sha256=sha256_file(dataset), notebook="course_kaggle.ipynb",
         source_members=len(members), pinned_candidate_packages=len(wheels), gpu_execution=False,
-        offline_assets_included=bool(assets), pretrained_model_loaded=False)
+        online_first=True, offline_assets_included=bool(assets), pretrained_model_loaded=False)
     (output/"package-summary.json").write_text(json.dumps(summary, indent=2)+"\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return summary

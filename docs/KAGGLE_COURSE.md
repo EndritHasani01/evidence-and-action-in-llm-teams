@@ -1,17 +1,17 @@
 ﻿# Run the course study on Kaggle
 
 Upload **course-kaggle-dataset.zip** as a private dataset, attach it, and import
-**course_kaggle.ipynb**. The offline ZIP includes the committed source, fixed
-inputs, pinned Linux wheels and the original checkpoint revision. There is no
-separate asset upload or setup notebook. Weights remain in read-only input
-storage; only the installed environment and experiment outputs use working disk.
+**course_kaggle.ipynb**. The small ZIP contains committed research code,
+configurations, fixtures and essential metadata. Dependencies and the original
+checkpoint are downloaded directly on Kaggle. There is no separate asset upload
+or setup notebook. Internet must be available during installation/downloads.
 
 Complete the notebook's **one setup cell**, select **T4 ×2**, turn Internet
-**Off**, then click **Run All**. For a durable background run, use
+**On**, then click **Run All**. For a durable background run, use
 [Save Version → Save & Run All](https://www.kaggle.com/docs/notebooks).
 No action switching is required. The sequence is:
 
-1. Verify source and native asset identities; install the pinned ordinary package.
+1. Verify source; download/install hash-pinned dependencies and the pinned checkpoint.
 2. Run the bounded hardware screen and both complete-envelope diagnostics.
 3. Require the supported memory/headroom gate; run the first 90 development slots.
 4. Require capability thresholds; finish the same five-world pilot and audit it.
@@ -30,7 +30,7 @@ before the actual hardware, capability, validity and resource gates pass.
 
 The first cell contains these required facts and permissions:
 
-- Explicit, separate scope statements for **hardware**, **pilot**, **conditional
+- Explicit, separate scope statements for **downloads**, **hardware**, **pilot**, **conditional
   freeze**, and **main**. A conditional freeze authorizes the unchanged candidate
   only after every acceptance gate passes. Main authorization never waives gates.
 - Supported prior `[lower, upper]` GPU-hour bounds for development, setup,
@@ -52,8 +52,21 @@ freeze, even if the pooled 98% validity threshold passes.
 GPU work requires Linux x86_64 **Python 3.13** and the exact pinned candidate.
 Changing the image, packages, configuration or physical layout reopens the
 relevant acceptance gate. Two independent T4 replicas are required; no splitting,
-offload or pooled memory is introduced. CPU preparation downloaded assets only;
-it did not load the pretrained model or establish GPU feasibility.
+offload or pooled memory is introduced. Setup verifies all 97 pinned candidate
+package versions, native wheel SHA-256 values, ordinary installed module bytes,
+and checkpoint revision `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a` with native
+LFS sizes/SHA-256 values. Two checkpoint shards download concurrently with bounded
+HTTPS ranges. Installed inference subsequently uses the verified local snapshot.
+Fresh wheel downloads are reclaimed after installation; weights, the environment
+and results must still fit the measured disk space. No downloaded environment or
+checkpoint is included in the resume ZIP.
+
+On an assigned T4 ×2 session, downloading, installation and hardware validation
+share the remaining **0.5 aggregate GPU-hour smoke limit**: at most 15 wall minutes
+with no prior smoke usage. Slow Internet/setup can exhaust that gate. The notebook
+retains a limited result and receipts instead of extending the limit. Downloads
+and setup in subsequent accepted pilot/main sessions retain their cumulative
+course/overall and provider limits.
 
 ## Monitor and resume
 
@@ -72,13 +85,16 @@ For interactive runs, **Stop Session** and verify provider deallocation. Noteboo
 completion or local process exit is not a release receipt. Record the real UTC
 release time and evidence for the next session.
 
-To resume, attach the same offline dataset and the latest resume ZIP. Update only
+To resume, attach the same small dataset and the latest resume ZIP. Update only
 current provider facts/release evidence, retain the base bounds and authorizations,
 then Run All again. The package detects the first unfinished stage and reuses
 completed replies, including invalid and failed outcomes. A changed source packet
 or saved input/configuration is rejected. Pre-install refusals retain assignment
 receipts and become ordinary allocation ledgers on the next installed invocation;
-an unknown earlier interval blocks GPU admission until reconciled.
+an unknown earlier interval blocks GPU admission until reconciled. A new session
+reinstalls and re-downloads the same verified candidate automatically. Setup reads
+the original allocation ledgers before large downloads; accepted hardware is
+counted once, and pilot/main resume does not reset or repeat its smoke allowance.
 If a pre-install receipt missed the assignment time/device identity, add a
 `bootstrap_refusal_assignments` entry to `RUN_SETTINGS` keyed by its JSON filename,
 with recovered `allocated_at`/`physical_devices` and supporting `evidence`.
@@ -88,8 +104,8 @@ facts; an unreconstructable interval remains blocked.
 ## Reproduce the final analysis
 
 Use Accelerator **None**, attach the same dataset and resume ZIP, and select
-`ACTION="analyze"` in the setup cell. Internet can remain Off with the bundled
-Linux candidate; analysis never loads weights or invokes inference. It verifies
+`ACTION="analyze"` in the setup cell. Keep Internet **On** for the small CPU
+environment install; analysis downloads no weights and invokes no inference. It verifies
 saved requests, native raw validation, independent gold and branch-local delivery
 reconstruction, then compares two clean report generations. Complete reporting
 requires all 6,280 logical main uses, committed effects and the accepted freeze.
@@ -104,7 +120,7 @@ python -I source/scripts/course_kaggle_workflow.py --root source --bundle . --co
 ```
 
 Original reports are retained. A different rendering environment may need the
-bundled pinned Linux environment to reproduce figure bytes. New allocation/release
+pinned Linux rendering environment to reproduce figure bytes. New allocation/release
 evidence produces a new analysis version instead of overwriting earlier results.
 
 Advanced single-stage actions remain available for diagnostics. They use the same

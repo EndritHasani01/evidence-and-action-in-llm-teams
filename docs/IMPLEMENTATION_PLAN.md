@@ -999,9 +999,11 @@ exports, release-confirmed restart and independent offline reconstruction.
 [Package evidence](validation/course-kaggle-workflow.md) records executed CPU
 integration; milestone scientific/empirical statuses remain unchanged.
 
-The subsequent user request makes Run All the normal interface. One offline
-dataset now bundles the native checkpoint and pinned wheels, removing separate
-asset uploads and action switching. Safe CPU packaging loads no model. Actual
+The subsequent user request makes Run All the normal interface. The user's final
+delivery preference is online-first: a small dataset contains committed research
+code/configurations/fixtures/metadata; Kaggle downloads the original pinned
+checkpoint and hash-pinned wheels. Separate asset uploads and action switching
+are unnecessary. Safe CPU packaging loads no model. Actual
 assignment is charged from its supplied clock, including installation and review.
 Quiescent stage transitions partition that same physical assignment in the existing
 allocation ledgers; they never claim provider deallocation. Workers can re-admit
@@ -1012,8 +1014,14 @@ recorded failures, uncertainty or near-timeout calls require explicit review.
 Reporting has an allocation-aware time limit and always retains a portable
 limited-result export when a gate/session prevents completion.
 
-Consequential choices: checkpoint/wheel inputs remain read-only on Kaggle.
-The optional older CPU setup mode still consumes its rebuildable staging
+Consequential choices: the ordinary installed candidate and local snapshot are
+verified by versions/module bytes and native wheel/LFS identities. The existing
+asset builder supplies online installation, with fresh downloaded wheels reclaimed
+before checkpoint staging to limit peak disk use. Cold session preparation derives
+resource bounds from original allocations before downloads; accepted hardware is
+counted once, while pilot/main preparation does not demand fresh smoke allowance.
+Downloads/install receipts travel in the original resume bundle; environments and
+weights do not. The optional older CPU setup mode still consumes its rebuildable staging
 environment before large weight packing to limit peak disk use. Two separately recorded
 full-envelope diagnostics replace redundant smoke probes within the same cumulative
 24-attempt ceiling. They require a supported complete R7 review before admission.

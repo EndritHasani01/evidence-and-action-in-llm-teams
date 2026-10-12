@@ -27,7 +27,8 @@ class PortableAssetTests(unittest.TestCase):
             inspection=root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json"
             inspection.parent.mkdir(parents=True)
             blobs={"first.safetensors":b"first CPU fixture","second.safetensors":b"second CPU fixture"}
-            inspection.write_text(json.dumps(dict(checkpoint_index=dict(shard_files=list(blobs)))))
+            inspection.write_text(json.dumps(dict(model=CANDIDATE.model,revision=CANDIDATE.revision,
+                checkpoint_index=dict(shard_files=list(blobs)))))
             info=dict(sha=CANDIDATE.revision,siblings=[dict(rfilename=name,lfs=dict(size=len(raw),
                 sha256=hashlib.sha256(raw).hexdigest())) for name,raw in blobs.items()])
             class Response(io.BytesIO):
@@ -64,7 +65,8 @@ class PortableAssetTests(unittest.TestCase):
             root=Path(directory)/"source"
             inspection=root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json"
             inspection.parent.mkdir(parents=True)
-            inspection.write_text(json.dumps(dict(checkpoint_index=dict(shard_files=["model.safetensors"]))))
+            inspection.write_text(json.dumps(dict(model=CANDIDATE.model,revision=CANDIDATE.revision,
+                checkpoint_index=dict(shard_files=["model.safetensors"]))))
             metadata=root/"metadata/4B/config.json"
             metadata.parent.mkdir(parents=True)
             metadata.write_bytes(b'{"test":"CPU fixture"}')

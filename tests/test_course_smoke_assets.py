@@ -124,7 +124,8 @@ class CourseSmokeAssetTests(unittest.TestCase):
             root,manifest,launch,*rest = self.fixture(directory)
             inspection = root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json"
             inspection.parent.mkdir(parents=True)
-            inspection.write_text(json.dumps(dict(checkpoint_index=dict(total_checkpoint_bytes=1))))
+            inspection.write_text(json.dumps(dict(model=CANDIDATE.model,revision=CANDIDATE.revision,
+                checkpoint_index=dict(total_checkpoint_bytes=1))))
             data = io.BytesIO()
             with zipfile.ZipFile(data,"w") as archive:
                 archive.writestr("fixture.txt","controlled CPU wheel, not a package")
@@ -140,6 +141,9 @@ class CourseSmokeAssetTests(unittest.TestCase):
             scratch,output = Path(directory)/"scratch",Path(directory)/"output"
             captured = {}
             def command(output,name,args,**kwargs):
+                if name == "create-candidate":
+                    (scratch/"venv").mkdir()
+                    (scratch/"venv/retained-runtime.txt").write_text("controlled runtime fixture")
                 if name in ("download-pip","download-candidate","download-build-tools"):
                     for w in (runtime,build,pip,tool):
                         (scratch/"wheels"/w["filename"]).write_bytes(wheel_bytes)
@@ -150,8 +154,14 @@ class CourseSmokeAssetTests(unittest.TestCase):
                     (scratch/"built"/"recovery_fixture.whl").write_bytes(wheel_bytes)
                 if name == "installed-provenance":
                     (output/"installed.json").write_text(json.dumps(dict(versions={"setuptools":"81.0.0"},
-                        verified_module_hashes={},qwen_text_class="Qwen3_5ForCausalLM",torch_cuda_build="12.8",model_generations=0)))
+                        verified_module_hashes={},qwen_text_class=None if captured.get("cpu_only") else "Qwen3_5ForCausalLM",
+                        torch_cuda_build=None if captured.get("cpu_only") else "12.8",model_generations=0)))
                 if name == "stage-pinned-checkpoint":
+                    self.assertFalse(captured.get("cpu_only"))
+                    captured["checkpoint_arguments"] = args
+                    if captured.get("expect_online"):
+                        self.assertTrue((scratch/"venv/retained-runtime.txt").exists())
+                        self.assertEqual(list((scratch/"wheels").glob("*.whl")),[])
                     (output/"weights.json").write_text(json.dumps(dict(checkpoint_files={},gpu_execution=False)))
                 return dict(status="passed",kind="controlled CPU command fixture; no downloads or GPU")
             with patch("scripts.m5_course_smoke_assets.command",side_effect=command), \
@@ -166,6 +176,33 @@ class CourseSmokeAssetTests(unittest.TestCase):
             self.assertIn("setuptools==84.0.0",captured["build_constraints"])
             self.assertFalse(result["gpu_execution"])
             self.assertFalse(result["model_weights_loaded"])
+            # Online Run All uses the same installer, retains its ordinary
+            # runtime, and frees verified wheel downloads before the checkpoint.
+            captured["expect_online"] = True
+            scratch,output = Path(directory)/"online-scratch",Path(directory)/"online-output"
+            with patch("scripts.m5_course_smoke_assets.command",side_effect=command), \
+                    patch("scripts.m5_course_smoke_assets.require_space",return_value={}), \
+                    patch("scripts.m5_course_smoke_assets.platform.system",return_value="Linux"), \
+                    patch("scripts.m5_course_smoke_assets.platform.machine",return_value="x86_64"), \
+                    patch("scripts.m5_course_smoke_assets.sys.version_info",(3,13)):
+                online_result = prepare(root,manifest,launch,scratch,output,online_config=Path("fixture.json"))
+            self.assertEqual(online_result["status"],"prepared",online_result)
+            self.assertIn("--range-bytes",captured["checkpoint_arguments"])
+            self.assertFalse(online_result["model_weights_loaded"])
+            captured["expect_online"] = False
+            captured["cpu_only"] = True
+            scratch,output = Path(directory)/"cpu-scratch",Path(directory)/"cpu-output"
+            with patch("scripts.m5_course_smoke_assets.command",side_effect=command), \
+                    patch("scripts.m5_course_smoke_assets.require_space",return_value={}), \
+                    patch("scripts.m5_course_smoke_assets.platform.system",return_value="Linux"), \
+                    patch("scripts.m5_course_smoke_assets.platform.machine",return_value="x86_64"), \
+                    patch("scripts.m5_course_smoke_assets.sys.version_info",(3,13)):
+                cpu_result = prepare(root,manifest,{},scratch,output,cpu_only=True)
+            self.assertEqual(cpu_result["status"],"prepared",cpu_result)
+            self.assertTrue(cpu_result["environment_only"])
+            self.assertIsNone(cpu_result["assets_receipt"])
+            self.assertFalse(cpu_result["weights_staged"])
+            captured["cpu_only"] = False
             # The same tiny-file pipeline also permits an already-assigned host.
             # No package download, CUDA initialization or actual allocation occurs.
             from scripts.m5_kaggle_preflight import utc

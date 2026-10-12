@@ -1,8 +1,7 @@
-"""Stdlib-only Kaggle setup and offline restoration of the pinned candidate.
+"""Online-first pinned Kaggle setup, with optional portable asset restoration.
 
-Use the existing CPU asset builder. Model weights and target wheels are optional
-operator-authorized downloads, kept in a separate reusable assets ZIP.
-No imports in this module initialize CUDA or load a model.
+The bare entry point uses the standard library. It never loads a model or
+initializes CUDA; scientific execution remains in the existing workflow.
 """
 
 import argparse
@@ -16,6 +15,10 @@ import subprocess
 import sys
 import time
 import zipfile
+from copy import deepcopy
+from contextlib import closing
+import sqlite3
+from types import SimpleNamespace
 
 if not __package__:
     import types
@@ -25,6 +28,138 @@ if not __package__:
 
 from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, sha256_file, save_json,
     candidate_environment, command, source_identity, assigned_preparation_window, EXPORT_SECONDS, utc)
+
+
+def preparation_budget(root, bundle, config, saved):
+    """Read canonical allocation rows before large downloads, without dependencies.
+
+    Use the existing allocation partition. Temporary release bounds never alter
+    worker evidence; the installed workflow applies the actual receipt later.
+    Hardware already incorporated in run.json is excluded exactly once.
+    """
+    sys.path.insert(0,str(root))
+    from recovery.costs import _allocation_resources, timestamp
+    budget = deepcopy(saved["budget"] if saved else config["budget"])
+    paths = list(bundle.glob("development/worker-*.sqlite"))+list(bundle.glob("main/worker-*.sqlite"))
+    paths += list(bundle.glob("refusals/*/worker-*.sqlite"))
+    paths += list(bundle.glob("hardware/worker-*.sqlite"))
+    rows = {name:[] for name in ("allocations","attempts","provider_processes")}
+    now, release = utc(), config.get("previous_session_release", {})
+    recorded_assignments = {}
+    for index,path in enumerate(sorted(paths)):
+        with closing(sqlite3.connect(path.resolve().as_uri()+"?mode=ro",uri=True)) as db:
+            db.row_factory = sqlite3.Row
+            for row in db.execute("SELECT started_at,billing_json FROM allocations"):
+                identity = json.loads(row["billing_json"] or "{}").get("physical_gpu_uuid")
+                recorded_assignments.setdefault(row["started_at"],set()).add(identity)
+            if saved and path.parent.name == "hardware":
+                continue
+            for table in rows:
+                rows[table].extend(dict(row,worker=index) for row in db.execute("SELECT * FROM "+table))
+    for allocation in rows["allocations"]:
+        if allocation["stopped_at"] is None:
+            if allocation["started_at"] == config.get("allocated_at"):
+                raise ValueError("reuse the existing verified environment for an active assignment")
+            at = release.get("released_at")
+            if (not at or not release.get("evidence", "").strip() or
+                    not timestamp(allocation["started_at"]) <= timestamp(at) <= timestamp(now)):
+                raise ValueError("actual_previous_provider_release_required_before_online_downloads")
+            for row in rows["attempts"]+rows["provider_processes"]:
+                if row["worker"] != allocation["worker"]:
+                    continue
+                if any(row.get(key) and timestamp(row[key]) > timestamp(at)
+                        for key in ("finished_at","last_observed_at","stopped_at")):
+                    raise ValueError("provider release precedes observed model work")
+            allocation["stopped_at"] = at
+    # Pre-install failures may not yet have an ordinary allocation-only worker.
+    # Include their known two-device intervals; unknown facts still refuse.
+    for path in sorted((bundle/"bootstrap-refusals").glob("*.json")):
+        receipt = json.loads(path.read_bytes())
+        correction = config.get("bootstrap_refusal_assignments", {}).get(path.name, {})
+        if correction:
+            if not correction.get("evidence", "").strip():
+                raise ValueError("bootstrap_assignment_correction_requires_provider_evidence")
+            receipt.update({key:correction[key] for key in ("allocated_at","physical_devices") if correction.get(key)})
+        start,devices = receipt.get("allocated_at"),receipt.get("physical_devices")
+        if not start or len(devices or ()) != 2 or timestamp(start) > timestamp(receipt["observed_at"]):
+            raise ValueError("earlier_bootstrap_assignment_interval_unknown")
+        if start in recorded_assignments:
+            if recorded_assignments[start] != set(devices):
+                raise ValueError("bootstrap_assignment_physical_devices_differ")
+            continue
+        at = release.get("released_at")
+        if not at or not release.get("evidence", "").strip() or not timestamp(start) <= timestamp(at) <= timestamp(now):
+            raise ValueError("bootstrap_assignment_release_evidence_required")
+        for index,device in enumerate(devices):
+            rows["allocations"].append(dict(worker=len(paths)+index,number=0,device=f"kaggle-t4-slot-{index}",
+                started_at=start,stopped_at=at,stop_requested_at=None,stop_reason="supplied actual provider release",
+                stage="main" if receipt.get("stage") == "main" else "development",
+                billing_json=json.dumps(dict(unadmitted_action=receipt.get("stage","hardware"),physical_gpu_uuid=device))))
+        recorded_assignments[start] = set(devices)
+    used = _allocation_resources(rows["allocations"],rows["attempts"],rows["provider_processes"],now,SimpleNamespace(**budget))
+    additional = dict(development=0.,setup=0.,interruption=0.,other_course=0.,smoke=0.)
+    for device in used["devices"]:
+        partition = device["partition_seconds"]
+        additional["setup"] += partition["setup"]/3600
+        additional["interruption"] += (partition["interruption"]+partition["uncertain_work"])/3600
+        phase = "development" if device["stage"] == "development" else "other_course"
+        additional[phase] += (partition["attempt"]+partition["idle"])/3600
+        if not saved and json.loads(device["billing_json"] or "{}").get("unadmitted_action","hardware") == "hardware":
+            additional["smoke"] += device["allocated_seconds"]/3600
+    for name,hours in additional.items():
+        if budget.get("prior_"+name+"_gpu_hours") is not None:
+            budget["prior_"+name+"_gpu_hours"] = [v+hours for v in budget["prior_"+name+"_gpu_hours"]]
+    if not saved and budget.get("prior_smoke_attempts") is not None:
+        budget["prior_smoke_attempts"] += sum(row["worker"] in {d["worker"] for d in used["devices"]
+            if json.loads(d["billing_json"] or "{}").get("unadmitted_action","hardware") == "hardware"}
+            for row in rows["attempts"])
+    return budget
+
+
+def online(root, config_path, scratch, output):
+    config = json.loads(config_path.read_bytes())
+    manifest = json.loads((root/"source-manifest.json").read_bytes())
+    source_identity(root,manifest)
+    if not config.get("authorizations", {}).get("weights", "").strip():
+        raise ValueError("explicit pinned checkpoint download authorization required")
+    bundle = config_path.resolve().parent
+    saved = json.loads((bundle/"run.json").read_bytes()) if (bundle/"run.json").exists() else None
+    action = "main" if saved and saved["freeze"] else "pilot" if saved else "hardware"
+    if not config.get("authorizations", {}).get(action, "").strip():
+        raise ValueError("explicit_"+action+"_authorization_missing")
+    launch = dict(stage_weights=True,execute_gpu=False,authorization=config["authorizations"]["weights"],
+        provider="kaggle",reported_quota_gpu_hours=config.get("provider_quota_gpu_hours"),
+        prior_sessions_released=config.get("prior_sessions_released",False),allocated_at=config.get("allocated_at"),
+        provider_session_seconds=config.get("provider_session_seconds"),release_instructions=config.get("release_instructions",""),
+        budget=preparation_budget(root,bundle,config,saved),resume_workers=[])
+    from scripts.m5_course_smoke_assets import prepare
+    result = prepare(root,manifest,launch,scratch,output,online_config=config_path,smoke_required=saved is None)
+    if result["status"] != "prepared":
+        raise ValueError(result["root_blocker"])
+    return dict(interpreter=result["interpreter"],assets_receipt=result["assets_receipt"],hf_cache=result["hf_cache"],
+        online=True,note="Pinned native wheel hashes, installed versions/module bytes and checkpoint revision/LFS hashes verified; no model loaded")
+
+
+def check_resume(root, config_path, output):
+    """Apply the real release receipt, then admit resources before resumed weights."""
+    from scripts.course_kaggle_workflow import snapshot, session_window
+    from recovery.accounting import CourseBudget, course_admission
+    config = json.loads(config_path.read_bytes())
+    bundle = config_path.resolve().parent
+    run = json.loads((bundle/"run.json").read_bytes())
+    stage = "main" if run["freeze"] else "development"
+    # The pre-install screen already bounds known prior open intervals using
+    # their real release receipt. The ordinary controller applies it on resume.
+    from scripts.course_kaggle_workflow import recover_bootstrap_refusals, confirm_previous_release
+    recover_bootstrap_refusals(root,bundle,config)
+    confirm_previous_release(bundle,config.get("previous_session_release"))
+    progress = snapshot(root,bundle,stage,run,devices=("kaggle-t4-slot-0","kaggle-t4-slot-1"))
+    reason,seconds = course_admission(progress["resources"],progress["forecast"],CourseBudget(**run["budget"]),stage,2)
+    if reason:
+        raise ValueError(reason)
+    save_json(output/"admission.json",dict(gpu_execution=False,model_generations=0,stage=stage,
+        allowed_gpu_seconds=seconds,provider_wall_seconds=session_window(config)))
+    return dict(resume_admission=True)
 
 
 def extract_assets(archive, destination):
@@ -187,7 +322,7 @@ def restore(root, assets_zip, scratch, output, *, seconds=1800, config=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("setup", "restore", "cpu"))
+    parser.add_argument("action", choices=("online", "check-resume", "setup", "restore", "cpu"))
     for name in ("root", "scratch", "output"):
         parser.add_argument("--"+name, type=Path, required=True)
     parser.add_argument("--config", type=Path)
@@ -195,7 +330,14 @@ def main():
     args = parser.parse_args()
     root, scratch, output = args.root.resolve(), args.scratch.resolve(), args.output.resolve()
     try:
-        if args.action == "setup":
+        if args.action in ("online","check-resume"):
+            if not args.config:
+                raise ValueError(args.action+" requires configuration")
+            result = (online(root,args.config,scratch,output) if args.action == "online" else
+                check_resume(root,args.config,output))
+            if args.action == "check-resume":
+                return
+        elif args.action == "setup":
             if not args.config:
                 raise ValueError("setup requires configuration")
             result = setup(root, json.loads(args.config.read_bytes()), scratch, output)
@@ -207,6 +349,15 @@ def main():
                 config["_bundle"] = str(args.config.resolve().parent)
             result = restore(root, args.assets, scratch, output,config=config)
         else:
+            if platform.system() == "Linux" and platform.machine() == "x86_64" and sys.version_info[:2] == (3,13):
+                manifest = json.loads((root/"source-manifest.json").read_bytes())
+                from scripts.m5_course_smoke_assets import prepare
+                result = prepare(root,manifest,{},scratch,output,cpu_only=True)
+                if result["status"] != "prepared":
+                    raise ValueError(result["root_blocker"])
+                save_json(output/"bootstrap.json",result)
+                print(json.dumps(result,indent=2),flush=True)
+                return
             if scratch.exists() or output.exists():
                 raise FileExistsError("fresh CPU environment/output required")
             output.mkdir(parents=True)

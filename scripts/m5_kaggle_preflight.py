@@ -493,29 +493,30 @@ def pip_wheel_download_script(metadata: dict, destination: Path) -> str:
         "print(json.dumps(dict(expected,verified=True)))", ""])
 
 
-def installed_probe_script(expected: dict, versions: dict, result_path: Path) -> str:
+def installed_probe_script(expected: dict, versions: dict, result_path: Path, *, gpu=True) -> str:
     hashes = {n: item["sha256"] for n, item in expected["members"].items()
               if n.startswith("recovery/") and n.endswith(".py")}
     return "\n".join([
         "import hashlib,json,sys,site", "from pathlib import Path",
         "from importlib.metadata import version", "import recovery,recovery.inference,recovery.runner",
         "from langgraph.checkpoint.sqlite import SqliteSaver",
-        "from transformers import Qwen3_5ForCausalLM", "import torch",
+        "from transformers import Qwen3_5ForCausalLM; import torch" if gpu else "import importlib.util; assert importlib.util.find_spec('torch') is None",
         f"wanted={versions!r}", "actual={n:version(n) for n in wanted}",
         "assert actual==wanted, {'expected':wanted,'actual':actual}",
         "assert sys.prefix!=sys.base_prefix and site.ENABLE_USER_SITE is False",
-        "assert torch.__version__=='2.11.0+cu128' and torch.version.cuda=='12.8'",
+        "assert torch.__version__=='2.11.0+cu128' and torch.version.cuda=='12.8'" if gpu else "",
         "package=Path(recovery.__file__).resolve().parent", f"expected={hashes!r}",
         "observed={'recovery/'+p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in package.glob('*.py')}",
         "assert observed==expected, 'source-to-installed module bytes differ'",
         "assert package.is_relative_to(Path(sys.prefix).resolve()), 'base/source import contamination'",
         f"Path({str(result_path)!r}).write_text(json.dumps({{'versions':actual,'executable':sys.executable,'prefix':sys.prefix,",
         "'sys_path':sys.path,'module_root':str(package),'verified_module_hashes':observed,",
-        "'qwen_text_class':Qwen3_5ForCausalLM.__name__,'torch_cuda_build':torch.version.cuda,",
+        "'qwen_text_class':Qwen3_5ForCausalLM.__name__,'torch_cuda_build':torch.version.cuda," if gpu else
+        "'qwen_text_class':None,'torch_cuda_build':None,",
         "'gpu_native_diagnostics':None,'model_generations':0}),encoding='utf-8')", ""])
 
 
-def installed_provenance(result_path: Path, expected: dict, versions: dict) -> dict:
+def installed_provenance(result_path: Path, expected: dict, versions: dict, *, gpu=True) -> dict:
     # Third-party imports may print diagnostics; machine evidence has its own file.
     if result_path.stat().st_size > 2*2**20:
         raise ValueError('installed_probe_result_too_large')
@@ -524,8 +525,8 @@ def installed_provenance(result_path: Path, expected: dict, versions: dict) -> d
                      if n.startswith('recovery/') and n.endswith('.py')}
     if (not isinstance(result,dict) or result.get('versions')!=versions
             or result.get('verified_module_hashes')!=wanted_hashes
-            or result.get('qwen_text_class')!='Qwen3_5ForCausalLM'
-            or result.get('torch_cuda_build')!='12.8' or result.get('model_generations')!=0):
+            or result.get('qwen_text_class')!=('Qwen3_5ForCausalLM' if gpu else None)
+            or result.get('torch_cuda_build')!=('12.8' if gpu else None) or result.get('model_generations')!=0):
         raise ValueError('installed_probe_schema_or_provenance')
     return result
 

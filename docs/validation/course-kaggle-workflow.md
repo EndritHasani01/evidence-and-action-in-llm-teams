@@ -96,3 +96,32 @@ reconciliation or freeze was executed here. The R7 review remains a mandatory
 actual-evidence gate. A failed/open gate produces a limited result; software
 delivery does not mark the course M5/M6 empirical tasks done. Earlier thesis
 defaults, task files, populations/schedules and scientific authority are preserved.
+
+## Online-first delivery
+
+The user's Internet-enabled delivery replaces the default large offline input
+with a small source/configuration/fixture/metadata ZIP. The existing installer
+downloads native hash-pinned wheels, verifies all installed versions/module
+bytes, retains its ordinary environment, reclaims fresh installation downloads,
+then verifies the original pinned checkpoint with native revision/LFS identities.
+CPU reporting reuses the same installer with 75 pinned CPU dependencies (about
+84 MB of compressed wheels), without torch or checkpoint downloads. Optional
+offline restoration remains available; it is not required by Run All.
+
+Cold-session preparation reads canonical allocation rows through the existing
+allocation partition before large downloads. Accepted hardware enters spending
+once; pilot/main resume accepts an exhausted smoke allowance without resetting
+it. Repeated known pre-install refusals share their original assignment; unknown
+clocks/releases and conflicting physical devices refuse. Actual release receipts
+are applied through the original controller, with no inferred zero spending.
+
+`unittest tests.test_course_online_bootstrap tests.test_course_smoke_assets
+tests.test_course_kaggle_assets tests.test_course_run_all
+tests.test_kaggle_preflight -q`: **48 passed in 20.533 s**, Windows Python 3.11
+repository environment. Checks include the bare `-I -S` entry point without site
+packages, native hash/range integrity, retained online runtime and wheel cleanup,
+CPU installation without weight download, unchanged ordinary provenance checks,
+release-required ledger accounting, repeated-refusal deduplication and exact
+accepted main resume with all 24 smoke attempts consumed. Controlled fixtures do
+not download/load pretrained weights or validate the actual Linux/T4 runtime.
+Literal notebook/upload/portable report evidence accompanies the final package.
