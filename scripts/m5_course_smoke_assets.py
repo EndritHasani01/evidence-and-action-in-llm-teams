@@ -4,6 +4,8 @@ import argparse
 import hashlib
 import importlib.metadata
 import json
+from datetime import datetime, timezone
+from math import isfinite
 import os
 from pathlib import Path
 import platform
@@ -26,6 +28,74 @@ from scripts.m5_course_preparation import CANDIDATE, read
 from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, BUILD_RESERVE, EXPORT_SECONDS,
     candidate_environment, command, export_evidence, installed_probe_script,
     installed_provenance, pip_wheel_download_script, require_space, save_json, sha256_file, utc)
+
+
+def assigned_device_count():
+    devices = Path("/proc/driver/nvidia/gpus")
+    return len(list(devices.iterdir())) if devices.is_dir() else 0
+
+
+def assigned_preparation_window(launch, now=None):
+    """Conservative pre-install screen; installed CourseBudget still gates weights.
+
+    The bare bootstrap has no LangGraph/Pydantic environment yet. Check the
+    supplied bounds before downloads, without CUDA or resetting assignment time.
+    Current allocation enters the ordinary smoke ledgers from this same clock.
+    """
+    if not launch.get("authorization", "").strip() or launch.get("prior_sessions_released") is not True:
+        raise ValueError("authorization_or_prior_release_missing")
+    if launch.get("resume_workers"):
+        raise ValueError("assigned_preparation_requires_fresh_run; reuse admitted assets for resume")
+    budget = launch["budget"]
+    if not budget.get("prior_evidence", "").strip() or budget.get("allocation_mode") != "gpu":
+        raise ValueError("documented_prior_bounds_and_gpu_charging_required")
+    def number(value):
+        if type(value) not in (int,float) or not isfinite(value) or value < 0:
+            raise ValueError("finite_nonnegative_resource_bound_required")
+        return value
+    upper = {}
+    for name in ("development","setup","interruption","other_course","other_overall","smoke"):
+        bounds = budget.get("prior_"+name+"_gpu_hours")
+        if not isinstance(bounds,(tuple,list)) or len(bounds) != 2 or number(bounds[0]) > number(bounds[1]):
+            raise ValueError("supported_prior_allocation_and_smoke_bounds_required")
+        upper[name] = bounds[1]
+    attempts = budget.get("prior_smoke_attempts")
+    if type(attempts) is not int or not 0 <= attempts < 24:
+        raise ValueError("remaining_cumulative_smoke_attempt_required")
+    remaining = []
+    for name,ceiling in (("development",8),("setup",2),("interruption",2)):
+        reserve = number(budget[name+"_reserve_gpu_hours"])
+        if reserve > ceiling:
+            raise ValueError("adopted_preparation_allowance_exceeded")
+        remaining.append(reserve-upper[name])
+    course = sum(upper[name] for name in ("development","setup","interruption","other_course"))
+    for field,ceiling,spent in (("ceiling_gpu_hours",30,course),("overall_ceiling_gpu_hours",100,course+upper["other_overall"])):
+        limit = number(budget[field])
+        if not 0 < limit <= ceiling:
+            raise ValueError("adopted_resource_ceiling_required")
+        remaining.append(limit-spent)
+    remaining.append(.5-upper["smoke"])
+    if not launch.get("allocated_at"):
+        raise ValueError("actual_provider_assignment_clock_required")
+    assigned = datetime.fromisoformat(launch["allocated_at"])
+    current = datetime.fromisoformat(now or utc())
+    if assigned.tzinfo is None or current.tzinfo is None:
+        raise ValueError("timezone_aware_assignment_required")
+    elapsed = (current-assigned).total_seconds()
+    if elapsed < 0:
+        raise ValueError("provider_assignment_cannot_be_in_future")
+    quota = number(launch.get("reported_quota_gpu_hours"))
+    duration = number(launch.get("provider_session_seconds"))
+    if quota == 0 or duration == 0 or not launch.get("release_instructions", "").strip():
+        raise ValueError("provider_terms_required")
+    shutdown = number(budget["shutdown_seconds"])
+    if shutdown < 120:
+        raise ValueError("at_least_120_seconds_for_provider_release_required")
+    wall = min((3600*min(remaining)-number(budget["overhead_seconds"]))/2-elapsed,
+        quota*3600/2,duration-elapsed)
+    if wall <= shutdown+EXPORT_SECONDS+8+124:
+        raise ValueError("insufficient_remaining_time_for_preparation_attempt_export_and_release")
+    return wall
 
 
 def source_identity(root, manifest):
@@ -107,10 +177,14 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800):
                        for name in ("development","setup","interruption","other_course","other_overall","smoke"))
                 or launch["budget"].get("prior_smoke_attempts") is None):
             raise ValueError("prior_allocation_smoke_or_release_evidence_missing")
+        count = assigned_device_count()
+        assigned = bool(count or launch.get("allocated_at"))
+        report.update(assigned_device_count=count,provider_assignment_utc=launch.get("allocated_at"),
+            provider_release_confirmed=False)
+        if count and count != 2:
+            raise ValueError("selected_T4_x2_host_required")
+        wall = assigned_preparation_window(launch) if assigned else None
         source_identity(root,manifest)
-        gpus = Path("/proc/driver/nvidia/gpus")
-        if gpus.is_dir() and list(gpus.iterdir()):
-            raise ValueError("stage on CPU with Accelerator None before assigning GPUs")
         if (platform.system() != "Linux" or platform.machine() != "x86_64" or sys.version_info[:2] != (3,13)):
             raise ValueError("reviewed Linux x86_64 Python 3.13 candidate required")
         scratch.mkdir(parents=True)
@@ -118,8 +192,16 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800):
         weight_bytes = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")["checkpoint_index"]["total_checkpoint_bytes"]
         require_space(scratch,output,4*sum(w["bytes"] for w in wheels)+weight_bytes+BUILD_RESERVE)
         env = candidate_environment(scratch)
-        deadline = time.monotonic()+workflow_seconds
+        deadline = time.monotonic()+min(workflow_seconds,
+            wall-launch["budget"]["shutdown_seconds"]-124 if assigned else workflow_seconds)
         def invoke(name,args,timeout):
+            nonlocal deadline
+            if assigned:
+                wall = assigned_preparation_window(launch)
+                deadline = min(deadline,time.monotonic()+wall-launch["budget"]["shutdown_seconds"]-124)
+                timeout = min(timeout,int(deadline-time.monotonic()-EXPORT_SECONDS-8))
+                if timeout < 1:
+                    raise TimeoutError("assigned_preparation_deadline")
             return command(output,name,args,deadline=deadline,timeout=timeout,cwd=scratch,env=env)
         venv = scratch/"venv"
         invoke("create-candidate",[sys.executable,"-m","venv","--without-pip",venv],60)
@@ -204,6 +286,7 @@ def main():
     stage = commands.add_parser("prepare")
     for name in ("root","manifest","launch","scratch","output"):
         stage.add_argument("--"+name,type=Path,required=True)
+    stage.add_argument("--workflow-seconds",type=float,default=1800)
     weights = commands.add_parser("weights")
     for name in ("root","manifest","cache","receipt"):
         weights.add_argument("--"+name,type=Path,required=True)
@@ -211,7 +294,7 @@ def main():
     if args.command == "weights":
         download_weights(args.root,read(args.manifest),args.cache,args.receipt)
     else:
-        prepare(args.root.resolve(),read(args.manifest),read(args.launch),args.scratch.resolve(),args.output.resolve())
+        prepare(args.root.resolve(),read(args.manifest),read(args.launch),args.scratch.resolve(),args.output.resolve(),args.workflow_seconds)
 
 
 if __name__ == "__main__":

@@ -14,29 +14,30 @@ def hardware_notebook(expected, helper, launch):
         if kind == "code":
             value.update(execution_count=None,outputs=[])
         return value
-    instructions = """# Course M5-T02: CPU assets, then separately admitted T4 smoke
+    instructions = """# Course M5-T02: one launch, T4 x2 from the start
 
 This local packet is unpublished. Attach the exact new course source payload
-as a private input. Keep Accelerator **None** for source/environment/checkpoint
-preparation. Set `COURSE_M5_PAYLOAD` and `COURSE_M5_HW_OUTPUT` when reviewing
+as a private input. You may select **T4 x2 before starting**. Set
+`COURSE_M5_PAYLOAD` and `COURSE_M5_HW_OUTPUT` when reviewing
 locally; use fresh output paths and preserve all previous results.
 
 Both execution flags default **False**. Edit the visible `LAUNCH` dictionary at
-the top of the source cell before its first execution, using supported prior
+the top of the source cell once, setting both flags True for the authorized run,
+using supported prior
 allocation/smoke bounds and the separately authorized concrete action. Available
 quota is independent of study spending; accounts do not reset the 30-hour course
 or cumulative 24-attempt / 1,800-device-second smoke ceilings. Unknowns stop
 admission. No pilot/main/freeze is authorized by this notebook.
 
-Only after CPU assets/provenance pass, retain the prepared-assets receipt and
-environment/cache. For the approved GPU action, choose T4 x2, record the actual
-UTC assignment clock, remaining provider session allowance and stop/release
-instructions, edit the two launch fields at the top of the GPU cell and run
-that cell once; do not rerun the source cell. If switching
-accelerators loses the source/environment/cache, stop the GPU session and
-prepare on CPU again; installation/downloads do not belong in the short GPU run.
-The GPU cell uses the isolated candidate interpreter and an independent bounded
-process-group controller. Both devices, including idle/loading time, are charged.
+Record the actual UTC GPU assignment clock in LAUNCH before the first cell,
+with remaining provider allowance and release instructions. Run the source,
+asset preparation, model smoke and export cells in order. No accelerator switch
+or second launch configuration is needed. Asset preparation uses CPU operations
+while both GPUs are assigned; installation/downloads/idle time count against
+the same cumulative smoke allowance. Preparation and inference use independent
+bounded process-group controllers and retain the original assignment clock.
+Insufficient time stops work and preserves evidence; it does not extend limits.
+The installed candidate is checked before weights and model work.
 
 Download the result ZIP and this executed notebook, then **Stop Session** and
 confirm provider deallocation within the reserved release time. Kernel exit is
@@ -71,27 +72,35 @@ if not LAUNCH['stage_weights']:
     helpers['save_json'](cpu_output/'report.json',dict(status='blocked',reason='CPU staging disabled pending authorization/resources',gpu_execution=False,weights_staged=False))
 else:
     try:
+        import runpy
+        asset_helpers=runpy.run_path(str(source/'scripts/m5_course_smoke_assets.py'))
+        assigned=bool(asset_helpers['assigned_device_count']() or LAUNCH.get('allocated_at'))
+        if assigned:
+            wall=asset_helpers['assigned_preparation_window'](LAUNCH)
+            deadline=time.monotonic()+wall-LAUNCH['budget']['shutdown_seconds']-124
+            timeout=int(deadline-time.monotonic()-helpers['EXPORT_SECONDS']-8)
+            assert timeout>0,'Insufficient allowance: export and stop the GPU session'
+        else:
+            deadline=time.monotonic()+2100
+            timeout=1800
         helpers['command'](output,'cpu-asset-preparation',[sys.executable,'-I',str(source/'scripts/m5_course_smoke_assets.py'),
             'prepare','--root',str(source),'--manifest',str(manifest_path),'--launch',str(launch_path),
-            '--scratch',str(scratch),'--output',str(cpu_output)],deadline=time.monotonic()+2100,
-            timeout=1800,cwd=output,env=dict(os.environ))
+            '--scratch',str(scratch),'--output',str(cpu_output),'--workflow-seconds',str(timeout)],deadline=deadline,
+            timeout=timeout,cwd=output,env=dict(os.environ))
     except (Exception,KeyboardInterrupt) as error:
         cpu_output.mkdir(exist_ok=True)
-        helpers['save_json'](cpu_output/'report.json',dict(status='blocked',reason=str(error),gpu_execution=False,weights_staged=None))
+        helpers['save_json'](cpu_output/'report.json',dict(status='blocked',reason=str(error),gpu_execution=False,
+            weights_staged=None,provider_assignment_utc=LAUNCH.get('allocated_at'),provider_release_confirmed=False))
 assets_path=cpu_output/'prepared-assets.json'
 print(json.loads((cpu_output/'report.json').read_bytes()))
 """
-    gpu = """# Edit these only after CPU preparation and the actual T4 x2 assignment.
-# Keep the source cell and previous CPU evidence; do not rerun them.
-LAUNCH['execute_gpu'] = False
-LAUNCH['allocated_at'] = None  # Actual timezone-aware UTC assignment, not cell start.
-gpu_output=output/'gpu-smoke'
+    gpu = """gpu_output=output/'gpu-smoke'
 if not LAUNCH['execute_gpu']:
     gpu_output.mkdir()
     helpers['save_json'](gpu_output/'report.json',dict(status='blocked',reason='GPU execution disabled',gpu_admission=False,model_generations=0,physical_memory_accepted=False,provider_release_confirmed=False))
 else:
     try:
-        assert assets_path.exists(),'CPU assets must pass before GPU assignment; stop if missing'
+        assert assets_path.exists(),'Asset preparation must pass before model loading; stop if missing'
         assets=json.loads(assets_path.read_bytes())
         LAUNCH.update(assets_receipt=str(assets_path),hf_cache=assets['hf_cache'])
         helpers['save_json'](launch_path,LAUNCH)

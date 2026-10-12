@@ -12,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 from scripts.m5_course_smoke import CANDIDATE, launch_defaults
-from scripts.m5_course_smoke_assets import prepare, source_identity, verify_assets
+from scripts.m5_course_smoke_assets import prepare, source_identity, verify_assets, assigned_preparation_window
 from scripts.build_course_hardware_packet import hardware_notebook
 
 
@@ -108,7 +108,11 @@ class CourseSmokeAssetTests(unittest.TestCase):
                 self.assertEqual(cell["outputs"],[])
                 self.assertIsNone(cell["execution_count"])
         text = "".join("".join(cell["source"]) for cell in document["cells"])
-        self.assertIn("Accelerator **None**",text)
+        self.assertIn("T4 x2 before starting",text)
+        gpu = next("".join(c["source"]) for c in document["cells"] if c["id"] == "hardware-gpu-smoke")
+        self.assertNotIn("LAUNCH['execute_gpu'] =",gpu)
+        self.assertNotIn("LAUNCH['allocated_at'] =",gpu)
+        self.assertIn("assigned_preparation_window",text)
         self.assertIn("Stop Session",text)
         self.assertIn("bounded-model-smoke",text)
         self.assertIn("provider_release_confirmed=False",text)
@@ -132,6 +136,7 @@ class CourseSmokeAssetTests(unittest.TestCase):
             manifest.update(candidate_wheels=[runtime],build_tools={name:dict(version=w["version"],wheels=[w])
                 for name,w in (("setuptools",build),("pip",pip),("wheel",tool))})
             launch = known_launch() | dict(stage_weights=True)
+            launch["allocated_at"] = None
             scratch,output = Path(directory)/"scratch",Path(directory)/"output"
             captured = {}
             def command(output,name,args,**kwargs):
@@ -161,3 +166,70 @@ class CourseSmokeAssetTests(unittest.TestCase):
             self.assertIn("setuptools==84.0.0",captured["build_constraints"])
             self.assertFalse(result["gpu_execution"])
             self.assertFalse(result["model_weights_loaded"])
+            # The same tiny-file pipeline also permits an already-assigned host.
+            # No package download, CUDA initialization or actual allocation occurs.
+            from scripts.m5_kaggle_preflight import utc
+            launch["allocated_at"] = utc()
+            scratch,output = Path(directory)/"assigned-scratch",Path(directory)/"assigned-output"
+            timeouts = []
+            def assigned_command(*args,**kwargs):
+                timeouts.append(kwargs["timeout"])
+                return command(*args,**kwargs)
+            with patch("scripts.m5_course_smoke_assets.command",side_effect=assigned_command), \
+                    patch("scripts.m5_course_smoke_assets.assigned_device_count",return_value=2), \
+                    patch("scripts.m5_course_smoke_assets.require_space",return_value={}), \
+                    patch("scripts.m5_course_smoke_assets.platform.system",return_value="Linux"), \
+                    patch("scripts.m5_course_smoke_assets.platform.machine",return_value="x86_64"), \
+                    patch("scripts.m5_course_smoke_assets.sys.version_info",(3,13)):
+                assigned_result = prepare(root,manifest,launch,scratch,output)
+            self.assertEqual(assigned_result["status"],"prepared",assigned_result)
+            self.assertEqual(assigned_result["assigned_device_count"],2)
+            self.assertEqual(assigned_result["provider_assignment_utc"],launch["allocated_at"])
+            self.assertTrue(all(0 < timeout <= 565 for timeout in timeouts))
+            self.assertFalse(assigned_result["provider_release_confirmed"])
+
+    def test_assigned_preparation_charges_the_original_clock_and_preserves_release_time(self):
+        from tests.test_course_hardware_smoke import known_launch
+        from scripts.m5_course_smoke import admission
+        launch = known_launch()
+        now = "2026-10-12T10:01:00+00:00"
+        self.assertEqual(assigned_preparation_window(launch,now),840)
+        self.assertEqual(assigned_preparation_window(launch,now),admission(launch,now=now)[1])
+        launch["budget"]["prior_smoke_gpu_hours"] = [.3,.3]
+        self.assertEqual(assigned_preparation_window(launch,launch["allocated_at"]),360)
+        with self.assertRaisesRegex(ValueError,"insufficient_remaining_time"):
+            assigned_preparation_window(launch,now)
+        launch = known_launch()
+        launch["budget"]["prior_setup_gpu_hours"] = None
+        with self.assertRaisesRegex(ValueError,"supported_prior"):
+            assigned_preparation_window(launch,now)
+        launch = known_launch()
+        launch["budget"]["prior_setup_gpu_hours"] = [2.1,2.1]
+        with self.assertRaisesRegex(ValueError,"insufficient_remaining_time"):
+            assigned_preparation_window(launch,now)
+
+    def test_assigned_host_without_actual_clock_stops_before_environment_or_downloads(self):
+        from tests.test_course_hardware_smoke import known_launch
+        with tempfile.TemporaryDirectory() as directory:
+            root,manifest,*rest = self.fixture(directory)
+            launch = known_launch() | dict(stage_weights=True,allocated_at=None)
+            scratch,output = Path(directory)/"scratch",Path(directory)/"output"
+            with patch("scripts.m5_course_smoke_assets.assigned_device_count",return_value=2), \
+                    patch("scripts.m5_course_smoke_assets.command") as command:
+                result = prepare(root,manifest,launch,scratch,output)
+            command.assert_not_called()
+            self.assertFalse(scratch.exists())
+            self.assertEqual(result["assigned_device_count"],2)
+            self.assertIn("actual_provider_assignment_clock_required",result["root_blocker"])
+            self.assertFalse(result["provider_release_confirmed"])
+
+    def test_installed_admission_does_not_reset_an_existing_assignment_clock(self):
+        from tests.test_course_hardware_smoke import known_launch
+        import scripts.m5_course_smoke as smoke
+        launch = known_launch()
+        args = ["smoke","--root","fixture","--launch","launch.json","--output","admission.json","--check-admission-only"]
+        with patch.object(smoke.sys,"argv",args), patch.object(smoke,"read",return_value=launch), \
+                patch.object(smoke,"admission") as admission, patch.object(smoke,"save_json") as save:
+            smoke.main()
+        self.assertEqual(admission.call_args.args[0]["allocated_at"],launch["allocated_at"])
+        self.assertFalse(save.call_args.args[1]["prospective_resource_check"])

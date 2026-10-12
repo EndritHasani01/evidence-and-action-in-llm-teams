@@ -387,9 +387,10 @@ def main():
         result = unittest.TextTestRunner(verbosity=1).run(unittest.defaultTestLoader.loadTestsFromNames(names))
         raise SystemExit(not result.wasSuccessful())
     elif args.check_admission_only:
-        # A prospective CPU calculation, never a provider assignment receipt.
-        admission(dict(launch,allocated_at=utc()),next_attempt=True)
-        save_json(args.output,dict(prospective_resource_check=True,gpu_execution=False,model_generations=0))
+        # Keep an already-assigned GPU clock, including all asset preparation.
+        prospective = not launch.get("allocated_at")
+        admission(dict(launch,allocated_at=utc()) if prospective else launch,next_attempt=True)
+        save_json(args.output,dict(prospective_resource_check=prospective,gpu_execution=False,model_generations=0))
     else:
         run(args.root.resolve(),launch,args.output.resolve())
 
