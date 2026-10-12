@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "source_commit": "481699c6e46d5376ac451352d30b1a9da99ec0c3",
+  "dataset_bytes": 5449818,
+  "source_members": 275,
+  "literal_notebook_executed": true,
+  "guarded_model_calls": 0,
+  "ordinary_installed_CPU_environment": true,
+  "source_pythonpath": false,
+  "host_checks": 3,
+  "intended_main_slots": 6280,
+  "recorded_main_slots": 0,
+  "unknown_main_slots": 6280,
+  "seven_figures_svg_png": true,
+  "portable_restore_report_bytes_identical": true,
+  "native_weights_loaded": false,
+  "actual_T4_acceptance": false
+}

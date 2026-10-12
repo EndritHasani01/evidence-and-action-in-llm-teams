@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python",
+    "notebooks/validation/course-kaggle/validate_delivery.py",
+    "--packet",
+    "dist/course-kaggle-final",
+    "--work",
+    "dist/course-kaggle-final-check",
+    "--cpu-python",
+    "dist/course-kaggle-cpu-env/Scripts/python.exe"
+  ],
+  "source_commit": "481699c6e46d5376ac451352d30b1a9da99ec0c3",
+  "exit_code": 0,
+  "gpu_calls": 0
+}
