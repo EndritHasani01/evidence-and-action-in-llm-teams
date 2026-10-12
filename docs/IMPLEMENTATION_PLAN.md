@@ -1289,6 +1289,17 @@ packet preparation is the next safe task; later gates still precede GPU use.
 
 ### Course unresolved gates
 
+Course/M5-T02 implementation starts 12 October 2026 from `2f2523f`; see
+[the hardware-smoke record](validation/course-m5-hardware-smoke.md).
+Reuse M5-T01's exact matrix, complete input proof and unchanged prerequisite
+acceptance. Prepare the executable bounded path and CPU asset preparation,
+renewing only affected source/storage/attempt/host behavior. The user reports
+full Kaggle T4 x2 quota and confirms earlier sessions stopped, while retaining
+the cumulative 30-hour project ceiling and preferring much less spending.
+Prior allocation and remaining cumulative smoke allowance are still unknown;
+reported quota does not resolve spending. Actual GPU action, physical R7
+acceptance and dependent pilot/main/freeze gates remain unaccepted.
+
 The user requested an [offline R7 continuation](validation/course-m5-r7-offline-review.md)
 at `2c566b4`, preserving the scientific contract and avoiding GPU execution.
 The supplemental proof at `5ce6d5f` verifies 109,851 input + 256 output reserve

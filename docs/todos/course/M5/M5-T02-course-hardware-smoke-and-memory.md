@@ -34,6 +34,14 @@ Execute the approved packet within its exact limits. Retain raw IDs/text, candid
 
 **Evidence:** Not yet recorded. Standalone run-6 diagnostics and CPU adapter checks do not pass this course model gate.
 
+**Implementation started, 12 October 2026:** Follow
+[the scoped hardware-smoke record](../../../validation/course-m5-hardware-smoke.md).
+Safe packet/runner implementation reuses completed M5-T01; no broad CPU rerun
+or speculative offline R7 continuation is required. The user selects Kaggle
+T4 x2, reports full quota and confirms prior sessions stopped. The 30-hour
+project ceiling remains cumulative; prior spending/smoke bounds, concrete
+model-run authorization and actual-host/R7 acceptance are still pending.
+
 **Preparation handoff, 11 October 2026:**
 [Course M5-T01 evidence](../../../validation/course-m5-inference-and-smoke-preparation.md#packet-and-resource-handoff)
 supplies 24 exact unexecuted requests, a new committed source/asset/package
