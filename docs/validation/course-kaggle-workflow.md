@@ -125,3 +125,21 @@ release-required ledger accounting, repeated-refusal deduplication and exact
 accepted main resume with all 24 smoke attempts consumed. Controlled fixtures do
 not download/load pretrained weights or validate the actual Linux/T4 runtime.
 Literal notebook/upload/portable report evidence accompanies the final package.
+
+## Compact two-file input
+
+The default upload now wraps an explicit execution-only source selection in the
+existing raw `.payload` format, with its integrity manifest as the second input
+file. No repository-wide test suite, documentation tree, historical capture
+scripts/logs, unrelated configurations, wheels or checkpoint shards are exposed
+to Kaggle input preparation. Original production modules, fixed course inputs,
+essential candidate/feasibility metadata, the independent gold reference, and the
+unchanged mandatory three host checks with their import dependencies remain.
+
+The literal notebook source cell verifies the packed archive identity, exact
+member set and all member hashes before extraction; saved-source verification and
+original-package resume binding remain intact. `unittest
+tests.test_course_compact_packet tests.test_course_run_all -q`: **10 passed in
+3.972 s** on Windows Python 3.11, including two-file source extraction, corrupt
+payload rejection before extraction, repeat verification, and the existing
+extracted-resume/continuous-allocation/gate-order checks. No GPU work was performed.

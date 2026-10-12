@@ -4,7 +4,7 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import subprocess
 import sys
 import zipfile
@@ -33,7 +33,25 @@ def main():
     asset_files=0
     with zipfile.ZipFile(packet/"course-kaggle-dataset.zip") as z:
         manifest=json.loads(z.read("source-manifest.json"))
-        for name in list(manifest["members"])+["source-manifest.json"]: z.extract(name,dataset)
+        if manifest["payload_filename"] in z.namelist():
+            # Exercise the actual two-file uploaded dataset. Cell 3, rather
+            # than Kaggle input preparation, must unpack the runtime source.
+            for name in (manifest["payload_filename"],"source-manifest.json"):
+                z.extract(name,dataset)
+            assert summary["dataset_input_files"] == len(z.infolist())
+            import shutil
+            # A disposable installation source is independent of the notebook's
+            # input; the literal source cell still sees only the packed payload.
+            install_source=work/"installation-source"; install_source.mkdir()
+            with zipfile.ZipFile(dataset/manifest["payload_filename"]) as packed:
+                assert set(packed.namelist()) == set(manifest["members"])
+                assert all(not PurePosixPath(name).is_absolute() and ".." not in PurePosixPath(name).parts
+                    and "\\" not in name and ":" not in name for name in packed.namelist())
+                packed.extractall(install_source)
+            shutil.copyfile(dataset/"source-manifest.json",install_source/"source-manifest.json")
+        else:
+            for name in list(manifest["members"])+["source-manifest.json"]: z.extract(name,dataset)
+            install_source=dataset
         if summary.get("offline_assets_included"):
             assets=json.loads(z.read("assets/prepared-assets.json"))
             expected={**{"assets/checkpoint/"+k:v for k,v in assets["checkpoint_files"].items()},
@@ -49,7 +67,7 @@ def main():
     manifest=json.loads((dataset/"source-manifest.json").read_bytes())
     assert summary["dataset_sha256"]==file_hash(packet/"course-kaggle-dataset.zip")
     for name,wanted in manifest["members"].items():
-        data=(dataset/name).read_bytes()
+        data=(install_source/name).read_bytes()
         assert len(data)==wanted["bytes"] and hashlib.sha256(data).hexdigest()==wanted["sha256"],name
     import nbclient,nbformat
     notebook=nbformat.read(packet/"course_kaggle.ipynb",as_version=4)
@@ -62,7 +80,7 @@ def main():
         if completed.returncode not in allowed:
             raise AssertionError(f"{name}: {completed.returncode}: {completed.stderr[-3000:]}")
         return completed
-    command("install-delivered-project",[python,"-m","pip","install","--no-deps",dataset])
+    command("install-delivered-project",[python,"-m","pip","install","--no-deps",install_source])
     command("installed-CPU-check",[python,"-m","pip","check"])
     # Use the separately pinned ordinary CPU interpreter so the literal default
     # Run All needs no network, target CUDA wheels or source PYTHONPATH.
@@ -113,6 +131,7 @@ def main():
     facts=dict(passed=True,source_commit=summary["source_commit"],dataset_bytes=summary["dataset_bytes"],
         source_members=len(manifest["members"]),literal_notebook_executed=True,guarded_model_calls=0,
         default_run_all=True,both_results_and_resume_exported=True,offline_native_asset_files_verified=asset_files,
+        dataset_input_files=summary.get("dataset_input_files",len(manifest["members"])+1),
         ordinary_installed_CPU_environment=True,source_pythonpath=False,host_checks=3,
         intended_main_slots=6280,recorded_main_slots=0,unknown_main_slots=6280,
         seven_figures_svg_png=True,portable_restore_report_bytes_identical=True,

@@ -15,16 +15,26 @@ from scripts.build_course_smoke_packet import preparation_review
 
 REPORT_PACKAGES = ("matplotlib", "contourpy", "cycler", "fonttools", "kiwisolver", "pillow",
                    "pyparsing", "python-dateutil", "six")
-SOURCE_PATHS = ("recovery", "scripts", "tests", "configs", "pyproject.toml", "AGENTS.md", "PROJECT_SPECIFICATION.md", "README.md",
-    "docs/IMPLEMENTATION_PLAN.md", "docs/todos/course", "docs/validation/course-kaggle-workflow.md",
-    "docs/KAGGLE_COURSE.md", "docs/implementation-research/course-m5-r7-capacity-proof.md",
-    "notebooks/validation/course-m5-preparation/inputs",
+# Explicit execution dependencies, not the whole repository. The existing three
+# mandatory host checks require these helper modules and two original populations.
+RUNTIME_SCRIPTS = ("course_kaggle_workflow", "course_kaggle_bootstrap", "m5_course_smoke",
+    "m5_course_smoke_assets", "m5_course_preparation", "m5_kaggle_preflight", "m5_model_feasibility")
+HOST_HELPERS = ("worker_checks", "attempt_checks", "durable_checks", "event_checks",
+    "replay_checks", "round_checks", "protocol_checks", "worker_fixture", "references")
+FIXTURES = ("population_course.json", "schedules_course.json", "course_capacity.json.gz",
+    "population_target.json", "population_fallback.json")
+SOURCE_PATHS = ("recovery", "pyproject.toml", "PROJECT_SPECIFICATION.md", "tests/__init__.py",
+    *("scripts/"+name+".py" for name in RUNTIME_SCRIPTS),
+    *("tests/"+name+".py" for name in HOST_HELPERS),
+    *("tests/fixtures/"+name for name in FIXTURES),
+    "configs/course-kaggle.json", "configs/course-smoke-launch.json", "configs/course-cpu-reproduction.txt",
+    "notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz",
+    "notebooks/validation/course-m5-preparation/inputs/memory-review.json",
     "notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json",
-    "notebooks/validation/course-m5-r7",
-    "notebooks/validation/m5-t4-compatibility-run-6/validation.json")
-FIXTURES = {"population_course.json", "schedules_course.json", "course_capacity.json.gz",
-            "native_silo_cases.json", "population_target.json", "population_fallback.json",
-            "schedules_target.json", "schedules_fallback.json"}
+    "notebooks/validation/course-m5-r7/native-tightening-source.json",
+    "notebooks/validation/course-m5-r7/outside-provenance.json",
+    "notebooks/validation/course-m5-r7/offline-memory-review.json",
+    "notebooks/validation/course-m5-r7/loading-review-source.json")
 
 
 def report_wheels(base):
@@ -67,6 +77,9 @@ Upload this notebook and the **small research dataset ZIP**, attach the dataset,
 complete one setup cell, select **T4 ×2**, turn Internet **On**, then **Run All**.
 The notebook downloads the pinned dependencies and original model checkpoint,
 verifies their native hashes and versions, and advances automatically:
+
+The dataset contains only a packed research archive and its integrity manifest.
+Cell 3 extracts the required files locally after Kaggle starts the session.
 
 **Hardware → first 90 slots → full pilot → audit and freeze → complete main matrix
 → independently reproduced analysis ? results and resume ZIPs.**
@@ -175,16 +188,30 @@ if not source.exists():
     if len(matches)!=1: raise ValueError('Attach the exact course dataset ZIP (Kaggle extracts it), or set PACKAGE_DIR')
     package=matches[0].parent
     manifest=json.loads(matches[0].read_bytes())
-    source.mkdir()
-    for name,expected in manifest['members'].items():
-        p=PurePosixPath(name)
-        if p.is_absolute() or '..' in p.parts or '\\\\' in name or ':' in name: raise ValueError('Unsafe source member')
-        original=package/name
-        if not original.is_file() or original.is_symlink() or original.stat().st_size!=expected['bytes'] or hashlib.sha256(original.read_bytes()).hexdigest()!=expected['sha256']:
-            raise ValueError('Source bytes differ: '+name)
-        target=source/name
-        target.parent.mkdir(parents=True,exist_ok=True)
-        shutil.copyfile(original,target)
+    payload=package/manifest.get('payload_filename','missing.payload')
+    if payload.exists():
+        if payload.is_symlink() or not payload.is_file() or payload.stat().st_size!=manifest['archive_bytes'] or hashlib.sha256(payload.read_bytes()).hexdigest()!=manifest['archive_sha256']:
+            raise ValueError('Packed research archive differs')
+        with zipfile.ZipFile(payload) as archive:
+            if len(archive.infolist())!=len(manifest['members']) or set(archive.namelist())!=set(manifest['members']):
+                raise ValueError('Packed research member set differs')
+            for item in archive.infolist():
+                expected=manifest['members'][item.filename]
+                if item.file_size!=expected['bytes'] or hashlib.sha256(archive.read(item)).hexdigest()!=expected['sha256']:
+                    raise ValueError('Packed source bytes differ: '+item.filename)
+        extract_fresh(payload,source)
+    else:
+        # Read previously delivered loose layouts as well as compact datasets.
+        source.mkdir()
+        for name,expected in manifest['members'].items():
+            p=PurePosixPath(name)
+            if p.is_absolute() or '..' in p.parts or '\\\\' in name or ':' in name: raise ValueError('Unsafe source member')
+            original=package/name
+            if not original.is_file() or original.is_symlink() or original.stat().st_size!=expected['bytes'] or hashlib.sha256(original.read_bytes()).hexdigest()!=expected['sha256']:
+                raise ValueError('Source bytes differ: '+name)
+            target=source/name
+            target.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copyfile(original,target)
     shutil.copyfile(matches[0],source/'source-manifest.json')
 manifest_bytes=(source/'source-manifest.json').read_bytes()
 if hashlib.sha256(manifest_bytes).hexdigest()!=EXPECTED_MANIFEST_SHA256: raise ValueError('Resume requires the identical source package/notebook')
@@ -195,7 +222,6 @@ for name,expected in manifest['members'].items():
     if p.is_symlink() or not p.is_file() or p.stat().st_size!=expected['bytes'] or hashlib.sha256(p.read_bytes()).hexdigest()!=expected['sha256']:
         raise ValueError('Canonical source changed: '+name)
 display(HTML('<div style="padding:16px;background:#e8f3f3;border-radius:10px"><b>Source verified</b> · '+EXPECTED_SOURCE_COMMIT[:12]+'<br>20 main worlds · 6,280 logical main uses · 5 separate development worlds</div>'))
-display(FileLink(str(source/'docs/KAGGLE_COURSE.md')))
 """
     settings = """# Automatic assembly; edit only the setup cell above.
 saved_config=bundle/'operator-config.json'
@@ -394,8 +420,6 @@ def build(root, output, *, base_manifest=None, extra_report_wheels=None, assets_
             name = item.filename
             if item.is_dir() or name.endswith(".pyc"):
                 continue
-            if name.startswith("tests/fixtures/") and Path(name).name not in FIXTURES:
-                continue
             members[name] = source.read(item)
     with zipfile.ZipFile(payload) as source:
         for name, expected in candidate["members"].items():
@@ -440,11 +464,10 @@ def build(root, output, *, base_manifest=None, extra_report_wheels=None, assets_
             (installed_source/"source-manifest.json").write_bytes(manifest_bytes)
             assets = portable_members(installed_source,manifest,Path(assets_cache))
     with zipfile.ZipFile(dataset, "x", zipfile.ZIP_DEFLATED) as archive:
-        for name,data in sorted(dict(members, **{"source-manifest.json":manifest_bytes}).items()):
-            item = zipfile.ZipInfo(name, (2026,10,12,0,0,0))
-            item.compress_type = zipfile.ZIP_DEFLATED
-            item.external_attr = 0o100644 << 16
-            archive.writestr(item, data)
+        # The .payload suffix preserves one packed file during Kaggle's input
+        # preparation. The notebook verifies/extracts it after the session starts.
+        archive.write(raw,raw.name,compress_type=zipfile.ZIP_STORED)
+        archive.writestr("source-manifest.json",manifest_bytes)
         for name,path in sorted(assets.items()):
             archive.write(path,"assets/"+name,compress_type=zipfile.ZIP_STORED)
     document = notebook(hashlib.sha256(manifest_bytes).hexdigest(), commit)
@@ -455,7 +478,7 @@ def build(root, output, *, base_manifest=None, extra_report_wheels=None, assets_
     summary = dict(source_commit=commit, dataset=str(dataset), dataset_bytes=dataset.stat().st_size,
         dataset_sha256=sha256_file(dataset), notebook="course_kaggle.ipynb",
         source_members=len(members), pinned_candidate_packages=len(wheels), gpu_execution=False,
-        online_first=True, offline_assets_included=bool(assets), pretrained_model_loaded=False)
+        dataset_input_files=2+len(assets), online_first=True, offline_assets_included=bool(assets), pretrained_model_loaded=False)
     (output/"package-summary.json").write_text(json.dumps(summary, indent=2)+"\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return summary

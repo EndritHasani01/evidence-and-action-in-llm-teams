@@ -5,6 +5,17 @@ Upload **course-kaggle-dataset.zip** as a private dataset, attach it, and import
 configurations, fixtures and essential metadata. Dependencies and the original
 checkpoint are downloaded directly on Kaggle. There is no separate asset upload
 or setup notebook. Internet must be available during installation/downloads.
+The dataset ZIP exposes just **two files**: `course-kaggle-source.payload` and
+`source-manifest.json`. Keep the `.payload` extension; cell 3 verifies and unpacks
+the necessary research files locally after the session starts. Repository-wide
+tests, documentation and historical logs are excluded. The mandatory three host
+checks, their helpers and independent scoring reference remain included.
+
+Create a fresh private dataset from this compact ZIP and attach **only that dataset**
+(plus a matching resume bundle when applicable). Import its matching notebook. Attaching
+the earlier expanded dataset as well would retain its file preparation overhead.
+Existing experiment bundles must continue with their original matching package;
+this source-bound compact release is for a fresh run.
 
 Complete the notebook's **one setup cell**, select **T4 ×2**, turn Internet
 **On**, then click **Run All**. For a durable background run, use

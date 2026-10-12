@@ -1014,6 +1014,15 @@ recorded failures, uncertainty or near-timeout calls require explicit review.
 Reporting has an allocation-aware time limit and always retains a portable
 limited-result export when a gate/session prevents completion.
 
+The user's reported slow pre-cell Kaggle input preparation led to a compact
+two-file upload: the existing raw `.payload` archive and integrity manifest.
+An explicit execution-file list replaces whole-repository packaging. Only the
+research runtime, saved inputs, essential metadata, independent reference and
+mandatory three host checks/helper dependencies remain. The notebook verifies
+both archive and member identities before local extraction. Scientific execution,
+freeze gates and original-source resume binding are unchanged; recorded bundles
+continue with their matching original source packet.
+
 Consequential choices: the ordinary installed candidate and local snapshot are
 verified by versions/module bytes and native wheel/LFS identities. The existing
 asset builder supplies online installation, with fresh downloaded wheels reclaimed
