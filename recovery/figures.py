@@ -209,7 +209,7 @@ def render_figures(directory):
                     _quality(axes[1], data[eid], "final_preservation")
                     axes[0].set_title("Paired quality / original policy cost: 95%")
                     axes[1].set_title("Paired preservation / its eligible-world cost: 95%")
-                label = LABEL
+                label = report["kind"]
                 if report["scope"].get("regime") == "course":
                     label += "\nExploratory course: "+report["execution"]["status"]+"; "+report["execution"]["coverage_status"]+" supplied scope"
                 fig.suptitle(exhibit["title"]+"\n"+label, fontsize=14)

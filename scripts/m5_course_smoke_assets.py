@@ -162,7 +162,46 @@ def download_weights(root, manifest, cache, receipt):
         checkpoint_files=expected,snapshot=str(snapshot),gpu_execution=False,model_weights_loaded=False))
 
 
-def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800):
+def download_weights_stdlib(root, manifest, cache, receipt):
+    """Download-only native LFS verification after consuming the setup venv."""
+    from urllib.request import Request, urlopen
+    inspection = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
+    with urlopen(Request(f"https://huggingface.co/api/models/{CANDIDATE.model}/revision/{CANDIDATE.revision}?blobs=true",
+            headers={"User-Agent":"recovery-course-asset-preparation"}),timeout=30) as response:
+        info = json.load(response)
+    if info.get("sha") != CANDIDATE.revision:
+        raise ValueError("immutable checkpoint revision differs")
+    files = {s["rfilename"]:s for s in info["siblings"]}
+    expected = {}
+    snapshot = cache/("models--"+CANDIDATE.model.replace("/","--"))/"snapshots"/CANDIDATE.revision
+    snapshot.mkdir(parents=True)
+    for name in inspection["checkpoint_index"]["shard_files"]:
+        lfs = files[name].get("lfs",{})
+        if not re.fullmatch("[0-9a-f]{64}",lfs.get("sha256","")) or type(lfs.get("size")) is not int:
+            raise ValueError("checkpoint shard lacks native LFS identity")
+        expected[name] = dict(bytes=lfs["size"],sha256=lfs["sha256"])
+        temporary = snapshot/(name+".partial")
+        with urlopen(Request(f"https://huggingface.co/{CANDIDATE.model}/resolve/{CANDIDATE.revision}/{name}",
+                headers={"User-Agent":"recovery-course-asset-preparation"}),timeout=60) as response, temporary.open("xb") as output:
+            while block := response.read(1024*1024):
+                output.write(block)
+        if temporary.stat().st_size != lfs["size"] or sha256_file(temporary) != lfs["sha256"]:
+            raise ValueError("downloaded checkpoint differs: "+name)
+        temporary.replace(snapshot/name)
+    for path,wanted in manifest["members"].items():
+        if path.startswith("metadata/4B/"):
+            import shutil
+            name = Path(path).name
+            shutil.copyfile(root/path,snapshot/name)
+            if (snapshot/name).stat().st_size != wanted["bytes"] or sha256_file(snapshot/name) != wanted["sha256"]:
+                raise ValueError("pinned metadata differs: "+name)
+            expected[name] = wanted
+    save_json(receipt,dict(model=CANDIDATE.model,revision=CANDIDATE.revision,
+        checkpoint_files=expected,snapshot=str(snapshot),gpu_execution=False,model_weights_loaded=False,
+        download_path="stdlib HTTPS; native revision/LFS identities; no weight conversion"))
+
+
+def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, portable_assets=False):
     if output.exists() or scratch.exists():
         raise FileExistsError("fresh CPU output/scratch required; preserve prior assets")
     output.mkdir(parents=True)
@@ -179,6 +218,8 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800):
             raise ValueError("prior_allocation_smoke_or_release_evidence_missing")
         count = assigned_device_count()
         assigned = bool(count or launch.get("allocated_at"))
+        if portable_assets and assigned:
+            raise ValueError("portable asset preparation requires Accelerator None")
         report.update(assigned_device_count=count,provider_assignment_utc=launch.get("allocated_at"),
             provider_release_confirmed=False)
         if count and count != 2:
@@ -190,7 +231,8 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800):
         scratch.mkdir(parents=True)
         tools, wheels = manifest["build_tools"],manifest["candidate_wheels"]
         weight_bytes = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")["checkpoint_index"]["total_checkpoint_bytes"]
-        require_space(scratch,output,4*sum(w["bytes"] for w in wheels)+weight_bytes+BUILD_RESERVE)
+        require_space(scratch,output,(sum(w["bytes"] for w in wheels)+BUILD_RESERVE if portable_assets else
+            4*sum(w["bytes"] for w in wheels)+weight_bytes+BUILD_RESERVE))
         env = candidate_environment(scratch)
         deadline = time.monotonic()+min(workflow_seconds,
             wall-launch["budget"]["shutdown_seconds"]-124 if assigned else workflow_seconds)
@@ -232,7 +274,7 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800):
                 raise ValueError("pinned candidate wheel differs: "+item["filename"])
             with zipfile.ZipFile(path) as archive:
                 expanded += sum(member.file_size for member in archive.infolist())
-        require_space(scratch,output,expanded+weight_bytes+BUILD_RESERVE)
+        require_space(scratch,output,expanded+BUILD_RESERVE+(0 if portable_assets else weight_bytes))
         install = scratch/"install.lock"
         install.write_text("".join(f"{w['name']}=={w['version']} --hash=sha256:{w['sha256']}\n" for w in wheels))
         invoke("install-candidate",pip+["install","--no-deps","--no-index","--find-links",wheel_dir,
@@ -263,8 +305,17 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800):
         weight_receipt = output/"weights.json"
         manifest_path = output/"source-manifest.json"
         save_json(manifest_path,manifest)
-        invoke("stage-pinned-checkpoint",[interpreter,"-I",root/"scripts/m5_course_smoke_assets.py",
-            "weights","--root",root,"--manifest",manifest_path,"--cache",cache,"--receipt",weight_receipt],600)
+        weight_interpreter = interpreter
+        if portable_assets:
+            import shutil
+            if not venv.resolve().is_relative_to(scratch.resolve()) or venv.name != "venv":
+                raise ValueError("setup environment escaped its fresh scratch")
+            shutil.rmtree(venv)
+            require_space(scratch,output,weight_bytes+BUILD_RESERVE)
+            weight_interpreter = sys.executable
+        invoke("stage-pinned-checkpoint",[weight_interpreter,"-I",root/"scripts/m5_course_smoke_assets.py",
+            "weights","--root",root,"--manifest",manifest_path,"--cache",cache,"--receipt",weight_receipt]+
+            (["--stdlib"] if portable_assets else []),600)
         weights = read(weight_receipt)
         assets = dict(source_commit=manifest["source_baseline_commit"],model=CANDIDATE.model,revision=CANDIDATE.revision,
             versions=versions,installed_modules=modules,checkpoint_files=weights["checkpoint_files"],
@@ -288,11 +339,12 @@ def main():
         stage.add_argument("--"+name,type=Path,required=True)
     stage.add_argument("--workflow-seconds",type=float,default=1800)
     weights = commands.add_parser("weights")
+    weights.add_argument("--stdlib",action="store_true")
     for name in ("root","manifest","cache","receipt"):
         weights.add_argument("--"+name,type=Path,required=True)
     args = parser.parse_args()
     if args.command == "weights":
-        download_weights(args.root,read(args.manifest),args.cache,args.receipt)
+        (download_weights_stdlib if args.stdlib else download_weights)(args.root,read(args.manifest),args.cache,args.receipt)
     else:
         prepare(args.root.resolve(),read(args.manifest),read(args.launch),args.scratch.resolve(),args.output.resolve(),args.workflow_seconds)
 

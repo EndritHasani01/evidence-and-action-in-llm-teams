@@ -27,6 +27,15 @@ Four recovery rounds are the default here. The proposal's three-round alternativ
 
 ## Progress and next work
 
+The user-authorized remaining M5/M6 **engineering** is delivered together in the
+[Kaggle workflow](../../KAGGLE_COURSE.md), with its
+[CPU integration evidence](../../validation/course-kaggle-workflow.md).
+Use that package for all later gates and delivery; these task contracts remain
+the acceptance checklist. Their blocked empirical statuses and counts below
+are unchanged by notebook/package implementation. Actual R7/hardware/resources,
+capability/pilot, freeze/main, evidence audit and final result delivery still
+require the corresponding executed evidence and applicable authorization.
+
 **12/21 course tasks done; 9 remaining; 0 active; 0 ready; 9 blocked.**
 Course/M1-T01 is done: explicit adoption, the approved scientific/plan amendment,
 verified reuse boundaries and [contract/handoff evidence](../../validation/course-m1-contract-and-reuse.md#completion-and-handoff)

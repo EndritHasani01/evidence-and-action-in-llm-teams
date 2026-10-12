@@ -990,6 +990,30 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+On 12 October 2026 the user authorized consolidating remaining M5/M6 engineering
+into the [course Kaggle execution package](KAGGLE_COURSE.md), rather than separate
+implementation projects. It reuses the saved course schedule, durable workers,
+allocation/attempt records and M4 reports. The delivered interface covers staged
+assets, hardware/capability/pilot, explicit audited freeze/main, quiescent portable
+exports, release-confirmed restart and independent offline reconstruction.
+[Package evidence](validation/course-kaggle-workflow.md) records executed CPU
+integration; milestone scientific/empirical statuses remain unchanged.
+
+Consequential choices: CPU asset setup precedes GPU assignment; checkpoint/wheel
+inputs can remain read-only on Kaggle; the verified setup environment is consumed
+before large weight staging/packing to limit peak disk use. Two separately recorded
+full-envelope diagnostics replace redundant smoke probes within the same cumulative
+24-attempt ceiling. They require a supported complete R7 review before admission.
+Stable replica positions carry timing forecasts across sessions, with actual
+physical UUIDs retained in allocation/load evidence. Gate-refused assigned
+intervals remain original allocation-only worker records. Audit reconstruction
+uses disposable branch-local databases and SQLite-enforced read-only parents,
+including private temporary views that omit only the current scratch branch's
+duplicate IDs. Complete reporting requires committed effects and native model
+diagnostics as well as full raw coverage; CPU/synthetic reports retain their
+original default labels and bytes. No GPU execution, accepted freeze or external
+publication is authorized by this software delivery.
+
 The [adopted course clause](../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
 is the sole authority for the separate ABS/IIS regime. Sections 1-10 above retain
 the thesis engineering roadmap and its existing task/evidence state. The

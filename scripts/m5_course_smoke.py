@@ -64,7 +64,8 @@ def resources(stores, budget, now):
             rows[table].extend(dict(row, worker=index) for row in store.connection.execute("SELECT * FROM "+table))
     result = _allocation_resources(rows["allocations"], rows["attempts"], rows["provider_processes"], now, budget)
     _course_resources(result, budget)
-    allocated = result["allocated_gpu_hours"] or 0
+    allocated = sum(d["allocated_seconds"]/3600 for d in result["devices"]
+        if json.loads(d["billing_json"] or "{}").get("unadmitted_action", "hardware") == "hardware")
     if result["remaining_smoke_gpu_hours"] is not None:
         result["remaining_smoke_gpu_hours"] = max(0, result["remaining_smoke_gpu_hours"]-allocated)
     if result["remaining_smoke_attempts"] is not None:
@@ -82,7 +83,19 @@ def admission(launch, stores=(), *, now=None, next_attempt=False):
         raise BudgetStop("concrete_course_smoke_authorization_missing")
     if launch.get("prior_sessions_released") is not True:
         raise BudgetStop("prior_provider_release_unconfirmed")
-    if not stores and launch.get("resume_workers"):
+    extra_paths = launch.get("prior_allocation_workers", [])
+    if extra_paths:
+        with ExitStack() as stack:
+            extra = [WorkerStore(Path(p), readonly=True) for p in extra_paths]
+            for store in extra:
+                stack.callback(store.close)
+            resumed = []
+            if not stores and launch.get("resume_workers"):
+                resumed = [WorkerStore(Path(p),readonly=True) for p in launch["resume_workers"]]
+                for store in resumed:
+                    stack.callback(store.close)
+            current = resources((*stores,*resumed,*extra),budget,now)
+    elif not stores and launch.get("resume_workers"):
         resumed = []
         try:
             for path in launch["resume_workers"]:
@@ -316,7 +329,8 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
         for index, path in enumerate(paths):
             if resume:
                 import shutil
-                shutil.copyfile(resume[index],path)
+                if Path(resume[index]).resolve() != path.resolve():
+                    shutil.copyfile(resume[index],path)
             stack.enter_context(_own_file(path))
             store = WorkerStore(path)
             stack.callback(store.close)
@@ -334,7 +348,13 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
         for device in devices:
             providers.append(ProcessProvider(factory(device),before_attempt=before_attempt))
         try:
-            save_json(output/"host-checks.json",host_checks(root,launch,stores,output))
+            host_output = output
+            if launch.get("resume_in_place"):
+                count = stores[0].connection.execute("SELECT COUNT(*) FROM allocations").fetchone()[0]
+                host_output = output/f"host-session-{count}"
+                host_output.mkdir()
+                save_json(host_output/"launch.json",launch)
+            save_json(output/"host-checks.json",host_checks(root,launch,stores,host_output))
             for row, branch in zip(rows,branches):
                 index = row["intended_worker"]
                 view = peer_view(row["view"])
@@ -377,7 +397,11 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
             for store in stores:
                 for allocation in store.connection.execute("SELECT number FROM allocations WHERE stopped_at IS NULL").fetchall():
                     store.allocation_stop_requested(allocation[0],"smoke_finished; provider_release_unconfirmed")
-                store.backup(output/(store.path.stem+"-backup.sqlite"))
+                destination = output/(store.path.stem+"-backup.sqlite")
+                if destination.exists():
+                    count = store.connection.execute("SELECT COUNT(*) FROM allocations").fetchone()[0]
+                    destination = output/(store.path.stem+f"-backup-session-{count}.sqlite")
+                store.backup(destination)
             cost = resources(stores,budget,utc())
             finished = sum(store.connection.execute("SELECT count(*) FROM calls WHERE status='completed'").fetchone()[0] for store in stores)
             attempts = sum(store.connection.execute("SELECT count(*) FROM attempts WHERE call_id != ?",(packet["requests"][-1]["smoke_call_id"],)).fetchone()[0] for store in stores)
@@ -391,9 +415,15 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
 
 
 def run(root, launch, output):
-    if output.exists():
+    if output.exists() and not launch.get("resume_in_place"):
         raise FileExistsError("fresh output required; preserve all previous evidence")
-    output.mkdir(parents=True)
+    if output.exists():
+        import shutil
+        previous = output/("report-before-resume-"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+".json")
+        if (output/"report.json").exists():
+            shutil.copyfile(output/"report.json",previous)
+    else:
+        output.mkdir(parents=True)
     report = dict(status="blocked",model_generations=0,gpu_admission=False,weights_staged_by_this_run=False,
         runtime_freeze=False,provider_release_confirmed=False,physical_memory_accepted=False,
         complete_live_memory_upper_bound_bytes=None,actual_headroom_acceptance=None,root_blocker=None)

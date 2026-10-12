@@ -1,0 +1,906 @@
+"""Course execution interface over the accepted M1--M4 records and runner.
+
+GPU operations are opt-in. This module imports no CUDA or pretrained weights.
+The source manifest, frozen run packet and worker SQLite files are authoritative;
+gate summaries, reports and portable exports are derived from them.
+"""
+
+import argparse
+from collections import Counter, defaultdict
+from contextlib import ExitStack, closing
+from dataclasses import asdict, replace
+from datetime import datetime, timezone
+import hashlib
+import importlib.metadata
+import json
+import os
+from pathlib import Path, PurePosixPath
+import shutil
+import sqlite3
+import sys
+import tempfile
+from time import monotonic
+import zipfile
+
+if not __package__:
+    import types
+    for name in ("scripts", "tests"):
+        namespace = types.ModuleType(name)
+        namespace.__path__ = [str(Path(__file__).resolve().parents[1]/name)]
+        sys.modules.setdefault(name, namespace)
+
+from recovery.accounting import (BudgetStop, CourseBudget, FINAL, course_admission,
+    budget_from_record, format_status, progress_snapshot, timestamp)
+from recovery.evaluate import evaluate_run, read_records
+from recovery.inference import TokenizerFactory
+from recovery.manifests import load_population, load_schedules
+from recovery.prompts import COURSE_LIMITS, render_request, tokenize_request
+from recovery.protocol import GeneratedReply, failed_reply, validate_reply
+from recovery.rounds import deserialize_state, prepare_round, snapshot_bytes
+from recovery.runner import DurableRunner, WorkerReader
+from recovery.schedule import component_counts, dependency_order
+from recovery.storage import RecordedFailure, WorkerStore, record_json, settings_json, utc_now
+from recovery.truth import solve_world
+from recovery.workers import LocalScheduler, WorkerInterrupted, WorkerSpec, _own_file
+from scripts.m5_course_smoke import CANDIDATE, SmokeFactory, resources as smoke_resources
+from scripts.m5_course_preparation import read
+
+BOUNDS = dict(timeout_seconds=120., termination_seconds=1., heartbeat_seconds=1.)
+AS_OF_SEED = 20261006
+MIN_HEADROOM = 1610612736
+
+
+def save(path, value):
+    """Atomic replacement of derived views; canonical evidence is never removed."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_suffix(path.suffix+".tmp")
+    temporary.write_text(json.dumps(value, indent=2, sort_keys=True)+"\n", encoding="utf-8")
+    temporary.replace(path)
+
+
+def require_authorization(config, action):
+    text = config.get("authorizations", {}).get(action, "")
+    if type(text) is not str or not text.strip():
+        raise BudgetStop(f"explicit_{action}_authorization_missing")
+    return text
+
+
+def safe_extract(archive, destination):
+    """Fresh destination, no traversal, duplicate members or symbolic links."""
+    destination = Path(destination).resolve()
+    if destination.exists():
+        raise FileExistsError(destination)
+    with zipfile.ZipFile(archive) as source:
+        names = set()
+        for item in source.infolist():
+            path = PurePosixPath(item.filename)
+            if (item.filename in names or path.is_absolute() or ".." in path.parts
+                    or "\\" in item.filename or ":" in item.filename
+                    or (item.external_attr >> 16) & 0o170000 == 0o120000):
+                raise ValueError("unsafe or duplicated portable archive member")
+            names.add(item.filename)
+        destination.mkdir(parents=True)
+        source.extractall(destination)
+
+
+def worker_paths(bundle, stage):
+    return tuple(Path(bundle)/stage/f"worker-{i}.sqlite" for i in range(2))
+
+
+def all_workers(bundle):
+    ordinary = tuple(p for stage in ("hardware", "development", "main") for p in worker_paths(bundle, stage) if p.exists())
+    return ordinary + refused_workers(bundle)
+
+
+def refused_workers(bundle):
+    return tuple(sorted((Path(bundle)/"refusals").glob("*/worker-*.sqlite")))
+
+
+def record_refused_allocation(root, bundle, config, action, reason, *, devices=None):
+    """Already assigned Kaggle GPUs stay chargeable when an early gate refuses.
+
+    Use ordinary allocation-only worker ledgers; no call/checkpoint/provider is
+    created. Their costs enter subsequent status/admission as historical files.
+    """
+    if action not in ("hardware", "capability", "pilot", "main") or config.get("execute_gpu") is not True or not config.get("allocated_at"):
+        return
+    assigned = config["allocated_at"]
+    if timestamp(assigned) > timestamp(utc_now()):
+        return
+    # Existing scheduler/smoke allocations already cover the assignment.
+    for path in all_workers(bundle):
+        store = WorkerStore(path, readonly=True)
+        try:
+            if store.connection.execute("SELECT 1 FROM allocations WHERE started_at=?", (assigned,)).fetchone():
+                return
+        finally:
+            store.close()
+    if devices is None:
+        import subprocess
+        inventory = subprocess.check_output(["nvidia-smi", "--query-gpu=uuid", "--format=csv,noheader"], text=True, timeout=5)
+        devices = tuple(line.strip() for line in inventory.splitlines() if line.strip())
+    if not devices:
+        return
+    stage = "main" if action == "main" else "development"
+    worlds, branches = scope(root, bundle, stage)
+    settings = read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")["settings"]
+    saved = read(Path(bundle)/"run.json") if (Path(bundle)/"run.json").exists() else None
+    budget = CourseBudget(**(saved["budget"] if saved else config["budget"]))
+    label = datetime.fromisoformat(assigned).astimezone(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    directory = Path(bundle)/"refusals"/label
+    directory.mkdir(parents=True, exist_ok=False)
+    for i, physical in enumerate(devices):
+        with DurableRunner(directory/f"worker-{i}.sqlite", None) as runner:
+            store = runner.store
+            store.bind_run(worlds, branches, settings, BOUNDS, budget=budget, regime="course")
+            number = store.allocation_started(f"kaggle-t4-slot-{i}", stage, budget=budget, started_at=assigned,
+                billing=dict(provider="kaggle", physical_gpu_uuid=physical, unadmitted_action=action))
+            store.allocation_stop_requested(number, "gate refusal; provider release pending: "+reason)
+
+
+def initialize(root, bundle):
+    root, bundle = Path(root).resolve(), Path(bundle).resolve()
+    bundle.mkdir(parents=True, exist_ok=True)
+    for name, fixture in (("population.json", "population_course.json"), ("schedules.json", "schedules_course.json")):
+        source, target = root/"tests/fixtures"/fixture, bundle/"inputs"/name
+        target.parent.mkdir(exist_ok=True)
+        if target.exists():
+            if target.read_bytes() != source.read_bytes():
+                raise ValueError("course saved inputs differ from the uploaded source")
+        else:
+            shutil.copyfile(source, target)
+    population = load_population(bundle/"inputs/population.json")
+    schedules = load_schedules(bundle/"inputs/schedules.json", population)
+    if population.regime != "course":
+        raise ValueError("this workflow executes only the adopted course regime")
+    totals = [tuple(sum(row[i] for row in component_counts(branches).values()) for i in (0, 1))
+              for branches in (schedules.development, schedules.main_for(population, 20))]
+    if totals != [(1114, 1178), (5752, 6280)] or len(schedules.capability) != 90:
+        raise ValueError("complete course schedule/counts differ")
+    return population, schedules
+
+
+def scope(root, bundle, stage):
+    population, schedules = initialize(root, bundle)
+    return ((population.development, schedules.development) if stage == "development" else
+            (population.worlds(20), schedules.main_for(population, 20)))
+
+
+def confirm_previous_release(bundle, receipt, *, now=None):
+    """Record a real provider release, preserving unknown completion around crashes.
+
+    Call only on a restored/stopped session. A local worker exit never supplies
+    this acknowledgement, and a future/current-session receipt is rejected.
+    """
+    if not receipt or not receipt.get("released_at") or not receipt.get("evidence", "").strip():
+        return 0
+    at, now = receipt["released_at"], now or utc_now()
+    if timestamp(at) > timestamp(now):
+        raise ValueError("provider release cannot be in the future")
+    updates = 0
+    for path in all_workers(bundle):
+        with _own_file(path):
+            store = WorkerStore(path)
+            try:
+                for row in store.connection.execute("SELECT * FROM allocations WHERE stopped_at IS NULL").fetchall():
+                    if timestamp(at) < timestamp(row["started_at"]):
+                        raise ValueError("release receipt precedes an open allocation")
+                    observed = store.connection.execute("SELECT MAX(last_observed_at) FROM provider_processes").fetchone()[0]
+                    finished = store.connection.execute("SELECT MAX(finished_at) FROM attempts").fetchone()[0]
+                    if any(value and timestamp(value) > timestamp(at) for value in (observed, finished)):
+                        raise ValueError("release receipt precedes observed model work")
+                    # On a different VM, old PIDs are meaningless. The provider
+                    # receipt bounds their exit without inventing exact timing.
+                    with store.connection:
+                        store.connection.execute("""UPDATE provider_processes SET stopped_at=?,
+                            uncertain_stop=1,recovered_at=?,termination_reason=? WHERE stopped_at IS NULL""",
+                            (at, at, "provider release receipt: "+receipt["evidence"]))
+                    for call in store.connection.execute("SELECT call_id FROM calls WHERE status='running'").fetchall():
+                        attempts = store.attempts(call[0])
+                        if attempts and attempts[-1]["status"] == "running":
+                            store.interrupt_attempt(call[0], "provider release confirmed; unobserved completion retained")
+                    store.allocation_stopped(row["number"], "provider release: "+receipt["evidence"], released_at=at)
+                    updates += 1
+            finally:
+                store.close()
+    if updates:
+        save(Path(bundle)/"provider-release.json", receipt)
+    return updates
+
+
+def backup_bundle(bundle, destination):
+    """Export quiescent canonical evidence using ordinary SQLite backups.
+
+    The caller drains rounds/stops workers first. Do not zip live WAL files.
+    Previously downloaded ZIPs remain valid immutable session snapshots.
+    """
+    bundle, destination = Path(bundle).resolve(), Path(destination).resolve()
+    if destination.is_relative_to(bundle):
+        raise ValueError("put exports outside the canonical bundle")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    temporary_zip = destination.with_suffix(".tmp")
+    paths = all_workers(bundle)
+    with tempfile.TemporaryDirectory() as directory:
+        backups = {}
+        for i, path in enumerate(paths):
+            target = Path(directory)/f"worker-{i}.sqlite"
+            store = WorkerStore(path, readonly=True)
+            try:
+                store.backup(target)
+            finally:
+                store.close()
+            with closing(sqlite3.connect(target)) as db:
+                if db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+                    raise ValueError("portable SQLite integrity check failed")
+            backups[path] = target
+        with zipfile.ZipFile(temporary_zip, "w", zipfile.ZIP_DEFLATED, compresslevel=3) as archive:
+            for path in sorted(bundle.rglob("*")):
+                if not path.is_file() or path.is_symlink() or path.name.endswith(("-wal", "-shm", ".owner", ".tmp")):
+                    continue
+                if "__pycache__" in path.parts or path.suffix == ".pyc":
+                    continue
+                archive.write(backups.get(path, path), path.relative_to(bundle).as_posix())
+    temporary_zip.replace(destination)
+    return dict(path=str(destination), bytes=destination.stat().st_size,
+                canonical_workers=len(paths), provider_release_confirmed=False)
+
+
+def capability_gate(worlds, branches, paths):
+    tables = evaluate_run(worlds, branches, paths)
+    rows = [r for r in tables["outcomes"] if r["phase"] in ("prefix", "control")]
+    controls = [r for r in rows if r["phase"] == "control"]
+    final = [r for r in rows if r["phase"] == "prefix" and r["round"] == 4]
+    families = sorted({w.world.task.value for w in worlds})
+    by_family = {family:dict(controls_correct=sum(r["correct"] == 1 for r in controls if r["family"] == family),
+        final_peers_correct=sum(r["correct"] == 1 for r in final if r["family"] == family),
+        invalid_or_failed=sum(r["protocol_outcome"] in ("invalid", "failed") for r in rows if r["family"] == family))
+        for family in families}
+    counts = dict(scheduled=len(rows), recorded=sum(r["correct"] is not None for r in rows),
+        controls_correct=sum(r["correct"] == 1 for r in controls),
+        final_peers_correct=sum(r["correct"] == 1 for r in final),
+        jointly_correct_prefixes=sum(all(r["correct"] == 1 for r in final if r["world_id"] == w.world_id)
+                                     for w in worlds))
+    passed = (len(worlds) == 5 and counts["scheduled"] == counts["recorded"] == 90
+        and counts["controls_correct"] >= 9 and counts["final_peers_correct"] >= 14
+        and counts["jointly_correct_prefixes"] >= 3 and all(r["controls_correct"] >= 1 for r in by_family.values()))
+    return dict(passed=passed, status="passed" if passed else "incomplete" if counts["recorded"] < 90 else "failed",
+        counts=counts, by_family=by_family, rows=rows,
+        interpretation="Operational development screen; no main treatment effects or added independent worlds")
+
+
+def audit_records(worlds, branches, paths, tokenizer, settings):
+    """Re-render, revalidate, recompute independent gold and replay committed effects.
+
+    Archived replies are the sole provider in the scratch reconstruction. This
+    audit never invokes a model and never changes the original worker files.
+    Partial raw rounds are checked without fabricating their missing peers.
+    """
+    from tests.references import numeric_reference, relaxation_distances
+    records, inputs, attempts, committed = read_records(worlds, branches, paths, include_committed=True)
+    tables = evaluate_run(worlds, branches, paths)
+    by_world = {w.world_id:w for w in worlds}
+    scheduled = {c.call_id:(b, c) for b in branches for c in b.calls}
+    last_rounds = {}
+    for branch in branches:
+        if branch.phase == "control":
+            row = records.get(branch.calls[0].call_id)
+            last_rounds[branch.branch_id] = int(bool(row and row["status"] in FINAL and row["validation_json"]))
+        elif branch.branch_id in committed:
+            state = deserialize_state(record_json(committed[branch.branch_id]["state"]))
+            last_rounds[branch.branch_id] = state.last_slot.round_number if state.last_slot and state.last_slot.phase == state.phase else 0
+        else:
+            last_rounds[branch.branch_id] = 0
+            if any(bid == branch.branch_id for bid,r in inputs):
+                raise ValueError("saved branch requests lack their committed boundary")
+        if any(bid == branch.branch_id and r > last_rounds[branch.branch_id]+1 for bid,r in inputs):
+            raise ValueError("future round requests lack an intervening committed boundary")
+    committed_complete = all(last_rounds[b.branch_id] == (1 if b.phase == "control" else 4) for b in branches)
+    completed_raw = [r for r in records.values() if r["replay_parent"] is None and r["status"] == "completed"]
+    native = [a for a in attempts if a.get("backend_json") and a["status"] == "completed" and
+        (lambda f:f.get("cache", {}).get("initial_empty") is True and f.get("finite_score_steps",0) > 0 and
+         f.get("device") == "cuda:0" and not f.get("hardware_diagnostic"))(json.loads(a["backend_json"]))]
+    native_ids = {a["call_id"] for a in native}
+    actual_model_evidence = bool(completed_raw) and all(r["call_id"] in native_ids for r in completed_raw)
+    gold_checked = 0
+    for world in worlds:
+        for event in ("original", "revision", "preserving"):
+            if event == "preserving" and world.preserving_edit is None:
+                continue
+            native = world.world if event == "original" else world.event_world(event)
+            truth = solve_world(native)
+            raw = [r.value for r in sorted(native.records, key=lambda r:r.position if r.position is not None else r.record_id)
+                   if not r.deleted]
+            reference = (relaxation_distances(native.size.node_count, raw) if native.task.value == "bfs_distance"
+                         else numeric_reference(native.task.value, raw))
+            actual = truth.candidate(None)
+            if actual != reference:
+                raise ValueError("independent gold differs: "+world.world_id)
+            gold_checked += 1
+    with ExitStack() as stack:
+        stores = []
+        for path in paths:
+            if Path(path).exists():
+                store = WorkerStore(path, readonly=True)
+                stack.callback(store.close)
+                if store.connection.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+                    raise ValueError("worker integrity check failed")
+                stores.append(store)
+        for store in stores:
+            store.parents = tuple(other for other in stores if other is not store)
+        owners = {r["call_id"]:s for s in stores for r in s.connection.execute("SELECT call_id FROM calls")}
+        for call_id, saved in records.items():
+            branch, call = scheduled[call_id]
+            if tuple(saved[k] for k in ("branch_id", "seed", "generation_id", "replay_parent", "round_number", "peer")) != (
+                    branch.branch_id, call.seed, call.generation_id, call.replay_parent, call.round_number,
+                    -1 if call.peer is None else call.peer):
+                raise ValueError("saved call identity/seed/replay parent differs from schedule")
+        for row in inputs.values():
+            if row["settings_json"] != settings_json(settings):
+                raise ValueError("audited candidate/template/settings differ")
+            data = row["requests"]
+            if "view" in data:
+                from scripts.m5_course_preparation import peer_view
+                views = [peer_view(data["view"])]
+                rendered, tokens = [data["rendered"]], [data["tokenized"]]
+            else:
+                before = deserialize_state(data["before"])
+                prepared = prepare_round(before, tokenizer, limits=COURSE_LIMITS)
+                # Include permitted views, exact native requests and pre-delivery state.
+                re_rendered = dict(before=snapshot_bytes(prepared.before).decode("utf-8"), slot=asdict(prepared.slot),
+                    rendered=[asdict(r) for r in prepared.rendered], tokenized=[asdict(t) for t in prepared.tokenized])
+                if record_json(re_rendered) != record_json(data):
+                    raise ValueError("saved native request/state differs from re-rendering")
+                views, rendered, tokens = prepared.views, data["rendered"], data["tokenized"]
+            for i, view in enumerate(views):
+                rendered_now = render_request(view, limits=COURSE_LIMITS)
+                if (record_json(asdict(rendered_now)) != record_json(rendered[i]) or
+                        record_json(asdict(tokenize_request(rendered_now, tokenizer, limits=COURSE_LIMITS))) != record_json(tokens[i])):
+                    raise ValueError("native rendering/tokenization audit failed")
+                bid, number = row["branch_id"], row["round_number"]
+                calls = [c for b in branches if b.branch_id == bid for c in b.calls
+                         if c.round_number == number and c.peer == view.peer]
+                call = calls[0]
+                if call.call_id not in owners:
+                    continue
+                store = owners[call.call_id]
+                saved = store.call(call.call_id)
+                if saved["status"] not in FINAL:
+                    continue
+                raw = store.response(call.call_id)
+                validation = (validate_reply(view, raw, tokenizer, limits=COURSE_LIMITS)
+                              if type(raw) is GeneratedReply else failed_reply(view))
+                if saved["validation_json"] and saved["validation_json"] != record_json(asdict(validation)):
+                    raise ValueError("raw reply independent validation differs")
+        comparisons = 0
+        with tempfile.TemporaryDirectory() as directory:
+            ordered = dict.fromkeys(b.branch_id for b,c in dependency_order(branches))
+            by_branch = {b.branch_id:b for b in branches}
+            for branch_id in ordered:
+                branch = by_branch[branch_id]
+                if branch.branch_id not in committed and branch.phase != "control":
+                    continue
+                def archived(view, rendered, tokenized, *, seed, settings, branch=branch):
+                    call = next(c for c in branch.calls if c.peer == view.peer and c.round_number == view.slot.round_number)
+                    if call.call_id not in owners or records[call.call_id]["status"] not in FINAL:
+                        raise ValueError("committed checkpoint depends on missing raw reply")
+                    return owners[call.call_id].response(call.call_id)
+                # Audit each branch against original read-only parents. No full
+                # second run accumulates on disk; every prefix is independently
+                # reconstructed too, and each child's boundary is compared.
+                with tempfile.TemporaryDirectory(dir=directory) as branch_directory, DurableRunner(
+                        Path(branch_directory)/"reconstructed.sqlite", tokenizer, archived, scripted=True,
+                        dependencies=tuple(Path(p) for p in paths if Path(p).exists())) as runner:
+                    # The scratch branch owns its current calls. Original files
+                    # supply only its parents, avoiding duplicate current IDs.
+                    # URI mode=ro still forbids every main-database write; TEMP
+                    # views are private to these disposable audit connections.
+                    for parent in runner.dependencies:
+                        con = parent.store.connection
+                        con.execute("PRAGMA query_only=OFF")
+                        con.execute("CREATE TEMP TABLE audit_branch(branch_id TEXT)")
+                        con.execute("INSERT INTO audit_branch VALUES (?)", (branch.branch_id,))
+                        for table in ("calls", "round_inputs"):
+                            con.execute(f"CREATE TEMP VIEW {table} AS SELECT * FROM main.{table} WHERE branch_id NOT IN (SELECT branch_id FROM audit_branch)")
+                        con.commit()
+                        con.execute("PRAGMA query_only=ON")
+                    from recovery.manifests import _branch, _prepared
+                    binding = stores[0].run_inputs
+                    if binding is None:
+                        raise ValueError("course audit requires the original bound worker inputs")
+                    runner.store.bind_run(tuple(_prepared(w) for w in binding["worlds"]),
+                        tuple(_branch(b) for b in binding["branches"]), binding["settings"], binding["bounds"],
+                        budget=budget_from_record(binding["budget"]) if binding.get("budget") else None,
+                        regime="course")
+                    if branch.phase == "control":
+                        call = branch.calls[0]
+                        if call.call_id in records and records[call.call_id]["validation_json"] is not None:
+                            runner.run_control(by_world[branch.world_id], branch, settings=settings)
+                            expected = runner.store.connection.execute("SELECT requests_json FROM round_inputs WHERE branch_id=?", (branch.branch_id,)).fetchone()[0]
+                            if expected != record_json(inputs[(branch.branch_id, 1)]["requests"]):
+                                raise ValueError("control exposes a changed full-information view")
+                        continue
+                    runner.start(by_world[branch.world_id], branch, settings=settings)
+                    target = deserialize_state(record_json(committed[branch.branch_id]["state"]))
+                    last = target.last_slot.round_number if target.last_slot and target.last_slot.phase == target.phase else 0
+                    for number in range(1, last+1):
+                        runner.run_round(branch.branch_id, number)
+                        expected = runner.store.connection.execute("SELECT requests_json FROM round_inputs WHERE branch_id=? AND round_number=?", (branch.branch_id, number)).fetchone()[0]
+                        if expected != record_json(inputs[(branch.branch_id, number)]["requests"]):
+                            raise ValueError("reconstructed branch boundary differs from original saved requests")
+                    if snapshot_bytes(runner.state(branch.branch_id)) != snapshot_bytes(target):
+                        raise ValueError("archived reply replay differs from committed sources/history/queues/deliveries")
+                    pending = inputs.get((branch.branch_id, last+1))
+                    if pending and pending["requests"]["before"] != snapshot_bytes(target).decode("utf-8"):
+                        raise ValueError("unfinished round view differs from its last committed boundary")
+                    comparisons += 1
+    return dict(passed=True, gold_cases=gold_checked, raw_calls_checked=len(records),
+        committed_branches_reconstructed=comparisons, coverage=tables["coverage"],
+        committed_schedule_complete=committed_complete, actual_model_evidence=actual_model_evidence,
+        inference_calls=0, missing_slots="unknown", note="Independent gold; literal raw reply validation and branch-local effect reconstruction")
+
+
+def pilot_gate(worlds, branches, paths, *, audit=None):
+    tables = evaluate_run(worlds, branches, paths)
+    rows = [r for r in tables["outcomes"] if r["replay_parent"] is None]
+    valid = sum(r["protocol_outcome"] == "valid" for r in rows)
+    recorded = sum(r["correct"] is not None for r in rows)
+    failures = defaultdict(Counter)
+    for r in rows:
+        failures[(r["family"], r["phase"], r["policy"] or "none", r["event"])][r["protocol_outcome"]] += 1
+    group_rows = [dict(family=k[0], phase=k[1], policy=k[2], event=k[3], outcomes=dict(v)) for k,v in sorted(failures.items())]
+    capability = capability_gate(worlds, branches, paths)
+    complete = (len(rows) == recorded == 1114 and tables["coverage"]["recorded"] == 1178
+                and bool(audit and audit.get("committed_schedule_complete")))
+    passed = complete and valid*100 >= 98*1114 and capability["passed"] and bool(audit and audit["passed"])
+    return dict(passed=passed, complete=complete, distinct_scheduled=len(rows), distinct_recorded=recorded,
+        protocol_valid=valid, validity_denominator=1114, minimum_valid=1092, capability=capability,
+        family_condition_failures=group_rows, audit=audit,
+        status="passed" if passed else "incomplete" if not complete else "failed")
+
+
+def hardware_gate(bundle, review):
+    report = read(Path(bundle)/"hardware/report.json")
+    paths = worker_paths(bundle, "hardware")
+    probes, ordinary, loads, all_attempts = [], [], [], []
+    released = True
+    for path in paths:
+        store = WorkerStore(path, readonly=True)
+        try:
+            released &= store.connection.execute("SELECT COUNT(*) FROM allocations WHERE stopped_at IS NULL").fetchone()[0] == 0
+            loads.extend(json.loads(r[0]) for r in store.connection.execute("SELECT backend_json FROM provider_processes WHERE backend_json IS NOT NULL"))
+            for row in store.connection.execute("SELECT * FROM attempts"):
+                all_attempts.append(dict(row))
+                facts = json.loads(row["backend_json"]) if row["backend_json"] else {}
+                if facts.get("hardware_diagnostic"):
+                    probes.append(facts)
+                elif row["status"] == "completed":
+                    ordinary.append(facts)
+        finally:
+            store.close()
+    complete_probes = (len(probes) == 2 and all(p.get("input_tokens") == 109851 and p.get("forced_output_tokens") == 256
+        and p.get("finite_score_steps") == 256 and p.get("cache", {}).get("initial_empty") is True for p in probes))
+    samples = [s for p in ordinary+probes for s in p.get("observed_model_edge_memory", [])]
+    observed_peak = max((s["total_bytes"]-s["free_bytes"] for s in samples), default=0)
+    free_min = min((s["free_bytes"] for s in samples), default=0)
+    total_min = min((s["total_bytes"] for s in samples), default=0)
+    bound = review.get("complete_live_memory_upper_bound_bytes")
+    supported = (review.get("accepted") is True and type(bound) is int and bound >= observed_peak
+        and bound >= 7400914336 and bound+MIN_HEADROOM <= total_min
+        and bool(review.get("justification", "").strip()))
+    host_receipt = read(Path(bundle)/"hardware/host-checks.json") if (Path(bundle)/"hardware/host-checks.json").exists() else {}
+    host_passed = host_receipt.get("tests") == 3 and host_receipt.get("skipped") == 0
+    native_loads = [l for l in loads if l.get("model") == CANDIDATE.model]
+    valid_loads = bool(native_loads) and all(l.get("revision") == CANDIDATE.revision and
+        len(l.get("candidate_attention", [])) == 3 for l in native_loads)
+    cache_passed = len(ordinary) == 21 and all(p.get("cache", {}).get("initial_empty") is True and
+        p.get("cache", {}).get("same_call_cache") is True and p.get("finite_score_steps", 0) > 0 for p in ordinary)
+    passed = (report.get("root_blocker") is None and report.get("smoke", {}).get("stop_reason") is None
+        and complete_probes and len(ordinary) == 21 and valid_loads and released
+        and free_min >= MIN_HEADROOM and supported and host_passed and cache_passed)
+    return dict(passed=passed, status="passed" if passed else "review_required" if complete_probes and free_min >= MIN_HEADROOM else "incomplete_or_failed",
+        complete_resident_tokens_upper=110107, complete_envelope_probes=len(probes),
+        ordinary_completed=len(ordinary), actual_minimum_free_bytes=free_min, observed_device_peak_bytes=observed_peak,
+        complete_live_memory_upper_bound_bytes=bound, review=review, host_checks=host_receipt,
+        native_load_checks_passed=valid_loads, provider_release_confirmed=released,
+        note="Physical shape diagnostics alone do not prove a complete allocator/workspace bound; a supported R7 review is required")
+
+
+def accepted_budget(bundle, base):
+    """Derive prior hardware charges once; pilot/main ledgers stay explicit."""
+    original = CourseBudget(**base)
+    stores = []
+    try:
+        for path in worker_paths(bundle, "hardware"):
+            stores.append(WorkerStore(path, readonly=True))
+        used = smoke_resources(stores, original, utc_now())
+        if any(d["stopped_at"] is None for d in used["devices"]):
+            raise BudgetStop("hardware_provider_release_pending")
+        if not used["admission_available"]:
+            raise BudgetStop(used["admission_reason"])
+        values = asdict(original)
+        for name in ("development", "setup", "interruption", "other_course", "other_overall"):
+            values["prior_"+name+"_gpu_hours"] = used["spending_bounds_gpu_hours"][name]
+        allocated = used["allocated_gpu_hours"]
+        values["prior_smoke_gpu_hours"] = [v+allocated for v in original.prior_smoke_gpu_hours]
+        # Refused hardware assignments also consumed the same smoke envelope;
+        # their monetary costs enter status as prior ledgers, not these bounds.
+        for path in refused_workers(bundle):
+            prior = WorkerStore(path, readonly=True)
+            try:
+                for row in prior.connection.execute("SELECT * FROM allocations"):
+                    billing = json.loads(row["billing_json"] or "{}")
+                    if billing.get("unadmitted_action") == "hardware":
+                        if row["stopped_at"] is None:
+                            raise BudgetStop("refused_hardware_assignment_release_pending")
+                        hours = (timestamp(row["stopped_at"])-timestamp(row["started_at"]))/3600
+                        values["prior_smoke_gpu_hours"] = [v+hours for v in values["prior_smoke_gpu_hours"]]
+            finally:
+                prior.close()
+        values["prior_smoke_attempts"] += sum(s.connection.execute("SELECT COUNT(*) FROM attempts").fetchone()[0] for s in stores)
+        values["prior_evidence"] += "; original released hardware worker allocations (included once)"
+        return CourseBudget(**values)
+    finally:
+        for store in stores:
+            store.close()
+
+
+def bind_candidate(root, bundle, config, *, verify_environment=True):
+    path = Path(bundle)/"run.json"
+    manifest = read(Path(root)/"source-manifest.json")
+    from scripts.m5_course_smoke_assets import source_identity
+    source_identity(Path(root), manifest)
+    prepared = read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
+    budget = accepted_budget(bundle, config["budget"])
+    assets = read(config["assets_receipt"])
+    for name, version in assets["versions"].items():
+        if verify_environment and importlib.metadata.version(name) != version:
+            raise ValueError("candidate environment differs from prepared assets: "+name)
+    candidate = dict(source_commit=manifest["source_baseline_commit"], source_members=manifest["members"],
+        settings=prepared["settings"], bounds=BOUNDS, budget=asdict(budget), environment=assets["versions"],
+        analysis=dict(regime="course", resampling_seed=AS_OF_SEED, bootstrap_draws=10000,
+            primaries_interval=.975, secondary_interval=.95, replicate_zero_primary=True),
+        source_manifest="source/source-manifest.json", model_revision=CANDIDATE.revision,
+        freeze=None)
+    if path.exists():
+        saved = read(path)
+        if record_json({k:v for k,v in saved.items() if k != "freeze"}) != record_json({k:v for k,v in candidate.items() if k != "freeze"}):
+            raise ValueError("candidate source/settings/environment/resource binding differs; resume exact inputs")
+        return saved
+    save(path, candidate)
+    return candidate
+
+
+def snapshot(root, bundle, stage, run=None, *, now=None, devices=()):
+    worlds, branches = scope(root, bundle, stage)
+    return progress_snapshot(worlds, branches, worker_paths(bundle, stage), now=now,
+        budget=CourseBudget(**run["budget"]) if run else None,
+        settings=run["settings"] if run else None, regime="course",
+        prior_paths=(tuple(p for p in worker_paths(bundle, "development") if p.exists()) if stage == "main" else ()) + refused_workers(bundle),
+        planned_devices=devices)
+
+
+def session_window(config):
+    assigned = config.get("allocated_at")
+    if not assigned or not config.get("release_instructions", "").strip():
+        raise BudgetStop("actual_assignment_and_provider_release_instructions_required")
+    elapsed = timestamp(utc_now())-timestamp(assigned)
+    quota, duration = config.get("provider_quota_gpu_hours"), config.get("provider_session_seconds")
+    if (elapsed < 0 or type(quota) not in (int,float) or quota <= 0 or
+            type(duration) not in (int,float) or duration <= 0):
+        raise BudgetStop("verify_current_quota_session_duration_and_assignment_clock")
+    return min(duration-elapsed, quota*3600/2, config.get("max_work_seconds", 3600))
+
+
+def disk_admission(bundle, stage, *, complete_forecast=False):
+    current = sum(p.stat().st_size for p in all_workers(bundle))
+    pilot = sum(p.stat().st_size for p in worker_paths(bundle, "development") if p.exists())
+    main = sum(p.stat().st_size for p in worker_paths(bundle, "main") if p.exists())
+    projection = int(1.5*pilot*6280/1178) if stage == "main" and pilot else current
+    # Ordinary backup + uncompressed ZIP upper allowance; reports/branch audit
+    # have separate scratch. Projection is pilot-based, not a disk guarantee.
+    target = max(current, projection) if complete_forecast else current
+    required = (max(0, projection-main) if complete_forecast else 0)+2*target+512*1024**2
+    free = shutil.disk_usage(bundle).free
+    if free < required:
+        raise BudgetStop("insufficient_disk_for_raw_records_backup_export_and_offline_report")
+    return dict(free_bytes=free, required_free_bytes=required, observed_worker_bytes=current,
+        pilot_based_main_projection_bytes=projection if stage == "main" else None,
+        rule="1.5 pilot byte-rate main projection; two portable-copy allowances and 512 MiB report/branch scratch; monitor actual growth")
+
+
+def hardware(root, bundle, config):
+    require_authorization(config, "hardware")
+    if config.get("execute_gpu") is not True:
+        raise BudgetStop("gpu_execution_disabled")
+    from scripts.m5_course_smoke import run as run_smoke
+    launch = dict(execute_gpu=True, stage_weights=False, authorization=config["authorizations"]["hardware"],
+        provider="kaggle", reported_quota_gpu_hours=config["provider_quota_gpu_hours"],
+        provider_session_seconds=config["provider_session_seconds"], allocated_at=config["allocated_at"],
+        prior_sessions_released=config.get("prior_sessions_released", False),
+        release_instructions=config["release_instructions"], budget=config["budget"],
+        hf_cache=config["hf_cache"], assets_receipt=config["assets_receipt"],
+        source_manifest=str(Path(root)/"source-manifest.json"), resume_workers=[], complete_envelope_diagnostics=True)
+    launch["prior_allocation_workers"] = [str(p) for p in refused_workers(bundle)]
+    if (Path(bundle)/"hardware").exists():
+        if not all(p.exists() for p in worker_paths(bundle, "hardware")):
+            raise BudgetStop("partial_hardware_controller_setup_requires_review; no new probe identities are created")
+        launch.update(resume_workers=[str(p) for p in worker_paths(bundle, "hardware")], resume_in_place=True)
+    return run_smoke(Path(root), launch, Path(bundle)/"hardware")
+
+
+def execute(root, bundle, config, action):
+    authorization = require_authorization(config, "main" if action == "main" else "pilot")
+    if config.get("execute_gpu") is not True:
+        raise BudgetStop("gpu_execution_disabled")
+    gate = hardware_gate(bundle, config.get("hardware_review", {}))
+    save(Path(bundle)/"hardware-gate.json", gate)
+    if not gate["passed"]:
+        raise BudgetStop("complete_hardware_resource_release_and_R7_gate_not_passed")
+    from scripts.m5_course_smoke_assets import verify_assets
+    verify_assets(Path(root), dict(source_manifest=str(Path(root)/"source-manifest.json"),
+        assets_receipt=config["assets_receipt"], hf_cache=config["hf_cache"]))
+    run = bind_candidate(root, bundle, config)
+    if action == "main" and not run["freeze"]:
+        raise BudgetStop("explicit_frozen_main_admission_missing")
+    stage = "main" if action == "main" else "development"
+    disk_admission(Path(bundle), stage, complete_forecast=stage == "main")
+    worlds, branches = scope(root, bundle, stage)
+    tokenizer = TokenizerFactory(CANDIDATE, str(Path(root)/"metadata/4B"), COURSE_LIMITS)()
+    if action == "pilot":
+        capability = capability_gate(worlds, branches, worker_paths(bundle, stage))
+        if not capability["passed"]:
+            raise BudgetStop("first_90_capability_gate_not_passed")
+    import subprocess
+    inventory = subprocess.check_output(["nvidia-smi", "--query-gpu=uuid,name,driver_version,memory.total", "--format=csv,noheader"], text=True, timeout=5)
+    device_rows = [line.split(",") for line in inventory.splitlines()]
+    if len(device_rows) != 2 or any("T4" not in row[1] for row in device_rows):
+        raise BudgetStop("two_actual_T4_replicas_required")
+    physical_devices = tuple(row[0].strip() for row in device_rows)
+    if len(set(physical_devices)) != 2:
+        raise ValueError("two distinct GPUs required")
+    # Stable replica positions allow measured phase/condition forecasts to
+    # survive Kaggle VM replacement. Each allocation still archives the actual
+    # physical UUID, host facts and model device visibility; these are not a
+    # claim that the same physical card returns in the next session.
+    devices = ("kaggle-t4-slot-0", "kaggle-t4-slot-1")
+    budget = CourseBudget(**run["budget"])
+    wall = session_window(config)
+    session_deadline = monotonic()+wall-budget.shutdown_seconds-60
+    initial = snapshot(root, bundle, stage, run, devices=devices)
+    reason, allowed = course_admission(initial["resources"], initial["forecast"], budget, stage, 2)
+    if reason:
+        raise BudgetStop(reason)
+    if initial["resources"]["active_devices"]:
+        raise BudgetStop("previous_session_provider_release_receipt_required")
+    if wall <= budget.shutdown_seconds+1050:
+        raise BudgetStop("insufficient_session_time_for_a_complete_bounded_round_backup_and_release")
+    os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_HUB_CACHE=config["hf_cache"])
+    paths = worker_paths(bundle, stage)
+    specs = [WorkerSpec(path, SmokeFactory(physical), cuda_visible_devices=physical, allocated_device=device,
+        allocated_at=config["allocated_at"], provider_billing=dict(provider="kaggle", authorization=authorization,
+            physical_gpu_uuid=physical, host_inventory=inventory,
+            release_instructions=config["release_instructions"])) for path,device,physical in zip(paths,devices,physical_devices)]
+    last_print, last_backup = [0.], monotonic()
+    def report(progress):
+        disk_admission(Path(bundle), stage)
+        if monotonic()-last_print[0] >= 15 or progress["counts"]["remaining_logical"] == 0:
+            save(Path(bundle)/"progress.json", progress)
+            c = progress["counts"]
+            print(f"{stage}: {c['finished_logical']}/{c['scheduled_logical']} recorded; "
+                  f"{c['attempts']} attempts; {c['replay_uses']} replay uses; "
+                  f"{c['recorded_failures']} invalid/failed; {c['unknown_logical']} unknown", flush=True)
+            last_print[0] = monotonic()
+        # Raw replies have already been saved. Stop subsequent work on any
+        # physical headroom/finite/cache defect without resampling those slots.
+        for path in paths:
+            if not path.exists():
+                continue
+            store = WorkerStore(path, readonly=True)
+            try:
+                for row in store.connection.execute("SELECT backend_json FROM attempts WHERE backend_json IS NOT NULL"):
+                    facts = json.loads(row[0])
+                    samples = facts.get("observed_model_edge_memory", [])
+                    if samples and min(s["free_bytes"] for s in samples) < MIN_HEADROOM:
+                        raise BudgetStop("recorded_actual_headroom_failure")
+            finally:
+                store.close()
+    scheduler = LocalScheduler(specs, worlds, branches, TokenizerFactory(CANDIDATE, str(Path(root)/"metadata/4B"), COURSE_LIMITS),
+        settings=run["settings"], budget=budget, release_device=lambda *unused:False,
+        prior_paths=(tuple(p for p in worker_paths(bundle, "development") if p.exists()) if stage == "main" else ()) + refused_workers(bundle),
+        regime="course", report=report)
+    stopped = None
+    try:
+        scheduler.__enter__()
+        scheduler.deadline = min(scheduler.deadline, session_deadline)
+        if action == "capability":
+            scheduler.run(capability_only=True)
+        else:
+            while scheduler.inflight or any(w.status != "done" for w in scheduler.status()):
+                if monotonic()-last_backup >= config.get("backup_every_seconds", 600):
+                    while scheduler.inflight:
+                        scheduler.advance(dispatch=False)
+                    backup_bundle(bundle, Path(bundle).parent/"course-resume.zip")
+                    last_backup = monotonic()
+                    print("Portable round-boundary backup updated: course-resume.zip", flush=True)
+                scheduler.advance()
+    except (Exception, KeyboardInterrupt) as error:
+        stopped = f"{type(error).__name__}: {error}"
+    finally:
+        try:
+            scheduler.close()
+        except WorkerInterrupted:
+            pass  # Kaggle provider release is deliberately deferred to a real receipt.
+    progress = snapshot(root, bundle, stage, run)
+    save(Path(bundle)/"progress.json", progress)
+    if stage == "development":
+        capability = capability_gate(worlds, branches, paths)
+        save(Path(bundle)/"capability-gate.json", capability)
+        if capability["status"] == "failed":
+            stopped = "capability screen failed; no recovery spending admitted"
+    result = dict(action=action, stop_reason=stopped, counts=progress["counts"], provider_release_confirmed=False,
+        instruction="Download course-resume.zip and executed notebook, then Stop Session. Record actual provider release for the next CPU/session action.")
+    save(Path(bundle)/"last-execution.json", result)
+    return result
+
+
+def freeze(root, bundle, config):
+    authorization = require_authorization(config, "freeze")
+    run = bind_candidate(root, bundle, config, verify_environment=False)
+    if run["freeze"]:
+        return run["freeze"]
+    if any(p.exists() for p in worker_paths(bundle, "main")):
+        raise ValueError("main records already exist before freeze")
+    hardware = hardware_gate(bundle, config.get("hardware_review", {}))
+    if not hardware["passed"]:
+        raise BudgetStop("hardware_gate_not_passed")
+    worlds, branches = scope(root, bundle, "development")
+    tokenizer = TokenizerFactory(CANDIDATE, str(Path(root)/"metadata/4B"), COURSE_LIMITS)()
+    audit = audit_records(worlds, branches, worker_paths(bundle, "development"), tokenizer, run["settings"])
+    pilot = pilot_gate(worlds, branches, worker_paths(bundle, "development"), audit=audit)
+    save(Path(bundle)/"pilot-gate.json", pilot)
+    if not pilot["passed"]:
+        raise BudgetStop("complete_pilot_acceptance_not_passed")
+    if not audit["actual_model_evidence"]:
+        raise BudgetStop("pilot_rows_lack_actual_finite_fresh_cache_GPU_diagnostics")
+    progress = snapshot(root, bundle, "development", run)
+    if progress["resources"]["active_devices"]:
+        raise BudgetStop("pilot_provider_release_required_before_freeze")
+    if not config.get("pilot_review", {}).get("family_condition_failures_reviewed") or not config.get("pilot_review", {}).get("timeout_120_seconds_adequate"):
+        raise BudgetStop("review_pilot_family_failures_and_120_second_timeout_before_freeze")
+    devices = tuple(sorted({d["device"] for d in progress["resources"]["devices"]}))
+    forecast = snapshot(root, bundle, "main", run, devices=devices)
+    reason, available = course_admission(forecast["resources"], forecast["forecast"], CourseBudget(**run["budget"]), "main", 2)
+    if reason:
+        raise BudgetStop(reason)
+    # Existing forecast includes slower-device/idle allocation and the 25% margin.
+    resources = forecast["resources"]
+    freeze_receipt = dict(at=utc_now(), authorization=authorization, hardware=hardware, pilot=pilot,
+        storage=disk_admission(Path(bundle), "main", complete_forecast=True),
+        forecast=forecast["forecast"], resources=resources, planned_devices=list(devices),
+        course_admission_lhs_upper_gpu_hours=resources["course_gpu_hours"][1]+sum(resources["remaining_reserves_gpu_hours"].values())+
+            forecast["forecast"]["remaining_gpu_hours"][1],
+        complete_main_distinct=5752, complete_main_logical=6280,
+        provider_session_terms=dict(duration_seconds=config.get("provider_session_seconds"),
+            release_instructions=config.get("release_instructions")),
+        main_authorization_granted=False)
+    run["freeze"] = freeze_receipt
+    save(Path(bundle)/"run.json", run)
+    return freeze_receipt
+
+
+def analyze(root, bundle, config):
+    from recovery.report import report_run, write_report
+    run_path = Path(bundle)/"run.json"
+    run = read(run_path) if run_path.exists() else None
+    settings = run["settings"] if run else read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")["settings"]
+    if (Path(bundle)/"hardware/report.json").exists() and all(p.exists() for p in worker_paths(bundle, "hardware")):
+        save(Path(bundle)/"hardware-gate.json", hardware_gate(bundle, config.get("hardware_review", {})))
+    tokenizer = TokenizerFactory(CANDIDATE, str(Path(root)/"metadata/4B"), COURSE_LIMITS)()
+    worlds, branches = scope(root, bundle, "main")
+    audit = audit_records(worlds, branches, worker_paths(bundle, "main"), tokenizer, settings)
+    save(Path(bundle)/"main-audit.json", audit)
+    recorded = audit["coverage"]["recorded"]
+    if recorded and not (run and run["freeze"]):
+        raise ValueError("main evidence has no accepted frozen configuration")
+    if recorded and not audit["actual_model_evidence"]:
+        raise ValueError("main raw generations lack actual finite/fresh-cache GPU diagnostics")
+    now = config.get("analysis_as_of") or utc_now()
+    accounting_context = read(Path(bundle)/"provider-release.json") if (Path(bundle)/"provider-release.json").exists() else None
+    # Persist the first analysis clock: subsequent CPU reproductions use it.
+    receipt_path = Path(bundle)/"analysis-receipt.json"
+    if receipt_path.exists():
+        receipt = read(receipt_path)
+        if receipt["coverage"] == audit["coverage"] and receipt.get("accounting_context") == accounting_context:
+            now = receipt["as_of"]
+    evidence = dict(audit_passed=True, committed_schedule_complete=audit["committed_schedule_complete"],
+        status="model_complete" if recorded == 6280 and audit["committed_schedule_complete"] else "model_incomplete" if recorded else "feasibility",
+        accepted_main_freeze=("run.json; frozen at "+run["freeze"]["at"]) if run and run["freeze"] else None,
+        model_capability=read(Path(bundle)/"capability-gate.json")["counts"] if (Path(bundle)/"capability-gate.json").exists() else None,
+        gpu_memory_headroom={k:read(Path(bundle)/"hardware-gate.json")[k] for k in ("passed", "actual_minimum_free_bytes", "complete_live_memory_upper_bound_bytes")} if (Path(bundle)/"hardware-gate.json").exists() else None,
+        cumulative_allocation=snapshot(root, bundle, "main", run, now=now)["resources"] if run else None,
+        source_commit=run["source_commit"] if run else (Path(root)/"SOURCE_COMMIT.txt").read_text().strip())
+    name = datetime.fromisoformat(now).astimezone(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    target = Path(bundle)/"analyses"/name
+    result = report_run(worlds, branches, worker_paths(bundle, "main"), now=now, seed=AS_OF_SEED,
+        tokenizer=tokenizer, regime="course", execution_evidence=evidence,
+        provenance=dict(manifest="inputs/population.json", schedule="inputs/schedules.json",
+            workers=[p.relative_to(bundle).as_posix() for p in worker_paths(bundle, "main")], stage="main", count=20))
+    # Reproduce bytes on two fresh paths, then compare the retained canonical
+    # export. No CPU regeneration of raw model replies is permitted.
+    with tempfile.TemporaryDirectory() as directory:
+        first, second = Path(directory)/"first", Path(directory)/"second"
+        write_report(first, result, figures=config.get("figures", True))
+        repeated = report_run(worlds, branches, worker_paths(bundle, "main"), now=now, seed=AS_OF_SEED,
+            tokenizer=tokenizer, regime="course", execution_evidence=evidence, provenance=result["report"]["provenance"])
+        write_report(second, repeated, figures=config.get("figures", True))
+        files = [p.relative_to(first) for p in first.rglob("*") if p.is_file()]
+        if any((first/p).read_bytes() != (second/p).read_bytes() for p in files):
+            raise ValueError("clean offline report reproduction differs")
+        if target.exists():
+            if any(not (target/p).exists() or (target/p).read_bytes() != (first/p).read_bytes() for p in files):
+                raise ValueError("retained report differs; preserve it and use a new derived output for updated evidence")
+        else:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copytree(first, target)
+    if run:
+        dev_worlds, dev_branches = scope(root, bundle, "development")
+        dev_audit = audit_records(dev_worlds, dev_branches, worker_paths(bundle, "development"), tokenizer, settings)
+        save(Path(bundle)/"development-audit.json", dev_audit)
+        save(Path(bundle)/"pilot-gate.json", pilot_gate(dev_worlds, dev_branches, worker_paths(bundle, "development"), audit=dev_audit))
+    receipt = dict(as_of=now, resampling_seed=AS_OF_SEED, report=(target/"report.html").relative_to(bundle).as_posix(),
+        status=evidence["status"], coverage=audit["coverage"], byte_identical_reproductions=2,
+        inference_calls=0, external_delivery=False, accounting_context=accounting_context)
+    save(receipt_path, receipt)
+    return receipt
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--bundle", type=Path, required=True)
+    parser.add_argument("--config", type=Path, required=True)
+    parser.add_argument("--action", choices=("inspect", "hardware", "capability", "pilot", "freeze", "main", "status", "analyze", "export"), required=True)
+    args = parser.parse_args(argv)
+    root, bundle = args.root.resolve(), args.bundle.resolve()
+    config = read(args.config)
+    result = dict(action=args.action, status="blocked", inference_called=False)
+    try:
+        initialize(root, bundle)
+        confirm_previous_release(bundle, config.get("previous_session_release"))
+        if args.action == "hardware":
+            result = hardware(root, bundle, config)
+            if result.get("root_blocker"):
+                record_refused_allocation(root, bundle, config, args.action, result["root_blocker"])
+        elif args.action in ("capability", "pilot", "main"):
+            result = execute(root, bundle, config, args.action)
+        elif args.action == "freeze":
+            result = freeze(root, bundle, config)
+        elif args.action == "analyze":
+            result = analyze(root, bundle, config)
+        elif args.action in ("inspect", "status"):
+            run = read(bundle/"run.json") if (bundle/"run.json").exists() else None
+            result = {stage:snapshot(root, bundle, stage, run) for stage in ("development", "main")}
+            for stage in result:
+                print(stage+"\n"+format_status(result[stage]), flush=True)
+        elif args.action == "export":
+            result = dict(status="exported", gpu_calls=0)
+    except (Exception, KeyboardInterrupt) as error:
+        result = dict(action=args.action, status="blocked_or_safely_stopped", reason=f"{type(error).__name__}: {error}",
+            remaining_outcomes="unknown", gates_bypassed=False)
+        try:
+            record_refused_allocation(root, bundle, config, args.action, result["reason"])
+        except Exception as accounting_error:
+            result["unresolved_assignment_accounting"] = str(accounting_error)
+            result["assignment_clock"] = config.get("allocated_at")
+    finally:
+        save(bundle/"last-action.json", result)
+        save(bundle/"actions"/(args.action+"-"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+".json"), result)
+        exported = backup_bundle(bundle, bundle.parent/"course-resume.zip")
+        brief = {k:result[k] for k in ("action", "status", "passed", "stop_reason", "reason", "counts", "coverage", "report", "instruction") if k in result}
+        print(json.dumps(dict(result=brief, export=exported), indent=2), flush=True)
+    return 0 if result.get("status") not in ("blocked", "blocked_or_safely_stopped") else 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

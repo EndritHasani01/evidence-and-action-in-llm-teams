@@ -1,5 +1,12 @@
 # Recovery in distributed LLM teams
 
+The complete course Kaggle interface is in the [Kaggle runbook](docs/KAGGLE_COURSE.md).
+The local `dist/course-kaggle/` delivery contains `course_kaggle.ipynb`,
+`course-kaggle-dataset.zip` and `START_HERE.md`: one guarded workflow for hardware,
+capability/pilot, explicit freeze/main, session backups and offline reports.
+Its [CPU integration evidence](docs/validation/course-kaggle-workflow.md) is
+separate from the still-open actual-host, R7, resource, pilot and main gates.
+
 A controlled study of how multi-agent teams recover when information used during distributed problem solving is corrected.
 
 The design uses five SILO-derived task families to study retained evidence and computation, historical change information, and how recovering peers affect one another. Shared-prefix revision and no-change continuations provide matched controls.
