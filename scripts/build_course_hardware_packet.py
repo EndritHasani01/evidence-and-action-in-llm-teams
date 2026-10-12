@@ -3,6 +3,7 @@
 import argparse
 import json
 from pathlib import Path
+from pprint import pformat
 
 from scripts.build_course_smoke_packet import build
 
@@ -20,7 +21,8 @@ as a private input. Keep Accelerator **None** for source/environment/checkpoint
 preparation. Set `COURSE_M5_PAYLOAD` and `COURSE_M5_HW_OUTPUT` when reviewing
 locally; use fresh output paths and preserve all previous results.
 
-Both execution flags default **False**. Fill `LAUNCH` from supported prior
+Both execution flags default **False**. Edit the visible `LAUNCH` dictionary at
+the top of the source cell before its first execution, using supported prior
 allocation/smoke bounds and the separately authorized concrete action. Available
 quota is independent of study spending; accounts do not reset the 30-hour course
 or cumulative 24-attempt / 1,800-device-second smoke ceilings. Unknowns stop
@@ -29,7 +31,8 @@ admission. No pilot/main/freeze is authorized by this notebook.
 Only after CPU assets/provenance pass, retain the prepared-assets receipt and
 environment/cache. For the approved GPU action, choose T4 x2, record the actual
 UTC assignment clock, remaining provider session allowance and stop/release
-instructions, set `execute_gpu=True` and run the GPU cell once. If switching
+instructions, edit the two launch fields at the top of the GPU cell and run
+that cell once; do not rerun the source cell. If switching
 accelerators loses the source/environment/cache, stop the GPU session and
 prepare on CPU again; installation/downloads do not belong in the short GPU run.
 The GPU cell uses the isolated candidate interpreter and an independent bounded
@@ -43,9 +46,9 @@ and unresolved physical R7 coverage withhold hardware acceptance. A short
 successful model run cannot establish the complete-envelope memory/headroom gate.
 """
     bootstrap = ("import hashlib,json,os,sys,time\nfrom pathlib import Path\n"
+        f"LAUNCH={pformat(launch,sort_dicts=False)}\n"
         f"EXPECTED=json.loads({json.dumps(expected,sort_keys=True)!r})\n"
         f"HELPER={helper!r}\n"
-        f"LAUNCH=json.loads({json.dumps(launch,sort_keys=True)!r})\n"
         "assert hashlib.sha256(HELPER.encode()).hexdigest()==EXPECTED['review_helper_sha256']\n"
         "helpers={'__name__':'course_hardware_helper'}\n"
         "exec(compile(HELPER,'m5_kaggle_preflight.py','exec'),helpers)\n"
@@ -78,7 +81,11 @@ else:
 assets_path=cpu_output/'prepared-assets.json'
 print(json.loads((cpu_output/'report.json').read_bytes()))
 """
-    gpu = """gpu_output=output/'gpu-smoke'
+    gpu = """# Edit these only after CPU preparation and the actual T4 x2 assignment.
+# Keep the source cell and previous CPU evidence; do not rerun them.
+LAUNCH['execute_gpu'] = False
+LAUNCH['allocated_at'] = None  # Actual timezone-aware UTC assignment, not cell start.
+gpu_output=output/'gpu-smoke'
 if not LAUNCH['execute_gpu']:
     gpu_output.mkdir()
     helpers['save_json'](gpu_output/'report.json',dict(status='blocked',reason='GPU execution disabled',gpu_admission=False,model_generations=0,physical_memory_accepted=False,provider_release_confirmed=False))
