@@ -134,7 +134,7 @@ bundle=workspace/'bundle'
 inputs=Path(os.environ.get('COURSE_INPUT','/kaggle/input'))
 def attached(name,explicit=None):
     if explicit: return Path(explicit).resolve()
-    matches=list(inputs.rglob(name))
+    matches=list(inputs.rglob('course-resume*.zip' if name=='course-resume.zip' else name))
     if len(matches)>1: raise ValueError('Select one exact '+name+' in the options cell')
     return matches[0] if matches else None
 def extract_fresh(archive,target):
@@ -149,8 +149,22 @@ def extract_fresh(archive,target):
         target.mkdir(parents=True)
         z.extractall(target)
 resume=attached('course-resume.zip',RESUME_ZIP)
+if resume is None:
+    # Kaggle normally expands uploaded ZIPs. Recognize the extracted original
+    # bundle instead of accidentally starting a new set of worker files.
+    options=[p.parent for p in inputs.rglob('operator-config.json')
+        if (p.parent/'inputs/population.json').is_file()
+        and (p.parent/'source/source-manifest.json').is_file()
+        and hashlib.sha256((p.parent/'source/source-manifest.json').read_bytes()).hexdigest()==EXPECTED_MANIFEST_SHA256]
+    if len(options)>1: raise ValueError('Select the exact extracted resume directory with RESUME_ZIP')
+    resume=options[0] if options else None
 if not bundle.exists():
-    if resume: extract_fresh(resume,bundle)
+    if resume and resume.is_dir():
+        members=list(resume.rglob('*'))
+        if any(p.is_symlink() or p.name.endswith(('-wal','-shm','.owner','.tmp')) for p in members):
+            raise ValueError('Resume requires the ordinary exported SQLite backups, without live WAL/locks or symlinks')
+        shutil.copytree(resume,bundle)
+    elif resume: extract_fresh(resume,bundle)
     else: bundle.mkdir()
 source=bundle/'source'
 if not source.exists():
@@ -197,7 +211,8 @@ def bounded_child(arguments,limit):
     # The repo owns scientific work; this cell only streams its process output.
     log=workspace/('action-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.log')
     process=subprocess.Popen([str(a) for a in arguments],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
-        text=True,bufsize=1,start_new_session=(os.name!='nt'),cwd=workspace)
+        text=True,bufsize=1,start_new_session=(os.name!='nt'),cwd=workspace,
+        env=dict(os.environ,MPLBACKEND='Agg'))
     lines=queue.Queue()
     def collect():
         for line in process.stdout: lines.put(line)
@@ -313,7 +328,13 @@ with tempfile.TemporaryDirectory() as temporary:
                     original.backup(copy)
                     if copy.execute('PRAGMA integrity_check').fetchone()[0]!='ok': raise ValueError('SQLite backup failed')
             z.write(target,p.relative_to(bundle).as_posix())
-partial.replace(resume_export)
+try:
+    partial.replace(resume_export)
+except PermissionError:
+    # An open download/Windows scanner may hold the previous derived ZIP.
+    # Keep it intact and publish this complete snapshot under a fresh name.
+    resume_export=workspace/('course-resume-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.zip')
+    partial.replace(resume_export)
 results_export=workspace/'course-results.zip'
 with zipfile.ZipFile(results_export,'w',zipfile.ZIP_DEFLATED,compresslevel=3) as z:
     for p in sorted(bundle.rglob('*')):

@@ -8,6 +8,8 @@ import io
 import json
 from pathlib import Path
 import tempfile
+import sys
+import types
 import unittest
 from unittest.mock import patch
 
@@ -18,6 +20,7 @@ from recovery.workers import LocalScheduler, WorkerSpec, WorkerInterrupted
 from scripts.course_kaggle_workflow import (accepted_budget, current_assignment, run_all,
     snapshot, transfer_assignment, worker_paths, scope, recover_bootstrap_refusals, refused_workers)
 from scripts.m5_kaggle_preflight import download_native_ranges
+from scripts.build_course_kaggle import notebook
 from tests.course_worker_cases import SETTINGS, branches, course_inputs, provider_factory, tokenizer_factory
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,6 +39,37 @@ def config():
 
 
 class RunAllTests(unittest.TestCase):
+    def test_literal_source_cell_detects_extracted_resume_and_preserves_worker_bytes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base=Path(directory); inputs=base/"input"; resumed=inputs/"resume"
+            source=resumed/"source"; source.mkdir(parents=True)
+            commit="CPU fixture"
+            data=(commit+"\n").encode()
+            (source/"SOURCE_COMMIT.txt").write_bytes(data)
+            manifest=dict(members={"SOURCE_COMMIT.txt":dict(bytes=len(data),sha256=hashlib.sha256(data).hexdigest())})
+            encoded=json.dumps(manifest).encode(); (source/"source-manifest.json").write_bytes(encoded)
+            (resumed/"operator-config.json").write_text("{}")
+            (resumed/"inputs").mkdir(); (resumed/"inputs/population.json").write_text("{}")
+            (resumed/"main").mkdir()
+            worker=resumed/"main/worker-0.sqlite"
+            with DurableRunner(worker,None): pass
+            original=worker.read_bytes()
+            # The separate source dataset has the same marker. A correct resume
+            # is discovered before that could become an ambiguous source choice.
+            package=inputs/"dataset"; package.mkdir()
+            (package/"source-manifest.json").write_bytes(encoded)
+            (package/"SOURCE_COMMIT.txt").write_bytes(data)
+            document=notebook(hashlib.sha256(encoded).hexdigest(),commit)
+            values={}
+            display=types.SimpleNamespace(display=lambda *args:None,FileLink=str,HTML=str)
+            with patch.dict("os.environ",COURSE_WORKSPACE=str(base/"workspace"),COURSE_INPUT=str(inputs)), \
+                 patch.dict(sys.modules,{"IPython":types.ModuleType("IPython"),"IPython.display":display}):
+                for name in ("action","source"):
+                    cell=next(c for c in document["cells"] if c["id"]==name)
+                    exec("".join(cell["source"]),values)
+            self.assertEqual((base/"workspace/bundle/main/worker-0.sqlite").read_bytes(),original)
+            self.assertEqual((base/"workspace/bundle/source/source-manifest.json").read_bytes(),encoded)
+
     def test_unknown_bootstrap_clock_needs_evidence_and_original_receipt_is_preserved(self):
         with tempfile.TemporaryDirectory() as directory:
             bundle=Path(directory)/"bundle"; (bundle/"bootstrap-refusals").mkdir(parents=True)

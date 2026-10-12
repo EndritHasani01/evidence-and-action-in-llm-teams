@@ -1137,6 +1137,7 @@ def main(argv=None):
     parser.add_argument("--action", choices=("run_all", "inspect", "hardware", "capability", "pilot", "freeze", "main", "status", "analyze", "export"), required=True)
     args = parser.parse_args(argv)
     root, bundle = args.root.resolve(), args.bundle.resolve()
+    os.environ["MPLBACKEND"] = "Agg"  # Notebook inline backends must not leak into ordinary CPU exports.
     config = read(args.config)
     result = dict(action=args.action, status="blocked", inference_called=False)
     try:

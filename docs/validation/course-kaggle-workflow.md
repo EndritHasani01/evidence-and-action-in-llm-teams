@@ -81,6 +81,14 @@ resumption. Fourteen focused asset checks pass in 3.224 s. Six Run All checks pa
 in 2.842 s, including evidence-required recovery of a missing bootstrap assignment
 clock into the ordinary allocation records without altering its original receipt.
 
+The literal notebook's first CPU execution exposed an inherited Jupyter inline
+plotting backend unavailable in the isolated report interpreter. Both the child
+environment and ordinary CLI now select Agg explicitly. A Windows-held derived
+ZIP is preserved while a fresh complete snapshot is published. Kaggle-expanded
+resume ZIPs are detected before source selection, preserving worker bytes and
+avoiding an accidental fresh experiment. Seven focused Run All checks pass in
+2.952 s, including literal extracted-resume detection.
+
 **Limits:** scripted witness success is not pretrained-model capability. Tiny
 asset fixtures load/download no pretrained weights; no actual Linux/T4 install,
 quantized model, complete physical memory bound, GPU smoke/pilot/main, resource
