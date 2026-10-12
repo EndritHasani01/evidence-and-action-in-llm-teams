@@ -29,7 +29,7 @@ if not __package__:
         namespace.__path__ = [str(Path(__file__).resolve().parents[1]/name)]
         sys.modules.setdefault(name, namespace)
 
-from recovery.accounting import (BudgetStop, CourseBudget, FINAL, course_admission,
+from recovery.accounting import (BudgetStop, CourseBudget, MonitoringCourseBudget, FINAL, course_admission,
     budget_from_record, format_status, progress_snapshot, timestamp)
 from recovery.evaluate import evaluate_run, read_records
 from recovery.inference import TokenizerFactory
@@ -48,6 +48,32 @@ from scripts.m5_course_preparation import read
 BOUNDS = dict(timeout_seconds=120., termination_seconds=1., heartbeat_seconds=1.)
 AS_OF_SEED = 20261006
 MIN_HEADROOM = 1610612736
+
+
+def course_budget(config, values=None):
+    cls = MonitoringCourseBudget if config.get("resource_policy") == "observe" else CourseBudget
+    return cls(**(values if values is not None else config["budget"]))
+
+
+def end_observations(bundle, current_assignment=None, *, through=None):
+    """Keep measured intervals and unknown gaps; never fabricate GPU release."""
+    for path in all_workers(bundle):
+        with _own_file(path), closing(WorkerStore(path)) as store:
+            for row in store.connection.execute("SELECT * FROM allocations WHERE stopped_at IS NULL").fetchall():
+                billing = json.loads(row["billing_json"] or "{}")
+                if billing.get("provider_assignment_at") == current_assignment:
+                    continue
+                if billing.get("measurement_scope") != "observed_notebook_interval":
+                    raise ValueError("previous physical allocation still needs actual release evidence")
+                observed = [row["started_at"]]
+                if through:
+                    observed.append(through)
+                for table,fields in (("attempts",("started_at","finished_at","recovered_at")),
+                        ("provider_processes",("started_at","ready_at","last_observed_at","stopped_at","recovered_at"))):
+                    for record in store.connection.execute("SELECT * FROM "+table):
+                        observed.extend(record[field] for field in fields if field in record.keys() and record[field])
+                store.allocation_observation_ended(row["number"],at=max(observed,key=timestamp),
+                    reason="saved notebook observation ended; time outside recorded activity remains unknown")
 
 
 def save(path, value):
@@ -148,7 +174,7 @@ def transfer_assignment(bundle, source_stage, target_stage, config, *, budget=No
             billing = {k:v for k,v in billing.items() if k not in ("segment_end", "successor_stage")}
             billing.update(authorization=authorization, provider_release_confirmed=False)
             number = following.allocation_started(row["device"], target_stage, started_at=at,
-                budget=budget or CourseBudget(**config["budget"]), billing=billing)
+                budget=budget or course_budget(config), billing=billing)
             successors.append(dict(following.connection.execute("SELECT * FROM allocations WHERE number=?", (number,)).fetchone()))
         for (previous, following, row, billing), successor in zip(pairs, successors):
             previous.allocation_transferred(row["number"], successor, at=at)
@@ -176,6 +202,7 @@ def start_assignment(bundle, stage, config, budget):
             store.allocation_started(f"kaggle-t4-slot-{index}", stage, started_at=config["allocated_at"],
                 budget=budget, billing=dict(provider="kaggle", provider_assignment_at=config["allocated_at"],
                     physical_gpu_uuid=rows[index][0].strip(), authorization=authorization,
+                    measurement_scope="observed_notebook_interval" if config.get("resource_policy") == "observe" else "provider_assignment",
                     release_instructions=config["release_instructions"]))
 
 
@@ -217,7 +244,7 @@ def record_refused_allocation(root, bundle, config, action, reason, *, devices=N
     worlds, branches = scope(root, bundle, stage)
     settings = read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")["settings"]
     saved = read(Path(bundle)/"run.json") if (Path(bundle)/"run.json").exists() else None
-    budget = CourseBudget(**(saved["budget"] if saved else config["budget"]))
+    budget = course_budget(config,saved["budget"] if saved else config["budget"])
     label = datetime.fromisoformat(assigned).astimezone(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     directory = Path(bundle)/"refusals"/label
     directory.mkdir(parents=True, exist_ok=False)
@@ -226,7 +253,9 @@ def record_refused_allocation(root, bundle, config, action, reason, *, devices=N
             store = runner.store
             store.bind_run(worlds, branches, settings, BOUNDS, budget=budget, regime="course")
             number = store.allocation_started(f"kaggle-t4-slot-{i}", stage, budget=budget, started_at=assigned,
-                billing=dict(provider="kaggle", physical_gpu_uuid=physical, unadmitted_action=action))
+                billing=dict(provider="kaggle", physical_gpu_uuid=physical, unadmitted_action=action,
+                    measurement_scope="observed_notebook_interval" if config.get("resource_policy") == "observe" else "provider_assignment",
+                    provider_assignment_at=assigned))
             store.allocation_stop_requested(number, "gate refusal; provider release pending: "+reason)
 
 def recover_bootstrap_refusals(root, bundle, current_config):
@@ -589,7 +618,8 @@ def hardware_gate(bundle, review, *, assignment=None):
             allocations = store.connection.execute("SELECT * FROM allocations").fetchall()
             segment_closed &= all(r["stopped_at"] is not None for r in allocations)
             released &= all(r["stopped_at"] is not None and
-                json.loads(r["billing_json"] or "{}").get("segment_end") != "stage_transfer" for r in allocations)
+                json.loads(r["billing_json"] or "{}").get("segment_end") not in ("stage_transfer","observation_end") and
+                json.loads(r["billing_json"] or "{}").get("measurement_scope") != "observed_notebook_interval" for r in allocations)
             quiescent &= (store.connection.execute("SELECT COUNT(*) FROM provider_processes WHERE stopped_at IS NULL").fetchone()[0] == 0
                 and store.connection.execute("SELECT COUNT(*) FROM attempts WHERE status='running'").fetchone()[0] == 0)
             same_assignment &= bool(allocations) and all(r["stopped_at"] is not None or
@@ -614,6 +644,7 @@ def hardware_gate(bundle, review, *, assignment=None):
     supported = (review.get("accepted") is True and type(bound) is int and bound >= observed_peak
         and bound >= 7400914336 and bound+MIN_HEADROOM <= total_min
         and bool(review.get("justification", "").strip()))
+    measured = review.get("acceptance") == "measured_stress"
     host_receipt = read(Path(bundle)/"hardware/host-checks.json") if (Path(bundle)/"hardware/host-checks.json").exists() else {}
     host_passed = host_receipt.get("tests") == 3 and host_receipt.get("skipped") == 0
     native_loads = [l for l in loads if l.get("model") == CANDIDATE.model]
@@ -624,18 +655,22 @@ def hardware_gate(bundle, review, *, assignment=None):
     passed = (report.get("root_blocker") is None and report.get("smoke", {}).get("stop_reason") is None
         and complete_probes and len(ordinary) == 21 and valid_loads
         and (segment_closed or assignment is not None and same_assignment and quiescent)
-        and free_min >= MIN_HEADROOM and supported and host_passed and cache_passed)
+        and free_min >= MIN_HEADROOM and (measured or supported) and host_passed and cache_passed)
     return dict(passed=passed, status="passed" if passed else "review_required" if complete_probes and free_min >= MIN_HEADROOM else "incomplete_or_failed",
         complete_resident_tokens_upper=110107, complete_envelope_probes=len(probes),
         ordinary_completed=len(ordinary), actual_minimum_free_bytes=free_min, observed_device_peak_bytes=observed_peak,
         complete_live_memory_upper_bound_bytes=bound, review=review, host_checks=host_receipt,
         native_load_checks_passed=valid_loads, provider_release_confirmed=released,
         accounting_segment_closed=segment_closed, inference_processes_quiescent=quiescent,
-        note="Physical shape diagnostics alone do not prove a complete allocator/workspace bound; a supported R7 review is required")
+        acceptance="measured_stress" if measured else "supported_memory_bound",
+        note="Measured complete-input stress/headroom acceptance; no formal memory proof claimed" if measured else
+            "Physical shape diagnostics alone do not prove a complete allocator/workspace bound; a supported R7 review is required")
 
 
-def accepted_budget(bundle, base):
+def accepted_budget(bundle, base, *, observe=False):
     """Derive prior hardware charges once; pilot/main ledgers stay explicit."""
+    if observe:
+        return MonitoringCourseBudget(**base)  # Hardware stays in the canonical ledgers.
     original = CourseBudget(**base)
     stores = []
     try:
@@ -679,7 +714,7 @@ def bind_candidate(root, bundle, config, *, verify_environment=True):
     from scripts.m5_course_smoke_assets import source_identity
     source_identity(Path(root), manifest)
     prepared = read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
-    budget = accepted_budget(bundle, config["budget"])
+    budget = accepted_budget(bundle, config["budget"],observe=config.get("resource_policy") == "observe")
     assets = read(config["assets_receipt"])
     for name, version in assets["versions"].items():
         if verify_environment and importlib.metadata.version(name) != version:
@@ -690,6 +725,9 @@ def bind_candidate(root, bundle, config, *, verify_environment=True):
             primaries_interval=.975, secondary_interval=.95, replicate_zero_primary=True),
         source_manifest="source/source-manifest.json", model_revision=CANDIDATE.revision,
         freeze=None)
+    if config.get("resource_policy") == "observe":
+        candidate["resource_policy"] = "observe"
+        candidate["hardware_acceptance"] = config.get("hardware_review", {}).get("acceptance")
     if path.exists():
         saved = read(path)
         if record_json({k:v for k,v in saved.items() if k != "freeze"}) != record_json({k:v for k,v in candidate.items() if k != "freeze"}):
@@ -702,9 +740,10 @@ def bind_candidate(root, bundle, config, *, verify_environment=True):
 def snapshot(root, bundle, stage, run=None, *, now=None, devices=()):
     worlds, branches = scope(root, bundle, stage)
     return progress_snapshot(worlds, branches, worker_paths(bundle, stage), now=now,
-        budget=CourseBudget(**run["budget"]) if run else None,
+        budget=course_budget(run) if run else None,
         settings=run["settings"] if run else None, regime="course",
-        prior_paths=(tuple(p for p in worker_paths(bundle, "development") if p.exists()) if stage == "main" else ()) + refused_workers(bundle),
+        prior_paths=(tuple(p for p in worker_paths(bundle, "development") if p.exists()) if stage == "main" else ()) +
+            (tuple(p for p in worker_paths(bundle,"hardware") if p.exists()) if run and run.get("resource_policy") == "observe" else ()) + refused_workers(bundle),
         planned_devices=devices)
 
 
@@ -713,6 +752,10 @@ def session_window(config):
     if not assigned or not config.get("release_instructions", "").strip():
         raise BudgetStop("actual_assignment_and_provider_release_instructions_required")
     elapsed = timestamp(utc_now())-timestamp(assigned)
+    if config.get("resource_policy") == "observe":
+        if elapsed < 0:
+            raise ValueError("observed session start is in the future")
+        return config.get("max_work_seconds",36000)-elapsed
     quota, duration = config.get("provider_quota_gpu_hours"), config.get("provider_session_seconds")
     if (elapsed < 0 or type(quota) not in (int,float) or quota <= 0 or
             type(duration) not in (int,float) or duration <= 0):
@@ -750,6 +793,7 @@ def hardware(root, bundle, config):
         hf_cache=config["hf_cache"], assets_receipt=config["assets_receipt"],
         source_manifest=str(Path(root)/"source-manifest.json"), resume_workers=[], complete_envelope_diagnostics=True)
     launch["continuous_assignment"] = config.get("continuous_assignment", False)
+    launch.update(resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000))
     launch["prior_allocation_workers"] = [str(p) for p in refused_workers(bundle)]
     if (Path(bundle)/"hardware").exists():
         if not all(p.exists() for p in worker_paths(bundle, "hardware")):
@@ -794,7 +838,7 @@ def execute(root, bundle, config, action):
     # physical UUID, host facts and model device visibility; these are not a
     # claim that the same physical card returns in the next session.
     devices = ("kaggle-t4-slot-0", "kaggle-t4-slot-1")
-    budget = CourseBudget(**run["budget"])
+    budget = course_budget(run)
     wall = session_window(config)
     session_deadline = monotonic()+wall-budget.shutdown_seconds-config.get("finalization_seconds", 60)
     initial = snapshot(root, bundle, stage, run, devices=devices)
@@ -811,6 +855,7 @@ def execute(root, bundle, config, action):
     specs = [WorkerSpec(path, SmokeFactory(physical), cuda_visible_devices=physical, allocated_device=device,
         allocated_at=utc_now() if config.get("continuous_assignment") else config["allocated_at"],
         continuing_assignment=continuing, provider_billing=dict(provider="kaggle", authorization=authorization,
+            measurement_scope="observed_notebook_interval" if config.get("resource_policy") == "observe" else "provider_assignment",
             physical_gpu_uuid=physical, host_inventory=inventory,
             provider_assignment_at=config["allocated_at"],
             release_instructions=config["release_instructions"])) for path,device,physical in zip(paths,devices,physical_devices)]
@@ -823,6 +868,8 @@ def execute(root, bundle, config, action):
             print(f"{stage}: {c['finished_logical']}/{c['scheduled_logical']} recorded; "
                   f"{c['attempts']} attempts; {c['replay_uses']} replay uses; "
                   f"{c['recorded_failures']} invalid/failed; {c['unknown_logical']} unknown", flush=True)
+            estimate=progress["forecast"]
+            print("  "+utc_now()+"; measured remaining-time forecast: "+str(estimate.get("elapsed_seconds"))+" seconds",flush=True)
             last_print[0] = monotonic()
         # Raw replies have already been saved. Stop subsequent work on any
         # physical headroom/finite/cache defect without resampling those slots.
@@ -840,7 +887,8 @@ def execute(root, bundle, config, action):
                 store.close()
     scheduler = LocalScheduler(specs, worlds, branches, TokenizerFactory(CANDIDATE, str(Path(root)/"metadata/4B"), COURSE_LIMITS),
         settings=run["settings"], budget=budget, release_device=lambda *unused:False,
-        prior_paths=(tuple(p for p in worker_paths(bundle, "development") if p.exists()) if stage == "main" else ()) + refused_workers(bundle),
+        prior_paths=(tuple(p for p in worker_paths(bundle, "development") if p.exists()) if stage == "main" else ()) +
+            (tuple(p for p in worker_paths(bundle,"hardware") if p.exists()) if config.get("resource_policy") == "observe" else ()) + refused_workers(bundle),
         regime="course", report=report)
     stopped = None
     try:
@@ -853,7 +901,7 @@ def execute(root, bundle, config, action):
                 if monotonic()-last_backup >= config.get("backup_every_seconds", 600):
                     while scheduler.inflight:
                         scheduler.advance(dispatch=False)
-                    exported = backup_bundle(bundle, Path(bundle).parent/"course-resume.zip")
+                    exported = backup_bundle(bundle, Path(bundle).parent/("course-resume.payload" if config.get("resource_policy") == "observe" else "course-resume.zip"))
                     last_backup = monotonic()
                     print("Portable round-boundary backup updated: "+exported["path"], flush=True)
                 scheduler.advance()
@@ -917,11 +965,15 @@ def freeze(root, bundle, config):
                    "automatic acceptance only with no failures/uncertainty and every attempt below 96 seconds",
             maximum_attempt_seconds=max((r["elapsed_seconds"] or 0 for r in attempts), default=None))
         save(Path(bundle)/"automatic-pilot-review.json", review)
+    if config.get("resource_policy") == "observe" and config.get("automatic_pilot_review"):
+        review.update(family_condition_failures_reviewed=audit["passed"],timeout_120_seconds_adequate=pilot["passed"],
+            method="automatic independent raw/effect audit and complete 98% validity gate; all failure groups retained")
+        save(Path(bundle)/"automatic-pilot-review.json",review)
     if not review.get("family_condition_failures_reviewed") or not review.get("timeout_120_seconds_adequate"):
         raise BudgetStop("review_pilot_family_failures_and_120_second_timeout_before_freeze")
     devices = tuple(sorted({d["device"] for d in progress["resources"]["devices"]}))
     forecast = snapshot(root, bundle, "main", run, devices=devices)
-    reason, available = course_admission(forecast["resources"], forecast["forecast"], CourseBudget(**run["budget"]), "main", 2)
+    reason, available = course_admission(forecast["resources"], forecast["forecast"], course_budget(run), "main", 2)
     if reason:
         raise BudgetStop(reason)
     # Existing forecast includes slower-device/idle allocation and the 25% margin.
@@ -929,8 +981,8 @@ def freeze(root, bundle, config):
     freeze_receipt = dict(at=utc_now(), authorization=authorization, hardware=hardware, pilot=pilot, pilot_review=review,
         storage=disk_admission(Path(bundle), "main", complete_forecast=True),
         forecast=forecast["forecast"], resources=resources, planned_devices=list(devices),
-        course_admission_lhs_upper_gpu_hours=resources["course_gpu_hours"][1]+sum(resources["remaining_reserves_gpu_hours"].values())+
-            forecast["forecast"]["remaining_gpu_hours"][1],
+        course_admission_lhs_upper_gpu_hours=None if config.get("resource_policy") == "observe" else
+            resources["course_gpu_hours"][1]+sum(resources["remaining_reserves_gpu_hours"].values())+forecast["forecast"]["remaining_gpu_hours"][1],
         complete_main_distinct=5752, complete_main_logical=6280,
         provider_session_terms=dict(duration_seconds=config.get("provider_session_seconds"),
             release_instructions=config.get("release_instructions")),
@@ -1013,7 +1065,7 @@ def run_all(root, bundle, config):
     def record(stage, result):
         events.append(dict(stage=stage, at=utc_now(), result=result))
         save(Path(bundle)/"automatic-run.json", dict(status="running", stages=events))
-        backup_bundle(bundle, Path(bundle).parent/"course-resume.zip")
+        backup_bundle(bundle, Path(bundle).parent/("course-resume.payload" if config.get("resource_policy") == "observe" else "course-resume.zip"))
         print("Run All: "+stage+" finished; portable evidence updated", flush=True)
     def inference(stage):
         last_count = -1
@@ -1033,7 +1085,7 @@ def run_all(root, bundle, config):
     try:
         if config.get("execute_gpu") is not True:
             raise BudgetStop("GPU authorization disabled; limited CPU report only")
-        if config.get("prior_sessions_released") is not True:
+        if config.get("resource_policy") != "observe" and config.get("prior_sessions_released") is not True:
             raise BudgetStop("prior_provider_release_unconfirmed")
         session_window(config)
         if not (Path(bundle)/"hardware/report.json").exists():
@@ -1050,7 +1102,7 @@ def run_all(root, bundle, config):
         run = bind_candidate(root, bundle, config)
         if not run["freeze"]:
             action = "pilot"
-            start_assignment(bundle, "development", config, CourseBudget(**run["budget"]))
+            start_assignment(bundle, "development", config, course_budget(run))
             worlds, branches = scope(root, bundle, "development")
             capability = capability_gate(worlds, branches, worker_paths(bundle, "development"))
             if capability["status"] == "incomplete":
@@ -1067,8 +1119,8 @@ def run_all(root, bundle, config):
         require_authorization(config, "main")
         if current_assignment(bundle, "development", config):
             record("development_to_main", transfer_assignment(bundle, "development", "main", config,
-                budget=CourseBudget(**run["budget"])))
-        start_assignment(bundle, "main", config, CourseBudget(**run["budget"]))
+                budget=course_budget(run)))
+        start_assignment(bundle, "main", config, course_budget(run))
         result = inference("main")
         if result["counts"]["remaining_logical"]:
             raise BudgetStop("fixed_main_schedule_incomplete")
@@ -1080,6 +1132,11 @@ def run_all(root, bundle, config):
         except Exception as accounting_error:
             events.append(dict(stage="assignment_accounting", reason=str(accounting_error),
                                assignment_clock=config.get("allocated_at")))
+    if config.get("resource_policy") == "observe":
+        # Seal measured inference/setup intervals before read-only reporting.
+        # Subsequent analysis/export/provider idle is not silently called free;
+        # its controller logs survive and unobserved provider time stays unknown.
+        end_observations(bundle,through=utc_now())
     # Reporting never invokes a model, and has its own failure receipt. Preserve
     # original evidence even if an audit or provider interruption prevents it.
     analysis = None
@@ -1087,7 +1144,7 @@ def run_all(root, bundle, config):
     try:
         if config.get("execute_gpu"):
             run = read(Path(bundle)/"run.json") if (Path(bundle)/"run.json").exists() else None
-            budget = CourseBudget(**(run["budget"] if run else config["budget"]))
+            budget = course_budget(config,run["budget"] if run else config["budget"])
             if run:
                 stage = "main" if run["freeze"] else "development"
                 resources = snapshot(root,bundle,stage,run)["resources"]
@@ -1096,13 +1153,14 @@ def run_all(root, bundle, config):
                     stores = [WorkerStore(p,readonly=True) for p in all_workers(bundle)]
                     for store in stores: stack.callback(store.close)
                     resources = smoke_resources(stores,budget,utc_now())
-            if not resources["admission_available"]:
+            if config.get("resource_policy") != "observe" and not resources["admission_available"]:
                 raise BudgetStop("reporting_on_assigned_GPUs_with_unresolved_resource_bounds")
-            hours = resources["remaining_ceiling_gpu_hours"]
-            if not run or not run["freeze"]:
-                hours = min(hours,resources["remaining_reserves_gpu_hours"]["development"])
-            if not run:
-                hours = min(hours,resources["remaining_smoke_gpu_hours"])
+            hours = config.get("max_work_seconds",36000)/1800 if config.get("resource_policy") == "observe" else resources["remaining_ceiling_gpu_hours"]
+            if config.get("resource_policy") != "observe":
+                if not run or not run["freeze"]:
+                    hours = min(hours,resources["remaining_reserves_gpu_hours"]["development"])
+                if not run:
+                    hours = min(hours,resources["remaining_smoke_gpu_hours"])
             window = min(session_window(config),hours*3600/2)-budget.shutdown_seconds-30
             if window < 10:
                 raise BudgetStop("report_deferred_to_CPU_to_preserve_release_allowance")
@@ -1146,6 +1204,8 @@ def main(argv=None):
     result = dict(action=args.action, status="blocked", inference_called=False)
     try:
         initialize(root, bundle)
+        if config.get("resource_policy") == "observe":
+            end_observations(bundle,current_assignment=config.get("allocated_at"))
         recover_bootstrap_refusals(root,bundle,config)
         confirm_previous_release(bundle, config.get("previous_session_release"))
         if args.action == "run_all":
@@ -1178,7 +1238,7 @@ def main(argv=None):
     finally:
         save(bundle/"last-action.json", result)
         save(bundle/"actions"/(args.action+"-"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+".json"), result)
-        exported = backup_bundle(bundle, bundle.parent/"course-resume.zip")
+        exported = backup_bundle(bundle, bundle.parent/("course-resume.payload" if config.get("resource_policy") == "observe" else "course-resume.zip"))
         brief = {k:result[k] for k in ("action", "status", "passed", "stop_reason", "reason", "counts", "coverage", "report", "instruction") if k in result}
         print(json.dumps(dict(result=brief, export=exported), indent=2), flush=True)
     return 0 if result.get("status") not in ("blocked", "blocked_or_safely_stopped") else 2

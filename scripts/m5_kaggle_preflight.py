@@ -65,6 +65,16 @@ def assigned_preparation_window(launch, now=None, *, smoke_required=True):
     supplied bounds before downloads, without CUDA or resetting assignment time.
     Current allocation enters the ordinary smoke ledgers from this same clock.
     """
+    if launch.get("resource_policy") == "observe":
+        assigned = datetime.fromisoformat(launch["allocated_at"])
+        current = datetime.fromisoformat(now or utc())
+        duration = launch.get("session_limit_seconds",36000)
+        if assigned.tzinfo is None or current.tzinfo is None or type(duration) not in (int,float) or not 0 < duration <= 86400:
+            raise ValueError("bounded_observed_session_required")
+        wall = duration-(current-assigned).total_seconds()
+        if wall <= 120+EXPORT_SECONDS+124:
+            raise ValueError("session_time_needed_for_shutdown_and_export")
+        return wall
     if not launch.get("authorization", "").strip() or launch.get("prior_sessions_released") is not True:
         raise ValueError("authorization_or_prior_release_missing")
     if launch.get("resume_workers"):
@@ -341,7 +351,7 @@ def _stop_owned(process: subprocess.Popen) -> dict:
 
 
 def command(output: Path, name: str, args: list, *, deadline: float, timeout: float,
-            cwd: Path, env: dict) -> dict:
+            cwd: Path, env: dict, stream=False) -> dict:
     remaining = deadline - time.monotonic() - EXPORT_SECONDS
     if remaining < timeout + 7:
         raise TimeoutError(f"deadline_before_command: {name}, remaining={remaining:.1f}, bound={timeout}")
@@ -362,7 +372,27 @@ def command(output: Path, name: str, args: list, *, deadline: float, timeout: fl
             record["pid"] = process.pid
             record['tree_confirmation']='unconfirmed'
             try:
-                record["exit_code"] = process.wait(timeout=timeout)
+                if stream:
+                    print("Setup: "+name,flush=True)
+                    handles = [stdout.open("r",encoding="utf-8",errors="replace"),stderr.open("r",encoding="utf-8",errors="replace")]
+                    try:
+                        while process.poll() is None:
+                            for handle in handles:
+                                data=handle.read()
+                                if data: print(data,end="",flush=True)
+                            elapsed=time.monotonic()-started
+                            if elapsed >= timeout:
+                                raise subprocess.TimeoutExpired(args,timeout)
+                            try: process.wait(timeout=min(1,timeout-elapsed))
+                            except subprocess.TimeoutExpired: pass
+                        for handle in handles:
+                            data=handle.read()
+                            if data: print(data,end="",flush=True)
+                    finally:
+                        for handle in handles: handle.close()
+                    record["exit_code"] = process.returncode
+                else:
+                    record["exit_code"] = process.wait(timeout=timeout)
                 record["status"] = "passed" if process.returncode == 0 else "failed"
                 record["leader_exited"] = True
                 if os.name != "nt" and _group_exists(process.pid):

@@ -173,14 +173,14 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
             raise ValueError("CPU weight staging disabled pending concrete authorization/resources")
         if not cpu_only and not launch.get("authorization", "").strip():
             raise ValueError("concrete_course_smoke_authorization_missing")
-        if not cpu_only and (launch.get("prior_sessions_released") is not True
+        if not cpu_only and launch.get("resource_policy") != "observe" and (launch.get("prior_sessions_released") is not True
                 or any(launch["budget"].get("prior_"+name+"_gpu_hours") is None
                        for name in ("development","setup","interruption","other_course","other_overall","smoke"))
                 or launch["budget"].get("prior_smoke_attempts") is None):
             raise ValueError("prior_allocation_smoke_or_release_evidence_missing")
         count = assigned_device_count()
         assigned = bool(count or launch.get("allocated_at"))
-        if cpu_only and assigned:
+        if cpu_only and assigned and launch.get("resource_policy") != "observe":
             raise ValueError("CPU analysis installation requires Accelerator None")
         if portable_assets and assigned:
             raise ValueError("portable asset preparation requires Accelerator None")
@@ -211,7 +211,8 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
                 timeout = min(timeout,int(deadline-time.monotonic()-EXPORT_SECONDS-8))
                 if timeout < 1:
                     raise TimeoutError("assigned_preparation_deadline")
-            return command(output,name,args,deadline=deadline,timeout=timeout,cwd=scratch,env=env)
+            return command(output,name,args,deadline=deadline,timeout=timeout,cwd=scratch,env=env,
+                stream=online_config is not None)
         venv = scratch/"venv"
         invoke("create-candidate",[sys.executable,"-m","venv","--without-pip",venv],60)
         interpreter = venv/"bin/python"

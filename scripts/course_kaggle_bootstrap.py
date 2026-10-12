@@ -131,7 +131,8 @@ def online(root, config_path, scratch, output):
         provider="kaggle",reported_quota_gpu_hours=config.get("provider_quota_gpu_hours"),
         prior_sessions_released=config.get("prior_sessions_released",False),allocated_at=config.get("allocated_at"),
         provider_session_seconds=config.get("provider_session_seconds"),release_instructions=config.get("release_instructions",""),
-        budget=preparation_budget(root,bundle,config,saved),resume_workers=[])
+        budget=(saved["budget"] if saved else config["budget"]) if config.get("resource_policy") == "observe" else preparation_budget(root,bundle,config,saved),
+        resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000),resume_workers=[])
     from scripts.m5_course_smoke_assets import prepare
     result = prepare(root,manifest,launch,scratch,output,online_config=config_path,smoke_required=saved is None)
     if result["status"] != "prepared":
@@ -142,7 +143,7 @@ def online(root, config_path, scratch, output):
 
 def check_resume(root, config_path, output):
     """Apply the real release receipt, then admit resources before resumed weights."""
-    from scripts.course_kaggle_workflow import snapshot, session_window
+    from scripts.course_kaggle_workflow import snapshot, session_window, course_budget, end_observations
     from recovery.accounting import CourseBudget, course_admission
     config = json.loads(config_path.read_bytes())
     bundle = config_path.resolve().parent
@@ -152,9 +153,12 @@ def check_resume(root, config_path, output):
     # their real release receipt. The ordinary controller applies it on resume.
     from scripts.course_kaggle_workflow import recover_bootstrap_refusals, confirm_previous_release
     recover_bootstrap_refusals(root,bundle,config)
-    confirm_previous_release(bundle,config.get("previous_session_release"))
+    if config.get("resource_policy") == "observe":
+        end_observations(bundle,current_assignment=config.get("allocated_at"))
+    else:
+        confirm_previous_release(bundle,config.get("previous_session_release"))
     progress = snapshot(root,bundle,stage,run,devices=("kaggle-t4-slot-0","kaggle-t4-slot-1"))
-    reason,seconds = course_admission(progress["resources"],progress["forecast"],CourseBudget(**run["budget"]),stage,2)
+    reason,seconds = course_admission(progress["resources"],progress["forecast"],course_budget(config,run["budget"]),stage,2)
     if reason:
         raise ValueError(reason)
     save_json(output/"admission.json",dict(gpu_execution=False,model_generations=0,stage=stage,
@@ -352,7 +356,8 @@ def main():
             if platform.system() == "Linux" and platform.machine() == "x86_64" and sys.version_info[:2] == (3,13):
                 manifest = json.loads((root/"source-manifest.json").read_bytes())
                 from scripts.m5_course_smoke_assets import prepare
-                result = prepare(root,manifest,{},scratch,output,cpu_only=True)
+                launch = dict(resource_policy="observe") if args.config and json.loads(args.config.read_bytes()).get("resource_policy") == "observe" else {}
+                result = prepare(root,manifest,launch,scratch,output,cpu_only=True)
                 if result["status"] != "prepared":
                     raise ValueError(result["root_blocker"])
                 save_json(output/"bootstrap.json",result)

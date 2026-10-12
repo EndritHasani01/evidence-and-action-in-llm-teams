@@ -25,7 +25,7 @@ if not __package__:
     test_namespace.__path__ = [str(Path(__file__).resolve().parents[1]/"tests")]
     sys.modules.setdefault("tests",test_namespace)
 
-from recovery.accounting import CourseBudget, BudgetStop, _course_resources, course_admission, timestamp
+from recovery.accounting import CourseBudget, MonitoringCourseBudget, BudgetStop, _course_resources, course_admission, timestamp
 from recovery.attempts import ProcessProvider, MeasuredReply
 from recovery.costs import _allocation_resources
 from recovery.inference import ModelFactory, QWEN_4B, TokenizerFactory
@@ -76,7 +76,23 @@ def resources(stores, budget, now):
 def admission(launch, stores=(), *, now=None, next_attempt=False):
     """No available quota, per-account reset or successful output replaces usage evidence."""
     now = now or utc()
-    budget = CourseBudget(**launch["budget"])
+    budget = (MonitoringCourseBudget if launch.get("resource_policy") == "observe" else CourseBudget)(**launch["budget"])
+    if isinstance(budget, MonitoringCourseBudget):
+        if not launch.get("authorization", "").strip():
+            raise BudgetStop("course_execution_authorization_missing")
+        if not stores and launch.get("resume_workers"):
+            with ExitStack() as stack:
+                saved = [WorkerStore(Path(p),readonly=True) for p in launch["resume_workers"]]
+                for store in saved: stack.callback(store.close)
+                current = resources(saved,budget,now)
+                attempts = sum(s.connection.execute("SELECT COUNT(*) FROM attempts").fetchone()[0] for s in saved)
+        else:
+            current = resources(stores,budget,now)
+            attempts = sum(s.connection.execute("SELECT COUNT(*) FROM attempts").fetchone()[0] for s in stores)
+        if next_attempt and attempts >= 24:
+            raise BudgetStop("recorded_smoke_attempt_limit")
+        from scripts.m5_kaggle_preflight import assigned_preparation_window
+        return current, assigned_preparation_window(launch,now)
     if budget.allocation_mode != "gpu" or budget.shutdown_seconds < 120:
         raise ValueError("actual GPU charging and at least 120 seconds for release required")
     if launch.get("authorization", "").strip() == "":
@@ -318,7 +334,7 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
     worlds = load_population(root/"tests/fixtures/population_course.json").development
     settings = packet["settings"]
     paths = [output/f"worker-{i}.sqlite" for i in range(2)]
-    budget = CourseBudget(**launch["budget"])
+    budget = (MonitoringCourseBudget if launch.get("resource_policy") == "observe" else CourseBudget)(**launch["budget"])
     providers = []
     stopped = None
     with ExitStack() as stack:
@@ -344,6 +360,7 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
             charged_device = f"kaggle-t4-slot-{index}" if launch.get("continuous_assignment") else device
             store.allocation_started(charged_device,"development",budget=budget,started_at=launch["allocated_at"],
                 billing=dict(provider=launch["provider"],release_instructions=launch["release_instructions"],
+                    measurement_scope="observed_notebook_interval" if launch.get("resource_policy") == "observe" else "provider_assignment",
                     provider_assignment_at=launch["allocated_at"],physical_gpu_uuid=device))
         def before_attempt(*unused):
             admission(launch,stores,next_attempt=True)

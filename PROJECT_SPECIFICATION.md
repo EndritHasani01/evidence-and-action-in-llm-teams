@@ -560,6 +560,37 @@ plus all sixteen logical continuation calls, original replay cost and F's prefix
 
 ### 11.3 Cumulative resources and admission
 
+**Course execution amendment, 12 October 2026.** The user authorized removing
+manual budget forms and budget-based execution stops, and explicitly requested
+automatic acceptance without a manually justified model-memory bound. For the
+automatic course notebook, the 30/100-hour ceilings, 8/2/2 reservations and
+0.5-hour smoke envelope below are historical planning references and retrospective
+reporting quantities, not admission gates. The thesis regime is unchanged.
+Record actual attempts, provider-process timestamps, observed GPU intervals,
+setup logs and progression. Observation start/end never implies actual provider
+assignment/deallocation; unobserved earlier/later time remains unknown, not zero.
+Logical progress alone is not a measure of allocated GPU-hours. Keep bounded
+per-call execution, bounded cleanup, a configurable controller session deadline,
+quiescent backups and the fixed matrix; do not stop/select branches by outcomes.
+
+Hardware acceptance for this automatic workflow uses two distinct actual T4
+replicas, original loading/state/finite-output checks, the complete permitted-input
+bound, and both full-envelope probes with forced 256-token output, fresh state,
+finite outputs and at least 1.5 GiB observed free headroom. This is measured stress
+acceptance; it is not a formal complete allocator/workspace memory proof. Keep
+the 24 recorded smoke-attempt maximum, first-90 capability thresholds and the
+complete-pilot 98% validity/raw-effect audit. Review family/condition failures
+and timeout evidence automatically and retain every recorded failure/uncertainty.
+The observed forecast is reported rather than used as a budget stop. Run All on
+the pinned GPU configuration records operator authorization for the fixed stages
+and a conditional unchanged freeze before main; changing frozen scientific
+settings or publishing still requires separate authorization. Preserve every
+population, comparison, seed, protocol limit, replay and missingness rule.
+
+The following paragraphs describe the original resource-gated course policy,
+which remains available to earlier source-bound packages; the amendment above
+governs the simplified automatic notebook.
+
 Adopt a **30 aggregate allocated GPU-hour course subceiling**, within the unchanged
 **100-hour overall planning ceiling**. Count shared prior preparation once in the
 overall scientific total and include it in the course subceiling when reused.

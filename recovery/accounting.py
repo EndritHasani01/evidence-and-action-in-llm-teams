@@ -97,6 +97,15 @@ class CourseBudget(Budget):
                 object.__setattr__(self, field, tuple(bounds))
 
 
+class MonitoringCourseBudget(CourseBudget):
+    """User-authorized observation policy; original budget JSON stays compatible.
+
+    Historical limits remain available for retrospective reporting, while this
+    course execution policy does not turn unknown spending into an admission stop.
+    Per-call bounds and the controller's session deadline still apply.
+    """
+
+
 def budget_from_record(record):
     # Old thesis budget JSON and run bindings retain their exact representation.
     return (CourseBudget if "overall_ceiling_gpu_hours" in record else Budget)(**record)
@@ -147,6 +156,8 @@ def _course_resources(resources, budget):
 
 def course_admission(resources, forecast, budget, stage, device_count):
     """Conservative time before provider setup, including every assigned device."""
+    if isinstance(budget, MonitoringCourseBudget):
+        return None, device_count*24*3600  # Controller independently bounds the session.
     if not resources["admission_available"]:
         return resources["admission_reason"], 0
     available = resources["remaining_ceiling_gpu_hours"]
@@ -419,9 +430,9 @@ def progress_snapshot(worlds, branches, paths, *, now=None, budget=None, gate="M
             settings = bound["settings"]
             if bound.get("budget"):
                 saved_budget = budget_from_record(bound["budget"])
-                if budget is not None and budget != saved_budget:
+                if budget is not None and asdict(budget) != asdict(saved_budget):
                     raise ValueError("budget differs from saved run")
-                budget = saved_budget
+                budget = budget if budget is not None else saved_budget
         scheduled = {c.call_id: (b, c) for b in branches for c in b.calls}
         if records.keys() - scheduled.keys() or checkpoints.keys() - {b.branch_id for b in branches}:
             raise ValueError("worker contains unscheduled work")

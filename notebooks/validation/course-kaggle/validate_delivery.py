@@ -90,7 +90,7 @@ def main():
     nbclient.NotebookClient(notebook,timeout=600,kernel_name="python3").execute(env=environment,cwd=str(work))
     nbformat.write(notebook,work/"executed-run-all.ipynb")
     bundle=work/"workspace/bundle"; source=bundle/"source"
-    assert (work/"workspace/course-resume.zip").exists() and (work/"workspace/course-results.zip").exists()
+    assert (work/"workspace/course-resume.payload").exists() and (work/"workspace/course-results.zip").exists()
     assert not list(bundle.rglob("worker-*.sqlite"))
     config=json.loads((bundle/"operator-config.json").read_bytes())
     assert config["execute_gpu"] is False and not any(config["authorizations"].values())

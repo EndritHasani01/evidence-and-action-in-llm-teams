@@ -143,3 +143,30 @@ tests.test_course_compact_packet tests.test_course_run_all -q`: **10 passed in
 3.972 s** on Windows Python 3.11, including two-file source extraction, corrupt
 payload rejection before extraction, repeat verification, and the existing
 extracted-resume/continuous-allocation/gate-order checks. No GPU work was performed.
+
+## Executed final-online-1 repair and automatic workflow
+
+The supplied executed notebook (SHA-256
+`845fafced15cf5f0a8b78e0723c4abfd6a9a11cf13f40f5a4dd59e7aa989a363`)
+stopped at a rewritten/missing loose gzip fixture, then hit disabled-GPU/manual
+configuration defaults. Its original bytes and error output are preserved. The
+kernel reports Python 3.13.15; no model call ran. Compact payload input and opaque
+resume payload output prevent Kaggle input preparation from rewriting gzip files.
+Source errors retain a traceback, skip dependent execution and still export logs.
+
+At the user's explicit request, automatic course execution now uses observational
+resource accounting, measured complete-input stress/finite/cache/headroom
+acceptance and automatic pilot failure/timeout review. The specification §11.3
+records this amendment. Historical resource values stay unknown when unsupported;
+observation boundaries never claim provider deallocation. The old resource-gated
+mode and thesis defaults remain available. Exact inputs, native package/checkpoint
+identity, two independent T4 replicas, headroom, capability/98% validity, raw/effect
+audit, replay, failure/missingness and freeze-before-main checks remain enforced.
+
+Executed CPU verification: 57 focused package/flow/asset checks pass in 32.585 s;
+36 thesis/course accounting checks pass in 106.135 s. Five observation/automatic
+setup/hardware-acceptance checks pass in 0.512 s, including actual scheduler
+admission with unknown historical spending and unchanged saved budget JSON. That
+integration check caught a dataclass-policy type comparison in saved-run status;
+comparison now validates identical serialized values and preserves the requested
+execution policy. No GPU/model execution or actual hardware acceptance is claimed.

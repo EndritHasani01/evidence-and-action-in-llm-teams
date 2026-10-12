@@ -990,6 +990,18 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The user's `notebooks/run/final-online-1/notebook-exec.ipynb` stopped before model
+calls: Kaggle unpacked the loose gzip input and the notebook retained disabled
+GPU/manual setup defaults. The user authorized automatic GPU mode and timing,
+removal of budget-based stops/manual forms, and measured stress/headroom acceptance
+in place of the manual complete-memory proof. The scientific amendment is in
+specification §11.3; statistical/protocol/replay gates and unchanged freeze-before-main
+remain. The original executed notebook is preserved byte-for-byte. Compact raw
+payload transport prevents Kaggle fixture rewriting. Source failures now retain
+logs and skip dependent work while exporting evidence. Logs, worker intervals,
+checkpoints, failures and progress remain authoritative/derived in their existing
+stores; observed time does not assert provider release or resolve missing history.
+
 On 12 October 2026 the user authorized consolidating remaining M5/M6 engineering
 into the [course Kaggle execution package](KAGGLE_COURSE.md), rather than separate
 implementation projects. It reuses the saved course schedule, durable workers,

@@ -269,6 +269,23 @@ class WorkerStore:
             self.connection.execute("UPDATE allocations SET stop_reason=? WHERE number=? AND stopped_at IS NULL",
                                     (reason, number))
 
+    def allocation_observation_ended(self, number, *, at, reason):
+        """End a measured notebook interval without claiming GPU deallocation."""
+        row = self.connection.execute("SELECT * FROM allocations WHERE number=?", (number,)).fetchone()
+        if row is None:
+            raise ValueError("missing allocation observation")
+        if row["stopped_at"] is not None:
+            return
+        end = datetime.fromisoformat(at)
+        if end.tzinfo is None or end < datetime.fromisoformat(row["started_at"]):
+            raise ValueError("observation end precedes its start")
+        billing = json.loads(row["billing_json"] or "{}")
+        billing.update(provider_release_confirmed=False,measurement_scope="observed_notebook_interval",
+            unobserved_provider_time="unknown",segment_end="observation_end")
+        with self.connection:
+            self.connection.execute("UPDATE allocations SET stopped_at=?,stop_reason=?,billing_json=? WHERE number=?",
+                (at,reason,record_json(billing),number))
+
     def allocation_transferred(self, number, successor, *, at):
         """End one accounting segment while the same provider assignment continues.
 

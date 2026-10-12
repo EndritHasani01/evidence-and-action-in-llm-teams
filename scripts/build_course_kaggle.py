@@ -74,7 +74,7 @@ def notebook(manifest_sha, commit):
     introduction = """# Course research · Run All on Kaggle T4 ×2
 
 Upload this notebook and the **small research dataset ZIP**, attach the dataset,
-complete one setup cell, select **T4 ×2**, turn Internet **On**, then **Run All**.
+select **T4 ×2**, turn Internet **On**, then **Run All**.
 The notebook downloads the pinned dependencies and original model checkpoint,
 verifies their native hashes and versions, and advances automatically:
 
@@ -88,68 +88,43 @@ Progress appears every 15 seconds; portable backups update every ten minutes.
 No action switching, separate asset upload, or manual stage restart is needed.
 
 **A complete result depends on every mandatory gate passing and enough session time.**
-Failed gates finish with a limited result and preserved evidence. Prior spending
-and the supported complete memory bound cannot be invented. The default permits
-CPU reporting only; record separate conditional GPU, freeze and main authorizations
-below. Use Accelerator **None** for CPU reporting. GPU work requires the pinned
+Failed scientific checks finish with a limited result and preserved evidence.
+GPU mode is detected automatically. Running this notebook on T4 ×2 authorizes
+the fixed hardware/development/main sequence and a freeze conditional on the
+scientific gates. Use Accelerator **None** for CPU reporting. GPU work requires the pinned
 Linux x86_64 **Python 3.13** candidate; incompatible images stop safely.
 
-Keep the dataset private. Later sessions also attach **course-resume.zip**;
+Keep the dataset private. Later sessions also attach **course-resume.payload**;
 Run All resumes exact saved inputs without resampling completed calls.
 For durable background execution, use **Save Version → Save & Run All**;
 see the [Kaggle notebook guide](https://www.kaggle.com/docs/notebooks).
 """
-    select = """# ONE SETUP CELL. The repo chooses the next stage automatically.
-ACTION = "run_all"   # advanced read-only alternatives: inspect, status, analyze, export
-ENABLE_GPU = False
-PACKAGE_DIR = None   # detects the exact attached dataset automatically
-RESUME_ZIP = None    # detects the single attached course-resume.zip automatically
-ASSETS_ZIP = None    # optional existing offline assets; online downloads are the default
+    select = """# Normally leave these unchanged and select Run All.
+ACTION = "run_all"       # alternatives: status, analyze, export
+SESSION_HOURS = 10       # controller window; reserves time for a safe export
+RESUME_ZIP = None        # automatically detects a single attached resume bundle
 
-# Current provider facts reset on every resume. Empty dictionaries retain saved
-# authorizations, base bounds and reviews. Unknown duration is never zero.
-RUN_SETTINGS = {
-    "allocated_at": None,                 # actual UTC assignment, "...+00:00"
-    "provider_quota_gpu_hours": None,      # allowance verified at this assignment
-    "provider_session_seconds": None,      # verified maximum duration
-    "prior_sessions_released": False,
-    "authorizations": {
-        # Add five separate scope statements once:
-        # weights="I authorize downloading the original pinned checkpoint and dependencies...",
-        # hardware="I authorize the bounded course hardware screen...",
-        # pilot="I authorize the fixed five-world development pilot...",
-        # freeze="I authorize one unchanged freeze conditional on all gates...",
-        # main="I authorize the fixed 20-world matrix within course/overall caps..."
-    },
-    "budget": {
-        # prior_development_gpu_hours=[lower,upper], prior_setup_gpu_hours=[...],
-        # prior_interruption_gpu_hours=[...], prior_other_course_gpu_hours=[...],
-        # prior_other_overall_gpu_hours=[...], prior_smoke_gpu_hours=[...],
-        # prior_smoke_attempts=..., prior_evidence="..."
-        # Keep the SAME base values on every resume. Supported zero needs evidence.
-    },
-    "hardware_review": {
-        # accepted=True, complete_live_memory_upper_bound_bytes=...,
-        # justification="supported complete allocator/workspace/load bound..."
-        # Stress-test success alone does not establish this required proof.
-    },
-    "previous_session_release": {
-        # released_at="...+00:00", evidence="actual provider deallocation receipt"
-    },
-}
+# Automatic GPU detection and timing; no budget or approval forms.
+import os,time
+from pathlib import Path
+devices=Path('/proc/driver/nvidia/gpus')
+ENABLE_GPU=ACTION=='run_all' and devices.is_dir() and bool(list(devices.iterdir()))
+SESSION_STARTED_AT=time.strftime('%Y-%m-%dT%H:%M:%S+00:00',time.gmtime())
+PACKAGE_DIR=ASSETS_ZIP=None
+RUN_SETTINGS={}         # optional advanced overrides; normal execution needs none
 """
     bootstrap = f"""import hashlib,json,os,shutil,stat,sys,time,zipfile
 from pathlib import Path,PurePosixPath
 from IPython.display import display,FileLink,HTML
 EXPECTED_MANIFEST_SHA256={manifest_sha!r}
 EXPECTED_SOURCE_COMMIT={commit!r}
-workspace=Path(os.environ.get('COURSE_WORKSPACE','/kaggle/working/course-workspace')).resolve()
+workspace=Path(os.environ.get('COURSE_WORKSPACE','/kaggle/working/course-workspace-{commit[:12]}')).resolve()
 workspace.mkdir(parents=True,exist_ok=True)
 bundle=workspace/'bundle'
 inputs=Path(os.environ.get('COURSE_INPUT','/kaggle/input'))
 def attached(name,explicit=None):
     if explicit: return Path(explicit).resolve()
-    matches=list(inputs.rglob('course-resume*.zip' if name=='course-resume.zip' else name))
+    matches=(list(inputs.rglob('course-resume*.payload'))+list(inputs.rglob('course-resume*.zip'))) if name=='course-resume.zip' else list(inputs.rglob(name))
     if len(matches)>1: raise ValueError('Select one exact '+name+' in the options cell')
     return matches[0] if matches else None
 def extract_fresh(archive,target):
@@ -223,21 +198,42 @@ for name,expected in manifest['members'].items():
         raise ValueError('Canonical source changed: '+name)
 display(HTML('<div style="padding:16px;background:#e8f3f3;border-radius:10px"><b>Source verified</b> · '+EXPECTED_SOURCE_COMMIT[:12]+'<br>20 main worlds · 6,280 logical main uses · 5 separate development worlds</div>'))
 """
-    settings = """# Automatic assembly; edit only the setup cell above.
-saved_config=bundle/'operator-config.json'
-CONFIG=json.loads((saved_config if saved_config.exists() else source/'configs/course-kaggle.json').read_bytes())
-CONFIG.update(execute_gpu=ENABLE_GPU,continuous_assignment=(ACTION=='run_all'),
-    automatic_pilot_review=True,max_work_seconds=36000,finalization_seconds=900)
-for key,value in RUN_SETTINGS.items():
-    if isinstance(value,dict): CONFIG.setdefault(key,{}).update(value)
-    else: CONFIG[key]=value
-config_path=bundle/'operator-config.json'
-config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
+    bootstrap = ("import os,json,traceback\nfrom pathlib import Path\nSOURCE_READY=False\nsource=None\n"
+        f"workspace=Path(os.environ.get('COURSE_WORKSPACE','/kaggle/working/course-workspace-{commit[:12]}')).resolve()\n"
+        "bundle=workspace/'bundle'\ntry:\n"+
+        "".join("    "+line+"\n" for line in bootstrap.splitlines())+
+        "    SOURCE_READY=True\nexcept (Exception,KeyboardInterrupt) as error:\n"
+        "    bundle.mkdir(parents=True,exist_ok=True)\n"
+        "    logs=bundle/'logs'; logs.mkdir(exist_ok=True)\n"
+        "    (logs/'source-error.txt').write_text(traceback.format_exc(),encoding='utf-8')\n"
+        "    (bundle/'last-action.json').write_text(json.dumps(dict(status='source_setup_failed',reason=str(error),inference_calls=0)))\n"
+        "    print('Source setup failed:',error,'; no inference will run. The final cell exports the logs.')\n")
+    settings = """# Automatic configuration; no manual budget or memory proof.
+if not SOURCE_READY:
+    CONFIG=dict(execute_gpu=False,allocated_at=SESSION_STARTED_AT)
+    config_path=bundle/'operator-config.json'
+    print('Source setup failed; execution will be skipped and evidence exported.')
+else:
+    saved_config=bundle/'operator-config.json'
+    CONFIG=json.loads((saved_config if saved_config.exists() else source/'configs/course-kaggle.json').read_bytes())
+    CONFIG.update(execute_gpu=ENABLE_GPU,continuous_assignment=(ACTION=='run_all'),
+        automatic_pilot_review=True,max_work_seconds=SESSION_HOURS*3600,finalization_seconds=900,
+        resource_policy='observe',allocated_at=SESSION_STARTED_AT,assignment_clock_scope='observed_notebook_interval',
+        hardware_review=dict(acceptance='measured_stress'))
+    if ENABLE_GPU:
+        CONFIG['authorizations']={key:'Operator Run All authorizes the pinned course '+key+' stage; scientific gates must pass'
+            for key in ('weights','hardware','pilot','freeze','main')}
+    for key,value in RUN_SETTINGS.items():
+        if isinstance(value,dict): CONFIG.setdefault(key,{}).update(value)
+        else: CONFIG[key]=value
+    config_path=bundle/'operator-config.json'
+    config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
 """
     run = """import queue,threading,subprocess,signal
 def bounded_child(arguments,limit):
     # The repo owns scientific work; this cell only streams its process output.
-    log=workspace/('action-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.log')
+    logs=bundle/'logs'; logs.mkdir(exist_ok=True)
+    log=logs/('action-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.log')
     process=subprocess.Popen([str(a) for a in arguments],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
         text=True,bufsize=1,start_new_session=(os.name!='nt'),cwd=workspace,
         env=dict(os.environ,MPLBACKEND='Agg'))
@@ -266,6 +262,8 @@ def bounded_child(arguments,limit):
     return process.returncode
 
 try:
+    if not SOURCE_READY:
+        raise RuntimeError('Source setup failed; see logs/source-error.txt. No experiment was started.')
     if ACTION=='inspect':
         print('Source verified. Default Run All automatically orchestrates the authorized stages.')
     else:
@@ -274,7 +272,7 @@ try:
         assigned=Path('/proc/driver/nvidia/gpus').is_dir() and bool(list(Path('/proc/driver/nvidia/gpus').iterdir()))
         if assigned and ACTION=='run_all' and (not ENABLE_GPU or not CONFIG.get('allocated_at')):
             raise ValueError('Assigned GPUs are chargeable: complete the authorized setup cell, or select Accelerator None for CPU reporting')
-        if assigned and ACTION!='run_all' and not gpu_action:
+        if assigned and ACTION!='run_all' and not gpu_action and CONFIG.get('resource_policy')!='observe':
             raise ValueError('Use Accelerator None for standalone CPU actions; assigned idle time is chargeable')
         assets=attached('course-assets.zip',ASSETS_ZIP)
         if assets is None:
@@ -292,7 +290,7 @@ try:
             elif kind=='gpu-environment':
                 if assets is None: arguments+=['online','--config',config_path]
                 else: arguments+=['restore','--assets',assets,'--config',config_path]
-            else: arguments+=['cpu']
+            else: arguments+=['cpu','--config',config_path]
             arguments+=['--root',source,'--scratch',environment/'scratch','--output',environment/'bootstrap']
             if bounded_child(arguments,1800)!=0: raise RuntimeError('Bootstrap failed; its receipt and logs are retained')
         runtime=json.loads(receipt.read_bytes())
@@ -300,9 +298,10 @@ try:
         # Preserve setup/hash/version evidence in every portable resume export.
         bootstrap_evidence=bundle/'environment-receipts'/kind
         bootstrap_evidence.mkdir(parents=True,exist_ok=True)
-        for path in (environment/'bootstrap').glob('*'):
+        for path in (environment/'bootstrap').rglob('*'):
             if path.is_file() and path.name!='source-manifest.json':
-                target=bootstrap_evidence/path.name
+                target=bootstrap_evidence/path.relative_to(environment/'bootstrap')
+                target.parent.mkdir(parents=True,exist_ok=True)
                 if target.exists() and target.read_bytes()!=path.read_bytes():
                     target=bootstrap_evidence/(time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+path.name)
                 if not target.exists(): shutil.copyfile(path,target)
@@ -323,8 +322,11 @@ except (Exception,KeyboardInterrupt) as error:
     if locals().get('environment') and (environment/'bootstrap').is_dir():
         evidence=bundle/'environment-receipts'/(kind+'-failed-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime()))
         evidence.mkdir(parents=True,exist_ok=True)
-        for path in (environment/'bootstrap').glob('*'):
-            if path.is_file() and path.name!='source-manifest.json': shutil.copyfile(path,evidence/path.name)
+        for path in (environment/'bootstrap').rglob('*'):
+            if path.is_file() and path.name!='source-manifest.json':
+                target=evidence/path.relative_to(environment/'bootstrap')
+                target.parent.mkdir(parents=True,exist_ok=True)
+                shutil.copyfile(path,target)
     if locals().get('assigned'):
         try:
             ids=subprocess.check_output(['nvidia-smi','--query-gpu=uuid','--format=csv,noheader'],text=True,timeout=5)
@@ -353,11 +355,11 @@ coverage=analysis.get('coverage')
 summary='<html><meta charset="utf-8"><title>Course research result</title><body style="font:16px system-ui;max-width:900px;margin:40px auto;line-height:1.5">'
 summary+='<h1>Course research result</h1><p><b>'+html.escape(status)+'</b></p><p>'+html.escape(reason)+'</p>'
 if coverage: summary+='<p>Fixed main population coverage: '+html.escape(json.dumps(coverage))+'</p>'
-summary+='<p>Original replies and failures are retained in course-resume.zip. Unexecuted outcomes remain unknown. No failed gate was bypassed.</p>'
+summary+='<p>Original replies and failures are retained in course-resume.payload. Unexecuted outcomes remain unknown. No failed scientific check was bypassed.</p>'
 if analysis.get('report'): summary+='<p><a href="'+html.escape(analysis['report'],quote=True)+'">Open the independently reproduced analysis</a></p>'
 summary+='<p>Retain both ZIPs and this executed notebook. Stop any interactive GPU session and retain its real release receipt.</p></body></html>'
 (bundle/'RESULT.html').write_text(summary,encoding='utf-8')
-resume_export=workspace/'course-resume.zip'
+resume_export=workspace/'course-resume.payload'
 partial=resume_export.with_suffix('.tmp')
 with tempfile.TemporaryDirectory() as temporary:
     with zipfile.ZipFile(partial,'w',zipfile.ZIP_DEFLATED,compresslevel=3) as z:
@@ -375,7 +377,7 @@ try:
 except PermissionError:
     # An open download/Windows scanner may hold the previous derived ZIP.
     # Keep it intact and publish this complete snapshot under a fresh name.
-    resume_export=workspace/('course-resume-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.zip')
+    resume_export=workspace/('course-resume-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.payload')
     partial.replace(resume_export)
 results_export=workspace/'course-results.zip'
 with zipfile.ZipFile(results_export,'w',zipfile.ZIP_DEFLATED,compresslevel=3) as z:
@@ -397,7 +399,7 @@ print('Retain the ZIP(s) and actual executed notebook. For GPU actions: Stop Ses
     return dict(nbformat=4, nbformat_minor=5,
         metadata=dict(kernelspec=dict(display_name="Python 3", language="python", name="python3"), language_info=dict(name="python")),
         cells=[cell("markdown", introduction, "welcome"), cell("code", select, "action"),
-            cell("code", bootstrap, "source"), cell("markdown", "## Your saved configuration\nUse `[lower, upper]` GPU-hour bounds supported by evidence. Zero also requires evidence. Preserve the same base bounds on every resume. Available account quota does not reset study spending.\n", "config-notes"),
+            cell("code", bootstrap, "source"), cell("markdown", "## Automatic configuration\nThe notebook detects GPU mode, records observed session timestamps, and saves the same scientific configuration for resumption. No manual budget or memory-proof form is required. Unobserved provider time remains unknown.\n", "config-notes"),
             cell("code", settings, "configuration"), cell("markdown", "## Run and monitor\nThe package streams progress every 15 seconds and exports quiescent SQLite backups at ten-minute boundaries. Interrupted/invalid replies remain recorded. A failed gate stops subsequent work.\n", "execution-notes"),
             cell("code", run, "execute"), cell("markdown", "## Results and safe resume\nThe cell below always runs after an orchestration stop. Download both ZIPs and the executed notebook. A later Run All resumes the same saved inputs; actual provider release still needs a receipt.\n", "export-notes"), cell("code", export, "export")])
 
