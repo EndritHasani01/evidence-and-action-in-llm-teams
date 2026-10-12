@@ -29,11 +29,18 @@ Authorization never replaces an acceptance or resource gate.
    `course-assets.zip`; it contains target wheels and checkpoint files, not a
    copied environment. Its size is printed before handoff. Keep it private and
    observe the model's redistribution terms.
+   Setup uses installation and weight staging sequentially, then consumes only
+   fresh rebuildable staging copies while packing. Download the ZIP and start
+   a new session with it attached as a private, extracted input dataset.
 4. In a new session, attach `course-assets.zip` and the latest
    `course-resume.zip`, then run `ACTION="restore"` with Accelerator **None**
    and Internet **Off**. Restoration verifies pinned assets and reinstalls the
    ordinary project wheel. Select T4 ×2 only after this passes. This avoids
    spending the smoke allowance on downloads/installing packages.
+   Kaggle's extracted asset directory is used read-only: weights and wheels
+   are not duplicated in `/kaggle/working`. A raw ZIP is also supported if free
+   disk space permits expansion. Disk admission protects installation, raw
+   worker growth, backup/export and report scratch; missing space stops safely.
 
 A changed Kaggle image, unavailable pinned wheel, mismatched source or unknown
 resource bound produces a retained blocker. Do not replace packages, reduce
@@ -148,7 +155,7 @@ promise identical tokens across devices.
 To rebuild this local upload package from a clean committed checkout:
 
 ```text
-python -m scripts.build_course_kaggle --output dist/course-kaggle
+python -m scripts.build_course_kaggle --output dist/course-kaggle-final
 ```
 
 The builder reuses the reviewed `dist/course-m5-hardware-v3` source/metadata and

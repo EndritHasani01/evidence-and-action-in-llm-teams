@@ -14,9 +14,10 @@ workers/storage/accounting/reporting; no second experiment runtime/store is adde
 |---|---|---|
 | `unittest tests.test_course_workflow_core tests.inference_checks tests.test_course_hardware_smoke tests.worker_checks tests.accounting_checks -q` | Windows, repository Python 3.11 venv; CPU mocks/processes | 68 passed in 195.723 s; capability dispatch barrier, adapter/cache isolation, bounded failures, worker/resource behavior |
 | `unittest tests.test_course_kaggle_workflow -q` | Windows, repository venv; local-view witness and ordinary SQLite/LangGraph | 8 passed in 148.307 s; all 1,114 physical / 1,178 logical pilot rows, first-90 screen, branch-local archived-response reconstruction, missing/duplicate/seed detection, portable reopen and guarded CLI/notebook |
-| `unittest tests.test_course_kaggle_assets tests.test_course_smoke_assets -q` | Windows, repository venv; tiny artificial weights/wheels and CPU allocation receipts | 12 passed; native revision/LFS/metadata checks, bounded asset preparation, packing/restoration, retained receipts and gate-refused assignment accounting |
+| `unittest tests.test_course_kaggle_assets tests.test_course_smoke_assets -q` | Windows, repository venv; tiny artificial weights/wheels and CPU allocation receipts | 13 passed; native revision/LFS/metadata checks, bounded asset preparation, packing/restoration, retained receipts, gate-refused assignment accounting and full unknown main scope |
 | `unittest tests.test_course_report tests.test_course_report_archive -q` | Windows, repository venv; retained original CPU workers/reports | 14 passed in 589.073 s; unchanged synthetic/default reports and course coverage/uncertainty behavior |
 | `pip check` | Updated repository CPU venv; pinned tokenizer libraries, no Torch/model weights | Passed |
+| `tests.tokenizer_course_inference --tokenizer <pinned 4B metadata>` | Separate existing Python 3.11 / Transformers 5.12.0 / CPU Torch 2.11.0 environment | 4 passed; native template/IDs, settings and empty independent hybrid caches; no weights/GPU |
 
 The initial workflow run found SQLite connections left open by transaction
 contexts during temporary export/corruption tests; explicit closure fixes them.
@@ -32,6 +33,11 @@ Further package/notebook, native-tokenizer, outside-checkout CPU reproduction
 and final artifact audits are recorded in `notebooks/validation/course-kaggle/`
 at the delivery checkpoint. Artifact summaries bind the notebook/dataset to the
 exact committed source; rebuilds require a fresh output directory.
+The first fresh CPU run identified the optional Jinja2 template dependency and
+an empty-worker control-audit indexing defect. The CPU requirements now include
+pinned Jinja2; the audit skips unexecuted controls without creating workers.
+The final packet is `dist/course-kaggle-final/`; earlier failed delivery packets
+and receipts remain distinct.
 
 **Limits:** scripted witness success is not pretrained-model capability. Tiny
 asset fixtures load/download no pretrained weights; no actual Linux/T4 install,

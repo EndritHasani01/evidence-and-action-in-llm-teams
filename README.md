@@ -1,7 +1,7 @@
 # Recovery in distributed LLM teams
 
 The complete course Kaggle interface is in the [Kaggle runbook](docs/KAGGLE_COURSE.md).
-The local `dist/course-kaggle/` delivery contains `course_kaggle.ipynb`,
+The local `dist/course-kaggle-final/` delivery contains `course_kaggle.ipynb`,
 `course-kaggle-dataset.zip` and `START_HERE.md`: one guarded workflow for hardware,
 capability/pilot, explicit freeze/main, session backups and offline reports.
 Its [CPU integration evidence](docs/validation/course-kaggle-workflow.md) is

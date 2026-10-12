@@ -12,7 +12,7 @@ import zipfile
 
 from scripts.course_kaggle_bootstrap import export_assets, extract_assets
 from scripts.course_kaggle_workflow import (confirm_previous_release, record_refused_allocation,
-    refused_workers, snapshot)
+    refused_workers, snapshot, audit_records, scope)
 from scripts.m5_course_smoke_assets import download_weights_stdlib
 from scripts.m5_course_smoke import CANDIDATE
 from recovery.storage import WorkerStore
@@ -21,6 +21,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PortableAssetTests(unittest.TestCase):
+    def test_full_missing_main_scope_audits_without_creating_control_workers(self):
+        from tests.course_worker_cases import TOKENIZER, SETTINGS
+        with tempfile.TemporaryDirectory() as directory:
+            bundle=Path(directory)/"bundle"
+            worlds,branches=scope(ROOT,bundle,"main")
+            paths=(bundle/"main/worker-0.sqlite",bundle/"main/worker-1.sqlite")
+            result=audit_records(worlds,branches,paths,TOKENIZER,SETTINGS)
+            self.assertEqual(result["coverage"]["unknown"],6280)
+            self.assertTrue(result["passed"])
+            self.assertFalse(result["committed_schedule_complete"])
+            self.assertFalse(any(p.exists() for p in paths))
+
     def test_native_lfs_download_identity_and_copied_metadata_without_model_or_sdk(self):
         with tempfile.TemporaryDirectory() as directory:
             root=Path(directory)/"source"

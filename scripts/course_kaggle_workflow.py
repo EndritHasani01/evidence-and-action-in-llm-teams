@@ -380,6 +380,9 @@ def audit_records(worlds, branches, paths, tokenizer, settings):
                 branch = by_branch[branch_id]
                 if branch.branch_id not in committed and branch.phase != "control":
                     continue
+                if branch.phase == "control" and (branch.calls[0].call_id not in records or
+                        records[branch.calls[0].call_id]["validation_json"] is None):
+                    continue
                 def archived(view, rendered, tokenized, *, seed, settings, branch=branch):
                     call = next(c for c in branch.calls if c.peer == view.peer and c.round_number == view.slot.round_number)
                     if call.call_id not in owners or records[call.call_id]["status"] not in FINAL:
