@@ -337,12 +337,14 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
             stores.append(store)
             store.bind_run(worlds,branches,settings,dict(timeout_seconds=120,termination_seconds=1),budget=budget,regime="course")
         # Charge both assigned devices, including time before the first code cell.
-        for device, store in zip(devices,stores):
+        for index, (device, store) in enumerate(zip(devices,stores)):
             previous = store.connection.execute("SELECT * FROM allocations ORDER BY number DESC LIMIT 1").fetchone()
             if previous is not None and previous["stopped_at"] is None:
                 raise BudgetStop("smoke_resume_requires_confirmed_previous_provider_release_and_new_admission")
-            store.allocation_started(device,"development",budget=budget,started_at=launch["allocated_at"],
-                billing=dict(provider=launch["provider"],release_instructions=launch["release_instructions"]))
+            charged_device = f"kaggle-t4-slot-{index}" if launch.get("continuous_assignment") else device
+            store.allocation_started(charged_device,"development",budget=budget,started_at=launch["allocated_at"],
+                billing=dict(provider=launch["provider"],release_instructions=launch["release_instructions"],
+                    provider_assignment_at=launch["allocated_at"],physical_gpu_uuid=device))
         def before_attempt(*unused):
             admission(launch,stores,next_attempt=True)
         for device in devices:

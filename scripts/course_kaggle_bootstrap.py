@@ -24,7 +24,7 @@ if not __package__:
     sys.modules.setdefault("scripts", namespace)
 
 from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, sha256_file, save_json,
-    candidate_environment, command, EXPORT_SECONDS, utc)
+    candidate_environment, command, source_identity, assigned_preparation_window, EXPORT_SECONDS, utc)
 
 
 def extract_assets(archive, destination):
@@ -89,6 +89,7 @@ def export_assets(root, scratch, receipt, destination):
 
 
 def setup(root, config, scratch, output):
+    sys.path.insert(0,str(root))  # CPU preparation only; inference later uses -I ordinary install
     from scripts.m5_course_smoke_assets import prepare
     if not config.get("authorizations", {}).get("weights", "").strip():
         raise ValueError("explicit pinned weight-staging authorization required")
@@ -107,12 +108,22 @@ def setup(root, config, scratch, output):
         note="Download the assets ZIP and restore it as a private input in a new CPU session; staging copies were consumed")
 
 
-def restore(root, assets_zip, scratch, output, *, seconds=1800):
+def restore(root, assets_zip, scratch, output, *, seconds=1800, config=None):
     if platform.system() != "Linux" or platform.machine() != "x86_64" or sys.version_info[:2] != (3,13):
         raise ValueError("Pinned candidate requires Linux x86_64 Python 3.13; changing it reopens host acceptance")
     manifest = json.loads((root/"source-manifest.json").read_bytes())
-    from scripts.m5_course_smoke_assets import source_identity
     source_identity(root, manifest)
+    if config and config.get("execute_gpu"):
+        bundle = Path(config["_bundle"])
+        saved = json.loads((bundle/"run.json").read_bytes()) if (bundle/"run.json").exists() else None
+        action = "main" if saved and saved["freeze"] else "pilot" if saved else "hardware"
+        launch = dict(authorization=config.get("authorizations", {}).get(action, ""),
+            prior_sessions_released=config.get("prior_sessions_released"),resume_workers=[],
+            budget=saved["budget"] if saved else config["budget"],allocated_at=config.get("allocated_at"),
+            reported_quota_gpu_hours=config.get("provider_quota_gpu_hours"),
+            provider_session_seconds=config.get("provider_session_seconds"),release_instructions=config.get("release_instructions"))
+        wall = assigned_preparation_window(launch,smoke_required=saved is None)
+        seconds = min(seconds,wall-launch["budget"]["shutdown_seconds"]-EXPORT_SECONDS-124)
     if assets_zip.is_dir():
         if scratch.exists():
             raise FileExistsError(scratch)
@@ -191,7 +202,10 @@ def main():
         elif args.action == "restore":
             if not args.assets:
                 raise ValueError("restore requires the portable assets ZIP")
-            result = restore(root, args.assets, scratch, output)
+            config = json.loads(args.config.read_bytes()) if args.config else None
+            if config:
+                config["_bundle"] = str(args.config.resolve().parent)
+            result = restore(root, args.assets, scratch, output,config=config)
         else:
             if scratch.exists() or output.exists():
                 raise FileExistsError("fresh CPU environment/output required")

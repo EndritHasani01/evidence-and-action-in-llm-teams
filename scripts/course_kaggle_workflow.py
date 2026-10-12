@@ -87,6 +87,97 @@ def safe_extract(archive, destination):
 def worker_paths(bundle, stage):
     return tuple(Path(bundle)/stage/f"worker-{i}.sqlite" for i in range(2))
 
+def current_assignment(bundle, stage, config, physical_devices=None):
+    """Recognize only two persisted segments of this still-assigned session."""
+    if not config.get("continuous_assignment"):
+        return False
+    rows = []
+    for path in worker_paths(bundle, stage):
+        if not path.exists():
+            continue
+        with closing(WorkerStore(path, readonly=True)) as store:
+            rows.extend(dict(r) for r in store.connection.execute("SELECT * FROM allocations WHERE stopped_at IS NULL"))
+    if not rows:
+        return False
+    if len(rows) != 2:
+        raise BudgetStop("partial_continuous_assignment_requires_provider_release")
+    for index, row in enumerate(rows):
+        billing = json.loads(row["billing_json"] or "{}")
+        if (row["device"] != f"kaggle-t4-slot-{index}" or row["stage"] != stage
+                or billing.get("provider") != "kaggle"
+                or billing.get("provider_assignment_at") != config.get("allocated_at")
+                or not billing.get("physical_gpu_uuid")
+                or physical_devices and billing["physical_gpu_uuid"] != physical_devices[index]):
+            raise BudgetStop("open_allocation_belongs_to_another_session_or_device")
+    return True
+
+
+def transfer_assignment(bundle, source_stage, target_stage, config, *, budget=None):
+    """Partition a continuous assignment at a quiescent scientific stage boundary."""
+    authorization = require_authorization(config, "main" if target_stage == "main" else "pilot")
+    # Hardware rows have development accounting, but their directory is hardware.
+    sources = worker_paths(bundle, source_stage)
+    targets = worker_paths(bundle, target_stage)
+    targets[0].parent.mkdir(parents=True, exist_ok=True)
+    at = utc_now()
+    with ExitStack() as stack:
+        pairs = []
+        for index, (source, target) in enumerate(zip(sources, targets)):
+            stack.enter_context(_own_file(source))
+            stack.enter_context(_own_file(target))
+            previous = WorkerStore(source)
+            following = stack.enter_context(DurableRunner(target,None)).store
+            stack.callback(previous.close)
+            rows = previous.connection.execute("SELECT * FROM allocations WHERE stopped_at IS NULL").fetchall()
+            if (len(rows) != 1
+                    or previous.connection.execute("SELECT COUNT(*) FROM provider_processes WHERE stopped_at IS NULL").fetchone()[0]
+                    or previous.connection.execute("SELECT COUNT(*) FROM attempts WHERE status='running'").fetchone()[0]):
+                raise BudgetStop("stage_transfer_requires_quiescent_original_workers")
+            row = rows[0]
+            billing = json.loads(row["billing_json"] or "{}")
+            if (billing.get("provider_assignment_at") != config.get("allocated_at")
+                    or row["device"] != f"kaggle-t4-slot-{index}" or not billing.get("physical_gpu_uuid")):
+                raise BudgetStop("stage_transfer_must_preserve_the_current_physical_assignment")
+            if following.connection.execute("SELECT 1 FROM allocations WHERE stopped_at IS NULL").fetchone():
+                raise BudgetStop("successor_assignment_already_open")
+            pairs.append((previous, following, row, billing))
+        # Write successors first. A crash leaves visible overlapping/partial
+        # intervals and admission refuses; it never silently loses paid time.
+        successors = []
+        for previous, following, row, billing in pairs:
+            billing = {k:v for k,v in billing.items() if k not in ("segment_end", "successor_stage")}
+            billing.update(authorization=authorization, provider_release_confirmed=False)
+            number = following.allocation_started(row["device"], target_stage, started_at=at,
+                budget=budget or CourseBudget(**config["budget"]), billing=billing)
+            successors.append(dict(following.connection.execute("SELECT * FROM allocations WHERE number=?", (number,)).fetchone()))
+        for (previous, following, row, billing), successor in zip(pairs, successors):
+            previous.allocation_transferred(row["number"], successor, at=at)
+    return dict(at=at, from_stage=source_stage, to_stage=target_stage, provider_release_confirmed=False)
+
+
+def start_assignment(bundle, stage, config, budget):
+    """Charge a resumed session from its actual assignment, including setup."""
+    import subprocess
+    inventory = subprocess.check_output(["nvidia-smi", "--query-gpu=uuid,name", "--format=csv,noheader"], text=True, timeout=5)
+    rows = [line.split(",") for line in inventory.splitlines()]
+    if len(rows) != 2 or any("T4" not in r[1] for r in rows) or rows[0][0] == rows[1][0]:
+        raise BudgetStop("two_actual_T4_replicas_required")
+    if current_assignment(bundle, stage, config, tuple(r[0].strip() for r in rows)):
+        return
+    for path in all_workers(bundle):
+        with closing(WorkerStore(path, readonly=True)) as store:
+            if store.connection.execute("SELECT 1 FROM allocations WHERE stopped_at IS NULL").fetchone():
+                raise BudgetStop("previous_session_provider_release_receipt_required")
+    authorization = require_authorization(config, "main" if stage == "main" else "pilot")
+    worker_paths(bundle, stage)[0].parent.mkdir(parents=True, exist_ok=True)
+    for index, path in enumerate(worker_paths(bundle, stage)):
+        with _own_file(path), DurableRunner(path,None) as runner:
+            store = runner.store
+            store.allocation_started(f"kaggle-t4-slot-{index}", stage, started_at=config["allocated_at"],
+                budget=budget, billing=dict(provider="kaggle", provider_assignment_at=config["allocated_at"],
+                    physical_gpu_uuid=rows[index][0].strip(), authorization=authorization,
+                    release_instructions=config["release_instructions"]))
+
 
 def all_workers(bundle):
     ordinary = tuple(p for stage in ("hardware", "development", "main") for p in worker_paths(bundle, stage) if p.exists())
@@ -137,6 +228,17 @@ def record_refused_allocation(root, bundle, config, action, reason, *, devices=N
             number = store.allocation_started(f"kaggle-t4-slot-{i}", stage, budget=budget, started_at=assigned,
                 billing=dict(provider="kaggle", physical_gpu_uuid=physical, unadmitted_action=action))
             store.allocation_stop_requested(number, "gate refusal; provider release pending: "+reason)
+
+def recover_bootstrap_refusals(root, bundle):
+    """Materialize pre-install assignment receipts into the ordinary ledgers."""
+    for path in sorted((Path(bundle)/"bootstrap-refusals").glob("*.json")):
+        receipt = read(path)
+        if not receipt.get("allocated_at") or not receipt.get("physical_devices"):
+            raise BudgetStop("earlier_bootstrap_assignment_interval_unknown; reconcile it before GPU work")
+        config = receipt["config"]
+        config.update(execute_gpu=True,allocated_at=receipt["allocated_at"])
+        record_refused_allocation(root,bundle,config,receipt.get("stage","hardware"),
+            receipt["reason"],devices=tuple(receipt["physical_devices"]))
 
 
 def initialize(root, bundle):
@@ -462,15 +564,22 @@ def pilot_gate(worlds, branches, paths, *, audit=None):
         status="passed" if passed else "incomplete" if not complete else "failed")
 
 
-def hardware_gate(bundle, review):
+def hardware_gate(bundle, review, *, assignment=None):
     report = read(Path(bundle)/"hardware/report.json")
     paths = worker_paths(bundle, "hardware")
     probes, ordinary, loads, all_attempts = [], [], [], []
-    released = True
+    segment_closed, released, quiescent, same_assignment = True, True, True, True
     for path in paths:
         store = WorkerStore(path, readonly=True)
         try:
-            released &= store.connection.execute("SELECT COUNT(*) FROM allocations WHERE stopped_at IS NULL").fetchone()[0] == 0
+            allocations = store.connection.execute("SELECT * FROM allocations").fetchall()
+            segment_closed &= all(r["stopped_at"] is not None for r in allocations)
+            released &= all(r["stopped_at"] is not None and
+                json.loads(r["billing_json"] or "{}").get("segment_end") != "stage_transfer" for r in allocations)
+            quiescent &= (store.connection.execute("SELECT COUNT(*) FROM provider_processes WHERE stopped_at IS NULL").fetchone()[0] == 0
+                and store.connection.execute("SELECT COUNT(*) FROM attempts WHERE status='running'").fetchone()[0] == 0)
+            same_assignment &= bool(allocations) and all(r["stopped_at"] is not None or
+                json.loads(r["billing_json"] or "{}").get("provider_assignment_at") == assignment for r in allocations)
             loads.extend(json.loads(r[0]) for r in store.connection.execute("SELECT backend_json FROM provider_processes WHERE backend_json IS NOT NULL"))
             for row in store.connection.execute("SELECT * FROM attempts"):
                 all_attempts.append(dict(row))
@@ -499,13 +608,15 @@ def hardware_gate(bundle, review):
     cache_passed = len(ordinary) == 21 and all(p.get("cache", {}).get("initial_empty") is True and
         p.get("cache", {}).get("same_call_cache") is True and p.get("finite_score_steps", 0) > 0 for p in ordinary)
     passed = (report.get("root_blocker") is None and report.get("smoke", {}).get("stop_reason") is None
-        and complete_probes and len(ordinary) == 21 and valid_loads and released
+        and complete_probes and len(ordinary) == 21 and valid_loads
+        and (segment_closed or assignment is not None and same_assignment and quiescent)
         and free_min >= MIN_HEADROOM and supported and host_passed and cache_passed)
     return dict(passed=passed, status="passed" if passed else "review_required" if complete_probes and free_min >= MIN_HEADROOM else "incomplete_or_failed",
         complete_resident_tokens_upper=110107, complete_envelope_probes=len(probes),
         ordinary_completed=len(ordinary), actual_minimum_free_bytes=free_min, observed_device_peak_bytes=observed_peak,
         complete_live_memory_upper_bound_bytes=bound, review=review, host_checks=host_receipt,
         native_load_checks_passed=valid_loads, provider_release_confirmed=released,
+        accounting_segment_closed=segment_closed, inference_processes_quiescent=quiescent,
         note="Physical shape diagnostics alone do not prove a complete allocator/workspace bound; a supported R7 review is required")
 
 
@@ -592,7 +703,7 @@ def session_window(config):
     if (elapsed < 0 or type(quota) not in (int,float) or quota <= 0 or
             type(duration) not in (int,float) or duration <= 0):
         raise BudgetStop("verify_current_quota_session_duration_and_assignment_clock")
-    return min(duration-elapsed, quota*3600/2, config.get("max_work_seconds", 3600))
+    return min(duration-elapsed, quota*3600/2-elapsed, config.get("max_work_seconds", 3600))
 
 
 def disk_admission(bundle, stage, *, complete_forecast=False):
@@ -624,6 +735,7 @@ def hardware(root, bundle, config):
         release_instructions=config["release_instructions"], budget=config["budget"],
         hf_cache=config["hf_cache"], assets_receipt=config["assets_receipt"],
         source_manifest=str(Path(root)/"source-manifest.json"), resume_workers=[], complete_envelope_diagnostics=True)
+    launch["continuous_assignment"] = config.get("continuous_assignment", False)
     launch["prior_allocation_workers"] = [str(p) for p in refused_workers(bundle)]
     if (Path(bundle)/"hardware").exists():
         if not all(p.exists() for p in worker_paths(bundle, "hardware")):
@@ -636,7 +748,8 @@ def execute(root, bundle, config, action):
     authorization = require_authorization(config, "main" if action == "main" else "pilot")
     if config.get("execute_gpu") is not True:
         raise BudgetStop("gpu_execution_disabled")
-    gate = hardware_gate(bundle, config.get("hardware_review", {}))
+    gate = hardware_gate(bundle, config.get("hardware_review", {}),
+        assignment=config.get("allocated_at") if config.get("continuous_assignment") else None)
     save(Path(bundle)/"hardware-gate.json", gate)
     if not gate["passed"]:
         raise BudgetStop("complete_hardware_resource_release_and_R7_gate_not_passed")
@@ -669,20 +782,23 @@ def execute(root, bundle, config, action):
     devices = ("kaggle-t4-slot-0", "kaggle-t4-slot-1")
     budget = CourseBudget(**run["budget"])
     wall = session_window(config)
-    session_deadline = monotonic()+wall-budget.shutdown_seconds-60
+    session_deadline = monotonic()+wall-budget.shutdown_seconds-config.get("finalization_seconds", 60)
     initial = snapshot(root, bundle, stage, run, devices=devices)
     reason, allowed = course_admission(initial["resources"], initial["forecast"], budget, stage, 2)
     if reason:
         raise BudgetStop(reason)
-    if initial["resources"]["active_devices"]:
+    continuing = current_assignment(bundle, stage, config, physical_devices)
+    if initial["resources"]["active_devices"] and not continuing:
         raise BudgetStop("previous_session_provider_release_receipt_required")
     if wall <= budget.shutdown_seconds+1050:
         raise BudgetStop("insufficient_session_time_for_a_complete_bounded_round_backup_and_release")
     os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_HUB_CACHE=config["hf_cache"])
     paths = worker_paths(bundle, stage)
     specs = [WorkerSpec(path, SmokeFactory(physical), cuda_visible_devices=physical, allocated_device=device,
-        allocated_at=config["allocated_at"], provider_billing=dict(provider="kaggle", authorization=authorization,
+        allocated_at=utc_now() if config.get("continuous_assignment") else config["allocated_at"],
+        continuing_assignment=continuing, provider_billing=dict(provider="kaggle", authorization=authorization,
             physical_gpu_uuid=physical, host_inventory=inventory,
+            provider_assignment_at=config["allocated_at"],
             release_instructions=config["release_instructions"])) for path,device,physical in zip(paths,devices,physical_devices)]
     last_print, last_backup = [0.], monotonic()
     def report(progress):
@@ -767,9 +883,27 @@ def freeze(root, bundle, config):
     if not audit["actual_model_evidence"]:
         raise BudgetStop("pilot_rows_lack_actual_finite_fresh_cache_GPU_diagnostics")
     progress = snapshot(root, bundle, "development", run)
-    if progress["resources"]["active_devices"]:
+    if progress["resources"]["active_devices"] and not (
+            config.get("continuous_assignment") and current_assignment(bundle, "development", config)):
         raise BudgetStop("pilot_provider_release_required_before_freeze")
-    if not config.get("pilot_review", {}).get("family_condition_failures_reviewed") or not config.get("pilot_review", {}).get("timeout_120_seconds_adequate"):
+    review = config.get("pilot_review", {})
+    if config.get("automatic_pilot_review") and not (
+            review.get("family_condition_failures_reviewed") and review.get("timeout_120_seconds_adequate")):
+        # A completely clean pilot can be inspected mechanically. Any invalid,
+        # failed, uncertain or near-timeout call still needs an explicit review.
+        attempts = []
+        for path in worker_paths(bundle, "development"):
+            with closing(WorkerStore(path, readonly=True)) as store:
+                attempts.extend(dict(r) for r in store.connection.execute("SELECT * FROM attempts"))
+        clean = (pilot["protocol_valid"] == 1114 and all(r["status"] == "completed"
+            and not r["uncertain_completion"] and r["elapsed_seconds"] is not None
+            and r["elapsed_seconds"] < .8*BOUNDS["timeout_seconds"] for r in attempts))
+        review = dict(family_condition_failures_reviewed=clean, timeout_120_seconds_adequate=clean,
+            method="independent raw/effect audit; inspect every family/phase/policy/event group; "
+                   "automatic acceptance only with no failures/uncertainty and every attempt below 96 seconds",
+            maximum_attempt_seconds=max((r["elapsed_seconds"] or 0 for r in attempts), default=None))
+        save(Path(bundle)/"automatic-pilot-review.json", review)
+    if not review.get("family_condition_failures_reviewed") or not review.get("timeout_120_seconds_adequate"):
         raise BudgetStop("review_pilot_family_failures_and_120_second_timeout_before_freeze")
     devices = tuple(sorted({d["device"] for d in progress["resources"]["devices"]}))
     forecast = snapshot(root, bundle, "main", run, devices=devices)
@@ -778,7 +912,7 @@ def freeze(root, bundle, config):
         raise BudgetStop(reason)
     # Existing forecast includes slower-device/idle allocation and the 25% margin.
     resources = forecast["resources"]
-    freeze_receipt = dict(at=utc_now(), authorization=authorization, hardware=hardware, pilot=pilot,
+    freeze_receipt = dict(at=utc_now(), authorization=authorization, hardware=hardware, pilot=pilot, pilot_review=review,
         storage=disk_admission(Path(bundle), "main", complete_forecast=True),
         forecast=forecast["forecast"], resources=resources, planned_devices=list(devices),
         course_admission_lhs_upper_gpu_hours=resources["course_gpu_hours"][1]+sum(resources["remaining_reserves_gpu_hours"].values())+
@@ -858,20 +992,150 @@ def analyze(root, bundle, config):
     return receipt
 
 
+def run_all(root, bundle, config):
+    """Advance the existing gates in order, always finish with retained results."""
+    config = dict(config, continuous_assignment=True)
+    events, reason, action = [], None, "hardware"
+    def record(stage, result):
+        events.append(dict(stage=stage, at=utc_now(), result=result))
+        save(Path(bundle)/"automatic-run.json", dict(status="running", stages=events))
+        backup_bundle(bundle, Path(bundle).parent/"course-resume.zip")
+        print("Run All: "+stage+" finished; portable evidence updated", flush=True)
+    def inference(stage):
+        last_count = -1
+        while True:
+            result = execute(root, bundle, config, stage)
+            record(stage, result)
+            count = result["counts"]["finished_logical"]
+            stop = result.get("stop_reason")
+            if not stop:
+                return result
+            # A scientific/resource failure is terminal for this invocation.
+            # Only the runner's conservative time window may be re-admitted
+            # in the same still-assigned session, with fresh derived spending.
+            if "BudgetStop: allocation_deadline" not in stop or count <= last_count:
+                raise BudgetStop(stop)
+            last_count = count
+    try:
+        if config.get("execute_gpu") is not True:
+            raise BudgetStop("GPU authorization disabled; limited CPU report only")
+        if config.get("prior_sessions_released") is not True:
+            raise BudgetStop("prior_provider_release_unconfirmed")
+        session_window(config)
+        if not (Path(bundle)/"hardware/report.json").exists():
+            result = hardware(root, bundle, config)
+            record("hardware", result)
+            if result.get("root_blocker") or result.get("smoke", {}).get("stop_reason"):
+                raise BudgetStop(result.get("root_blocker") or result["smoke"]["stop_reason"])
+        gate = hardware_gate(bundle, config.get("hardware_review", {}), assignment=config["allocated_at"])
+        save(Path(bundle)/"hardware-gate.json", gate)
+        if not gate["passed"]:
+            raise BudgetStop("complete_hardware_and_supported_R7_memory_gate_not_passed")
+        if not gate["accounting_segment_closed"]:
+            record("hardware_to_development", transfer_assignment(bundle, "hardware", "development", config))
+        run = bind_candidate(root, bundle, config)
+        if not run["freeze"]:
+            action = "pilot"
+            start_assignment(bundle, "development", config, CourseBudget(**run["budget"]))
+            worlds, branches = scope(root, bundle, "development")
+            capability = capability_gate(worlds, branches, worker_paths(bundle, "development"))
+            if capability["status"] == "incomplete":
+                inference("capability")
+                capability = capability_gate(worlds, branches, worker_paths(bundle, "development"))
+            save(Path(bundle)/"capability-gate.json", capability)
+            if not capability["passed"]:
+                raise BudgetStop("first_90_capability_gate_not_passed")
+            inference("pilot")
+            action = "freeze"
+            record("freeze", freeze(root, bundle, config))
+            run = read(Path(bundle)/"run.json")
+        action = "main"
+        require_authorization(config, "main")
+        if current_assignment(bundle, "development", config):
+            record("development_to_main", transfer_assignment(bundle, "development", "main", config,
+                budget=CourseBudget(**run["budget"])))
+        start_assignment(bundle, "main", config, CourseBudget(**run["budget"]))
+        result = inference("main")
+        if result["counts"]["remaining_logical"]:
+            raise BudgetStop("fixed_main_schedule_incomplete")
+    except (Exception, KeyboardInterrupt) as error:
+        reason = f"{type(error).__name__}: {error}"
+        print("Run All stopped at "+action+": "+reason, flush=True)
+        try:
+            record_refused_allocation(root, bundle, config, "pilot" if action == "freeze" else action, reason)
+        except Exception as accounting_error:
+            events.append(dict(stage="assignment_accounting", reason=str(accounting_error),
+                               assignment_clock=config.get("allocated_at")))
+    # Reporting never invokes a model, and has its own failure receipt. Preserve
+    # original evidence even if an audit or provider interruption prevents it.
+    analysis = None
+    alarm = False
+    try:
+        if config.get("execute_gpu"):
+            run = read(Path(bundle)/"run.json") if (Path(bundle)/"run.json").exists() else None
+            budget = CourseBudget(**(run["budget"] if run else config["budget"]))
+            if run:
+                stage = "main" if run["freeze"] else "development"
+                resources = snapshot(root,bundle,stage,run)["resources"]
+            else:
+                with ExitStack() as stack:
+                    stores = [WorkerStore(p,readonly=True) for p in all_workers(bundle)]
+                    for store in stores: stack.callback(store.close)
+                    resources = smoke_resources(stores,budget,utc_now())
+            if not resources["admission_available"]:
+                raise BudgetStop("reporting_on_assigned_GPUs_with_unresolved_resource_bounds")
+            hours = resources["remaining_ceiling_gpu_hours"]
+            if not run or not run["freeze"]:
+                hours = min(hours,resources["remaining_reserves_gpu_hours"]["development"])
+            if not run:
+                hours = min(hours,resources["remaining_smoke_gpu_hours"])
+            window = min(session_window(config),hours*3600/2)-budget.shutdown_seconds-30
+            if window < 10:
+                raise BudgetStop("report_deferred_to_CPU_to_preserve_release_allowance")
+            if os.name != "nt":
+                import signal
+                def stop_report(*unused):
+                    raise BudgetStop("report_time_limit; original evidence retained for CPU reproduction")
+                signal.signal(signal.SIGALRM,stop_report)
+                signal.setitimer(signal.ITIMER_REAL,min(window,config.get("finalization_seconds",900)))
+                alarm = True
+        analysis = analyze(root, bundle, config)
+        record("analysis", analysis)
+    except (Exception, KeyboardInterrupt) as error:
+        analysis_error = f"{type(error).__name__}: {error}"
+        events.append(dict(stage="analysis", status="failed", reason=analysis_error))
+        reason = reason or analysis_error
+    finally:
+        if alarm:
+            signal.setitimer(signal.ITIMER_REAL,0)
+            signal.signal(signal.SIGALRM,signal.SIG_DFL)
+    result = dict(action="run_all", status="complete_results" if analysis and
+        analysis["status"] == "model_complete" and reason is None else "limited_result",
+        reason=reason, analysis=analysis, stages=events, gates_bypassed=False,
+        provider_release_confirmed=False,
+        instruction="Download course-resume.zip and course-results.zip. Stop any interactive session; "
+                    "retain actual provider release time/evidence before another GPU session.")
+    save(Path(bundle)/"automatic-run.json", result)
+    return result
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
     parser.add_argument("--bundle", type=Path, required=True)
     parser.add_argument("--config", type=Path, required=True)
-    parser.add_argument("--action", choices=("inspect", "hardware", "capability", "pilot", "freeze", "main", "status", "analyze", "export"), required=True)
+    parser.add_argument("--action", choices=("run_all", "inspect", "hardware", "capability", "pilot", "freeze", "main", "status", "analyze", "export"), required=True)
     args = parser.parse_args(argv)
     root, bundle = args.root.resolve(), args.bundle.resolve()
     config = read(args.config)
     result = dict(action=args.action, status="blocked", inference_called=False)
     try:
         initialize(root, bundle)
+        recover_bootstrap_refusals(root,bundle)
         confirm_previous_release(bundle, config.get("previous_session_release"))
-        if args.action == "hardware":
+        if args.action == "run_all":
+            result = run_all(root, bundle, config)
+        elif args.action == "hardware":
             result = hardware(root, bundle, config)
             if result.get("root_blocker"):
                 record_refused_allocation(root, bundle, config, args.action, result["root_blocker"])

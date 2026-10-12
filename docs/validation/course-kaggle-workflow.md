@@ -36,8 +36,44 @@ exact committed source; rebuilds require a fresh output directory.
 The first fresh CPU run identified the optional Jinja2 template dependency and
 an empty-worker control-audit indexing defect. The CPU requirements now include
 pinned Jinja2; the audit skips unexecuted controls without creating workers.
-The final packet is `dist/course-kaggle-final/`; earlier failed delivery packets
+The preceding final packet is `dist/course-kaggle-final/`; earlier failed delivery packets
 and receipts remain distinct.
+
+## Run All continuation
+
+The user's subsequent request replaces action switching with automatic gated
+progression. One offline ZIP now supplies checkpoint/wheels as well as source.
+An actual assignment is partitioned at quiescent stage changes in the original
+SQLite allocation records, with no gap, double charge or invented deallocation.
+Only matching open intervals can be reused. Pre-install assignment refusals
+retain receipts for reconstruction into those ordinary ledgers. Automatic pilot
+review accepts only a completely clean audit with every attempt below 96 seconds;
+other passing pilots still require the existing explicit failure/timeout review.
+Allocation-aware finalization preserves release allowance and exports evidence
+even when detailed analysis must be deferred to CPU.
+
+Executed Windows Python 3.11 CPU checks:
+
+- `unittest tests.test_course_run_all tests.test_course_workflow_core tests.test_course_smoke_assets tests.test_course_kaggle_assets -q`:
+  **21 passed in 17.271 s**. Continuous intervals, worker adoption, failed-gate
+  stopping, freeze-before-main order, bounded native downloads and inherited
+  capability/asset behavior. All device facts are explicit artificial fixtures.
+- `unittest tests.test_course_kaggle_workflow tests.worker_checks tests.accounting_checks -q`:
+  **45 passed in 311.381 s**; [receipt](../../notebooks/validation/course-kaggle/run-all-integration.txt).
+  The complete scripted pilot and original saved-response/effect audit still pass;
+  worker, course/thesis resource and replay behavior remain covered.
+
+The first focused check exposed missing checkpoint tables in newly created
+allocation-only successor files. Successors now initialize through the existing
+DurableRunner public path, so later reads stay genuinely read-only. The corrected
+checks above pass. Bare bootstrap source verification is now stdlib-only; actual
+ordinary installed provenance is checked after restoration.
+
+The packaged native checkpoint is downloaded and checksum-verified on CPU only.
+No model loading, new GPU session, accepted scientific freeze, main experiment or
+publication is performed. Literal notebook/offline delivery checks are recorded
+at the final artifact checkpoint. Prior resource and supported R7 evidence remain
+required inputs, not inferred zeros or automatic stress-test acceptance.
 
 **Limits:** scripted witness success is not pretrained-model capability. Tiny
 asset fixtures load/download no pretrained weights; no actual Linux/T4 install,

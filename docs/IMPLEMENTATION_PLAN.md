@@ -999,9 +999,22 @@ exports, release-confirmed restart and independent offline reconstruction.
 [Package evidence](validation/course-kaggle-workflow.md) records executed CPU
 integration; milestone scientific/empirical statuses remain unchanged.
 
-Consequential choices: CPU asset setup precedes GPU assignment; checkpoint/wheel
-inputs can remain read-only on Kaggle; the verified setup environment is consumed
-before large weight staging/packing to limit peak disk use. Two separately recorded
+The subsequent user request makes Run All the normal interface. One offline
+dataset now bundles the native checkpoint and pinned wheels, removing separate
+asset uploads and action switching. Safe CPU packaging loads no model. Actual
+assignment is charged from its supplied clock, including installation and review.
+Quiescent stage transitions partition that same physical assignment in the existing
+allocation ledgers; they never claim provider deallocation. Workers can re-admit
+their matching open interval at bounded window boundaries without resampling.
+All mandatory gates and separate conditional freeze/main authorizations remain.
+A completely clean pilot permits automatic family/condition/timeout review;
+recorded failures, uncertainty or near-timeout calls require explicit review.
+Reporting has an allocation-aware time limit and always retains a portable
+limited-result export when a gate/session prevents completion.
+
+Consequential choices: checkpoint/wheel inputs remain read-only on Kaggle.
+The optional older CPU setup mode still consumes its rebuildable staging
+environment before large weight packing to limit peak disk use. Two separately recorded
 full-envelope diagnostics replace redundant smoke probes within the same cumulative
 24-attempt ceiling. They require a supported complete R7 review before admission.
 Stable replica positions carry timing forecasts across sessions, with actual

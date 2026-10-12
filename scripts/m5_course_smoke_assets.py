@@ -26,85 +26,13 @@ if not __package__:
 
 from scripts.m5_course_preparation import CANDIDATE, read
 from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, BUILD_RESERVE, EXPORT_SECONDS,
-    candidate_environment, command, export_evidence, installed_probe_script,
+    candidate_environment, command, export_evidence, assigned_preparation_window, source_identity, installed_probe_script,
     installed_provenance, pip_wheel_download_script, require_space, save_json, sha256_file, utc)
 
 
 def assigned_device_count():
     devices = Path("/proc/driver/nvidia/gpus")
     return len(list(devices.iterdir())) if devices.is_dir() else 0
-
-
-def assigned_preparation_window(launch, now=None):
-    """Conservative pre-install screen; installed CourseBudget still gates weights.
-
-    The bare bootstrap has no LangGraph/Pydantic environment yet. Check the
-    supplied bounds before downloads, without CUDA or resetting assignment time.
-    Current allocation enters the ordinary smoke ledgers from this same clock.
-    """
-    if not launch.get("authorization", "").strip() or launch.get("prior_sessions_released") is not True:
-        raise ValueError("authorization_or_prior_release_missing")
-    if launch.get("resume_workers"):
-        raise ValueError("assigned_preparation_requires_fresh_run; reuse admitted assets for resume")
-    budget = launch["budget"]
-    if not budget.get("prior_evidence", "").strip() or budget.get("allocation_mode") != "gpu":
-        raise ValueError("documented_prior_bounds_and_gpu_charging_required")
-    def number(value):
-        if type(value) not in (int,float) or not isfinite(value) or value < 0:
-            raise ValueError("finite_nonnegative_resource_bound_required")
-        return value
-    upper = {}
-    for name in ("development","setup","interruption","other_course","other_overall","smoke"):
-        bounds = budget.get("prior_"+name+"_gpu_hours")
-        if not isinstance(bounds,(tuple,list)) or len(bounds) != 2 or number(bounds[0]) > number(bounds[1]):
-            raise ValueError("supported_prior_allocation_and_smoke_bounds_required")
-        upper[name] = bounds[1]
-    attempts = budget.get("prior_smoke_attempts")
-    if type(attempts) is not int or not 0 <= attempts < 24:
-        raise ValueError("remaining_cumulative_smoke_attempt_required")
-    remaining = []
-    for name,ceiling in (("development",8),("setup",2),("interruption",2)):
-        reserve = number(budget[name+"_reserve_gpu_hours"])
-        if reserve > ceiling:
-            raise ValueError("adopted_preparation_allowance_exceeded")
-        remaining.append(reserve-upper[name])
-    course = sum(upper[name] for name in ("development","setup","interruption","other_course"))
-    for field,ceiling,spent in (("ceiling_gpu_hours",30,course),("overall_ceiling_gpu_hours",100,course+upper["other_overall"])):
-        limit = number(budget[field])
-        if not 0 < limit <= ceiling:
-            raise ValueError("adopted_resource_ceiling_required")
-        remaining.append(limit-spent)
-    remaining.append(.5-upper["smoke"])
-    if not launch.get("allocated_at"):
-        raise ValueError("actual_provider_assignment_clock_required")
-    assigned = datetime.fromisoformat(launch["allocated_at"])
-    current = datetime.fromisoformat(now or utc())
-    if assigned.tzinfo is None or current.tzinfo is None:
-        raise ValueError("timezone_aware_assignment_required")
-    elapsed = (current-assigned).total_seconds()
-    if elapsed < 0:
-        raise ValueError("provider_assignment_cannot_be_in_future")
-    quota = number(launch.get("reported_quota_gpu_hours"))
-    duration = number(launch.get("provider_session_seconds"))
-    if quota == 0 or duration == 0 or not launch.get("release_instructions", "").strip():
-        raise ValueError("provider_terms_required")
-    shutdown = number(budget["shutdown_seconds"])
-    if shutdown < 120:
-        raise ValueError("at_least_120_seconds_for_provider_release_required")
-    wall = min((3600*min(remaining)-number(budget["overhead_seconds"]))/2-elapsed,
-        quota*3600/2,duration-elapsed)
-    if wall <= shutdown+EXPORT_SECONDS+8+124:
-        raise ValueError("insufficient_remaining_time_for_preparation_attempt_export_and_release")
-    return wall
-
-
-def source_identity(root, manifest):
-    if (root/"SOURCE_COMMIT.txt").read_text().strip() != manifest["source_baseline_commit"]:
-        raise ValueError("prepared source commit differs")
-    for name, wanted in manifest["members"].items():
-        path = root/name
-        if not path.is_file() or path.is_symlink() or path.stat().st_size != wanted["bytes"] or sha256_file(path) != wanted["sha256"]:
-            raise ValueError("prepared source member differs: "+name)
 
 
 def verify_assets(root, launch):
@@ -162,7 +90,7 @@ def download_weights(root, manifest, cache, receipt):
         checkpoint_files=expected,snapshot=str(snapshot),gpu_execution=False,model_weights_loaded=False))
 
 
-def download_weights_stdlib(root, manifest, cache, receipt):
+def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None):
     """Download-only native LFS verification after consuming the setup venv."""
     from urllib.request import Request, urlopen
     inspection = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
@@ -174,12 +102,22 @@ def download_weights_stdlib(root, manifest, cache, receipt):
     files = {s["rfilename"]:s for s in info["siblings"]}
     expected = {}
     snapshot = cache/("models--"+CANDIDATE.model.replace("/","--"))/"snapshots"/CANDIDATE.revision
-    snapshot.mkdir(parents=True)
+    snapshot.mkdir(parents=True,exist_ok=range_bytes is not None)
     for name in inspection["checkpoint_index"]["shard_files"]:
         lfs = files[name].get("lfs",{})
         if not re.fullmatch("[0-9a-f]{64}",lfs.get("sha256","")) or type(lfs.get("size")) is not int:
             raise ValueError("checkpoint shard lacks native LFS identity")
         expected[name] = dict(bytes=lfs["size"],sha256=lfs["sha256"])
+        if range_bytes is not None:
+            from scripts.m5_kaggle_preflight import download_native_ranges
+            target = snapshot/name
+            if target.exists():
+                if target.stat().st_size != lfs["size"] or sha256_file(target) != lfs["sha256"]:
+                    raise ValueError("cached checkpoint differs: "+name)
+            else:
+                download_native_ranges(f"https://huggingface.co/{CANDIDATE.model}/resolve/{CANDIDATE.revision}/{name}",
+                    target,lfs["size"],lfs["sha256"],chunk_bytes=range_bytes)
+            continue
         temporary = snapshot/(name+".partial")
         with urlopen(Request(f"https://huggingface.co/{CANDIDATE.model}/resolve/{CANDIDATE.revision}/{name}",
                 headers={"User-Agent":"recovery-course-asset-preparation"}),timeout=60) as response, temporary.open("xb") as output:

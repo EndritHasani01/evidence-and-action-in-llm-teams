@@ -269,6 +269,30 @@ class WorkerStore:
             self.connection.execute("UPDATE allocations SET stop_reason=? WHERE number=? AND stopped_at IS NULL",
                                     (reason, number))
 
+    def allocation_transferred(self, number, successor, *, at):
+        """End one accounting segment while the same provider assignment continues.
+
+        The successor's already-persisted open segment must start at this exact
+        boundary. This records a stage change, never provider deallocation.
+        """
+        row = self.connection.execute("SELECT * FROM allocations WHERE number=?", (number,)).fetchone()
+        if row is None or row["stopped_at"] is not None:
+            raise ValueError("transfer requires the original open allocation")
+        billing = json.loads(row["billing_json"] or "{}")
+        next_billing = json.loads(successor["billing_json"] or "{}")
+        if (successor["stopped_at"] is not None or successor["started_at"] != at
+                or successor["device"] != row["device"]
+                or not billing.get("provider_assignment_at")
+                or any(billing.get(k) != next_billing.get(k) for k in
+                       ("provider", "provider_assignment_at", "physical_gpu_uuid"))
+                or datetime.fromisoformat(at) < datetime.fromisoformat(row["started_at"])):
+            raise ValueError("transfer must preserve the physical assignment without a gap")
+        billing.update(provider_release_confirmed=False, segment_end="stage_transfer",
+                       successor_stage=successor["stage"])
+        with self.connection:
+            self.connection.execute("UPDATE allocations SET stopped_at=?,stop_reason=?,billing_json=? WHERE number=?",
+                (at, "stage transfer; same provider assignment remains chargeable", record_json(billing), number))
+
     def _record(self, table, where, values):
         # Table/predicate are internal constants, never user-supplied SQL.
         matches = []

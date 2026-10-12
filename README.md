@@ -1,9 +1,12 @@
 # Recovery in distributed LLM teams
 
 The complete course Kaggle interface is in the [Kaggle runbook](docs/KAGGLE_COURSE.md).
-The local `dist/course-kaggle-final/` delivery contains `course_kaggle.ipynb`,
-`course-kaggle-dataset.zip` and `START_HERE.md`: one guarded workflow for hardware,
-capability/pilot, explicit freeze/main, session backups and offline reports.
+The Run All delivery contains `course_kaggle.ipynb`, `course-kaggle-dataset.zip`
+and `START_HERE.md`. Its offline dataset includes pinned wheels and the checkpoint;
+one setup cell replaces separate asset uploads and per-stage action switching.
+Hardware, capability/pilot, conditional freeze/main, backups and analysis advance
+automatically through their gates. Earlier `dist/course-kaggle-final/` artifacts
+remain preserved as the preceding single-action interface.
 Its [CPU integration evidence](docs/validation/course-kaggle-workflow.md) is
 separate from the still-open actual-host, R7, resource, pilot and main gates.
 

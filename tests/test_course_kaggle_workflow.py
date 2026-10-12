@@ -165,7 +165,7 @@ class CourseWorkflowTests(unittest.TestCase):
                 compile("".join(cell["source"]),cell["id"],"exec")
         options=next(c for c in document["cells"] if c["id"] == "action")
         text="".join(options["source"])
-        self.assertIn('ACTION = "inspect"',text)
+        self.assertIn('ACTION = "run_all"',text)
         self.assertIn("ENABLE_GPU = False",text)
         with tempfile.TemporaryDirectory() as directory:
             archive=Path(directory)/"unsafe.zip"

@@ -1,164 +1,107 @@
-# Run the course study on Kaggle
+﻿# Run the course study on Kaggle
 
-Upload `course-kaggle-dataset.zip` as a **private dataset**, attach it to a new
-notebook, and import `course_kaggle.ipynb`. Run the default `inspect` action with
-Accelerator **None**. The notebook verifies its exact committed source and saved
-course inputs before executing code. The dataset contains source, metadata,
-fixed populations/schedules, the reviewed inference lock and CPU proofs; it
-contains no weights, credentials or experiment results.
+Upload **course-kaggle-dataset.zip** as a private dataset, attach it, and import
+**course_kaggle.ipynb**. The offline ZIP includes the committed source, fixed
+inputs, pinned Linux wheels and the original checkpoint revision. There is no
+separate asset upload or setup notebook. Weights remain in read-only input
+storage; only the installed environment and experiment outputs use working disk.
 
-The notebook is an interface to the existing runner. Each invocation performs
-one action. Its flags and authorization strings default to disabled/empty.
-Authorization never replaces an acceptance or resource gate.
+Complete the notebook's **one setup cell**, select **T4 ×2**, turn Internet
+**Off**, then click **Run All**. For a durable background run, use
+[Save Version → Save & Run All](https://www.kaggle.com/docs/notebooks).
+No action switching is required. The sequence is:
 
-## Prepare once
+1. Verify source and native asset identities; install the pinned ordinary package.
+2. Run the bounded hardware screen and both complete-envelope diagnostics.
+3. Require the supported memory/headroom gate; run the first 90 development slots.
+4. Require capability thresholds; finish the same five-world pilot and audit it.
+5. Review pilot failures/timeout, forecast the entire matrix, and conditionally freeze.
+6. Execute the fixed 20-world main matrix, with automatic bounded-window readmission.
+7. Audit raw replies and committed effects; reproduce all report bytes twice.
+8. Export the results and the complete portable resume/reproduction bundle.
 
-1. Reconstruct earlier GPU spending, including shared preparation and failed
-   sessions. Enter documented `[lower, upper]` GPU-hour bounds for every prior
-   category, cumulative smoke hours/attempts, and evidence. A supported zero
-   needs evidence; unknown is `None`. Keep these **same base bounds** on every
-   resume. The software adds its original hardware/development/main ledgers once.
-2. Verify current Kaggle quota, session duration and release procedure. The
-   scientific ceilings remain **30 course / 100 overall aggregate allocated
-   GPU-hours**, with the adopted 8/2/2-hour allowances. Two assigned T4s count
-   twice the wall-clock time, including loading and idle time.
-3. Set `ACTION="setup"`, Accelerator **None**, Internet **On**, and record the
-   explicit pinned weight-staging authorization. This reuses the existing CPU
-   asset builder, installs the pinned Linux Python 3.13 candidate and downloads
-   the reviewed 4B revision. Model weights are not loaded. Download
-   `course-assets.zip`; it contains target wheels and checkpoint files, not a
-   copied environment. Its size is printed before handoff. Keep it private and
-   observe the model's redistribution terms.
-   Setup uses installation and weight staging sequentially, then consumes only
-   fresh rebuildable staging copies while packing. Download the ZIP and start
-   a new session with it attached as a private, extracted input dataset.
-4. In a new session, attach `course-assets.zip` and the latest
-   `course-resume.zip`, then run `ACTION="restore"` with Accelerator **None**
-   and Internet **Off**. Restoration verifies pinned assets and reinstalls the
-   ordinary project wheel. Select T4 ×2 only after this passes. This avoids
-   spending the smoke allowance on downloads/installing packages.
-   Kaggle's extracted asset directory is used read-only: weights and wheels
-   are not duplicated in `/kaggle/working`. A raw ZIP is also supported if free
-   disk space permits expansion. Disk admission protects installation, raw
-   worker growth, backup/export and report scratch; missing space stops safely.
+A failed gate stops subsequent inference and produces a limited result with
+original evidence. Insufficient provider time produces an incomplete result and
+a safe resume bundle. The adopted population, output/context caps, masks, seeds,
+replay rules and resource ceilings are unchanged. Completion cannot be promised
+before the actual hardware, capability, validity and resource gates pass.
 
-A changed Kaggle image, unavailable pinned wheel, mismatched source or unknown
-resource bound produces a retained blocker. Do not replace packages, reduce
-contexts or raise ceilings to bypass it. The GPU candidate requires Linux
-x86_64 **Python 3.13**, Torch **2.11.0+cu128**, and actual T4 devices; acceptance
-is still established on the actual host.
+## Set up once
 
-## Execute one authorized action
+The first cell contains these required facts and permissions:
 
-Record the **actual UTC GPU assignment time** after selecting T4 ×2, the
-verified provider allowance/duration, and the specific action authorization.
-Set `ENABLE_GPU=True` for GPU actions. `max_work_seconds` defaults to 1,800;
-the runner also applies cumulative resources, timeout/retry bounds, export time
-and a 120-second provider-release reserve. It stops before any tighter bound.
+- Explicit, separate scope statements for **hardware**, **pilot**, **conditional
+  freeze**, and **main**. A conditional freeze authorizes the unchanged candidate
+  only after every acceptance gate passes. Main authorization never waives gates.
+- Supported prior `[lower, upper]` GPU-hour bounds for development, setup,
+  interruptions, other course/overall work and smoke; smoke attempt count and
+  evidence. Unknown is `None`. Supported zero needs evidence. Keep the **same base
+  bounds** on resumes; original worker allocations are added once by the code.
+- Actual UTC assignment time, current provider allowance, maximum session duration,
+  confirmation that earlier sessions were released, and their real release receipts.
+- A supported complete allocator/workspace/loading memory upper bound and its
+  justification. Stress-test success alone is insufficient for the approved R7 gate.
 
-| Action | What must pass first | What it does |
-|---|---|---|
-| `hardware` | Source/CPU gates, supported prior allocation and remaining cumulative smoke allowance | 21 native prepared probes, two full-envelope diagnostics, one controlled timeout; at most 24 cumulative attempts / 0.5 aggregate hour, including earlier smoke |
-| `capability` | Actual-host loading/isolation/finite-output/headroom, complete-envelope R7 review, provider release | Exactly 80 prefix + 10 control slots, no recovery work |
-| `pilot` | All 90 capability slots: ≥9/10 controls, one per family, ≥3/5 jointly correct prefixes and ≥14/20 final peers | Finish the existing 1,114 distinct / 1,178 logical development schedule; no new prefixes |
-| `freeze` (CPU) | Complete pilot, ≥98% validity, independent audit, family/condition and timeout review, release, conservative resources | Freeze source/environment/templates/settings/inputs/analysis and the complete 20-world forecast; needs separate freeze authorization |
-| `main` | Explicit accepted freeze, separate main authorization, current resource/provider admission | Execute/resume the complete 5,752-generation / 6,280-use main schedule in balanced blocks |
+These facts are currently unresolved in the repository. They cannot safely be
+filled with invented values. The default disables inference and produces a CPU
+feasibility report; use Accelerator **None** for that mode. A complete, clean
+pilot gets an automatic family/condition and timeout review. Any invalid/failed,
+uncertain or ≥96-second pilot attempt needs the existing explicit review before
+freeze, even if the pooled 98% validity threshold passes.
 
-The hardware diagnostics use the proved **109,851 input + 256 output** envelope
-on both replicas, forcing all output steps within separately recorded diagnostic
-attempts. They do not modify scientific requests or supply pilot answers.
-They may time out or fail memory; those failures remain evidence.
+GPU work requires Linux x86_64 **Python 3.13** and the exact pinned candidate.
+Changing the image, packages, configuration or physical layout reopens the
+relevant acceptance gate. Two independent T4 replicas are required; no splitting,
+offload or pooled memory is introduced. CPU preparation downloaded assets only;
+it did not load the pretrained model or establish GPU feasibility.
 
-**R7 requires a supported review.** Read `hardware/report.json`,
-`hardware/executed-plan.json`, raw attempt/load diagnostics and the included
-capacity/loading proof. In `hardware_review`, record a justified complete live
-memory upper bound that covers loading, native workspaces, allocator/context
-occupancy and the complete allowed shapes, is at least the observed physical
-peak, and leaves ≥1.5 GiB. Passing stress samples alone is insufficient.
-The software also requires both complete diagnostics, finite/fresh-cache native
-probes, loading/kernel/host checks and actual release. Leave `accepted=False`
-if the evidence cannot support the complete bound. An unresolved review is an
-open gate, not terminal infeasibility.
+## Monitor and resume
 
-Before freeze, inspect `capability-gate.json`, `pilot-gate.json`, grouped failures
-and the independently reconstructed pilot. Confirm the 120-second timeout is
-adequate; a changed timeout/configuration requires renewed affected acceptance.
-The existing forecast uses measured phase/condition costs on both replica
-positions, the slower device, assigned idle time and a 25% margin. Each session
-archives the actual physical UUIDs; stable replica positions support resumption
-on another Kaggle VM. Missing measurements or excessive forecast withhold freeze.
+Progress prints every 15 seconds: recorded/unknown slots, attempts, replay uses
+and invalid/failed slots. Every ten minutes, the runner drains in-flight work and
+updates **course-resume.zip** from consistent SQLite backups. Each completed stage
+also exports a backup. Local idle, installation, reviews, analysis and export
+remain charged while GPUs are assigned. Stage transitions partition the same
+assignment without claiming provider deallocation.
 
-## Monitor, save and resume
+At the end, download **course-results.zip**, **course-resume.zip**, and the
+executed notebook. The results ZIP contains `RESULT.html`, reports, tables,
+figures and gate receipts. The resume ZIP also contains exact source, inputs,
+settings, raw outcomes, original attempts and worker/checkpoint records.
+For interactive runs, **Stop Session** and verify provider deallocation. Notebook
+completion or local process exit is not a release receipt. Record the real UTC
+release time and evidence for the next session.
 
-The action streams counts every 15 seconds. `progress.json` provides logical
-coverage, attempts, literal replay uses, failures, resource bounds and resumable
-work. Quiescent ordinary SQLite backups update `course-resume.zip` at ten-minute
-boundaries and at final/safe stop. They include canonical source, inputs, frozen
-packet where available, original workers and derived evidence; weight assets
-stay in the separate reusable ZIP.
+To resume, attach the same offline dataset and the latest resume ZIP. Update only
+current provider facts/release evidence, retain the base bounds and authorizations,
+then Run All again. The package detects the first unfinished stage and reuses
+completed replies, including invalid and failed outcomes. A changed source packet
+or saved input/configuration is rejected. Pre-install refusals retain assignment
+receipts and become ordinary allocation ledgers on the next installed invocation;
+an unknown earlier interval blocks GPU admission until reconciled.
 
-Download the current ZIP and the actual executed notebook **before stopping**.
-Use Kaggle **Stop Session**, verify deallocation, and retain the real UTC release
-time/evidence. Process/kernel exit does not establish provider release. Enter it
-in `previous_session_release` at the next CPU/session action; original allocation
-rows then close at that time. Unobserved inference around a crash stays uncertain.
+## Reproduce the final analysis
 
-Attach the latest resume ZIP in the next session, restore assets on CPU, and
-repeat the same unfinished action with a new assignment clock. Completed valid,
-invalid, failed and replayed calls are reused literally; the runner does not
-resample them. Both worker files and their frozen bindings travel together.
-Preserve earlier downloaded ZIPs. Do not combine workers from different exports,
-course/thesis bundles or configurations. If the notebook setup cell fails, run
-the final export cell explicitly after the action has stopped.
+Use Accelerator **None**, attach the same dataset and resume ZIP, and select
+`ACTION="analyze"` in the setup cell. Internet can remain Off with the bundled
+Linux candidate; analysis never loads weights or invokes inference. It verifies
+saved requests, native raw validation, independent gold and branch-local delivery
+reconstruction, then compares two clean report generations. Complete reporting
+requires all 6,280 logical main uses, committed effects and the accepted freeze.
+Missing uses remain unknown; recorded invalid/failed uses score zero.
 
-The notebook download/export cells do not invoke inference. Kaggle Quick Save
-saves a notebook version without a fresh execution; **Save & Run All** starts
-another invocation. Downloaded ZIPs are the portable resume evidence. Verify
-the provider's current session/output behavior in
-[Kaggle notebook documentation](https://www.kaggle.com/docs/notebooks) and
-[official CLI save options](https://github.com/Kaggle/kaggle-cli/blob/main/docs/kernels.md).
-
-## Produce and reproduce results
-
-After actual release, run `ACTION="analyze"` on CPU. It independently recomputes
-gold, validates native requests/raw replies, reconstructs committed branch
-effects/queues from archived replies, then calls the existing M4 analysis/report.
-The original full main manifest supplies denominators even for a feasibility-only
-or incomplete run. Development evidence is separate; invalid/failed slots score
-zero, unexecuted slots remain unknown. Reports contain all seven exhibit groups,
-CSV/JSON tables, literal cases/calls, deterministic plotting inputs and SVG/PNG.
-Two fresh reproductions must agree byte-for-byte. Updated coverage gets a new
-derived report directory; earlier reports remain available.
-
-`analysis-receipt.json` links the latest report. A complete empirical label
-requires an accepted freeze, all **6,280** main logical uses and the artifact
-audit. A failed/open gate or partial run yields an accurately limited report.
-The 20-world/four-per-family study remains exploratory; continuation repeats do
-not add independent worlds. External publication/submission is separately authorized.
-
-For a clean local CPU reproduction, extract `course-resume.zip` to `bundle`,
-install Python 3.11+ (the captured CPU lock/target wheels can pin the environment):
+For a local CPU reproduction, extract the resume ZIP and install
+`source/configs/course-cpu-reproduction.txt` plus the ordinary source package in
+an isolated Python environment. Run:
 
 ```text
-python -m venv cpu
-<cpu-python> -m pip install -r bundle/source/configs/course-cpu-reproduction.txt bundle/source
-<cpu-python> -I bundle/source/scripts/course_kaggle_workflow.py --root bundle/source --bundle bundle --config bundle/operator-config.json --action analyze
+python -I source/scripts/course_kaggle_workflow.py --root source --bundle . --config operator-config.json --action analyze
 ```
 
-Use `cpu/Scripts/python.exe` on Windows or `cpu/bin/python` on Linux. No Torch,
-CUDA, model weights or inference are required. The saved accounting clock,
-bootstrap seed, native tokenizer metadata and original workers reproduce the
-same tables/cases/plots. A stochastic scientific rerun is separate, requires
-the accepted GPU environment and fresh authorization/resources, and does not
-promise identical tokens across devices.
+Original reports are retained. A different rendering environment may need the
+bundled pinned Linux environment to reproduce figure bytes. New allocation/release
+evidence produces a new analysis version instead of overwriting earlier results.
 
-To rebuild this local upload package from a clean committed checkout:
-
-```text
-python -m scripts.build_course_kaggle --output dist/course-kaggle-final
-```
-
-The builder reuses the reviewed `dist/course-m5-hardware-v3` source/metadata and
-candidate provenance. It adds pinned CPU rendering wheels, selects only required
-fixture assets and packages the current committed source. No GPU work, weight
-download, upload or publication occurs during a build.
+Advanced single-stage actions remain available for diagnostics. They use the same
+runner and gates as Run All. Publishing, paid compute, changed scientific scope,
+and altered frozen configuration retain their separate authorization requirements.

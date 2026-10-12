@@ -36,6 +36,7 @@ class WorkerSpec:
     allocated_device: str | None = None
     allocated_at: str | None = None
     provider_billing: dict | None = None
+    continuing_assignment: bool = False
 
 
 @dataclass(frozen=True)
@@ -415,7 +416,28 @@ class LocalScheduler:
         from .storage import WorkerStore
         snapshot = self.progress()
         resources = snapshot["resources"]
-        if resources["active_devices"]:
+        continuing = all(spec.continuing_assignment for spec in self.specs)
+        if any(spec.continuing_assignment for spec in self.specs) and (
+                not continuing or not isinstance(self.budget, CourseBudget) or self.budget.allocation_mode != "gpu"):
+            raise ValueError("continuous assignment requires all course GPU workers")
+        adopted = {}
+        if continuing:
+            for index, spec in enumerate(self.specs):
+                store = WorkerStore(self.paths[index], readonly=True)
+                try:
+                    rows = store.connection.execute("SELECT * FROM allocations WHERE stopped_at IS NULL").fetchall()
+                    if len(rows) != 1 or rows[0]["device"] != spec.allocated_device or rows[0]["stage"] != self.allocation_stage:
+                        raise BudgetStop("continuous assignment does not match the original open worker interval")
+                    billing, wanted = json.loads(rows[0]["billing_json"] or "{}"), spec.provider_billing or {}
+                    if not wanted.get("provider_assignment_at") or any(billing.get(k) != wanted.get(k) for k in
+                            ("provider", "provider_assignment_at", "physical_gpu_uuid")):
+                        raise BudgetStop("continuous assignment belongs to another provider session/device")
+                    adopted[index] = rows[0]["number"]
+                finally:
+                    store.close()
+            if sorted(resources["active_devices"]) != sorted(spec.allocated_device for spec in self.specs):
+                raise BudgetStop("another assignment is still open")
+        elif resources["active_devices"]:
             raise BudgetStop("preceding allocations require confirmed provider release")
         if isinstance(self.budget, CourseBudget):
             self.stop_reason, available = course_admission(resources, snapshot["forecast"], self.budget,
@@ -424,7 +446,7 @@ class LocalScheduler:
             available = (resources["remaining_ceiling_gpu_hours"]
                          - sum(resources["remaining_reserves_gpu_hours"].values())) * 3600 - self.budget.overhead_seconds
         now = datetime.now(timezone.utc)
-        previous_idle = sum(now.timestamp() - timestamp(spec.allocated_at) for spec in self.specs if spec.allocated_at)
+        previous_idle = 0 if continuing else sum(now.timestamp() - timestamp(spec.allocated_at) for spec in self.specs if spec.allocated_at)
         if any(spec.allocated_at and timestamp(spec.allocated_at) > now.timestamp() for spec in self.specs):
             raise ValueError("provider allocation cannot start in the future")
         available -= previous_idle
@@ -436,6 +458,9 @@ class LocalScheduler:
         self.deadline = monotonic() + max(0, duration)
         deadline_at = (now + timedelta(seconds=duration)).isoformat() if duration > 0 else None
         for index, spec in enumerate(self.specs):
+            if continuing:
+                self.allocations[index] = adopted[index]
+                continue
             if duration <= 0 and spec.allocated_at is None:
                 continue  # No new allocation, but retain already allocated time.
             with _own_file(self.paths[index]):

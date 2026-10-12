@@ -61,36 +61,67 @@ def notebook(manifest_sha, commit):
         if kind == "code":
             value.update(outputs=[], execution_count=None)
         return value
-    introduction = """# Course research · Kaggle T4 ×2
+    introduction = """# Course research · Run All on Kaggle T4 ×2
 
-One interface for the existing course runner, feasibility gates, restartable experiments and offline results.
-**Default: inspect only.** Each invocation performs one action. GPU calls, weight staging, freeze and main execution need their own explicit authorization below.
+Upload this notebook and the **offline dataset ZIP**, attach the dataset, complete
+one setup cell, select **T4 ×2**, turn Internet **Off**, then **Run All**.
+The notebook installs from the dataset and advances automatically:
 
-| Action | Accelerator | Internet | Result |
-|---|---|---|---|
-| `inspect` | None | Off | Verify this exact source package; show saved scope |
-| `setup` | None | On | Install pinned candidate and stage the reviewed checkpoint; export reusable assets |
-| `restore` | None | Off | Restore attached portable assets before assigning GPUs in a new session |
-| `hardware` | T4 ×2 | Off | Native smoke, two 110,107-token resident-envelope diagnostics, bounded timeout, original evidence |
-| `capability` | T4 ×2 | Off | First 90 development slots only |
-| `pilot` | T4 ×2 | Off | Finish the same 1,114-generation / 1,178-use pilot |
-| `freeze` | None | Off* | Audit pilot, review R7/timeout/family failures, forecast all 20 worlds; freeze if admitted |
-| `main` | T4 ×2 | Off | Continue the fixed 5,752-generation / 6,280-use schedule for a bounded session |
-| `status`, `analyze`, `export` | None | Off* | Monitor, independently audit/reproduce the report, or export without inference |
+**Hardware → first 90 slots → full pilot → audit and freeze → complete main matrix
+→ independently reproduced analysis ? results and resume ZIPs.**
 
-*A new CPU environment needs Internet for its first install; model weights are unnecessary for analysis.
+Progress appears every 15 seconds; portable backups update every ten minutes.
+No action switching, separate asset upload, or manual stage restart is needed.
 
-Upload **course-kaggle-dataset.zip** as a private dataset, attach it and import this notebook.
-In later sessions also attach **course-resume.zip**; GPU sessions reuse **course-assets.zip**.
-Read `source/docs/KAGGLE_COURSE.md` for the short runbook and memory-review requirements.
-The candidate requires Linux x86_64 Python 3.13 for GPU work. A different Kaggle image is a gate failure, not an automatic package upgrade.
+**A complete result depends on every mandatory gate passing and enough session time.**
+Failed gates finish with a limited result and preserved evidence. Prior spending
+and the supported complete memory bound cannot be invented. The default permits
+CPU reporting only; record separate conditional GPU, freeze and main authorizations
+below. Use Accelerator **None** for CPU reporting. GPU work requires the pinned
+Linux x86_64 **Python 3.13** candidate; incompatible images stop safely.
+
+Keep the dataset private. Later sessions also attach **course-resume.zip**;
+Run All resumes exact saved inputs without resampling completed calls.
+For durable background execution, use **Save Version → Save & Run All**;
+see the [Kaggle notebook guide](https://www.kaggle.com/docs/notebooks).
 """
-    select = """# Edit this cell for the action you have authorized. Run All is safe with these defaults.
-ACTION = "inspect"
+    select = """# ONE SETUP CELL. The repo chooses the next stage automatically.
+ACTION = "run_all"   # advanced read-only alternatives: inspect, status, analyze, export
 ENABLE_GPU = False
-PACKAGE_DIR = None  # Optional explicit directory containing source-manifest.json
-RESUME_ZIP = None   # Otherwise finds the single attached course-resume.zip
-ASSETS_ZIP = None   # Otherwise finds the single attached course-assets.zip
+PACKAGE_DIR = None   # detects the exact attached dataset automatically
+RESUME_ZIP = None    # detects the single attached course-resume.zip automatically
+ASSETS_ZIP = None    # detects bundled assets; no additional upload needed
+
+# Current provider facts reset on every resume. Empty dictionaries retain saved
+# authorizations, base bounds and reviews. Unknown duration is never zero.
+RUN_SETTINGS = {
+    "allocated_at": None,                 # actual UTC assignment, "...+00:00"
+    "provider_quota_gpu_hours": None,      # allowance verified at this assignment
+    "provider_session_seconds": None,      # verified maximum duration
+    "prior_sessions_released": False,
+    "authorizations": {
+        # Add four separate scope statements once:
+        # hardware="I authorize the bounded course hardware screen...",
+        # pilot="I authorize the fixed five-world development pilot...",
+        # freeze="I authorize one unchanged freeze conditional on all gates...",
+        # main="I authorize the fixed 20-world matrix within course/overall caps..."
+    },
+    "budget": {
+        # prior_development_gpu_hours=[lower,upper], prior_setup_gpu_hours=[...],
+        # prior_interruption_gpu_hours=[...], prior_other_course_gpu_hours=[...],
+        # prior_other_overall_gpu_hours=[...], prior_smoke_gpu_hours=[...],
+        # prior_smoke_attempts=..., prior_evidence="..."
+        # Keep the SAME base values on every resume. Supported zero needs evidence.
+    },
+    "hardware_review": {
+        # accepted=True, complete_live_memory_upper_bound_bytes=...,
+        # justification="supported complete allocator/workspace/load bound..."
+        # Stress-test success alone does not establish this required proof.
+    },
+    "previous_session_release": {
+        # released_at="...+00:00", evidence="actual provider deallocation receipt"
+    },
+}
 """
     bootstrap = f"""import hashlib,json,os,shutil,stat,sys,time,zipfile
 from pathlib import Path,PurePosixPath
@@ -150,23 +181,14 @@ for name,expected in manifest['members'].items():
 display(HTML('<div style="padding:16px;background:#e8f3f3;border-radius:10px"><b>Source verified</b> · '+EXPECTED_SOURCE_COMMIT[:12]+'<br>20 main worlds · 6,280 logical main uses · 5 separate development worlds</div>'))
 display(FileLink(str(source/'docs/KAGGLE_COURSE.md')))
 """
-    settings = """# Restore prior bounds/reviews/authorizations; edit only current provider facts.
+    settings = """# Automatic assembly; edit only the setup cell above.
 saved_config=bundle/'operator-config.json'
 CONFIG=json.loads((saved_config if saved_config.exists() else source/'configs/course-kaggle.json').read_bytes())
-CONFIG.update(execute_gpu=ENABLE_GPU,
-    allocated_at=None,                  # Actual UTC provider assignment, e.g. YYYY-MM-DDTHH:MM:SS+00:00
-    provider_quota_gpu_hours=None,       # Current provider allowance, independent of scientific spending
-    provider_session_seconds=None,      # Current provider maximum session duration; verify it
-    prior_sessions_released=CONFIG.get('prior_sessions_released',False),
-    max_work_seconds=1800,
-)
-# Fill these overrides when first known. Empty dictionaries preserve saved values.
-CONFIG['authorizations'].update({})  # keys: weights, hardware, pilot, freeze, main; explicit scope text
-CONFIG['budget'].update({})         # all six prior_*_gpu_hours=[lower,upper], prior_smoke_attempts, prior_evidence
-CONFIG['previous_session_release'].update({})  # released_at='...+00:00', evidence='actual provider deallocation receipt'
-CONFIG['hardware_review'].update({})  # accepted, complete_live_memory_upper_bound_bytes, supported justification
-CONFIG['pilot_review'].update({})     # family_condition_failures_reviewed, timeout_120_seconds_adequate
-# Keep these same prior bounds on all resumes; hardware and pilot ledgers are added once by the runner.
+CONFIG.update(execute_gpu=ENABLE_GPU,continuous_assignment=(ACTION=='run_all'),
+    automatic_pilot_review=True,max_work_seconds=36000,finalization_seconds=900)
+for key,value in RUN_SETTINGS.items():
+    if isinstance(value,dict): CONFIG[key].update(value)
+    else: CONFIG[key]=value
 config_path=bundle/'operator-config.json'
 config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
 """
@@ -200,57 +222,84 @@ def bounded_child(arguments,limit):
         reader.join(timeout=2)
     return process.returncode
 
-if ACTION=='inspect':
-    print('Verified upload package. GPU and weight staging remain disabled. Choose setup when resource evidence and weight staging authorization are ready.')
-else:
-    gpu_action=ACTION in ('hardware','capability','pilot','main')
-    if gpu_action and not ENABLE_GPU: raise ValueError('Set ENABLE_GPU only for the separately authorized GPU action')
-    if not gpu_action and Path('/proc/driver/nvidia/gpus').is_dir() and list(Path('/proc/driver/nvidia/gpus').iterdir()):
-        raise ValueError('Use Accelerator None for CPU/setup/review/analysis actions; assigned GPU idle time remains chargeable')
-    gpu_receipt=workspace/'gpu-environment'/'bootstrap'/'bootstrap.json'
-    kind='setup' if ACTION=='setup' else 'gpu-environment' if ACTION=='restore' or gpu_action or gpu_receipt.exists() else 'cpu-environment'
-    environment=workspace/kind
-    receipt=environment/'bootstrap'/'bootstrap.json'
-    if not receipt.exists():
-        arguments=[sys.executable,'-I',source/'scripts/course_kaggle_bootstrap.py']
-        if ACTION=='setup':
-            arguments+=['setup','--config',config_path]
-        elif ACTION=='restore':
-            assets=attached('course-assets.zip',ASSETS_ZIP)
-            if assets is None:
-                options=[p.parent for p in inputs.rglob('prepared-assets.json') if (p.parent/'checkpoint').is_dir() and (p.parent/'wheels').is_dir()]
-                if len(options)!=1: raise ValueError('Attach exactly one extracted course-assets dataset, or set ASSETS_ZIP to its directory/ZIP')
-                assets=options[0]
-            if assets is None: raise ValueError('Attach course-assets.zip from the CPU setup; use the same source package')
-            arguments+=['restore','--assets',assets]
-        elif gpu_action:
-            raise ValueError('Run ACTION=restore with Accelerator None before assigning T4 x2, then change ACTION and record actual assignment time. This avoids spending GPU allowance on environment installation.')
-        else:
-            arguments+=['cpu']
-        arguments+=['--root',source,'--scratch',environment/'scratch','--output',environment/'bootstrap']
-        limit=2100
-        if bounded_child(arguments,limit)!=0: raise RuntimeError('Environment setup/restore failed; evidence is retained in bootstrap.json and the action log')
-    runtime=json.loads(receipt.read_bytes())
-    if runtime.get('status')=='blocked': raise RuntimeError(runtime['reason'])
-    if runtime.get('assets_receipt') and not runtime.get('requires_dataset_restore'):
-        CONFIG.update(assets_receipt=runtime['assets_receipt'],hf_cache=runtime['hf_cache'])
-        shutil.copyfile(runtime['assets_receipt'],bundle/'asset-receipt.json')
-    elif (bundle/'asset-receipt.json').exists():
-        CONFIG['assets_receipt']=str(bundle/'asset-receipt.json')
-    config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
-    if ACTION not in ('setup','restore'):
-        arguments=[runtime['interpreter'],'-I',source/'scripts/course_kaggle_workflow.py',
-            '--root',source,'--bundle',bundle,'--config',config_path,'--action',ACTION]
-        limit=CONFIG['max_work_seconds']+180 if gpu_action else 2100
-        code=bounded_child(arguments,limit)
-        print('Action returned',code,'· inspect last-action.json for the exact gate/stop reason.')
+try:
+    if ACTION=='inspect':
+        print('Source verified. Default Run All automatically orchestrates the authorized stages.')
     else:
-        print('Pinned assets ready. Setup packs and consumes staging copies; download course-assets.zip and restore its private input in a new CPU session. Hardware acceptance remains open.')
+        gpu_action=ACTION in ('hardware','capability','pilot','main') or ACTION=='run_all' and ENABLE_GPU
+        if gpu_action and not ENABLE_GPU: raise ValueError('GPU execution requires explicit scoped authorizations in the setup cell')
+        assigned=Path('/proc/driver/nvidia/gpus').is_dir() and bool(list(Path('/proc/driver/nvidia/gpus').iterdir()))
+        if assigned and ACTION=='run_all' and (not ENABLE_GPU or not CONFIG.get('allocated_at')):
+            raise ValueError('Assigned GPUs are chargeable: complete the authorized setup cell, or select Accelerator None for CPU reporting')
+        if assigned and ACTION!='run_all' and not gpu_action:
+            raise ValueError('Use Accelerator None for standalone CPU actions; assigned idle time is chargeable')
+        assets=attached('course-assets.zip',ASSETS_ZIP)
+        if assets is None:
+            options=[p.parent for p in inputs.rglob('prepared-assets.json') if (p.parent/'checkpoint').is_dir() and (p.parent/'wheels').is_dir()]
+            if len(options)>1: raise ValueError('Select the exact asset directory with ASSETS_ZIP')
+            assets=options[0] if options else None
+        gpu_receipt=workspace/'gpu-environment'/'bootstrap'/'bootstrap.json'
+        cpu_receipt=workspace/'cpu-environment'/'bootstrap'/'bootstrap.json'
+        kind='setup' if ACTION=='setup' else 'gpu-environment' if gpu_action or gpu_receipt.exists() or assets and not cpu_receipt.exists() else 'cpu-environment'
+        environment=workspace/kind
+        receipt=environment/'bootstrap'/'bootstrap.json'
+        if not receipt.exists():
+            arguments=[sys.executable,'-I',source/'scripts/course_kaggle_bootstrap.py']
+            if ACTION=='setup': arguments+=['setup','--config',config_path]
+            elif kind=='gpu-environment':
+                if assets is None: raise ValueError('Use the offline dataset ZIP containing wheels and checkpoint; no separate setup is needed')
+                arguments+=['restore','--assets',assets,'--config',config_path]
+            else: arguments+=['cpu']
+            arguments+=['--root',source,'--scratch',environment/'scratch','--output',environment/'bootstrap']
+            if bounded_child(arguments,1800)!=0: raise RuntimeError('Bootstrap failed; its receipt and logs are retained')
+        runtime=json.loads(receipt.read_bytes())
+        if runtime.get('status')=='blocked': raise RuntimeError(runtime['reason'])
+        if runtime.get('assets_receipt') and not runtime.get('requires_dataset_restore'):
+            CONFIG.update(assets_receipt=runtime['assets_receipt'],hf_cache=runtime['hf_cache'])
+            shutil.copyfile(runtime['assets_receipt'],bundle/'asset-receipt.json')
+        config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
+        if ACTION not in ('setup','restore'):
+            arguments=[runtime['interpreter'],'-I',source/'scripts/course_kaggle_workflow.py',
+                '--root',source,'--bundle',bundle,'--config',config_path,'--action',ACTION]
+            limit=(CONFIG.get('provider_session_seconds') or CONFIG['max_work_seconds'])+2100 if gpu_action else 2100
+            code=bounded_child(arguments,limit)
+            print('Workflow returned',code,'; the final cell exports results and resume evidence.')
+except (Exception,KeyboardInterrupt) as error:
+    failure=dict(action=ACTION,status='blocked_or_safely_stopped',reason=type(error).__name__+': '+str(error),
+        gates_bypassed=False,assignment_clock=CONFIG.get('allocated_at'),provider_release_confirmed=False)
+    (bundle/'last-action.json').write_text(json.dumps(failure,indent=2)+'\\n')
+    if locals().get('assigned'):
+        try:
+            ids=subprocess.check_output(['nvidia-smi','--query-gpu=uuid','--format=csv,noheader'],text=True,timeout=5)
+            physical_devices=[line.strip() for line in ids.splitlines() if line.strip()]
+        except Exception: physical_devices=[]
+        old_run=json.loads((bundle/'run.json').read_bytes()) if (bundle/'run.json').exists() else None
+        stage='main' if old_run and old_run['freeze'] else 'pilot' if old_run else 'hardware'
+        receipt=dict(config=CONFIG,allocated_at=CONFIG.get('allocated_at'),physical_devices=physical_devices,
+            stage=stage,reason=failure['reason'],observed_at=time.strftime('%Y-%m-%dT%H:%M:%S+00:00',time.gmtime()))
+        refusals=bundle/'bootstrap-refusals'; refusals.mkdir(exist_ok=True)
+        (refusals/(time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.json')).write_text(json.dumps(receipt,indent=2)+'\\n')
+    print(failure['reason'])
+
 """
     export = """# Run this cell after an action finishes/fails. It never invokes inference.
 # Stdlib fallback also exports setup/refusal evidence before project installation.
 import sqlite3,tempfile
 from contextlib import closing
+# A small results export accompanies the complete reproducibility/resume ZIP.
+import html
+last=json.loads((bundle/'last-action.json').read_bytes()) if (bundle/'last-action.json').exists() else {}
+analysis=json.loads((bundle/'analysis-receipt.json').read_bytes()) if (bundle/'analysis-receipt.json').exists() else {}
+status=analysis.get('status') or last.get('status','limited_result')
+reason=last.get('reason') or last.get('stop_reason') or ''
+coverage=analysis.get('coverage')
+summary='<html><meta charset="utf-8"><title>Course research result</title><body style="font:16px system-ui;max-width:900px;margin:40px auto;line-height:1.5">'
+summary+='<h1>Course research result</h1><p><b>'+html.escape(status)+'</b></p><p>'+html.escape(reason)+'</p>'
+if coverage: summary+='<p>Fixed main population coverage: '+html.escape(json.dumps(coverage))+'</p>'
+summary+='<p>Original replies and failures are retained in course-resume.zip. Unexecuted outcomes remain unknown. No failed gate was bypassed.</p>'
+if analysis.get('report'): summary+='<p><a href="'+html.escape(analysis['report'],quote=True)+'">Open the independently reproduced analysis</a></p>'
+summary+='<p>Retain both ZIPs and this executed notebook. Stop any interactive GPU session and retain its real release receipt.</p></body></html>'
+(bundle/'RESULT.html').write_text(summary,encoding='utf-8')
 resume_export=workspace/'course-resume.zip'
 partial=resume_export.with_suffix('.tmp')
 with tempfile.TemporaryDirectory() as temporary:
@@ -265,7 +314,14 @@ with tempfile.TemporaryDirectory() as temporary:
                     if copy.execute('PRAGMA integrity_check').fetchone()[0]!='ok': raise ValueError('SQLite backup failed')
             z.write(target,p.relative_to(bundle).as_posix())
 partial.replace(resume_export)
-for p in (workspace/'course-resume.zip',workspace/'setup'/'course-assets.zip'):
+results_export=workspace/'course-results.zip'
+with zipfile.ZipFile(results_export,'w',zipfile.ZIP_DEFLATED,compresslevel=3) as z:
+    for p in sorted(bundle.rglob('*')):
+        if p.is_file() and not p.is_symlink() and (p.suffix in ('.html','.csv','.svg','.png') or
+                p.parent==bundle and p.suffix=='.json' and p.name!='operator-config.json'):
+            z.write(p,p.relative_to(bundle).as_posix())
+display(HTML(summary))
+for p in (results_export,resume_export,workspace/'setup'/'course-assets.zip'):
     if p.exists(): display(FileLink(str(p)))
 if (bundle/'last-action.json').exists():
     display(FileLink(str(bundle/'last-action.json')))
@@ -278,12 +334,12 @@ print('Retain the ZIP(s) and actual executed notebook. For GPU actions: Stop Ses
     return dict(nbformat=4, nbformat_minor=5,
         metadata=dict(kernelspec=dict(display_name="Python 3", language="python", name="python3"), language_info=dict(name="python")),
         cells=[cell("markdown", introduction, "welcome"), cell("code", select, "action"),
-            cell("code", bootstrap, "source"), cell("markdown", "## Configure the authorized action\nUse `[lower, upper]` GPU-hour bounds supported by evidence. Zero also requires evidence. Preserve the same base bounds on every resume. Available account quota does not reset study spending.\n", "config-notes"),
-            cell("code", settings, "configuration"), cell("markdown", "## Execute and monitor\nThe package streams progress every 15 seconds and exports quiescent SQLite backups at ten-minute boundaries. Interrupted/invalid replies remain recorded. A failed gate stops subsequent work.\n", "execution-notes"),
-            cell("code", run, "execute"), cell("markdown", "## Save evidence and release the session\nDownload the current ZIP and this executed notebook before stopping. Quick Save saves the notebook without a fresh execution; downloading exported evidence is the durable resume path. Save & Run All would start a new invocation.\n", "export-notes"), cell("code", export, "export")])
+            cell("code", bootstrap, "source"), cell("markdown", "## Your saved configuration\nUse `[lower, upper]` GPU-hour bounds supported by evidence. Zero also requires evidence. Preserve the same base bounds on every resume. Available account quota does not reset study spending.\n", "config-notes"),
+            cell("code", settings, "configuration"), cell("markdown", "## Run and monitor\nThe package streams progress every 15 seconds and exports quiescent SQLite backups at ten-minute boundaries. Interrupted/invalid replies remain recorded. A failed gate stops subsequent work.\n", "execution-notes"),
+            cell("code", run, "execute"), cell("markdown", "## Results and safe resume\nThe cell below always runs after an orchestration stop. Download both ZIPs and the executed notebook. A later Run All resumes the same saved inputs; actual provider release still needs a receipt.\n", "export-notes"), cell("code", export, "export")])
 
 
-def build(root, output, *, base_manifest=None, extra_report_wheels=None):
+def build(root, output, *, base_manifest=None, extra_report_wheels=None, assets_cache=None):
     root, output = Path(root).resolve(), Path(output).resolve()
     if output.exists():
         raise FileExistsError(output)
@@ -336,19 +392,33 @@ def build(root, output, *, base_manifest=None, extra_report_wheels=None):
     manifest_bytes = (json.dumps(manifest, indent=2, sort_keys=True)+"\n").encode()
     (output/"source-manifest.json").write_bytes(manifest_bytes)
     dataset = output/"course-kaggle-dataset.zip"
+    assets = {}
+    if assets_cache is not None:
+        import tempfile
+        from scripts.build_course_kaggle_assets import portable_members
+        with tempfile.TemporaryDirectory(dir=assets_cache) as directory:
+            installed_source = Path(directory)/"source"
+            with zipfile.ZipFile(raw) as source:
+                source.extractall(installed_source)
+            (installed_source/"source-manifest.json").write_bytes(manifest_bytes)
+            assets = portable_members(installed_source,manifest,Path(assets_cache))
     with zipfile.ZipFile(dataset, "x", zipfile.ZIP_DEFLATED) as archive:
         for name,data in sorted(dict(members, **{"source-manifest.json":manifest_bytes}).items()):
             item = zipfile.ZipInfo(name, (2026,10,12,0,0,0))
             item.compress_type = zipfile.ZIP_DEFLATED
             item.external_attr = 0o100644 << 16
             archive.writestr(item, data)
+        for name,path in sorted(assets.items()):
+            archive.write(path,"assets/"+name,compress_type=zipfile.ZIP_STORED)
     document = notebook(hashlib.sha256(manifest_bytes).hexdigest(), commit)
     (output/"course_kaggle.ipynb").write_text(json.dumps(document, indent=1, ensure_ascii=False)+"\n", encoding="utf-8")
     shutil_path = root/"docs/KAGGLE_COURSE.md"
     (output/"START_HERE.md").write_bytes(shutil_path.read_bytes())
+    from scripts.m5_kaggle_preflight import sha256_file
     summary = dict(source_commit=commit, dataset=str(dataset), dataset_bytes=dataset.stat().st_size,
-        dataset_sha256=hashlib.sha256(dataset.read_bytes()).hexdigest(), notebook="course_kaggle.ipynb",
-        source_members=len(members), pinned_candidate_packages=len(wheels), gpu_execution=False)
+        dataset_sha256=sha256_file(dataset), notebook="course_kaggle.ipynb",
+        source_members=len(members), pinned_candidate_packages=len(wheels), gpu_execution=False,
+        offline_assets_included=bool(assets), pretrained_model_loaded=False)
     (output/"package-summary.json").write_text(json.dumps(summary, indent=2)+"\n", encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return summary
@@ -358,8 +428,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--assets-cache", type=Path, help="include verified checkpoint and target wheels for one offline upload")
     args = parser.parse_args()
-    build(args.root, args.output)
+    build(args.root, args.output, assets_cache=args.assets_cache)
 
 
 if __name__ == "__main__":
