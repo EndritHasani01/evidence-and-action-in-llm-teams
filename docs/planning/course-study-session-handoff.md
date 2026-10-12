@@ -4,7 +4,8 @@ Updated 12 October 2026 through the course/M5-T02 software handoff. This is a st
 
 Current execution ownership: the user will run all Kaggle/provider work.
 Course/M5-T02 implementation and the guarded T4 x2 notebook/source packet are
-delivered; follow [the three run steps](../validation/course-m5-hardware-smoke.md#user-run-handoff).
+delivered; the current v3 packet supports T4 x2 from the start with one launch
+configuration. Follow [the three run steps](../validation/course-m5-hardware-smoke.md#user-run-handoff).
 Focused source/installed checks and the guarded notebook/export pass. Actual
 hardware/R7/resource/release acceptance remains pending; reuse prerequisite
 evidence and do not repeat broad preparation or request execution details to

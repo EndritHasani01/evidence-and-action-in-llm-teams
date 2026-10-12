@@ -1311,6 +1311,14 @@ are delivered without further execution questions. M5-T02 remains blocked solely
 on user-run resources/actual host/R7/release evidence; no model, pilot, freeze
 or main result is claimed.
 
+The subsequent user-requested GPU-first revision at `c8bb9bd` permits T4 x2
+from the start and one launch configuration. Asset preparation is bounded and
+charged from the actual assignment clock; installed `CourseBudget` still gates
+weights/inference and no ceiling changes. Nine focused checks pass; unchanged
+production/installed/prerequisite evidence is reused. The v3 notebook/payload
+and its guarded export are the current user-run handoff. No GPU work is executed
+by Codex and actual hardware/R7/release acceptance remains pending.
+
 The user requested an [offline R7 continuation](validation/course-m5-r7-offline-review.md)
 at `2c566b4`, preserving the scientific contract and avoiding GPU execution.
 The supplemental proof at `5ce6d5f` verifies 109,851 input + 256 output reserve

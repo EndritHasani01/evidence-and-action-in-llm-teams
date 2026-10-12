@@ -36,11 +36,18 @@ Execute the approved packet within its exact limits. Retain raw IDs/text, candid
 
 **Software handoff complete, 12 October 2026:** The user will perform all
 execution/provider work. The generated notebook, exact source payload and
-launch template are ready in `dist/course-m5-hardware-v2`; follow
+launch template are ready in `dist/course-m5-hardware-v3`; follow
 [the concise run steps](../../../validation/course-m5-hardware-smoke.md#user-run-handoff).
 No additional investigation or execution confirmation is required for this
 implementation scope. Status remains blocked on user-run hardware/R7/resource
 and release evidence, as required by the completion criteria above.
+
+**GPU-first revision, 12 October 2026:** At the user's request, `c8bb9bd`
+supports T4 x2 from the start with one launch configuration. Preparation remains
+inside the same cumulative assigned-time deadline, and installed admission keeps
+the actual assignment clock. Nine focused checks pass; unchanged production,
+installed and scientific prerequisite checks are reused. This changes workflow,
+not smoke ceilings or hardware acceptance.
 
 **Implementation started, 12 October 2026:** Follow
 [the scoped hardware-smoke record](../../../validation/course-m5-hardware-smoke.md).

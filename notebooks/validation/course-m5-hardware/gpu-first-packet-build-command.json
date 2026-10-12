@@ -1,0 +1,26 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "scripts.build_course_hardware_packet",
+    "--tokenizer",
+    "C:/Users/EndritHasani/AppData/Local/Temp/recovery-capacity-wr5ya_42/4B",
+    "--prepared",
+    "notebooks/validation/course-m5-preparation/inputs",
+    "--inspection",
+    "notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json",
+    "--output",
+    "dist/course-m5-hardware-v3"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-12T10:34:38.791801+00:00",
+  "source_head": "c8bb9bdc9ec15cb7598999f2473d3899aaaf7d9f",
+  "seconds": 39.59400000004098,
+  "exit_code": 0,
+  "log": "gpu-first-packet-build.txt.gz",
+  "hash_seed": null,
+  "temporary_root": null
+}
