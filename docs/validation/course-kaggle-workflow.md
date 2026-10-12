@@ -75,6 +75,12 @@ publication is performed. Literal notebook/offline delivery checks are recorded
 at the final artifact checkpoint. Prior resource and supported R7 evidence remain
 required inputs, not inferred zeros or automatic stress-test acceptance.
 
+The packaging refinement verifies both immutable checkpoint shards concurrently
+with bounded HTTP ranges and native LFS hashes, retaining partial downloads for
+resumption. Fourteen focused asset checks pass in 3.224 s. Six Run All checks pass
+in 2.842 s, including evidence-required recovery of a missing bootstrap assignment
+clock into the ordinary allocation records without altering its original receipt.
+
 **Limits:** scripted witness success is not pretrained-model capability. Tiny
 asset fixtures load/download no pretrained weights; no actual Linux/T4 install,
 quantized model, complete physical memory bound, GPU smoke/pilot/main, resource

@@ -187,7 +187,7 @@ CONFIG=json.loads((saved_config if saved_config.exists() else source/'configs/co
 CONFIG.update(execute_gpu=ENABLE_GPU,continuous_assignment=(ACTION=='run_all'),
     automatic_pilot_review=True,max_work_seconds=36000,finalization_seconds=900)
 for key,value in RUN_SETTINGS.items():
-    if isinstance(value,dict): CONFIG[key].update(value)
+    if isinstance(value,dict): CONFIG.setdefault(key,{}).update(value)
     else: CONFIG[key]=value
 config_path=bundle/'operator-config.json'
 config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')

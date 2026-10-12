@@ -229,10 +229,20 @@ def record_refused_allocation(root, bundle, config, action, reason, *, devices=N
                 billing=dict(provider="kaggle", physical_gpu_uuid=physical, unadmitted_action=action))
             store.allocation_stop_requested(number, "gate refusal; provider release pending: "+reason)
 
-def recover_bootstrap_refusals(root, bundle):
+def recover_bootstrap_refusals(root, bundle, current_config):
     """Materialize pre-install assignment receipts into the ordinary ledgers."""
     for path in sorted((Path(bundle)/"bootstrap-refusals").glob("*.json")):
         receipt = read(path)
+        correction = current_config.get("bootstrap_refusal_assignments", {}).get(path.name, {})
+        if correction:
+            if not correction.get("evidence", "").strip():
+                raise BudgetStop("bootstrap_assignment_correction_requires_provider_evidence")
+            if correction.get("allocated_at"):
+                if timestamp(correction["allocated_at"]) > timestamp(receipt["observed_at"]):
+                    raise ValueError("corrected assignment cannot follow its observed refusal")
+                receipt["allocated_at"] = correction["allocated_at"]
+            if correction.get("physical_devices"):
+                receipt["physical_devices"] = correction["physical_devices"]
         if not receipt.get("allocated_at") or not receipt.get("physical_devices"):
             raise BudgetStop("earlier_bootstrap_assignment_interval_unknown; reconcile it before GPU work")
         config = receipt["config"]
@@ -1131,7 +1141,7 @@ def main(argv=None):
     result = dict(action=args.action, status="blocked", inference_called=False)
     try:
         initialize(root, bundle)
-        recover_bootstrap_refusals(root,bundle)
+        recover_bootstrap_refusals(root,bundle,config)
         confirm_previous_release(bundle, config.get("previous_session_release"))
         if args.action == "run_all":
             result = run_all(root, bundle, config)

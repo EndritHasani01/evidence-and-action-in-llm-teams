@@ -16,7 +16,7 @@ from recovery.storage import WorkerStore
 from recovery.runner import DurableRunner
 from recovery.workers import LocalScheduler, WorkerSpec, WorkerInterrupted
 from scripts.course_kaggle_workflow import (accepted_budget, current_assignment, run_all,
-    snapshot, transfer_assignment, worker_paths, scope)
+    snapshot, transfer_assignment, worker_paths, scope, recover_bootstrap_refusals, refused_workers)
 from scripts.m5_kaggle_preflight import download_native_ranges
 from tests.course_worker_cases import SETTINGS, branches, course_inputs, provider_factory, tokenizer_factory
 
@@ -36,6 +36,26 @@ def config():
 
 
 class RunAllTests(unittest.TestCase):
+    def test_unknown_bootstrap_clock_needs_evidence_and_original_receipt_is_preserved(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bundle=Path(directory)/"bundle"; (bundle/"bootstrap-refusals").mkdir(parents=True)
+            cfg=config()
+            receipt=dict(config=cfg,allocated_at=None,physical_devices=["fixture-0","fixture-1"],
+                observed_at="2026-10-12T09:05:00+00:00",stage="hardware",reason="CPU fixture refusal")
+            path=bundle/"bootstrap-refusals/refusal.json"; path.write_text(json.dumps(receipt))
+            original=path.read_bytes()
+            with self.assertRaises(BudgetStop): recover_bootstrap_refusals(ROOT,bundle,cfg)
+            cfg["bootstrap_refusal_assignments"]={"refusal.json":dict(allocated_at="2026-10-12T09:00:00+00:00",
+                evidence="CPU fixture provider facts; no real allocation")}
+            recover_bootstrap_refusals(ROOT,bundle,cfg)
+            recover_bootstrap_refusals(ROOT,bundle,cfg)
+            self.assertEqual(path.read_bytes(),original)
+            self.assertEqual(len(refused_workers(bundle)),2)
+            for worker in refused_workers(bundle):
+                with closing(WorkerStore(worker,readonly=True)) as store:
+                    self.assertEqual(store.connection.execute("SELECT COUNT(*) FROM attempts").fetchone()[0],0)
+                    self.assertEqual(store.connection.execute("SELECT COUNT(*) FROM allocations").fetchone()[0],1)
+
     def test_stage_transfer_counts_every_assigned_second_once_without_release(self):
         with tempfile.TemporaryDirectory() as directory:
             bundle, cfg = Path(directory)/"bundle", config()

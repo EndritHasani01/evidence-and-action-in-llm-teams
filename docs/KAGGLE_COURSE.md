@@ -79,6 +79,11 @@ completed replies, including invalid and failed outcomes. A changed source packe
 or saved input/configuration is rejected. Pre-install refusals retain assignment
 receipts and become ordinary allocation ledgers on the next installed invocation;
 an unknown earlier interval blocks GPU admission until reconciled.
+If a pre-install receipt missed the assignment time/device identity, add a
+`bootstrap_refusal_assignments` entry to `RUN_SETTINGS` keyed by its JSON filename,
+with recovered `allocated_at`/`physical_devices` and supporting `evidence`.
+The original refusal receipt remains unchanged. Use actual recovered provider
+facts; an unreconstructable interval remains blocked.
 
 ## Reproduce the final analysis
 

@@ -103,20 +103,14 @@ def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None)
     expected = {}
     snapshot = cache/("models--"+CANDIDATE.model.replace("/","--"))/"snapshots"/CANDIDATE.revision
     snapshot.mkdir(parents=True,exist_ok=range_bytes is not None)
+    ranged = []
     for name in inspection["checkpoint_index"]["shard_files"]:
         lfs = files[name].get("lfs",{})
         if not re.fullmatch("[0-9a-f]{64}",lfs.get("sha256","")) or type(lfs.get("size")) is not int:
             raise ValueError("checkpoint shard lacks native LFS identity")
         expected[name] = dict(bytes=lfs["size"],sha256=lfs["sha256"])
         if range_bytes is not None:
-            from scripts.m5_kaggle_preflight import download_native_ranges
-            target = snapshot/name
-            if target.exists():
-                if target.stat().st_size != lfs["size"] or sha256_file(target) != lfs["sha256"]:
-                    raise ValueError("cached checkpoint differs: "+name)
-            else:
-                download_native_ranges(f"https://huggingface.co/{CANDIDATE.model}/resolve/{CANDIDATE.revision}/{name}",
-                    target,lfs["size"],lfs["sha256"],chunk_bytes=range_bytes)
+            ranged.append((name,lfs))
             continue
         temporary = snapshot/(name+".partial")
         with urlopen(Request(f"https://huggingface.co/{CANDIDATE.model}/resolve/{CANDIDATE.revision}/{name}",
@@ -126,6 +120,20 @@ def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None)
         if temporary.stat().st_size != lfs["size"] or sha256_file(temporary) != lfs["sha256"]:
             raise ValueError("downloaded checkpoint differs: "+name)
         temporary.replace(snapshot/name)
+    if ranged:
+        from concurrent.futures import ThreadPoolExecutor
+        from scripts.m5_kaggle_preflight import download_native_ranges
+        def fetch(item):
+            name,lfs=item
+            target=snapshot/name
+            if target.exists():
+                if target.stat().st_size != lfs["size"] or sha256_file(target) != lfs["sha256"]:
+                    raise ValueError("cached checkpoint differs: "+name)
+            else:
+                download_native_ranges(f"https://huggingface.co/{CANDIDATE.model}/resolve/{CANDIDATE.revision}/{name}",
+                    target,lfs["size"],lfs["sha256"],chunk_bytes=range_bytes)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            list(pool.map(fetch,ranged))
     for path,wanted in manifest["members"].items():
         if path.startswith("metadata/4B/"):
             import shutil

@@ -21,6 +21,32 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PortableAssetTests(unittest.TestCase):
+    def test_two_native_range_shards_download_concurrently_without_loading_model(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base=Path(directory); root=base/"source"
+            inspection=root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json"
+            inspection.parent.mkdir(parents=True)
+            blobs={"first.safetensors":b"first CPU fixture","second.safetensors":b"second CPU fixture"}
+            inspection.write_text(json.dumps(dict(checkpoint_index=dict(shard_files=list(blobs)))))
+            info=dict(sha=CANDIDATE.revision,siblings=[dict(rfilename=name,lfs=dict(size=len(raw),
+                sha256=hashlib.sha256(raw).hexdigest())) for name,raw in blobs.items()])
+            class Response(io.BytesIO):
+                status=206
+                def __init__(self,raw,start,end):
+                    super().__init__(raw[start:end+1])
+                    self.headers={"Content-Range":f"bytes {start}-{end}/{len(raw)}"}
+            def fetch(request,**kwargs):
+                if "/api/models/" in request.full_url: return io.BytesIO(json.dumps(info).encode())
+                raw=blobs[request.full_url.rsplit("/",1)[1]]
+                start,end=map(int,request.get_header("Range").split("=")[1].split("-"))
+                return Response(raw,start,end)
+            receipt=base/"weights.json"
+            with patch("urllib.request.urlopen",side_effect=fetch):
+                download_weights_stdlib(root,dict(members={}),base/"hub",receipt,range_bytes=5)
+            actual=json.loads(receipt.read_bytes())
+            self.assertFalse(actual["model_weights_loaded"])
+            for name,raw in blobs.items(): self.assertEqual((Path(actual["snapshot"])/name).read_bytes(),raw)
+
     def test_full_missing_main_scope_audits_without_creating_control_workers(self):
         from tests.course_worker_cases import TOKENIZER, SETTINGS
         with tempfile.TemporaryDirectory() as directory:
