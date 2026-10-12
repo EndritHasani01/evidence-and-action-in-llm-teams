@@ -18,7 +18,7 @@ from recovery.storage import WorkerStore
 from recovery.runner import DurableRunner
 from recovery.workers import LocalScheduler, WorkerSpec, WorkerInterrupted
 from scripts.course_kaggle_workflow import (accepted_budget, current_assignment, run_all,
-    snapshot, transfer_assignment, worker_paths, scope, recover_bootstrap_refusals, refused_workers)
+    snapshot, transfer_assignment, worker_paths, scope, recover_bootstrap_refusals, refused_workers, backup_bundle)
 from scripts.m5_kaggle_preflight import download_native_ranges
 from scripts.build_course_kaggle import notebook
 from tests.course_worker_cases import SETTINGS, branches, course_inputs, provider_factory, tokenizer_factory
@@ -39,6 +39,24 @@ def config():
 
 
 class RunAllTests(unittest.TestCase):
+    def test_locked_previous_export_is_preserved_and_complete_fresh_zip_is_returned(self):
+        import zipfile
+        with tempfile.TemporaryDirectory() as directory:
+            base=Path(directory); bundle=base/"bundle"; bundle.mkdir()
+            (bundle/"evidence.txt").write_text("CPU fixture, original records")
+            destination=base/"course-resume.zip"
+            destination.write_bytes(b"preserve previous derived export")
+            replace=Path.replace
+            def locked(path,target):
+                if Path(target).resolve()==destination.resolve(): raise PermissionError("CPU fixture download lock")
+                return replace(path,target)
+            with patch.object(Path,"replace",locked):
+                result=backup_bundle(bundle,destination)
+            self.assertEqual(destination.read_bytes(),b"preserve previous derived export")
+            self.assertNotEqual(result["path"],str(destination))
+            with zipfile.ZipFile(result["path"]) as z:
+                self.assertEqual(z.read("evidence.txt"),b"CPU fixture, original records")
+
     def test_literal_source_cell_detects_extracted_resume_and_preserves_worker_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             base=Path(directory); inputs=base/"input"; resumed=inputs/"resume"
