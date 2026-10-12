@@ -20,6 +20,9 @@ if not __package__:
     namespace = types.ModuleType("scripts")
     namespace.__path__ = [str(Path(__file__).resolve().parent)]
     sys.modules.setdefault("scripts", namespace)
+    test_namespace = types.ModuleType("tests")
+    test_namespace.__path__ = [str(Path(__file__).resolve().parents[1]/"tests")]
+    sys.modules.setdefault("tests",test_namespace)
 
 from recovery.accounting import CourseBudget, BudgetStop, _course_resources, course_admission, timestamp
 from recovery.attempts import ProcessProvider, MeasuredReply
@@ -78,7 +81,20 @@ def admission(launch, stores=(), *, now=None, next_attempt=False):
         raise BudgetStop("concrete_course_smoke_authorization_missing")
     if launch.get("prior_sessions_released") is not True:
         raise BudgetStop("prior_provider_release_unconfirmed")
-    current = resources(stores, budget, now)
+    if not stores and launch.get("resume_workers"):
+        resumed = []
+        try:
+            for path in launch["resume_workers"]:
+                resumed.append(WorkerStore(Path(path),readonly=True))
+            current = resources(resumed,budget,now)
+        finally:
+            for store in resumed:
+                store.close()
+    else:
+        current = resources(stores, budget, now)
+    if any(device["stopped_at"] is None and device["started_at"] != launch.get("allocated_at")
+           for device in current["devices"]):
+        raise BudgetStop("previous_worker_allocation_release_unconfirmed")
     reason, allowed_seconds = course_admission(current, dict(available=False), budget, "development", 2)
     if reason:
         raise BudgetStop(reason)
@@ -92,7 +108,9 @@ def admission(launch, stores=(), *, now=None, next_attempt=False):
     if elapsed < 0:
         raise ValueError("provider assignment cannot be in the future")
     # Before creating ledgers, the already-assigned interval is still chargeable.
-    if not stores:
+    assignment_recorded = any(device["stopped_at"] is None and device["started_at"] == launch["allocated_at"]
+                              for device in current["devices"])
+    if not assignment_recorded:
         allowed_seconds -= 2*elapsed
         smoke_seconds = current["remaining_smoke_gpu_hours"]*3600-2*elapsed
     else:
@@ -134,7 +152,16 @@ def candidate_attention(torch):
         assert grouped_key.stride(1) == grouped_value.stride(1) == 0
         assert grouped_key.untyped_storage().data_ptr() == key.untyped_storage().data_ptr()
         assert grouped_value.untyped_storage().data_ptr() == value.untyped_storage().data_ptr()
-        actual,_ = t4_sdpa_forward(module,query,key,value,mask)
+        if not cases:
+            with torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CPU,torch.profiler.ProfilerActivity.CUDA]) as profile:
+                actual,_ = t4_sdpa_forward(module,query,key,value,mask)
+                torch.cuda.synchronize(0)
+            operators = sorted({event.key for event in profile.key_averages()})
+            kernels = sorted({event.name for event in profile.events() if event.device_type == torch.autograd.DeviceType.CUDA})
+            if not kernels or not any("efficient_attention" in name for name in operators):
+                raise ValueError("actual candidate efficient-attention CUDA trace missing")
+        else:
+            actual,_ = t4_sdpa_forward(module,query,key,value,mask)
         weights = query.float() @ key.repeat_interleave(4,dim=1).float().transpose(-2,-1) / 16
         if mask is not None:
             weights = weights.masked_fill(~mask,float("-inf"))
@@ -144,12 +171,23 @@ def candidate_attention(torch):
         cases.append(dict(query_tokens=query_length,key_tokens=key_length,finite=True,reference_matches=True,
             kv_storage_alias=True,group_stride=0,forced_backend="EFFICIENT_ATTENTION",
             maximum_absolute_error=(actual.float()-expected).abs().max().item(),atol=2e-3,rtol=2e-2))
+        if len(cases) == 1:
+            cases[-1].update(profiled_operators=operators,cuda_kernels=kernels)
     return cases
 
 
 class SmokeBackend:
     def __init__(self, backend):
         self.backend = backend
+        inspection = read(Path(__file__).resolve().parents[1]/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
+        expected = inspection["language_parameters"]
+        actual = dict(backend.model.named_parameters())
+        if set(actual) != set(expected):
+            raise ValueError("actual language inventory differs from all 426 pinned names")
+        for name,tensor in actual.items():
+            shape = getattr(getattr(tensor,"quant_state",None),"shape",None) if expected[name]["kind"] == "nf4_linear" else tensor.shape
+            if shape is None or list(shape) != expected[name]["shape"]:
+                raise ValueError("actual original language tensor shape differs: "+name)
         self.load_report = dict(backend.load_report, candidate_attention=candidate_attention(backend.torch),
             observed_load_memory=memory_sample(backend.torch))
 
@@ -189,6 +227,20 @@ def hang_factory():
     return controlled_hang
 
 
+def host_checks(root,launch,stores,output):
+    """Affected Linux persistence/cleanup checks; no generic CPU acceptance rerun."""
+    import time
+    from scripts.m5_kaggle_preflight import command, test_result, EXPORT_SECONDS as COMMAND_EXPORT_SECONDS
+    _,wall = admission(launch,stores,next_attempt=True)
+    timeout = min(30,int(wall-launch["budget"]["shutdown_seconds"]-COMMAND_EXPORT_SECONDS-8))
+    if timeout < 1:
+        raise BudgetStop("insufficient_time_for_affected_host_checks")
+    record = command(output,"affected-host-checks",[sys.executable,"-I",root/"scripts/m5_course_smoke.py",
+        "--root",root,"--launch",output/"launch.json","--output",output/"host-checks.json","--host-checks"],
+        deadline=time.monotonic()+wall-launch["budget"]["shutdown_seconds"],timeout=timeout,cwd=output,env=dict(os.environ))
+    return test_result(output,record,3)
+
+
 def execute_requests(root, packet, launch, devices, output, *, tokenizer, factory=SmokeFactory):
     """Serial isolated probes; all raw outcomes remain in the original ledger."""
     from recovery.manifests import load_population
@@ -226,6 +278,7 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
         for device in devices:
             providers.append(ProcessProvider(factory(device),before_attempt=before_attempt))
         try:
+            save_json(output/"host-checks.json",host_checks(root,launch,stores,output))
             for row, branch in zip(packet["requests"],branches):
                 index = row["intended_worker"]
                 view = peer_view(row["view"])
@@ -242,6 +295,14 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                 validation = failed_reply(view) if isinstance(response,RecordedFailure) else validate_reply(view,response,tokenizer,limits=COURSE_LIMITS)
                 store.save_control_validation(row["smoke_call_id"],validation)
                 print(row["smoke_call_id"],store.call(row["smoke_call_id"])["status"],flush=True)
+                attempt = store.attempts(row["smoke_call_id"])[-1]
+                facts = json.loads(attempt["backend_json"]) if attempt["backend_json"] else {}
+                observed_free = [sample["free_bytes"] for sample in facts.get("observed_model_edge_memory",[])]
+                if facts.get("free_bytes_with_cache") is not None:
+                    observed_free.append(facts["free_bytes_with_cache"])
+                if observed_free and min(observed_free) < 1610612736:
+                    stopped = "observed_headroom_below_required_1_5_GiB"
+                    break
                 if isinstance(response,RecordedFailure) and not row["controlled_hang"]:
                     stopped = "recorded_model_attempt_failure"
                     break
@@ -264,6 +325,8 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
             attempts = sum(store.connection.execute("SELECT count(*) FROM attempts WHERE call_id != ?",(packet["requests"][-1]["smoke_call_id"],)).fetchone()[0] for store in stores)
     return dict(stop_reason=stopped,process_cleanup=cleanup,resources=cost,
         completed_model_generations=finished,model_physical_attempts=attempts,
+        complete_resident_tokens_upper=110107,
+        largest_prepared_request_resident_tokens=max(row["resident_tokens_with_reserve"] for row in packet["requests"]),
         provider_release_confirmed=False,physical_memory_accepted=False,
         complete_live_memory_upper_bound_bytes=None,actual_headroom_acceptance=None,
         r7_status="incomplete: supported complete-envelope review required",pilot_admitted=False)
@@ -280,6 +343,7 @@ def run(root, launch, output):
         if launch.get("execute_gpu") is not True:
             raise BudgetStop("gpu_execution_disabled")
         admission(launch,next_attempt=True)
+        save_json(output/"launch.json",launch)
         # Import/read native assets only after authorization and resources pass.
         os.environ.update(HF_HUB_OFFLINE="1",TRANSFORMERS_OFFLINE="1",HF_HUB_CACHE=launch["hf_cache"])
         from scripts.m5_course_smoke_assets import verify_assets
@@ -295,9 +359,8 @@ def run(root, launch, output):
         packet = read(root/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
         from scripts.m5_course_preparation import verify_native_requests
         verify_native_requests(root,tokenizer,packet)
-        report.update(status="incomplete",gpu_admission=True)
+        report.update(status="incomplete",gpu_admission=True,model_generations=None)
         report["smoke"] = execute_requests(root,packet,launch,[row[0].strip() for row in rows],output,tokenizer=tokenizer)
-        report["model_generations"] = None  # Failed/interrupted completion is unknown; exact completed count is separate.
     except (Exception,KeyboardInterrupt) as error:
         report["root_blocker"] = f"{type(error).__name__}: {error}"
     finally:
@@ -312,8 +375,23 @@ def main():
     parser.add_argument("--root",type=Path,required=True)
     parser.add_argument("--launch",type=Path,required=True)
     parser.add_argument("--output",type=Path,required=True)
+    parser.add_argument("--check-admission-only",action="store_true")
+    parser.add_argument("--host-checks",action="store_true")
     args = parser.parse_args()
-    run(args.root.resolve(),read(args.launch),args.output.resolve())
+    launch = read(args.launch)
+    if args.host_checks:
+        import unittest
+        names = ["tests.worker_checks.ParentAccessTests.test_controls_are_durable_empty_send_full_shape_and_reject_input_drift",
+            "tests.durable_checks.DurableTests.test_checkpoint_write_failure_before_and_after_commit_has_one_authoritative_effect",
+            "tests.attempt_checks.ProcessAttemptTests.test_interrupted_backend_retries_identical_inputs_and_preserves_ambiguous_completed_work"]
+        result = unittest.TextTestRunner(verbosity=1).run(unittest.defaultTestLoader.loadTestsFromNames(names))
+        raise SystemExit(not result.wasSuccessful())
+    elif args.check_admission_only:
+        # A prospective CPU calculation, never a provider assignment receipt.
+        admission(dict(launch,allocated_at=utc()),next_attempt=True)
+        save_json(args.output,dict(prospective_resource_check=True,gpu_execution=False,model_generations=0))
+    else:
+        run(args.root.resolve(),launch,args.output.resolve())
 
 
 if __name__ == "__main__":

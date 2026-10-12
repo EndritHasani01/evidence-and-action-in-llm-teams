@@ -17,6 +17,7 @@ from recovery.protocol import GeneratedReply
 from recovery.storage import WorkerStore, settings_json
 from scripts.m5_course_preparation import peer_view, read
 from scripts.m5_course_smoke import admission, launch_defaults, resources, run, smoke_branch
+from scripts.m5_course_smoke import execute_requests
 from recovery.prompts import RenderedRequest, TokenizedRequest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -153,3 +154,64 @@ class CourseHardwareSmokeTests(unittest.TestCase):
             self.assertEqual(list(output.glob("worker-*.sqlite")),[])
             with self.assertRaises(FileExistsError):
                 run(ROOT,launch_defaults(),output)
+
+    def test_partial_run_and_confirmed_release_resume_keep_raw_replies_and_costs(self):
+        from scripts.m5_kaggle_preflight import utc,save_json
+        from tests.inference_mocks import Tokenizer
+        with tempfile.TemporaryDirectory() as directory:
+            launch = known_launch()
+            launch["allocated_at"] = utc()
+            first = Path(directory)/"first"
+            first.mkdir()
+            save_json(first/"launch.json",launch)
+            calls = []
+            def completed(provider,store,call_id,number,request,started):
+                calls.append(call_id)
+                return GeneratedReply("invalid literal CPU fixture",(1,2),"eos")
+            real_admission = admission
+            def stop_after_three(*args,**kwargs):
+                if kwargs.get("next_attempt") and len(calls) >= 3:
+                    raise BudgetStop("CPU fixture partial stop before starting another attempt")
+                return real_admission(*args,**kwargs)
+            with patch("scripts.m5_course_smoke.host_checks",return_value=dict(kind="CPU fixture, no actual host acceptance")), \
+                    patch.object(ProcessProvider,"_execute",completed), \
+                    patch("scripts.m5_course_smoke.admission",side_effect=stop_after_three):
+                report = execute_requests(ROOT,self.packet,launch,["CPU-fixture-0","CPU-fixture-1"],first,
+                    tokenizer=Tokenizer(),factory=lambda device:lambda:None)
+            self.assertEqual(report["completed_model_generations"],3)
+            self.assertFalse(report["provider_release_confirmed"])
+            self.assertFalse(report["physical_memory_accepted"])
+            self.assertIn("BudgetStop",report["stop_reason"])
+            original = []
+            for index in range(2):
+                path = first/f"worker-{index}.sqlite"
+                store = WorkerStore(path)
+                try:
+                    original.append(tuple(store.connection.execute("SELECT call_id,raw_json FROM calls WHERE status='completed'")))
+                    for row in store.connection.execute("SELECT number FROM allocations").fetchall():
+                        store.allocation_stopped(row[0],"synthetic CPU release, not provider evidence",released_at=utc())
+                finally:
+                    store.close()
+                with closing(sqlite3.connect((first/f"worker-{index}-backup.sqlite").as_uri()+"?mode=ro&immutable=1",uri=True)) as copy:
+                    self.assertEqual(copy.execute("PRAGMA integrity_check").fetchone(),("ok",))
+            second = Path(directory)/"second"
+            second.mkdir()
+            launch["resume_workers"] = [str(first/f"worker-{index}.sqlite") for index in range(2)]
+            launch["allocated_at"] = utc()
+            save_json(second/"launch.json",launch)
+            def forbidden(provider,store,call_id,number,request,started):
+                self.assertNotIn(call_id,calls,"completed probes must not resample")
+                raise BudgetStop("CPU fixture stops remaining work")
+            with patch("scripts.m5_course_smoke.host_checks",return_value=dict(kind="CPU fixture")), \
+                    patch.object(ProcessProvider,"_execute",forbidden), \
+                    patch("scripts.m5_course_smoke.admission",side_effect=stop_after_three):
+                resumed = execute_requests(ROOT,self.packet,launch,["CPU-fixture-0","CPU-fixture-1"],second,
+                    tokenizer=Tokenizer(),factory=lambda device:lambda:None)
+            self.assertEqual(resumed["completed_model_generations"],3)
+            self.assertEqual(len(resumed["resources"]["devices"]),4)
+            for index in range(2):
+                store = WorkerStore(second/f"worker-{index}.sqlite",readonly=True)
+                try:
+                    self.assertEqual(tuple(store.connection.execute("SELECT call_id,raw_json FROM calls WHERE status='completed'")),original[index])
+                finally:
+                    store.close()

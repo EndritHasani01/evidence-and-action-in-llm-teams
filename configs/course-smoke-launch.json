@@ -1,0 +1,33 @@
+{
+  "execute_gpu": false,
+  "stage_weights": false,
+  "authorization": "",
+  "provider": "kaggle",
+  "reported_quota_gpu_hours": 30,
+  "prior_sessions_released": true,
+  "allocated_at": null,
+  "provider_session_seconds": null,
+  "release_instructions": "",
+  "budget": {
+    "ceiling_gpu_hours": 30,
+    "development_reserve_gpu_hours": 8,
+    "setup_reserve_gpu_hours": 2,
+    "interruption_reserve_gpu_hours": 2,
+    "overhead_seconds": 0,
+    "shutdown_seconds": 120,
+    "allocation_mode": "gpu",
+    "overall_ceiling_gpu_hours": 100,
+    "prior_development_gpu_hours": null,
+    "prior_setup_gpu_hours": null,
+    "prior_interruption_gpu_hours": null,
+    "prior_other_course_gpu_hours": null,
+    "prior_other_overall_gpu_hours": null,
+    "prior_smoke_gpu_hours": null,
+    "prior_smoke_attempts": null,
+    "prior_evidence": ""
+  },
+  "hf_cache": null,
+  "assets_receipt": null,
+  "source_manifest": null,
+  "resume_workers": []
+}
