@@ -86,7 +86,7 @@ def main():
     assert not list(bundle.rglob("worker-*.sqlite"))
     command("three-host-checks",[python,"-I",source/"scripts/m5_course_smoke.py","--root",source,
         "--launch",source/"configs/course-smoke-launch.json","--output",work/"unused-host-output","--host-checks"],timeout=180)
-    command("offline-analysis",base+["--action","analyze"],timeout=300)
+    analyzed=command("offline-analysis",base+["--action","analyze"],timeout=300)
     receipt=json.loads((bundle/"analysis-receipt.json").read_bytes())
     assert receipt["status"]=="feasibility" and receipt["coverage"]["unknown"]==6280
     assert receipt["byte_identical_reproductions"]==2 and receipt["inference_calls"]==0
@@ -98,7 +98,8 @@ def main():
     assert "Limited course feasibility" in report_path.read_text(encoding="utf-8")
     # Reopen the actual export in another workspace, no source-checkout path.
     restored=work/"restored"
-    with zipfile.ZipFile(work/"workspace/course-resume.zip") as z:
+    exported=json.loads(analyzed.stdout[analyzed.stdout.rfind("\n{")+1:])["export"]["path"]
+    with zipfile.ZipFile(exported) as z:
         assert z.testzip() is None
         z.extractall(restored)
     command("restored-offline-analysis",[python,"-I",restored/"source/scripts/course_kaggle_workflow.py",

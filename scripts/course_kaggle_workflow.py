@@ -353,7 +353,11 @@ def backup_bundle(bundle, destination):
                 if "__pycache__" in path.parts or path.suffix == ".pyc":
                     continue
                 archive.write(backups.get(path, path), path.relative_to(bundle).as_posix())
-    temporary_zip.replace(destination)
+    try:
+        temporary_zip.replace(destination)
+    except PermissionError:
+        destination = destination.with_name("course-resume-"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+".zip")
+        temporary_zip.replace(destination)
     return dict(path=str(destination), bytes=destination.stat().st_size,
                 canonical_workers=len(paths), provider_release_confirmed=False)
 
@@ -849,9 +853,9 @@ def execute(root, bundle, config, action):
                 if monotonic()-last_backup >= config.get("backup_every_seconds", 600):
                     while scheduler.inflight:
                         scheduler.advance(dispatch=False)
-                    backup_bundle(bundle, Path(bundle).parent/"course-resume.zip")
+                    exported = backup_bundle(bundle, Path(bundle).parent/"course-resume.zip")
                     last_backup = monotonic()
-                    print("Portable round-boundary backup updated: course-resume.zip", flush=True)
+                    print("Portable round-boundary backup updated: "+exported["path"], flush=True)
                 scheduler.advance()
     except (Exception, KeyboardInterrupt) as error:
         stopped = f"{type(error).__name__}: {error}"
