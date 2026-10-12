@@ -344,7 +344,17 @@ class WorkerStore:
             "SELECT * FROM attempts WHERE call_id=? ORDER BY number", (call_id,)))
 
     def prepare_control(self, branch, settings, view, rendered, tokenized):
+        """Save one isolated request: a control or a development smoke probe.
+
+        Smoke uses the same call/attempt tables, with its actual peer and a
+        separate smoke branch; it is never relabelled as a scheduled control.
+        """
+        if (branch.phase not in ("control", "smoke") or len(branch.calls) != 1
+                or branch.calls[0].round_number != 1 or branch.calls[0].replay_parent is not None
+                or branch.calls[0].peer != view.peer or branch.task != view.task):
+            raise ValueError("one isolated non-replay control/smoke request required")
         call = branch.calls[0]
+        peer = -1 if call.peer is None else call.peer
         payload = record_json({"view": asdict(view), "rendered": asdict(rendered), "tokenized": asdict(tokenized)})
         identity = record_json(asdict(branch))
         with self.connection:
@@ -355,7 +365,7 @@ class WorkerStore:
                     raise ValueError("saved control request/settings/branch equality failed")
                 saved = self.call(call.call_id)
                 if tuple(saved[k] for k in ("branch_id", "round_number", "peer", "seed", "generation_id", "replay_parent")) != (
-                        branch.branch_id, 1, -1, call.seed, call.generation_id, None):
+                        branch.branch_id, 1, peer, call.seed, call.generation_id, None):
                     raise ValueError("saved control slot identity differs")
                 if saved["request_tokens"] != len(tokenized.input_ids):
                     raise ValueError("saved control request token count differs")
@@ -364,7 +374,7 @@ class WorkerStore:
                                     (branch.branch_id, identity, settings, payload))
             self.connection.execute("""INSERT INTO calls
                 (call_id,branch_id,round_number,peer,seed,generation_id,status,request_tokens)
-                VALUES (?, ?,1,-1,?,?,'pending',?)""", (call.call_id, branch.branch_id, call.seed, call.generation_id, len(tokenized.input_ids)))
+                VALUES (?, ?,1,?,?,?,'pending',?)""", (call.call_id, branch.branch_id, peer, call.seed, call.generation_id, len(tokenized.input_ids)))
 
     def save_control_validation(self, call_id, reply):
         raw = self.response(call_id)

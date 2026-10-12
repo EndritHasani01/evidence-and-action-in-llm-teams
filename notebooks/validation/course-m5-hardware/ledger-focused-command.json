@@ -1,0 +1,22 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "tests.test_course_hardware_smoke",
+    "tests.attempt_checks.ProcessAttemptTests.test_interrupted_backend_retries_identical_inputs_and_preserves_ambiguous_completed_work",
+    "tests.attempt_checks.ProcessAttemptTests.test_invalid_truncated_wrong_and_known_timeout_results_never_resample",
+    "-q"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-12T08:38:24.359720+00:00",
+  "source_head": "5ae52514c5bc52e0d07f63b7eac271166d986abc",
+  "seconds": 9.327999999979511,
+  "exit_code": 0,
+  "log": "ledger-focused.txt.gz",
+  "hash_seed": "523",
+  "temporary_root": null
+}

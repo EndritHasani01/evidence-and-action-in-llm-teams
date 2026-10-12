@@ -91,7 +91,7 @@ class ProcessProvider:
     """
 
     def __init__(self, factory, *, timeout_seconds=120, termination_seconds=1,
-                 heartbeat_seconds=1):
+                 heartbeat_seconds=1, before_attempt=None):
         self.timeout_seconds = seconds(timeout_seconds)
         self.termination_seconds = seconds(termination_seconds)
         self.heartbeat_seconds = seconds(heartbeat_seconds)
@@ -100,6 +100,9 @@ class ProcessProvider:
                 or self.heartbeat_seconds > 60):
             raise ValueError("use a callable factory, positive bounds and a heartbeat within 60 seconds")
         self.factory = factory
+        if before_attempt is not None and not callable(before_attempt):
+            raise ValueError("physical-attempt admission must be callable or absent")
+        self.before_attempt = before_attempt
         self._process = self._connection = self._owner = self._store = None
         self._termination_unconfirmed = False
 
@@ -215,6 +218,10 @@ class ProcessProvider:
             row = store.call(call_id)
             if row["status"] in ("completed", "timeout", "infrastructure_failure"):
                 return store.response(call_id)
+            if self.before_attempt is not None:
+                # Recheck physical allowance before retries as well as first calls.
+                # The controller owns this callback; it never enters a peer view.
+                self.before_attempt(store, call_id, len(store.attempts(call_id)) + 1)
             number = store.begin_attempt(call_id, timeout_seconds=self.timeout_seconds,
                                          termination_seconds=self.termination_seconds)
             started = monotonic()

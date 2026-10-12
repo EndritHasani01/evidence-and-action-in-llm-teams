@@ -15,11 +15,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--temporary-root", type=Path, help="task-owned scratch directory on a drive with sufficient space")
     parser.add_argument("--hash-seed", type=int, help="explicit fresh-process Python hash seed")
+    parser.add_argument("--evidence-folder", type=Path, help="existing task evidence folder; default preserves the original location")
     parser.add_argument("label")
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
-    folder = Path(__file__).resolve().parent
+    folder = args.evidence_folder.resolve() if args.evidence_folder else Path(__file__).resolve().parent
+    if not folder.is_dir():
+        parser.error("the task evidence folder must already exist")
     receipt = folder / f"{args.label}-command.json"
     log = folder / f"{args.label}.txt.gz"
     if not command or receipt.exists() or log.exists():
