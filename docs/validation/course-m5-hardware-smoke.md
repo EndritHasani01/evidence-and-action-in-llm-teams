@@ -47,19 +47,68 @@ previous spending. Do not turn these unknowns into zero or verified remaining
 allowance. Run 6's observed 38.664-second workflow is not its provider allocation;
 its conditional 0.3-hour ceiling remains unverified spending.
 
-The delivered launch defaults must refuse staging/GPU work until the concrete
-action has its explicit authorization, supported prior-use inputs, provider
-clock/duration/release terms and storage admission. Existing historical
-GPU-host/tiny-operator authorization is reused within that scope, without
-assuming it accepts this new course model action. The smoke ceiling remains
+The delivered launch defaults refuse staging/GPU work until the operator records
+the authorized bounded scope, supported prior-use inputs, provider
+clock/duration/release terms and storage admission. On 12 October the user
+assigned **all execution and provider work to themselves**, asking for the
+implementation and generated files only. No further execution-information or
+permission request is needed to complete this software handoff. The smoke ceiling remains
 **24 cumulative attempts / 1,800 allocated device-seconds**. Two assigned T4s
 give at most 900 wall seconds before earlier spending and release reserves.
 
 ## Validation and progress
 
-Focused checks will cover only changed single-call persistence, retry/deadline
-admission, literal raw outcome/resume, source/asset guards, unknown resources,
-partial evidence/export and refusal of fabricated physical-memory acceptance.
-Actual GPU loading/smoke, R7 coverage, provider release and off-host reopening
-remain unexecuted until their prerequisites pass. Commands and receipts belong
-in [the task evidence folder](../../notebooks/validation/course-m5-hardware/).
+Implementation is complete at `c82ca7b`. It adds guarded CPU asset staging and
+an independently bounded GPU controller. Smoke requests use existing SQLite
+call/attempt/allocation records; completed raw outcomes resume without sampling.
+Each retry is admitted separately, and two-device allocation includes idle time.
+The existing inference adapter, scientific requests, limits and defaults remain
+unchanged. Loading inventory, affected CUDA attention cases, model-edge/allocator
+observations, state/RNG observations and ordinary backups are retained for review.
+Full-envelope R7 acceptance remains explicitly incomplete until supported.
+
+The [source receipt](../../notebooks/validation/course-m5-hardware/source-focused-command.json)
+records **14 focused checks**, with zero skips, at `c1dc767`.
+The [ordinary installed-wheel receipt](../../notebooks/validation/course-m5-hardware/installed-focused.json)
+records **four affected persistence checks**, zero skips, hash seed 37,
+all 29 matching production modules, no source Python path and passing `pip check`.
+Reuse the earlier nine ledger/attempt checks and single existing control check;
+no broad prerequisite rerun is needed. Windows/Python 3.11 CPU evidence is not
+Linux/T4 execution evidence. The Linux candidate remains pinned separately.
+
+The first packet's four guarded notebook cells execute successfully outside the
+checkout and its closed export reopens, with zero weights/generations/GPU use.
+The final delivery exposes editable launch fields before source admission and
+in the GPU cell, so enabling the later action does not rerun source extraction.
+Only that changed notebook/export path is checked again; production checks are
+reused. The [final notebook/export receipt](../../notebooks/validation/course-m5-hardware/delivery-packet/verification.json)
+passes all four cells and closed-export reopening, with zero weights or GPU work.
+The exact payload is 203,742,121 bytes with SHA-256
+`2dccebc482a460b70d86ae56eefc88db71596d3726ec23da9d2f568b8a87f3e1`.
+Commands and receipts belong in
+[the task evidence folder](../../notebooks/validation/course-m5-hardware/).
+
+## User-run handoff
+
+The final local packet is [dist/course-m5-hardware-v2](../../dist/course-m5-hardware-v2/),
+from committed source `c82ca7b`. Import `course_m5_hardware_smoke.ipynb` into
+Kaggle and attach its exact `course-m5-source.payload` as a private input.
+`launch-template.json` mirrors the guarded editable fields; do not reuse a
+historical source payload with this notebook.
+
+1. With Accelerator **None**, fill the visible `LAUNCH` dictionary, record
+   supported prior-use bounds/provider terms and set `stage_weights=True`.
+   Run the source and CPU asset cells; retain the passing prepared-assets receipt.
+2. Select T4 x2 only for the admitted bounded action. In the GPU cell set
+   `execute_gpu=True` and the actual UTC `allocated_at`; run it once. If the
+   accelerator switch loses the prepared environment/cache, stop and prepare
+   again on CPU, as the notebook instructs.
+3. Run the export cell, download the actual executed notebook/result ZIP and
+   **Stop Session**. Retain actual provider release evidence for off-host ledger
+   reconciliation. Do not rerun model work to save its output.
+
+All running, provider accounting and actual-host evidence are user-owned.
+M5-T02's hardware acceptance remains pending: full-envelope R7/headroom, actual
+loading/state/decoding/runtime, host persistence and confirmed provider release.
+This is a delivered implementation, not a passing model gate or terminal failure;
+M5-T03, pilot/main/freeze gates remain closed.

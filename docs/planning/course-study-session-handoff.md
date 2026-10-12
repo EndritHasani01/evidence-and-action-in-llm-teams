@@ -1,6 +1,14 @@
 # Course study: lessons and fresh-session handoff
 
-Updated 11 October 2026 through course/M4-T04. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
+Updated 12 October 2026 through the course/M5-T02 software handoff. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
+
+Current execution ownership: the user will run all Kaggle/provider work.
+Course/M5-T02 implementation and the guarded T4 x2 notebook/source packet are
+delivered; follow [the three run steps](../validation/course-m5-hardware-smoke.md#user-run-handoff).
+Focused source/installed checks and the guarded notebook/export pass. Actual
+hardware/R7/resource/release acceptance remains pending; reuse prerequisite
+evidence and do not repeat broad preparation or request execution details to
+finish the local software scope.
 
 Current course contract handoff, 9 October 2026: the user explicitly approved
 design/resource adoption after preparation at `ef4c3f6` and the earlier pending
@@ -99,7 +107,7 @@ Read in this order:
 3. The [course index](../todos/course/README.md), then one selected course task and its prerequisite evidence. Qualify IDs as `course/M2-T01`: the [thesis tree](../todos/README.md) uses the same short ID format for different tasks.
 4. The [course proposal](abs-iis-course-study-proposal.md) for proposed scope, and the [research synthesis](../implementation-research/SYNTHESIS.md) plus only the investigations relevant to that task.
 
-The next required task is [course/M5-T02](../todos/course/M5/M5-T02-course-hardware-smoke-and-memory.md), using the [completed preparation handoff](../validation/course-m5-preparation-completion.md#m5-t02-entry-and-acceptance). Its CPU dependencies are satisfied; actual resources/provider facts, explicit course-smoke authorization and host/R7 acceptance remain pending. Reuse original workers and saved derived tables, including unknown selected costs, intended diagnostic denominators and shared-response bounds. Direct uncertainty/report/assembly API consumers pass `regime="course"`; the CLI forwards the saved manifest regime. Keep saved course inputs, explicit `COURSE_LIMITS`, pinned 4B settings, literal `run_inputs` bindings and exact original-prefix/B/C parent identities. Status and analysis CLI infer the declared main count from the manifest (20 course, 60 thesis; nested thesis 40 remains explicit); analysis repeats follow the assigned continuation streams. The task index owns current readiness and counts; this document does not duplicate them.
+The next required task is [course/M5-T02](../todos/course/M5/M5-T02-course-hardware-smoke-and-memory.md), using the [completed preparation handoff](../validation/course-m5-preparation-completion.md#m5-t02-entry-and-acceptance). Its software implementation and user-run packet are delivered; operator resource/provider facts, host/R7 acceptance and confirmed release remain pending. The user owns execution; no further execution questions are needed for the local implementation. Reuse original workers and saved derived tables, including unknown selected costs, intended diagnostic denominators and shared-response bounds. Direct uncertainty/report/assembly API consumers pass `regime="course"`; the CLI forwards the saved manifest regime. Keep saved course inputs, explicit `COURSE_LIMITS`, pinned 4B settings, literal `run_inputs` bindings and exact original-prefix/B/C parent identities. Status and analysis CLI infer the declared main count from the manifest (20 course, 60 thesis; nested thesis 40 remains explicit); analysis repeats follow the assigned continuation streams. The task index owns current readiness and counts; this document does not duplicate them.
 
 ## Reuse evidence within its actual scope
 

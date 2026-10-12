@@ -1300,6 +1300,17 @@ Prior allocation and remaining cumulative smoke allowance are still unknown;
 reported quota does not resolve spending. Actual GPU action, physical R7
 acceptance and dependent pilot/main/freeze gates remain unaccepted.
 
+The user now owns all execution/provider work. The M5-T02 software handoff is
+complete at `c82ca7b`: existing ledgers and inference are reused for the bounded
+runner, CPU asset staging and guarded T4 x2 notebook. Fourteen focused CPU checks,
+four ordinary installed persistence checks, 29 matching modules, `pip check`
+and the literal guarded notebook/export pass. Only the final notebook's editable
+launch-field change is rechecked; prerequisite gates are reused. The
+[run steps and final local packet](validation/course-m5-hardware-smoke.md#user-run-handoff)
+are delivered without further execution questions. M5-T02 remains blocked solely
+on user-run resources/actual host/R7/release evidence; no model, pilot, freeze
+or main result is claimed.
+
 The user requested an [offline R7 continuation](validation/course-m5-r7-offline-review.md)
 at `2c566b4`, preserving the scientific contract and avoiding GPU execution.
 The supplemental proof at `5ce6d5f` verifies 109,851 input + 256 output reserve

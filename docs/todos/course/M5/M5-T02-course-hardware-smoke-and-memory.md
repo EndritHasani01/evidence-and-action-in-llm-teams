@@ -32,15 +32,24 @@ Actual 4B inference on the selected T4 host passes course-envelope memory, langu
 
 Execute the approved packet within its exact limits. Retain raw IDs/text, candidate/host facts, cache/state observations, boundary-memory evidence, failure/timeout cleanup, closed-copy checks and allocation/release receipts. Record incomplete checks explicitly rather than extending smoke to finish them.
 
-**Evidence:** Not yet recorded. Standalone run-6 diagnostics and CPU adapter checks do not pass this course model gate.
+**Evidence:** [Implemented runner and user-run packet](../../../validation/course-m5-hardware-smoke.md#validation-and-progress): 14 focused CPU checks, four ordinary installed persistence checks and the guarded notebook/export pass. Actual-host acceptance is not yet recorded; standalone run-6 diagnostics and CPU checks do not pass this course model gate.
+
+**Software handoff complete, 12 October 2026:** The user will perform all
+execution/provider work. The generated notebook, exact source payload and
+launch template are ready in `dist/course-m5-hardware-v2`; follow
+[the concise run steps](../../../validation/course-m5-hardware-smoke.md#user-run-handoff).
+No additional investigation or execution confirmation is required for this
+implementation scope. Status remains blocked on user-run hardware/R7/resource
+and release evidence, as required by the completion criteria above.
 
 **Implementation started, 12 October 2026:** Follow
 [the scoped hardware-smoke record](../../../validation/course-m5-hardware-smoke.md).
 Safe packet/runner implementation reuses completed M5-T01; no broad CPU rerun
 or speculative offline R7 continuation is required. The user selects Kaggle
 T4 x2, reports full quota and confirms prior sessions stopped. The 30-hour
-project ceiling remains cumulative; prior spending/smoke bounds, concrete
-model-run authorization and actual-host/R7 acceptance are still pending.
+project ceiling remains cumulative; prior spending/smoke bounds and actual-host/R7
+acceptance belong to the user-run gate. The software handoff above supersedes
+the earlier request for execution information.
 
 **Preparation handoff, 11 October 2026:**
 [Course M5-T01 evidence](../../../validation/course-m5-inference-and-smoke-preparation.md#packet-and-resource-handoff)
@@ -70,6 +79,6 @@ authorization, physical-memory acceptance, pilot admission or terminal failure.
 supplies the `3d1a19c` source packet, reused complete input/loading evidence and
 passing literal CPU review/export. Its preparation report says `prepared` while
 physical-memory/GPU/staging admission stays false. This task remains blocked by
-course execution authorization, actual resources/provider facts and host/R7
+actual resources/provider facts and host/R7
 acceptance; no further speculative offline proof is required before preparing
 that bounded authorized action.
