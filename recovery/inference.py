@@ -254,6 +254,36 @@ class TransformersBackend:
                 or record_json(asdict(tokenize_request(rendered, self.tokenizer, limits=self.limits)))
                 != record_json(asdict(tokenized))):
             raise ValueError("exact permitted request/tokenization/capacity equality failed before generation")
+        return self._generate(tokenized, seed)
+
+    def probe_envelope(self, tokenized, *, seed):
+        """A separately recorded hardware diagnostic, never a scientific reply.
+
+        Force the entire output reserve at the proved complete input bound.
+        Only this diagnostic suppresses EOS. Ordinary peer calls still check
+        exact permitted rendering and use the unchanged sampling settings.
+        """
+        if self.limits != COURSE_LIMITS or self.settings["model"] != QWEN_4B.model:
+            raise ValueError("the envelope diagnostic belongs only to the course candidate")
+        if type(seed) is not int or not 0 <= seed < 2**63:
+            raise ValueError("use the recorded diagnostic seed")
+        if len(tokenized.input_ids) != 109851 or len(tokenized.attention_mask) != 109851:
+            raise ValueError("the pinned complete course input envelope is required")
+        if any(value != 1 for value in tokenized.attention_mask):
+            raise ValueError("probe the full unmasked input")
+        from .attempts import MeasuredReply
+        reply = self._generate(tokenized, seed, force_output_reserve=True)
+        if len(reply.response.token_ids) != 256:
+            raise ValueError("the envelope diagnostic must execute all 256 output steps")
+        return MeasuredReply(reply.response, reply.peak_memory_bytes, dict(reply.backend,
+            hardware_diagnostic=True, input_tokens=109851, resident_tokens_with_reserve=110107,
+            forced_output_tokens=256, eos_suppressed_for_diagnostic=True))
+
+    def _generate(self, tokenized, seed, *, force_output_reserve=False):
+        from .attempts import MeasuredReply
+        from transformers import DynamicCache, GenerationConfig, LogitsProcessorList
+        if os.getpid() != self.pid or self.active:
+            raise ValueError("the model and global RNG belong to one serial process")
         torch = self.torch
         self.active = True
         cache = output = None
@@ -281,6 +311,9 @@ class TransformersBackend:
             # strings, forced tokens or schema constraints. The seed is not a
             # claim that regeneration will be exact on another order/device.
             config = GenerationConfig(**self.settings["generation"])
+            if force_output_reserve:
+                config.eos_token_id = None
+                config.min_new_tokens = config.max_new_tokens = self.limits.output_tokens
             with torch.inference_mode():
                 output = self.model.generate(input_ids=inputs, attention_mask=mask,
                     generation_config=config, past_key_values=cache,

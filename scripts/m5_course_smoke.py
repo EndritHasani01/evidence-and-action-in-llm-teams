@@ -7,6 +7,7 @@ GPU execution requires an explicit launch record and admitted resource bounds.
 import argparse
 from contextlib import ExitStack
 from dataclasses import asdict, dataclass, replace
+from copy import deepcopy
 from datetime import datetime, timezone
 import json
 import os
@@ -217,6 +218,57 @@ class SmokeFactory:
         return SmokeBackend(ModelFactory(CANDIDATE,self.device,COURSE_LIMITS)())
 
 
+class EnvelopeBackend(SmokeBackend):
+    """Full-length tensor diagnostic; its output is excluded from capability."""
+
+    def __call__(self, view, rendered, tokenized, *, seed, settings):
+        if settings_json(settings) != settings_json(self.backend.settings):
+            raise ValueError("envelope diagnostic candidate settings differ")
+        torch = self.backend.torch
+        observations = []
+        def observe(*unused):
+            observations.append(memory_sample(torch))
+        handles = [self.backend.model.register_forward_pre_hook(observe),
+                   self.backend.model.register_forward_hook(observe)]
+        try:
+            reply = self.backend.probe_envelope(tokenized, seed=seed)
+            return MeasuredReply(reply.response, reply.peak_memory_bytes,
+                dict(reply.backend, observed_model_edge_memory=observations,
+                     complete_envelope_memory_accepted=False))
+        finally:
+            for handle in handles:
+                handle.remove()
+
+
+@dataclass(frozen=True)
+class EnvelopeFactory:
+    device: str
+    def __call__(self):
+        return EnvelopeBackend(ModelFactory(CANDIDATE,self.device,COURSE_LIMITS)())
+
+
+def hardware_plan(packet, tokenizer):
+    """Keep 21 native smoke probes, two envelope attempts and one timeout.
+
+    Replaces two redundant worker-one independence probes with separately
+    identified diagnostics, within the existing cumulative 24-attempt ceiling.
+    Saved scientific pilot requests and settings are never changed.
+    """
+    rows = deepcopy(packet["requests"])
+    token_id = tokenizer.encode("a", add_special_tokens=False)[0]
+    ids = [token_id]*109851
+    text = tokenizer.decode(ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)
+    for index, worker in ((21, 0), (22, 1)):
+        row = rows[index]
+        row.update(smoke_call_id=f"course-hardware/envelope/device-{worker}",
+            physical_generation_id=f"course-hardware/envelope/device-{worker}",
+            intended_worker=worker, confirmed_restart_before=True, hardware_diagnostic=True,
+            input_tokens=109851, resident_tokens_with_reserve=110107,
+            rendered=dict(system="Hardware memory diagnostic; no scientific scoring", content=text),
+            tokenized=dict(text=text, input_ids=ids, attention_mask=[1]*109851))
+    return rows
+
+
 def controlled_hang(*args, **kwargs):
     while True:
         sleep(1)
@@ -241,11 +293,15 @@ def host_checks(root,launch,stores,output):
     return test_result(output,record,3)
 
 
-def execute_requests(root, packet, launch, devices, output, *, tokenizer, factory=SmokeFactory):
+def execute_requests(root, packet, launch, devices, output, *, tokenizer, factory=SmokeFactory,
+                     complete_envelope=False):
     """Serial isolated probes; all raw outcomes remain in the original ledger."""
     from recovery.manifests import load_population
     verify_requests(root,packet)
-    branches = tuple(smoke_branch(row) for row in packet["requests"])
+    rows = hardware_plan(packet, tokenizer) if complete_envelope else packet["requests"]
+    branches = tuple(smoke_branch(row) for row in rows)
+    save_json(output/"executed-plan.json", dict(rows=rows,
+        note="Envelope rows are tensor diagnostics; never score as scientific outcomes"))
     worlds = load_population(root/"tests/fixtures/population_course.json").development
     settings = packet["settings"]
     paths = [output/f"worker-{i}.sqlite" for i in range(2)]
@@ -279,7 +335,7 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
             providers.append(ProcessProvider(factory(device),before_attempt=before_attempt))
         try:
             save_json(output/"host-checks.json",host_checks(root,launch,stores,output))
-            for row, branch in zip(packet["requests"],branches):
+            for row, branch in zip(rows,branches):
                 index = row["intended_worker"]
                 view = peer_view(row["view"])
                 rendered = RenderedRequest(**row["rendered"])
@@ -290,6 +346,8 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                     providers[index].close()
                 if row["controlled_hang"]:
                     providers[index] = ProcessProvider(hang_factory,before_attempt=before_attempt)
+                elif row.get("hardware_diagnostic"):
+                    providers[index] = ProcessProvider(EnvelopeFactory(devices[index]),before_attempt=before_attempt)
                 response = providers[index].obtain(store,row["smoke_call_id"],view,rendered,tokenized,
                     seed=row["seed"],settings=settings)
                 validation = failed_reply(view) if isinstance(response,RecordedFailure) else validate_reply(view,response,tokenizer,limits=COURSE_LIMITS)
@@ -360,7 +418,8 @@ def run(root, launch, output):
         from scripts.m5_course_preparation import verify_native_requests
         verify_native_requests(root,tokenizer,packet)
         report.update(status="incomplete",gpu_admission=True,model_generations=None)
-        report["smoke"] = execute_requests(root,packet,launch,[row[0].strip() for row in rows],output,tokenizer=tokenizer)
+        report["smoke"] = execute_requests(root,packet,launch,[row[0].strip() for row in rows],output,tokenizer=tokenizer,
+            complete_envelope=launch.get("complete_envelope_diagnostics",False))
     except (Exception,KeyboardInterrupt) as error:
         report["root_blocker"] = f"{type(error).__name__}: {error}"
     finally:

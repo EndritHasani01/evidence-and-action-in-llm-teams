@@ -227,6 +227,7 @@ class LocalScheduler:
         self.deadline = None
         self.allocations = {}
         self.stop_reason = None
+        self.run_phases = None
         self._reported_signature = self._last_reported = None
         if budget is not None:
             from .accounting import Budget, CourseBudget
@@ -355,6 +356,7 @@ class LocalScheduler:
         self.inflight.clear()
         # A local process exit alone never ends paid/physical allocation.
         # Writes happen only after the exclusive worker has exited.
+        unconfirmed = []
         for index, number in tuple(self.allocations.items()):
             from .storage import WorkerStore
             with _own_file(self.paths[index]):
@@ -370,14 +372,17 @@ class LocalScheduler:
                     released = self.release_device(index, self.specs[index].allocated_device)
                     if released is not True and not isinstance(released, str):
                         store.allocation_stop_requested(number, reason + "; provider_release_unconfirmed")
-                        raise WorkerInterrupted("provider release is unconfirmed; allocation remains open and chargeable")
-                    store.allocation_stopped(number, reason, released_at=released if isinstance(released, str) else None)
-                    del self.allocations[index]
+                        unconfirmed.append(index)
+                    else:
+                        store.allocation_stopped(number, reason, released_at=released if isinstance(released, str) else None)
+                        del self.allocations[index]
                 finally:
                     store.close()
         for reader in self.readers:
             reader.close()
         self.readers.clear()
+        if unconfirmed:
+            raise WorkerInterrupted("provider release is unconfirmed; allocations remain open and chargeable")
 
     def restart(self, index):
         process = self.processes[index]
@@ -512,6 +517,8 @@ class LocalScheduler:
             return ()
         ready = sorted((w for w in self.status() if w.status == "runnable"),
                        key=lambda w: (w.next_round, self.rank[w.branch_id]))
+        if self.run_phases is not None:
+            ready = [w for w in ready if self.by_branch[w.branch_id].phase in self.run_phases]
         admitted = []
         for work in ready:
             eligible = idle if work.worker is None else [i for i in idle if i == work.worker]
@@ -529,12 +536,14 @@ class LocalScheduler:
             self._report(force=True)
         return tuple(admitted)
 
-    def advance(self, timeout=0.1):
+    def advance(self, timeout=0.1, *, dispatch=True):
         """Dispatch ready work and wait briefly for explicit round acknowledgments."""
-        self.dispatch()
+        if dispatch:
+            self.dispatch()
         handles = [h for i in self.inflight for h in (self.connections[i], self.processes[i].sentinel)]
         if not handles:
-            if any(w.status != "done" for w in self.status()):
+            if dispatch and any(w.status != "done" and (self.run_phases is None or
+                   self.by_branch[w.branch_id].phase in self.run_phases) for w in self.status()):
                 raise ValueError("no runnable work: missing/inconsistent dependency")
             return ()
         timeout = min(seconds(timeout), self.bounds["heartbeat_seconds"], 0.1)
@@ -561,14 +570,23 @@ class LocalScheduler:
         self._report(force=bool(finished))
         return tuple(finished)
 
-    def run(self):
+    def run(self, *, capability_only=False):
+        """Stop after saved prefixes/controls for the mandatory capability screen.
+
+        The full run binding is retained, so continuing the pilot or resuming
+        its first 90 slots cannot change schedules or recreate a prefix.
+        """
         from .accounting import BudgetStop
+        self.run_phases = {"prefix", "control"} if capability_only else None
         try:
-            while self.inflight or any(w.status != "done" for w in self.status()):
+            while self.inflight or any(w.status != "done" and (self.run_phases is None or
+                    self.by_branch[w.branch_id].phase in self.run_phases) for w in self.status()):
                 self.advance()
         except BudgetStop:
             self.close()
             raise
+        finally:
+            self.run_phases = None
 
 
 def scheduled_work(worlds, branches, readers, *, settings, inflight=None, reverse=False, recorded_active=False):
