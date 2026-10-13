@@ -1006,8 +1006,13 @@ including the real new 24-row controller with scripted providers, pinned native
 tokenization/generation processors, 9B worker binding, unchanged permitted data,
 durable exact reuse, fallback/refusal and nested SQLite backups. No GPU work,
 native 9B fit/capability acceptance, pilot/freeze/main or publication occurred.
-The lightweight generated notebook/package integration is the final delivery
-check; earlier source-bound artifacts and original submitted evidence remain.
+The exact delivered notebook/package also passed literal Jupyter CPU execution,
+the three mandatory host checks, guarded inference refusal, exports and restored
+byte-identical analysis with seven SVG/PNG pairs. The final two-file ZIP is
+4,673,456 bytes and keeps all 97 reviewed Linux dependency pins unchanged.
+[Implemented repair and delivery evidence](validation/course-kaggle-final-online-4-repair.md)
+records source `4deee72`, artifact hashes, limits and the practical upload path.
+Earlier source-bound artifacts and original submitted evidence remain.
 
 The latest submitted run is `final-online-4`, not `final-online-3`. Its code
 cells match the repaired delivery, all 73 committed source members verify, and

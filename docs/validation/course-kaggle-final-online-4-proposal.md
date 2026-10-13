@@ -2,7 +2,8 @@
 
 Implementation update: the user subsequently requested "Fully repair it".
 The scoped model/prompt/deadline/attempt adoption is in specification §11.3;
-the latest course living handoff records implemented behavior and CPU checks.
+the [implemented repair and tested delivery](course-kaggle-final-online-4-repair.md)
+records the final artifacts, implemented behavior and CPU checks.
 The proposal below preserves the original diagnosis and then-pending decisions.
 
 Prepared 13 October 2026 on `feat/course-m5-inference-preparation`, inspected

@@ -24,14 +24,9 @@ Each candidate has at most 24 hardware attempts; 23 historical plus at most 48
 new attempts give the adopted cumulative 71 ceiling. No failed reply is retried.
 First-90 and complete-pilot gates remain unchanged.
 
-The earlier **final-online-3 repair** remains preserved. Its ZIP and notebook from
-`dist/course-kaggle-final-online-3`. Attach only that new dataset for this first
-repaired run. It includes a reviewed resume seed: all 21 completed native probes,
-the original failed-load predecessor, unchanged worker databases, old source and
-diagnostics. Cell 3 restores it automatically. Do not attach the old final-online-3
-payload separately. The controller reuses the 21 replies and runs only the two
-full-input probes and controlled timeout, within the existing **22/25** usage.
-No extra retry allowance or scientific gate relaxation is implied.
+The earlier final-online-3 package remains preserved with its original 21-call
+resume seed and 25-attempt incident contract. Use it only with its own matching
+source; it is not a resume input for this new qualification package.
 
 The ordinary source dataset contains `course-kaggle-source.payload` and
 `source-manifest.json`. The incident repair ZIP also contains the
