@@ -99,7 +99,7 @@ Linux x86_64 **Python 3.13** candidate; incompatible images stop safely.
 Keep the dataset private. Later sessions also attach **course-resume.payload**;
 Run All resumes exact saved inputs without resampling completed calls.
 For this final-online-4 repair, attach only the new dataset for the first run.
-Do not attach old final-online-3/4 resume payloads: model/prompt bindings changed.
+Do not attach old final-online-3/4/5 resume payloads: this repaired source starts fresh.
 Later sessions attach this same dataset and one latest matching resume export.
 For durable background execution, use **Save Version → Save & Run All**;
 see the [Kaggle notebook guide](https://www.kaggle.com/docs/notebooks).
@@ -305,10 +305,11 @@ try:
         cpu_receipt=workspace/'cpu-environment'/'bootstrap'/'bootstrap.json'
         kind='setup' if ACTION=='setup' else 'gpu-environment' if gpu_action or gpu_receipt.exists() or assets and not cpu_receipt.exists() else 'cpu-environment'
         environment=workspace/kind
-        receipt=environment/'bootstrap'/'bootstrap.json'
+        bootstrap_output=environment/'bootstrap'
+        receipt=bootstrap_output/'bootstrap.json'
         if receipt.exists():
             previous=json.loads(receipt.read_bytes())
-            python=Path(previous.get('interpreter','/missing'))
+            python=Path(previous.get('interpreter') or '/missing')
             asset_path=CONFIG.get('assets_receipt') or previous.get('assets_receipt')
             reusable=previous.get('status')!='blocked' and python.is_file()
             if asset_path:
@@ -320,14 +321,17 @@ try:
                     source,asset_path,previous['hf_cache']]+([CONFIG['candidate']] if CONFIG.get('candidate') else [])
                 reusable=bounded_child(verification,180)==0
             if not reusable:
-                # Preserve every failed environment; rebuild only disposable setup.
-                print('Setup: saved environment unavailable/failed; preserving it and rebuilding',flush=True)
+                # Preserve small receipts; bootstrap verifies/reuses the installation
+                # independently of an interrupted checkpoint download.
+                print('Setup: retaining diagnostics; checking installation/download resumption',flush=True)
+                report_path=Path(CONFIG.get('setup_resume_report') or previous.get('setup_report') or receipt.parent/'report.json')
+                if report_path.is_file(): CONFIG['setup_resume_report']=str(report_path)
                 cache=Path(previous.get('hf_cache') or environment/'scratch/hub')
-                if cache.is_dir():
+                if cache.is_dir() and previous.get('source_commit')==EXPECTED_SOURCE_COMMIT:
                     CONFIG['hf_cache']=str(cache)
-                    config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
-                environment=environment/('retry-'+str(time.time_ns()))
-                receipt=environment/'bootstrap'/'bootstrap.json'
+                config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
+                bootstrap_output=environment/('bootstrap-retry-'+str(time.time_ns()))
+                receipt=bootstrap_output/'bootstrap.json'
         if not receipt.exists():
             arguments=[sys.executable,'-I',source/'scripts/course_kaggle_bootstrap.py']
             if ACTION=='setup': arguments+=['setup','--config',config_path]
@@ -335,8 +339,10 @@ try:
                 if assets is None: arguments+=['online','--config',config_path]
                 else: arguments+=['restore','--assets',assets,'--config',config_path]
             else: arguments+=['cpu','--config',config_path]
-            arguments+=['--root',source,'--scratch',environment/'scratch','--output',environment/'bootstrap']
-            if bounded_child(arguments,1800)!=0: raise RuntimeError('Bootstrap failed; its receipt and logs are retained')
+            arguments+=['--root',source,'--scratch',environment/'scratch','--output',bootstrap_output]
+            if bounded_child(arguments,1800)!=0:
+                blocked=json.loads(receipt.read_bytes()) if receipt.is_file() else {}
+                raise RuntimeError(blocked.get('reason') or 'Bootstrap failed before writing its receipt; see the retained log')
             pointer=workspace/kind/'bootstrap'/'bootstrap.json'
             if pointer!=receipt:
                 pointer.parent.mkdir(parents=True,exist_ok=True)
@@ -344,18 +350,21 @@ try:
                 if pointer.exists(): shutil.copyfile(pointer,pointer.with_name('bootstrap-before-'+str(time.time_ns())+'.json'))
                 shutil.copyfile(receipt,pointer)
         runtime=json.loads(receipt.read_bytes())
+        # Bootstrap derives a resumed candidate from its existing gate evidence.
+        # Reload that selection before merging runtime paths and saving config.
+        CONFIG=json.loads(config_path.read_bytes())
         if CONFIG.get('assets_receipt') and Path(CONFIG['assets_receipt']).is_file():
             runtime['assets_receipt']=CONFIG['assets_receipt']
         if runtime.get('status')=='blocked': raise RuntimeError(runtime['reason'])
         # Preserve setup/hash/version evidence in every portable resume export.
-        bootstrap_evidence=bundle/'environment-receipts'/kind
+        bootstrap_evidence=bundle/'environment-receipts'/(kind+'-'+bootstrap_output.name)
         bootstrap_evidence.mkdir(parents=True,exist_ok=True)
-        for path in (environment/'bootstrap').rglob('*'):
+        for path in bootstrap_output.rglob('*'):
             if path.is_file() and path.name!='source-manifest.json':
-                target=bootstrap_evidence/path.relative_to(environment/'bootstrap')
+                target=bootstrap_evidence/path.relative_to(bootstrap_output)
                 target.parent.mkdir(parents=True,exist_ok=True)
                 if target.exists() and target.read_bytes()!=path.read_bytes():
-                    target=bootstrap_evidence/(time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+path.name)
+                    target=bootstrap_evidence/(str(time.time_ns())+'-'+path.name)
                 if not target.exists(): shutil.copyfile(path,target)
         if runtime.get('assets_receipt') and not runtime.get('requires_dataset_restore'):
             CONFIG.update(assets_receipt=runtime['assets_receipt'],hf_cache=runtime['hf_cache'])
@@ -374,13 +383,20 @@ except (Exception,KeyboardInterrupt) as error:
     (bundle/'logs'/('notebook-error-'+str(time.time_ns())+'.txt')).write_text(traceback.format_exc(),encoding='utf-8')
     failure=dict(action=ACTION,status='blocked_or_safely_stopped',reason=type(error).__name__+': '+str(error),
         gates_bypassed=False,assignment_clock=CONFIG.get('allocated_at'),provider_release_confirmed=False)
+    if locals().get('receipt') and Path(receipt).is_file():
+        setup=json.loads(Path(receipt).read_bytes())
+        if setup.get('status')=='blocked':
+            failure.update(reason=setup.get('reason') or failure['reason'],setup_stage=setup.get('stage'),
+                setup_report=setup.get('setup_report'),weights_staged=setup.get('weights_staged',False))
+            CONFIG['setup_resume_report']=setup.get('setup_report')
+            config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
     (bundle/'last-action.json').write_text(json.dumps(failure,indent=2)+'\\n')
-    if locals().get('environment') and (environment/'bootstrap').is_dir():
-        evidence=bundle/'environment-receipts'/(kind+'-failed-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime()))
+    if locals().get('bootstrap_output') and bootstrap_output.is_dir():
+        evidence=bundle/'environment-receipts'/(kind+'-failed-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+str(time.time_ns()))
         evidence.mkdir(parents=True,exist_ok=True)
-        for path in (environment/'bootstrap').rglob('*'):
+        for path in bootstrap_output.rglob('*'):
             if path.is_file() and path.name!='source-manifest.json':
-                target=evidence/path.relative_to(environment/'bootstrap')
+                target=evidence/path.relative_to(bootstrap_output)
                 target.parent.mkdir(parents=True,exist_ok=True)
                 shutil.copyfile(path,target)
     if locals().get('assigned'):
@@ -393,7 +409,7 @@ except (Exception,KeyboardInterrupt) as error:
         receipt=dict(config=CONFIG,allocated_at=CONFIG.get('allocated_at'),physical_devices=physical_devices,
             stage=stage,reason=failure['reason'],observed_at=time.strftime('%Y-%m-%dT%H:%M:%S+00:00',time.gmtime()))
         refusals=bundle/'bootstrap-refusals'; refusals.mkdir(exist_ok=True)
-        (refusals/(time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.json')).write_text(json.dumps(receipt,indent=2)+'\\n')
+        (refusals/(time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+str(time.time_ns())+'.json')).write_text(json.dumps(receipt,indent=2)+'\\n')
     print(failure['reason'])
 
 """
@@ -410,6 +426,8 @@ reason=last.get('reason') or last.get('stop_reason') or ''
 coverage=analysis.get('coverage')
 summary='<html><meta charset="utf-8"><title>Course research result</title><body style="font:16px system-ui;max-width:900px;margin:40px auto;line-height:1.5">'
 summary+='<h1>Course research result</h1><p><b>'+html.escape(status)+'</b></p><p>'+html.escape(reason)+'</p>'
+if last.get('setup_stage') and last.get('weights_staged') is False:
+    summary+='<p>Setup stopped before weights. No new model attempt was started by this setup action. Stage: '+html.escape(last['setup_stage'])+'</p>'
 if coverage: summary+='<p>Fixed main population coverage: '+html.escape(json.dumps(coverage))+'</p>'
 summary+='<p>Original replies and failures are retained in course-resume.payload. Unexecuted outcomes remain unknown. No failed scientific check was bypassed.</p>'
 if analysis.get('report'): summary+='<p><a href="'+html.escape(analysis['report'],quote=True)+'">Open the independently reproduced analysis</a></p>'
@@ -421,6 +439,8 @@ with tempfile.TemporaryDirectory() as temporary:
     with zipfile.ZipFile(partial,'w',zipfile.ZIP_DEFLATED,compresslevel=3) as z:
         for p in sorted(bundle.rglob('*')):
             if not p.is_file() or p.is_symlink() or p.name.endswith(('-wal','-shm','.owner','.tmp','.pyc')) or '__pycache__' in p.parts: continue
+            relative=p.relative_to(bundle)
+            if 'source' in relative.parts and ('build' in relative.parts or any(part.endswith('.egg-info') for part in relative.parts)): continue
             target=p
             if p.name in ('worker-0.sqlite','worker-1.sqlite'):
                 target=Path(temporary)/(str(len(z.infolist()))+'-'+p.name)
@@ -436,11 +456,19 @@ except PermissionError:
     resume_export=workspace/('course-resume-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.payload')
     partial.replace(resume_export)
 results_export=workspace/'course-results.zip'
-with zipfile.ZipFile(results_export,'w',zipfile.ZIP_DEFLATED,compresslevel=3) as z:
+results_partial=results_export.with_suffix('.tmp')
+with zipfile.ZipFile(results_partial,'w',zipfile.ZIP_DEFLATED,compresslevel=3) as z:
     for p in sorted(bundle.rglob('*')):
         if p.is_file() and not p.is_symlink() and (p.suffix in ('.html','.csv','.svg','.png') or
                 p.suffix=='.json' and p.name!='operator-config.json' and not {'source','inputs'} & set(p.relative_to(bundle).parts)):
             z.write(p,p.relative_to(bundle).as_posix())
+with zipfile.ZipFile(results_partial) as z:
+    if z.testzip() is not None: raise ValueError('Results export CRC failed; previous export is preserved')
+try:
+    results_partial.replace(results_export)
+except PermissionError:
+    results_export=workspace/('course-results-'+str(time.time_ns())+'.zip')
+    results_partial.replace(results_export)
 display(HTML(summary))
 for p in (results_export,resume_export,workspace/'setup'/'course-assets.zip'):
     if p.exists(): display(FileLink(str(p)))
@@ -456,7 +484,7 @@ print('Retain course-results.zip, course-resume.payload and the executed noteboo
         metadata=dict(kernelspec=dict(display_name="Python 3", language="python", name="python3"), language_info=dict(name="python")),
         cells=[cell("markdown", introduction, "welcome"), cell("code", select, "action"),
             cell("code", bootstrap, "source"), cell("markdown", "## Automatic configuration\nThe notebook detects GPU mode, records observed session timestamps, and saves the same scientific configuration for resumption. No manual budget or memory-proof form is required. Unobserved provider time remains unknown.\n", "config-notes"),
-            cell("code", settings, "configuration"), cell("markdown", "## Run and monitor\nThe package streams progress every 15 seconds and exports quiescent SQLite backups at ten-minute boundaries. Interrupted/invalid replies remain recorded. A failed gate stops subsequent work.\n", "execution-notes"),
+            cell("code", settings, "configuration"), cell("markdown", "## Run and monitor\nThe package measures storage before installation and keeps dependencies/weights in suitable temporary space. Logs show the exact paths and available/required capacity. Verified installations and partial downloads resume within a session. Progress streams every 15 seconds; quiescent SQLite backups update at ten-minute boundaries. A failed gate stops subsequent work and retains its evidence.\n", "execution-notes"),
             cell("code", run, "execute"), cell("markdown", "## Results and safe resume\nDownload course-results.zip, course-resume.payload and this executed notebook. A later Run All with the SAME dataset and latest payload resumes eligible interrupted work without resampling completed calls. A diagnosed adapter defect or failed scientific gate remains a limited result. Stop interactive sessions normally; no manual release form is required.\n", "export-notes"), cell("code", export, "export")])
 
 

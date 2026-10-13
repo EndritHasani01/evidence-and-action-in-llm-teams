@@ -164,9 +164,16 @@ def online(root, config_path, scratch, output):
     if not config.get("authorizations", {}).get("weights", "").strip():
         raise ValueError("explicit pinned checkpoint download authorization required")
     bundle = config_path.resolve().parent
-    saved = json.loads((bundle/"run.json").read_bytes()) if (bundle/"run.json").exists() else None
+    work_bundle = bundle
+    prior = config["budget"]["prior_smoke_attempts"]
+    if config.get("candidate_order"):
+        label, prior = qualification_choice(bundle,config)
+        config["candidate"] = label
+        save_json(config_path,config)  # Select from existing gates before staging, without resetting base history.
+        work_bundle = bundle/"candidates"/label
+    saved = json.loads((work_bundle/"run.json").read_bytes()) if (work_bundle/"run.json").exists() else None
     action = "main" if saved and saved["freeze"] else "pilot" if saved else "hardware"
-    report_path = bundle/"hardware/report.json"
+    report_path = work_bundle/"hardware/report.json"
     if saved is None and report_path.exists():
         report = json.loads(report_path.read_bytes())
         stop = report.get("root_blocker") or report.get("smoke", {}).get("stop_reason")
@@ -174,10 +181,10 @@ def online(root, config_path, scratch, output):
             raise ValueError("saved_hardware_failure_before_downloads: "+str(stop))
     if config.get("resource_policy") == "observe" and saved is None:
         # This is stdlib-only and happens before multi-GB dependency downloads.
-        paths = list(bundle.glob("hardware/worker-*.sqlite"))
-        prior_paths = list(bundle.glob("refusals/*/worker-*.sqlite"))
-        usage = smoke_attempt_usage(config["budget"],paths,prior_paths=prior_paths)
-        canonical = [bundle/f"hardware/worker-{i}.sqlite" for i in range(2)]
+        paths = list(work_bundle.glob("hardware/worker-*.sqlite"))
+        prior_paths = list(work_bundle.glob("refusals/*/worker-*.sqlite"))
+        usage = smoke_attempt_usage(dict(config["budget"],prior_smoke_attempts=prior),paths,prior_paths=prior_paths)
+        canonical = [work_bundle/f"hardware/worker-{i}.sqlite" for i in range(2)]
         if usage["total_recorded"] >= smoke_attempt_limit(config) and not hardware_matrix_recorded(canonical):
             raise ValueError("recorded_smoke_attempt_limit_before_downloads")
     if not config.get("authorizations", {}).get(action, "").strip():
@@ -190,12 +197,24 @@ def online(root, config_path, scratch, output):
         resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000),resume_workers=[],
         **({"candidate":config["candidate"],"envelope_timeout_seconds":config.get("envelope_timeout_seconds",600)} if config.get("candidate") else {}),
         smoke_attempt_limit=config.get("smoke_attempt_limit",24),smoke_attempt_allowance=config.get("smoke_attempt_allowance"),
-        hf_cache=config.get("hf_cache"))
+        hf_cache=config.get("hf_cache"),setup_resume_report=config.get("setup_resume_report"))
+    if config.get("candidate_order") and saved is None:
+        launch["budget"] = dict(launch["budget"],prior_smoke_attempts=prior)
+    if config.get("candidate_order") and config["candidate"] == "4B" and config.get("assets_receipt"):
+        receipt = Path(config['assets_receipt'])
+        if not receipt.is_file():
+            receipt = bundle/'asset-receipt.json'  # Portable evidence survives lost session scratch.
+        if receipt.is_file():
+            assets = json.loads(receipt.read_bytes())
+            if assets["model"] == "Qwen/Qwen3.5-9B":
+                launch.update(retired_assets=assets,retired_workers=[str(p) for p in (bundle/"candidates/9B").rglob("worker-*.sqlite")])
     from scripts.m5_course_smoke_assets import prepare
     result = prepare(root,manifest,launch,scratch,output,online_config=config_path,smoke_required=saved is None)
     if result["status"] != "prepared":
         raise ValueError(result["root_blocker"])
     return dict(interpreter=result["interpreter"],assets_receipt=result["assets_receipt"],hf_cache=result["hf_cache"],
+        status="prepared",source_commit=result["source_commit"],scratch=result["scratch"],
+        installed_verified=result["installed_verified"],setup_report=str(output/"report.json"),
         online=True,note="Pinned native wheel hashes, installed versions/module bytes and checkpoint revision/LFS hashes verified; no model loaded")
 
 
@@ -205,6 +224,9 @@ def check_resume(root, config_path, output):
     from recovery.accounting import CourseBudget, course_admission
     config = json.loads(config_path.read_bytes())
     bundle = config_path.resolve().parent
+    if config.get('candidate_order'):
+        label,_ = qualification_choice(bundle,config)
+        bundle = bundle/'candidates'/label
     run = json.loads((bundle/"run.json").read_bytes())
     stage = "main" if run["freeze"] else "development"
     # The pre-install screen already bounds known prior open intervals using
@@ -215,6 +237,15 @@ def check_resume(root, config_path, output):
         end_observations(bundle,current_assignment=config.get("allocated_at"))
     else:
         confirm_previous_release(bundle,config.get("previous_session_release"))
+    if config.get('resource_policy') == 'observe':
+        # Automatic course resumption uses the current bounded session clock,
+        # not the superseded manual GPU-hour admission policy.
+        seconds = session_window(config)
+        if seconds <= 150:
+            raise ValueError('session_window_exhausted_before_resume')
+        save_json(output/'admission.json',dict(gpu_execution=False,model_generations=0,stage=stage,
+            resource_policy='observe',prospective_resource_check=False,provider_wall_seconds=seconds))
+        return
     progress = snapshot(root,bundle,stage,run,devices=("kaggle-t4-slot-0","kaggle-t4-slot-1"))
     reason,seconds = course_admission(progress["resources"],progress["forecast"],course_budget(config,run["budget"]),stage,2)
     if reason:
@@ -436,7 +467,10 @@ def main():
         print(json.dumps(result, indent=2), flush=True)
     except (Exception, KeyboardInterrupt) as error:
         output.mkdir(parents=True, exist_ok=True)
-        save_json(output/"bootstrap.json", dict(status="blocked", reason=f"{type(error).__name__}: {error}", gpu_calls=0))
+        report = json.loads((output/"report.json").read_bytes()) if (output/"report.json").is_file() else {}
+        save_json(output/"bootstrap.json", dict(report,status="blocked",
+            reason=report.get("root_blocker") or f"{type(error).__name__}: {error}",
+            setup_report=str(output/"report.json"),gpu_calls=0))
         raise
 
 

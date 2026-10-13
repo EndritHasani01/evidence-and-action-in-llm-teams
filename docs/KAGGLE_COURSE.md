@@ -5,10 +5,10 @@ and import its matching **course_kaggle.ipynb**. Select **T4 x2**, enable **Inte
 then **Run All**. No budget, approval or memory-proof forms are required.
 With Accelerator None, the same notebook produces a CPU feasibility report.
 
-For the **final-online-4 repair**, use `dist/course-kaggle-final-online-4`.
-Attach only its dataset for the first run; **do not attach an old final-online-3
-or final-online-4 resume payload**. The reviewed model/prompt changed, so this
-package starts fresh candidate bundles. The old 23 attempts remain counted and
+For the **final-online-5 repair**, use `dist/course-kaggle-final-online-5`.
+Attach only its dataset for the first run; **do not attach an old final-online-3,
+final-online-4 or final-online-5 resume payload**. The repaired source binding
+starts fresh candidate bundles. Final-online-5 made zero model calls. The old 23 attempts remain counted and
 their original evidence remains preserved in the repository. The dataset ZIP
 contains only two opaque input files: packed research source and its manifest.
 It contains no checkpoint, dependency wheels or old experiment databases.
@@ -61,8 +61,14 @@ generation processors are checked on CPU. Diagnostic EOS is explicitly disabled
 to force all 256 steps without triggering the numerical audit on EOS masking.
 Quiet operations show a 15-second heartbeat. Verified cached environments and
 checkpoint files are reused within the session; transient range-download failures
-have bounded retries. Failed setup logs remain intact when disposable setup is
-rebuilt. Completed failures, adapter defects and failed scientific gates are never
+have bounded retries. The notebook measures temporary storage before installation
+and retains path-specific free/required space and mount readings. Dependencies,
+installer scratch and full pinned checkpoints use suitable session storage;
+canonical workers, logs and exports stay in `/kaggle/working`. An interrupted
+checkpoint download re-verifies and reuses its completed installation. Lost
+temporary assets are rebuilt from pins in a later session. Failed setup logs remain
+intact; an actually damaged installation can be rebuilt without duplicate venvs.
+Neither a storage refusal nor an interrupted session switches models. Completed failures, adapter defects and failed scientific gates are never
 automatically resampled. Source-compatible interrupted hardware stages resume their
 original worker records; a saved report file alone does not determine completion.
 

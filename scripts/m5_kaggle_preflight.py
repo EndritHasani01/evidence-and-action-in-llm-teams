@@ -368,20 +368,38 @@ def filesystem_facts(paths: dict[str, Path]) -> dict:
                            "total_bytes": disk.total}
         pools[key] = {"free_bytes": min(disk.free, pools.get(key, {}).get("free_bytes", disk.free)),
                       "roles": pools.get(key, {}).get("roles", []) + [role]}
+    mountinfo = Path('/proc/self/mountinfo')
+    mounts = []
+    if mountinfo.is_file():
+        for line in mountinfo.read_text().splitlines():
+            fields = line.split()
+            if len(fields) > 5 and any(str(path) == fields[4] or str(path).startswith(fields[4].rstrip('/')+'/')
+                                       for path in paths.values()):
+                mounts.append(line)
     return {"locations": locations, "pools": pools, "quota_verified": False,
+            "observed_at": utc(), "mountinfo": mounts,
             "interpretation": "Filesystem free space is observed; shared pools are counted once."}
 
 
-def require_space(scratch: Path, output: Path, additional_scratch: int) -> dict:
+def require_space(scratch: Path, output: Path, additional_scratch: int, *, receipt=None, stage=None) -> dict:
     facts = filesystem_facts({"scratch": scratch, "output": output})
     same = scratch.stat().st_dev == output.stat().st_dev
-    if shutil.disk_usage(output).free < OUTPUT_RESERVE:
-        raise ValueError("output_evidence_reserve")
     required = additional_scratch + (OUTPUT_RESERVE if same else 0)
     scratch_pool=facts['locations']['scratch']['pool']
-    if facts['pools'][scratch_pool]['free_bytes'] < required:
-        raise ValueError(f"scratch_capacity: additional_required={required}")
-    facts.update(additional_scratch_bytes=additional_scratch, output_reserve_bytes=OUTPUT_RESERVE)
+    available = facts['pools'][scratch_pool]['free_bytes']
+    facts.update(additional_scratch_bytes=additional_scratch, output_reserve_bytes=OUTPUT_RESERVE,
+                 required_bytes=required, available_bytes=available, stage=stage,
+                 admitted=available >= required and facts['locations']['output']['free_bytes'] >= OUTPUT_RESERVE)
+    if receipt is not None:
+        save_json(Path(receipt), facts)
+        print(f"Storage [{stage}]: {scratch} | free={available/2**30:.2f} GiB "
+              f"required={required/2**30:.2f} GiB | {'admitted' if facts['admitted'] else 'refused'}",flush=True)
+    if facts['locations']['output']['free_bytes'] < OUTPUT_RESERVE:
+        raise ValueError(f"output_evidence_reserve: path={output} "
+                         f"available={facts['locations']['output']['free_bytes']} required={OUTPUT_RESERVE}")
+    if available < required:
+        raise ValueError(f"scratch_capacity: path={scratch} pool={scratch_pool} "
+                         f"available={available} additional_required={required}")
     return facts
 
 

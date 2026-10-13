@@ -990,6 +990,24 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The user requested full implementation of the final-online-5 proposal. The repair
+now measures/selects session scratch before installation, saves refusal capacity
+and mount observations, admits the actual checkpoint cache using verified complete
+files or bounded partial prefixes, and resumes a source-verified installation
+independently of download completion. It preserves small setup receipts instead of
+duplicating failed venvs, can relocate an undersized cache, and only reclaims a
+declared failed 9B snapshot for 4B after confirmed process quiescence. Candidate
+selection precedes resumed staging; selected-child observational resume avoids the
+superseded manual budget calculation. CPU preflight uses the active launch settings.
+Notebook failures retain their precise cause, repeated diagnostics remain distinct,
+and exports preserve previous complete snapshots and omit disposable source-build
+duplicates. The [focused CPU receipt](../notebooks/validation/course-kaggle/final-online-5-repair-focused-cpu.json)
+records 84 final checks plus the retained passing 24-row controller prerequisite;
+all 85 pass, with no GPU calls or checkpoint downloads. The approved scientific
+settings, 23 historical attempts, 71 ceiling, raw/replay rules and every empirical
+gate remain unchanged. Packaging and literal delivered-notebook evidence follow
+in the [repair handoff](validation/course-kaggle-final-online-5-repair.md).
+
 The latest submitted run is now `final-online-5`. Its code matches the delivered
 final-online-4 notebook and all 85 manifested source files verify. All twelve
 setup commands passed, including installed provenance and the full native CPU
@@ -1005,8 +1023,8 @@ wrong cache-pool check, installation reuse, exact remaining checkpoint bytes,
 fallback cache capacity, root-cause reporting and the missed online-bootstrap
 test boundary. Its [read-only CPU receipt](../notebooks/validation/course-kaggle/final-online-5-analysis.json)
 reproduces the guard and cache-pool counterexamples and verifies the unchanged
-submission. These are proposed production repairs; no new upload, GPU work,
-scientific design change, freeze or main execution is claimed.
+submission. That investigation preceded the implementation above; neither it nor
+the engineering repair executes GPU work, freeze or main experiments.
 
 The user subsequently requested full repair of the `final-online-4` proposal.
 Its scoped adoption is recorded in specification §11.3. The implementation

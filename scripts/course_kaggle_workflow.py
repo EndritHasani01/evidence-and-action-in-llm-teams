@@ -364,6 +364,13 @@ def backup_bundle(bundle, destination):
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary_zip = destination.with_suffix(".tmp")
     paths = all_workers(bundle)
+    from scripts.m5_kaggle_preflight import require_space
+    # A conservative uncompressed ZIP size; the old complete export is never
+    # replaced until the new snapshot has finished successfully.
+    incoming = sum(p.stat().st_size for p in bundle.rglob('*') if p.is_file() and not p.is_symlink()
+                   and not p.name.endswith(('-wal','-shm','.owner','.tmp')))
+    require_space(destination.parent,destination.parent,incoming,
+                  receipt=bundle/'storage-export.json',stage='portable-backup')
     with tempfile.TemporaryDirectory() as directory:
         backups = {}
         for i, path in enumerate(paths):
@@ -382,6 +389,9 @@ def backup_bundle(bundle, destination):
                 if not path.is_file() or path.is_symlink() or path.name.endswith(("-wal", "-shm", ".owner", ".tmp")):
                     continue
                 if "__pycache__" in path.parts or path.suffix == ".pyc":
+                    continue
+                relative = path.relative_to(bundle)
+                if 'source' in relative.parts and ('build' in relative.parts or any(p.endswith('.egg-info') for p in relative.parts)):
                     continue
                 archive.write(backups.get(path, path), path.relative_to(bundle).as_posix())
     try:
@@ -1248,7 +1258,7 @@ def run_qualification(root, bundle, config):
     """Two explicit source-bound bundles; existing pipeline owns every stage."""
     from copy import deepcopy
     from scripts.course_kaggle_bootstrap import qualification_choice
-    from scripts.m5_course_smoke_assets import download_weights_stdlib, require_space
+    from scripts.m5_course_smoke_assets import native_checkpoint_files, admit_checkpoint
     from scripts.m5_course_smoke import check_hardware_plan
     global CANDIDATE
     bundle = Path(bundle)
@@ -1282,7 +1292,11 @@ def run_qualification(root, bundle, config):
                 require_authorization(selected,"weights")
                 from scripts.m5_kaggle_preflight import command
                 inspection = read(preparation_files(root,CANDIDATE)["inspection"])
-                require_space(Path(selected["hf_cache"]),child,inspection["checkpoint_index"]["total_checkpoint_bytes"]+512*1024**2)
+                expected = native_checkpoint_files(inspection)
+                admit_checkpoint(Path(selected['hf_cache']),child/'environment-receipts',inspection,expected,
+                    read(Path(root)/'source-manifest.json'),retired_assets=assets,
+                    retired_workers=[p for stage in ('hardware','development','main')
+                        for p in (bundle/'candidates/9B'/stage).glob('worker-*.sqlite')])
                 seconds = min(900, int(session_window(selected))-150)
                 if seconds < 1:
                     raise BudgetStop("session_window_exhausted_before_fallback_download")

@@ -28,7 +28,7 @@ class PortableAssetTests(unittest.TestCase):
             inspection.parent.mkdir(parents=True)
             blobs={"first.safetensors":b"first CPU fixture","second.safetensors":b"second CPU fixture"}
             inspection.write_text(json.dumps(dict(model=CANDIDATE.model,revision=CANDIDATE.revision,
-                checkpoint_index=dict(shard_files=list(blobs)))))
+                checkpoint_index=dict(shard_files=list(blobs),total_checkpoint_bytes=sum(map(len,blobs.values()))))))
             info=dict(sha=CANDIDATE.revision,siblings=[dict(rfilename=name,lfs=dict(size=len(raw),
                 sha256=hashlib.sha256(raw).hexdigest())) for name,raw in blobs.items()])
             class Response(io.BytesIO):
@@ -65,13 +65,13 @@ class PortableAssetTests(unittest.TestCase):
             root=Path(directory)/"source"
             inspection=root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json"
             inspection.parent.mkdir(parents=True)
+            weights=b"tiny CPU fixture, no pretrained weights"
             inspection.write_text(json.dumps(dict(model=CANDIDATE.model,revision=CANDIDATE.revision,
-                checkpoint_index=dict(shard_files=["model.safetensors"]))))
+                checkpoint_index=dict(shard_files=["model.safetensors"],total_checkpoint_bytes=len(weights)))))
             metadata=root/"metadata/4B/config.json"
             metadata.parent.mkdir(parents=True)
             metadata.write_bytes(b'{"test":"CPU fixture"}')
             manifest=dict(members={"metadata/4B/config.json":dict(bytes=metadata.stat().st_size,sha256=hashlib.sha256(metadata.read_bytes()).hexdigest())})
-            weights=b"tiny CPU fixture, no pretrained weights"
             info=dict(sha=CANDIDATE.revision,siblings=[dict(rfilename="model.safetensors",lfs=dict(size=len(weights),sha256=hashlib.sha256(weights).hexdigest()))])
             receipt=Path(directory)/"weights.json"
             with patch("urllib.request.urlopen",side_effect=[io.BytesIO(json.dumps(info).encode()),io.BytesIO(weights)]):

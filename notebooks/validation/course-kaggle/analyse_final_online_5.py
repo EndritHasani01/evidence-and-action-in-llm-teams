@@ -19,6 +19,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
+HISTORICAL_GUARD = None
 
 
 def guard_probe(additional, readings, location="scratch"):
@@ -35,19 +36,21 @@ def guard_probe(additional, readings, location="scratch"):
     with patch.object(Path, "stat", lambda p: SimpleNamespace(st_dev=by_path[p]["device"])), \
          patch.object(preflight.shutil, "disk_usage", side_effect=disk_usage):
         try:
-            facts = preflight.require_space(paths[location], paths["output"], additional)
+            facts = HISTORICAL_GUARD(paths[location], paths["output"], additional)
             return dict(status="admitted", facts=facts)
         except ValueError as error:
             return dict(status="refused", reason=str(error))
 
 
 def analyse():
+    global HISTORICAL_GUARD
     from scripts.m5_kaggle_preflight import BUILD_RESERVE, OUTPUT_RESERVE
 
     incident = ROOT / "notebooks/run/final-online-5"
+    originals = [incident/name for name in ('course-results.zip','course-resume.payload','last-action.json','notebook-exec.ipynb')]
     hashes = {p.name: dict(bytes=p.stat().st_size,
                          sha256=hashlib.sha256(p.read_bytes()).hexdigest())
-              for p in sorted(incident.iterdir()) if p.is_file()}
+              for p in originals}
     executed = json.loads((incident / "notebook-exec.ipynb").read_bytes())
     delivered = json.loads((ROOT / "notebooks/run/final-online-4/notebook-fixed.ipynb").read_bytes())
 
@@ -70,6 +73,15 @@ def analyse():
         assert len(expected_manifest) == 1
         manifest_sha256 = hashlib.sha256(manifest_bytes).hexdigest()
         assert manifest_sha256 == expected_manifest[0]
+        # Keep this incident reproducible after repairing the live guard. Only
+        # these two original stdlib functions are executed on simulated paths.
+        original = ast.parse(resume.read('source/scripts/m5_kaggle_preflight.py'))
+        selected = [n for n in original.body if isinstance(n,ast.FunctionDef)
+                    and n.name in ('filesystem_facts','require_space')]
+        assert len(selected) == 2
+        scope = dict(Path=Path,shutil=shutil,OUTPUT_RESERVE=OUTPUT_RESERVE)
+        exec(compile(ast.Module(body=selected,type_ignores=[]),'submitted-storage-guard','exec'),scope)
+        HISTORICAL_GUARD = scope['require_space']
         for name, expected in manifest["members"].items():
             raw = resume.read("source/" + name)
             assert len(raw) == expected["bytes"]
