@@ -1,0 +1,15 @@
+{
+  "model": "Qwen/Qwen3.5-4B",
+  "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "name": "model.safetensors-00001-of-00002.safetensors",
+  "url": "https://huggingface.co/Qwen/Qwen3.5-4B/resolve/851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a/model.safetensors-00001-of-00002.safetensors",
+  "header_bytes": 11160,
+  "length_prefix_bytes": 8,
+  "payload_bytes": 5329387520,
+  "file_bytes": 5329398688,
+  "ranges": [
+    "bytes 0-7/5329398688",
+    "bytes 8-11167/5329398688"
+  ],
+  "tensor_bytes_downloaded": 0
+}

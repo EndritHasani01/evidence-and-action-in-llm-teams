@@ -990,6 +990,26 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The latest submitted run is now `final-online-6`, using the exact final-online-5
+notebook and `ae0b98f` runtime. All 13 setup commands and actual 9B native loading
+passed. Twenty-one ordinary hardware replies and one full 110,416-input/256-output
+probe are durable; the probe completed in 394.043 seconds but transient free
+headroom fell to 16.813 MiB, correctly refusing the 1.5 GiB gate. The declared 4B
+fallback then stopped before weights/model calls because its inspection compared
+tensor payload bytes with complete Safetensors file bytes (90,240 header bytes
+missing). Independently, broad worker globs counted backups twice, persisting a
+false 67 instead of 45 cumulative attempts. The [complete results analysis](validation/course-kaggle-final-online-6-analysis.md)
+and separate [complete repair proposal](validation/course-kaggle-final-online-6-proposal.md)
+cover both causal bugs, accurate progress, and narrow predecessor adoption to
+continue directly with 4B without repeating failed 9B work or breaking source
+binding. The [read-only CPU receipt](../notebooks/validation/course-kaggle/final-online-6-analysis.json)
+verifies original artifacts and reproduces both archived defects with zero GPU
+calls/tensor downloads. The 21 ordinary diagnostics contain 11 valid/10 invalid
+replies and 0/3 correct full-information controls; they are not pilot evidence.
+No development/freeze/main execution occurred; all 6,280 main uses remain unknown.
+This turn delivers diagnosis/proposal only: production repair and a new upload
+package remain pending; no scientific gate, settings or 71-attempt allowance changed.
+
 The user requested full implementation of the final-online-5 proposal. The repair
 now measures/selects session scratch before installation, saves refusal capacity
 and mount observations, admits the actual checkpoint cache using verified complete

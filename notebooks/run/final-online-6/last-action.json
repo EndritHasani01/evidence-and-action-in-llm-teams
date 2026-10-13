@@ -1,0 +1,7 @@
+{
+  "action": "run_all",
+  "gates_bypassed": false,
+  "reason": "ValueError: pinned checkpoint byte inventory differs",
+  "remaining_outcomes": "unknown",
+  "status": "blocked_or_safely_stopped"
+}
