@@ -439,7 +439,7 @@ results_export=workspace/'course-results.zip'
 with zipfile.ZipFile(results_export,'w',zipfile.ZIP_DEFLATED,compresslevel=3) as z:
     for p in sorted(bundle.rglob('*')):
         if p.is_file() and not p.is_symlink() and (p.suffix in ('.html','.csv','.svg','.png') or
-                p.parent==bundle and p.suffix=='.json' and p.name!='operator-config.json'):
+                p.suffix=='.json' and p.name!='operator-config.json' and not {'source','inputs'} & set(p.relative_to(bundle).parts)):
             z.write(p,p.relative_to(bundle).as_posix())
 display(HTML(summary))
 for p in (results_export,resume_export,workspace/'setup'/'course-assets.zip'):
