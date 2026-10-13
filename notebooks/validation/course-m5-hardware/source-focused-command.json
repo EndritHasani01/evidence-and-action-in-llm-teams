@@ -1,0 +1,21 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "tests.test_course_hardware_smoke",
+    "tests.test_course_smoke_assets"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-12T09:56:26.844713+00:00",
+  "source_head": "c1dc76735b929a74d028541d39c7215c9dd7b0f0",
+  "seconds": 3.2810000001918525,
+  "exit_code": 0,
+  "log": "source-focused.txt.gz",
+  "hash_seed": null,
+  "temporary_root": null
+}

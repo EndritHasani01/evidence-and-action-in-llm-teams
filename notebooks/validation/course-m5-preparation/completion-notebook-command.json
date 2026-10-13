@@ -1,0 +1,23 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-B",
+    "notebooks/validation/course-m5-preparation/verify_notebook.py",
+    "--packet",
+    "dist/course-m5-preparation-v2",
+    "--work",
+    "E:/CodexTemp/recovery-course-m5-completion-20261011/notebook",
+    "--evidence",
+    "notebooks/validation/course-m5-preparation/completion-packet"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T21:44:19.266377+00:00",
+  "source_head": "db9f928dea29e9a6300998898b3e028217c13766",
+  "seconds": 10.812999999849126,
+  "exit_code": 1,
+  "log": "completion-notebook.txt.gz",
+  "hash_seed": "419",
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m5-completion-20261011"
+}

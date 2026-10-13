@@ -1,0 +1,326 @@
+{
+  "status": "analysed_read_only",
+  "submitted_files": {
+    "course-results.zip": {
+      "bytes": 19376,
+      "sha256": "2bebdd46cb4fa994e8022579274ec97ac8571bba1a188b946e3f8ceb7ec25f1a"
+    },
+    "course-resume.payload": {
+      "bytes": 5391853,
+      "sha256": "ae3c707a85a27ef24875388a63b29bb487891c11090ae256877f96fc084a2c3d"
+    },
+    "last-action.json": {
+      "bytes": 265,
+      "sha256": "cd4c6aafaba69e9b9914737628634ce45aea96984525c4e0ce0670673cfc0adf"
+    },
+    "notebook-exec.ipynb": {
+      "bytes": 112235,
+      "sha256": "448e8e6af30adf39b8d7294208c3a3c79859ca4bd0a2a0f4323882c7e71717aa"
+    }
+  },
+  "source_commit": "4deee720e0f2bee12f5331cc933d542083a05f78",
+  "verified_source_members": 85,
+  "source_manifest_sha256": "dde0d87efe912bbf7116da5c440f6132f7da2dced73fdf108fda6cd3024177be",
+  "manifest_matches_delivered_notebook": true,
+  "notebook_code_equal": true,
+  "archive_crc_checks": 3,
+  "command_stages": [
+    {
+      "name": "create-candidate",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:15:22.270003+00:00",
+      "ended_utc": "2026-10-13T17:15:22.384865+00:00",
+      "elapsed_seconds": 0.11478773400000364,
+      "exit_code": 0
+    },
+    {
+      "name": "download-pip",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:15:22.385235+00:00",
+      "ended_utc": "2026-10-13T17:15:22.650280+00:00",
+      "elapsed_seconds": 0.26499470199999564,
+      "exit_code": 0
+    },
+    {
+      "name": "bootstrap-pip",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:15:22.650779+00:00",
+      "ended_utc": "2026-10-13T17:15:25.166904+00:00",
+      "elapsed_seconds": 2.5160688949999894,
+      "exit_code": 0
+    },
+    {
+      "name": "download-candidate",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:15:25.167653+00:00",
+      "ended_utc": "2026-10-13T17:18:59.322577+00:00",
+      "elapsed_seconds": 214.15482517899997,
+      "exit_code": 0
+    },
+    {
+      "name": "download-build-tools",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:18:59.323064+00:00",
+      "ended_utc": "2026-10-13T17:19:00.039491+00:00",
+      "elapsed_seconds": 0.7163593550000087,
+      "exit_code": 0
+    },
+    {
+      "name": "install-candidate",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:19:12.076596+00:00",
+      "ended_utc": "2026-10-13T17:20:42.662446+00:00",
+      "elapsed_seconds": 90.58577989499997,
+      "exit_code": 0
+    },
+    {
+      "name": "build-project",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:20:42.663053+00:00",
+      "ended_utc": "2026-10-13T17:20:47.330100+00:00",
+      "elapsed_seconds": 4.666985767000028,
+      "exit_code": 0
+    },
+    {
+      "name": "install-project",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:20:47.330981+00:00",
+      "ended_utc": "2026-10-13T17:20:47.796955+00:00",
+      "elapsed_seconds": 0.4658506339999917,
+      "exit_code": 0
+    },
+    {
+      "name": "installed-provenance",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:20:47.797852+00:00",
+      "ended_utc": "2026-10-13T17:21:02.966261+00:00",
+      "elapsed_seconds": 15.168263703999969,
+      "exit_code": 0
+    },
+    {
+      "name": "loading-contract",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:21:02.966900+00:00",
+      "ended_utc": "2026-10-13T17:21:03.081681+00:00",
+      "elapsed_seconds": 0.11471999000002597,
+      "exit_code": 0
+    },
+    {
+      "name": "hardware-plan-contract",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:21:03.082155+00:00",
+      "ended_utc": "2026-10-13T17:21:10.600228+00:00",
+      "elapsed_seconds": 7.517987237000057,
+      "exit_code": 0
+    },
+    {
+      "name": "prospective-admission",
+      "status": "passed",
+      "started_utc": "2026-10-13T17:21:10.600833+00:00",
+      "ended_utc": "2026-10-13T17:21:11.567907+00:00",
+      "elapsed_seconds": 0.9670213069999818,
+      "exit_code": 0
+    }
+  ],
+  "executed_notebook_uncaught_errors": 0,
+  "failure": {
+    "status": "blocked",
+    "gpu_execution": false,
+    "model_weights_loaded": false,
+    "weights_staged": false,
+    "root_blocker": "ValueError: scratch_capacity: additional_required=20648488160",
+    "assigned_device_count": 2,
+    "provider_assignment_utc": "2026-10-13T17:15:21+00:00",
+    "provider_release_confirmed": false
+  },
+  "outer_last_action": {
+    "action": "run_all",
+    "status": "blocked_or_safely_stopped",
+    "reason": "RuntimeError: Bootstrap failed; its receipt and logs are retained",
+    "gates_bypassed": false,
+    "assignment_clock": "2026-10-13T17:15:21+00:00",
+    "provider_release_confirmed": false
+  },
+  "scratch_path": "/kaggle/working/course-workspace-4deee720e0f2/gpu-environment/scratch",
+  "inferred_default_cache": "/kaggle/working/course-workspace-4deee720e0f2/gpu-environment/scratch/hub",
+  "required_bytes": {
+    "checkpoint": 19306310880,
+    "build_reserve": 1073741824,
+    "shared_output_reserve": 268435456,
+    "total": 20648488160,
+    "total_gib": 19.230403155088425
+  },
+  "physical_generations": 0,
+  "worker_databases": [],
+  "historical_preparation_attempts": 23,
+  "cumulative_attempt_limit": 71,
+  "main_coverage": {
+    "recorded": 0,
+    "unknown": 6280
+  },
+  "weights_download_command_started": false,
+  "elapsed_observed_to_last_setup_command_seconds": 350.567907,
+  "provider_release_confirmed": false,
+  "user_dashboard": {
+    "source": "chat screenshot, later session-level observation",
+    "session_minutes": 12,
+    "session_limit_hours": 12,
+    "disk_used_gib": 2.2,
+    "disk_max_gib": 57.6,
+    "ram_used_gib": 2.1,
+    "ram_max_gib": 30,
+    "gpu_count": 2,
+    "gpu_type": "T4",
+    "gpu_utilization_percent": [
+      0,
+      0
+    ],
+    "gpu_memory_bytes": [
+      0,
+      0
+    ],
+    "gpu_memory_max_gib_each": 15,
+    "filesystem_paths_or_mounts_not_shown": true
+  },
+  "missing_failure_telemetry": [
+    "free_bytes",
+    "total_bytes",
+    "mount or filesystem identity",
+    "cache disk measurement",
+    "installed environment disk footprint"
+  ],
+  "cpu_counterexamples": {
+    "exact_refusal": {
+      "status": "refused",
+      "reason": "scratch_capacity: additional_required=20648488160"
+    },
+    "dashboard_values": {
+      "status": "admitted",
+      "facts": {
+        "locations": {
+          "scratch": {
+            "path": "\\synthetic\\scratch",
+            "pool": "1",
+            "free_bytes": 59485297049,
+            "total_bytes": 61847529062
+          },
+          "output": {
+            "path": "\\synthetic\\output",
+            "pool": "1",
+            "free_bytes": 59485297049,
+            "total_bytes": 61847529062
+          }
+        },
+        "pools": {
+          "1": {
+            "free_bytes": 59485297049,
+            "roles": [
+              "scratch",
+              "output"
+            ]
+          }
+        },
+        "quota_verified": false,
+        "interpretation": "Filesystem free space is observed; shared pools are counted once.",
+        "additional_scratch_bytes": 20380052704,
+        "output_reserve_bytes": 268435456
+      }
+    },
+    "wrong_scratch_refusal": {
+      "status": "refused",
+      "reason": "scratch_capacity: additional_required=20648488160"
+    },
+    "cache_admitted": {
+      "status": "admitted",
+      "facts": {
+        "locations": {
+          "scratch": {
+            "path": "\\synthetic\\cache",
+            "pool": "2",
+            "free_bytes": 42949672960,
+            "total_bytes": 64424509440
+          },
+          "output": {
+            "path": "\\synthetic\\output",
+            "pool": "1",
+            "free_bytes": 19327352832,
+            "total_bytes": 64424509440
+          }
+        },
+        "pools": {
+          "2": {
+            "free_bytes": 42949672960,
+            "roles": [
+              "scratch"
+            ]
+          },
+          "1": {
+            "free_bytes": 19327352832,
+            "roles": [
+              "output"
+            ]
+          }
+        },
+        "quota_verified": false,
+        "interpretation": "Filesystem free space is observed; shared pools are counted once.",
+        "additional_scratch_bytes": 20380052704,
+        "output_reserve_bytes": 268435456
+      }
+    },
+    "wrong_scratch_admission": {
+      "status": "admitted",
+      "facts": {
+        "locations": {
+          "scratch": {
+            "path": "\\synthetic\\scratch",
+            "pool": "1",
+            "free_bytes": 42949672960,
+            "total_bytes": 64424509440
+          },
+          "output": {
+            "path": "\\synthetic\\output",
+            "pool": "1",
+            "free_bytes": 42949672960,
+            "total_bytes": 64424509440
+          }
+        },
+        "pools": {
+          "1": {
+            "free_bytes": 42949672960,
+            "roles": [
+              "scratch",
+              "output"
+            ]
+          }
+        },
+        "quota_verified": false,
+        "interpretation": "Filesystem free space is observed; shared pools are counted once.",
+        "additional_scratch_bytes": 20380052704,
+        "output_reserve_bytes": 268435456
+      }
+    },
+    "cache_refused": {
+      "status": "refused",
+      "reason": "scratch_capacity: additional_required=20380052704"
+    },
+    "stale_partial_credit": {
+      "current_incoming_estimate": 20,
+      "actual_incoming": 100
+    }
+  },
+  "checkpoint_shard_bytes": {
+    "9B": 19306310880,
+    "4B": 9319737856
+  },
+  "candidate_wheel_count": 97,
+  "candidate_wheel_download_bytes": 4088733635,
+  "constraints_unchanged": true,
+  "production_files_changed": false,
+  "analysis_environment": {
+    "python": "3.11.9",
+    "platform": "win32",
+    "gpu_calls": 0,
+    "weight_downloads": 0,
+    "model_imports": 0
+  }
+}

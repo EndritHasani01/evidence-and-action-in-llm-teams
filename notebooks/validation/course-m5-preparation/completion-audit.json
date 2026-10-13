@@ -1,0 +1,91 @@
+{
+  "status": "passed",
+  "task_status": "done",
+  "audited_head": "3d1a19cba62a286c5141af842986cff93d01c572",
+  "protected_files_identical": 1730,
+  "plan_sections_1_to_10_identical": true,
+  "installed_production_modules_identical": 29,
+  "prior_m1_m4_gate_unchanged": true,
+  "r7_checkpoint_artifacts_unchanged": true,
+  "historical_source_packets_preserved": true,
+  "reused_suites": {
+    "source-final": {
+      "methods": 64,
+      "skips": 0,
+      "source_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+      "exit_code": 0
+    },
+    "installed-corrected": {
+      "methods": 64,
+      "skips": 0,
+      "source_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+      "exit_code": 0
+    },
+    "native-course-final": {
+      "methods": 4,
+      "skips": 0,
+      "source_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+      "exit_code": 0
+    },
+    "native-installed": {
+      "methods": 4,
+      "skips": 0,
+      "source_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+      "exit_code": 0
+    },
+    "native-tightening-source": {
+      "methods": 5,
+      "skips": 0,
+      "source_head": "add294959e3560150cd6aa28d3b39a2819f9aecb",
+      "exit_code": 0
+    },
+    "outside-native": {
+      "methods": 5,
+      "skips": 0,
+      "source_head": "5ce6d5fccf1259c1da93598e2bc916ad57da9c19",
+      "exit_code": 0
+    },
+    "loading-review-source": {
+      "methods": 5,
+      "skips": 0,
+      "source_head": "f4555225cf5d1e393e1c01a8c7433a39def7d1b8",
+      "exit_code": 0
+    }
+  },
+  "focused_suite": {
+    "methods": 11,
+    "skips": 0,
+    "source_head": "3d1a19cba62a286c5141af842986cff93d01c572",
+    "exit_code": 0
+  },
+  "course_task_states": {
+    "done": 12,
+    "blocked": 9
+  },
+  "packet_source_commit": "3d1a19cba62a286c5141af842986cff93d01c572",
+  "payload_sha256": "24d00391f3255ff197ce4afad35d5444421a8c09325db80c9625c7abbfbc336d",
+  "source_members": 272,
+  "closed_exports_reopened": 2,
+  "preparation": {
+    "status": "prepared",
+    "preparation_complete": true,
+    "complete_input_tokens_upper": 109851,
+    "complete_resident_tokens_upper": 110107,
+    "physical_memory_acceptance_task": "course/M5-T02",
+    "conditional_tensor_component_sum_bytes": 7400914336,
+    "conditional_loading_tensor_allowance_bytes": 3214021348,
+    "complete_live_memory_upper_bound_bytes": null,
+    "actual_headroom_acceptance": null,
+    "physical_memory_accepted": false,
+    "weight_staging_permitted": false,
+    "gpu_admission": false,
+    "terminal_model_feasibility_failure": false
+  },
+  "local_references": 525,
+  "markdown_fragments": 228,
+  "inbound_references": 105,
+  "model_generations": 0,
+  "gpu_execution": false,
+  "weights_staged": false,
+  "runtime_freeze": false
+}

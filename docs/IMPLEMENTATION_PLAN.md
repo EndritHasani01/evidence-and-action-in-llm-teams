@@ -990,6 +990,247 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The latest submitted run is now `final-online-6`, using the exact final-online-5
+notebook and `ae0b98f` runtime. All 13 setup commands and actual 9B native loading
+passed. Twenty-one ordinary hardware replies and one full 110,416-input/256-output
+probe are durable; the probe completed in 394.043 seconds but transient free
+headroom fell to 16.813 MiB, correctly refusing the 1.5 GiB gate. The declared 4B
+fallback then stopped before weights/model calls because its inspection compared
+tensor payload bytes with complete Safetensors file bytes (90,240 header bytes
+missing). Independently, broad worker globs counted backups twice, persisting a
+false 67 instead of 45 cumulative attempts. The [complete results analysis](validation/course-kaggle-final-online-6-analysis.md)
+and separate [complete repair proposal](validation/course-kaggle-final-online-6-proposal.md)
+cover both causal bugs, accurate progress, and narrow predecessor adoption to
+continue directly with 4B without repeating failed 9B work or breaking source
+binding. The [read-only CPU receipt](../notebooks/validation/course-kaggle/final-online-6-analysis.json)
+verifies original artifacts and reproduces both archived defects with zero GPU
+calls/tensor downloads. The 21 ordinary diagnostics contain 11 valid/10 invalid
+replies and 0/3 correct full-information controls; they are not pilot evidence.
+No development/freeze/main execution occurred; all 6,280 main uses remain unknown.
+This turn delivers diagnosis/proposal only: production repair and a new upload
+package remain pending; no scientific gate, settings or 71-attempt allowance changed.
+
+The user requested full implementation of the final-online-5 proposal. The repair
+now measures/selects session scratch before installation, saves refusal capacity
+and mount observations, admits the actual checkpoint cache using verified complete
+files or bounded partial prefixes, and resumes a source-verified installation
+independently of download completion. It preserves small setup receipts instead of
+duplicating failed venvs, can relocate an undersized cache, and only reclaims a
+declared failed 9B snapshot for 4B after confirmed process quiescence. Candidate
+selection precedes resumed staging; selected-child observational resume avoids the
+superseded manual budget calculation. CPU preflight uses the active launch settings.
+Notebook failures retain their precise cause, repeated diagnostics remain distinct,
+and exports preserve previous complete snapshots and omit disposable source-build
+duplicates. The [focused CPU receipt](../notebooks/validation/course-kaggle/final-online-5-repair-focused-cpu.json)
+records 84 final checks plus the retained passing 24-row controller prerequisite;
+all 85 pass, with no GPU calls or checkpoint downloads. The approved scientific
+settings, 23 historical attempts, 71 ceiling, raw/replay rules and every empirical
+gate remain unchanged. Packaging and literal delivered-notebook evidence follow
+in the [repair handoff](validation/course-kaggle-final-online-5-repair.md).
+
+The final 4,678,127-byte two-file dataset and 35,020-byte notebook are delivered
+in `dist/course-kaggle-final-online-5`, with unchanged 97 dependency pins and 85
+runtime members bound to `ae0b98f`. The final literal notebook also passed ordinary
+CPU installation, three host/loading checks, exports and byte-identical restored
+analysis with seven SVG/PNG pairs; the [delivery receipt](../notebooks/validation/course-kaggle/final-online-5-repair-delivery-cpu.json)
+records the final notebook hash. A focused follow-up verifies accurate source-error
+reporting after earlier bootstrap failures. Native Linux download/install and T4
+acceptance remain unexecuted; all 6,280 main outcomes remain unknown. No additional
+scientific configuration, allowance or frozen-state change occurred.
+
+The latest submitted run is now `final-online-5`. Its code matches the delivered
+final-online-4 notebook and all 85 manifested source files verify. All twelve
+setup commands passed, including installed provenance and the full native CPU
+hardware-plan/generation-processor checks. Before any checkpoint download or model
+loading, the online storage guard refused 20,648,488,160 additional bytes. No worker
+databases or new model attempts exist; the historical 23 and adopted 71 ceiling
+remain unchanged, with all 6,280 main outcomes unknown. The later user screenshot
+shows 2.2/57.6 GiB session-level disk usage and idle T4s. Original path-specific
+free/total/mount readings were discarded, so global disk exhaustion is not proven.
+The [complete diagnosis and repair proposal](validation/course-kaggle-final-online-5-proposal.md)
+addresses measured temporary storage selection, early phase-aware admission, the
+wrong cache-pool check, installation reuse, exact remaining checkpoint bytes,
+fallback cache capacity, root-cause reporting and the missed online-bootstrap
+test boundary. Its [read-only CPU receipt](../notebooks/validation/course-kaggle/final-online-5-analysis.json)
+reproduces the guard and cache-pool counterexamples and verifies the unchanged
+submission. That investigation preceded the implementation above; neither it nor
+the engineering repair executes GPU work, freeze or main experiments.
+
+The user subsequently requested full repair of the `final-online-4` proposal.
+Its scoped adoption is recorded in specification §11.3. The implementation
+adds a persisted compact prompt profile while preserving original rendering,
+admits the reviewed 9B course candidate, renews both native inventories and
+complete input bounds (110,416 + 256), and restricts the 600-second deadline to
+the two envelope diagnostics. Existing process logs now retain prefill/decode
+progress and precise terminal-attempt details. Two explicit source-bound
+candidate bundles reuse the existing workflow: 9B first, 4B only after terminal
+pre-main hardware or complete capability/protocol failure; interrupted sessions,
+raw/effect audit defects and frozen/main failures cannot switch candidates.
+Historical 23 attempts remain counted; each fresh matrix has a 24-attempt cap
+within the adopted cumulative 71 scope. Seventy-seven focused CPU checks passed,
+including the real new 24-row controller with scripted providers, pinned native
+tokenization/generation processors, 9B worker binding, unchanged permitted data,
+durable exact reuse, fallback/refusal and nested SQLite backups. No GPU work,
+native 9B fit/capability acceptance, pilot/freeze/main or publication occurred.
+The exact delivered notebook/package also passed literal Jupyter CPU execution,
+the three mandatory host checks, guarded inference refusal, exports and restored
+byte-identical analysis with seven SVG/PNG pairs. The final two-file ZIP is
+4,673,456 bytes and keeps all 97 reviewed Linux dependency pins unchanged.
+[Implemented repair and delivery evidence](validation/course-kaggle-final-online-4-repair.md)
+records source `4deee72`, artifact hashes, limits and the practical upload path.
+Earlier source-bound artifacts and original submitted evidence remain.
+
+The preceding `final-online-4` submission was analysed after correcting the
+earlier folder reference from `final-online-3`. Its code
+cells match the repaired delivery, all 73 committed source members verify, and
+all 21 original call/attempt rows are unchanged. The first actual full-envelope
+probe then recorded a terminal 120-second timeout: provider startup consumed
+20.62 seconds, no reply or full-envelope memory evidence returned, and bounded
+termination was confirmed. Cumulative preparation is 23/25; two remaining slots
+cannot repair that failed matrix. Main coverage remains 0/6,280 recorded. The
+[in-depth diagnosis and complete proposal](validation/course-kaggle-final-online-4-proposal.md)
+separates this hardware/runtime failure from the earlier repaired software
+defects and from the poor original protocol/answer outcomes. It proposes live
+phase progress, honest evidence-scoped reporting, diagnostic-only timing review,
+compact uniform output instructions and pinned 9B qualification with a declared
+4B fallback. CPU meta architecture estimates make 9B plausible, not T4-accepted.
+The [read-only CPU receipt](../notebooks/validation/course-kaggle/final-online-4-analysis.json)
+records archive/source/notebook/worker checks, mathematical counterexamples and
+conditional memory estimates. This work changes no production behavior,
+scientific configuration, attempt allowance or frozen settings and makes zero
+GPU calls. The proposed model/rendering/deadline and extra-attempt scopes require
+explicit adoption before execution; no new notebook/package is claimed here.
+
+The user requested full repair of the `final-online-3` proposal. The implemented
+corrections use the existing `RenderedRequest` schema and explicit empty diagnostic
+EOS, preserve parent-controller tracebacks, and check the complete plan and real
+pinned generation processors on CPU before checkpoint download. Idle providers
+use the existing stop sentinel within unchanged TERM/KILL bounds. Recorded matrix
+outcomes can be reconstructed at the cumulative ceiling without admitting new
+attempts. The reviewed preparation-only continuation is produced offline: original
+source/reports and all 21 worker outcomes are retained, corrected source is bound
+normally, and the notebook's exact-source checks remain. The repair dataset embeds
+that resume seed; a later separate export supersedes it. CPU controller and pinned
+processor checks and literal notebook/export/restore integration passed. The
+[implemented repair and final delivery](validation/course-kaggle-final-online-3-repair.md)
+records the exact three-file upload, original worker-byte preservation and remaining
+three diagnostics. The
+25-attempt allowance and all scientific settings/gates remain unchanged. No GPU
+execution, native full-envelope acceptance, pilot/freeze/main or publication is
+performed by this repair work.
+
+The subsequent `final-online-3` submission completed pinned online setup, both
+native T4 replica loading audits, and all 21 ordinary hardware probes. It stopped
+before the first full-envelope attempt because the generated request includes an
+unsupported `RenderedRequest.system` field. Exact pinned-library inspection also
+found ineffective diagnostic EOS suppression: `None` inherits model EOS, creating
+intentional nonfinite masking before the finite-score audit. The
+[full diagnosis and fix proposal](validation/course-kaggle-final-online-3-proposal.md)
+records both defects, the missed CPU integration boundaries, and a proposed narrow
+source-bound preparation continuation. Disposable CPU copies reused all 21 exact
+saved replies without provider/admission or new attempts; all raw validations
+matched. Cumulative usage is 22/25 including the retained predecessor, leaving
+only the two full-envelope diagnostics and controlled hang. Hardware acceptance
+remains unestablished; capability/pilot/freeze/main remain unexecuted, and all main
+logical uses remain unknown.
+This investigation changes no production behavior, source-binding rule or
+scientific configuration and makes no GPU call. The native acceptance and scoped
+continuation are proposed, not implemented or authorized by this document.
+
+The `final-online-2` repair is implemented on 13 October 2026. Loading audits use
+actual parameter/buffer/NF4-state placement and tolerate absent dispatch metadata;
+child defects retain full phase/traceback evidence. Hardware resumption follows
+original failure/attempt state, completed outcomes are never resampled, and cold
+setup refuses retained fatal hardware failures before downloads. Cumulative smoke
+counts include documented predecessors and deduplicate original backups. The user
+explicitly authorized the one-time 25-attempt incident allowance in specification
+§11.3; the package retains the failed attempt and unchanged 24 diagnostics.
+Pinned online setup checks the delivered loading contract, retries transient
+ranges, verifies/reuses cache, and preserves failed setup when rebuilding. Native
+GPU/model feasibility, full-input headroom, capability/pilot/freeze/main remain
+operator-run gates. The [repair evidence](validation/course-kaggle-final-online-2-repair.md)
+records actual focused checks and the exact rebuilt notebook/package integration.
+
+On 13 October 2026 the submitted `final-online-2` run completed verified online
+setup and the three affected host checks, then stopped on the adapter's direct
+`hf_device_map` access: the pinned single-device loader legitimately omits that
+annotation. No model generation completed; all 6,280 main logical slots remain
+unknown. The [incident diagnosis and repair proposal](validation/course-kaggle-final-online-2-proposal.md)
+records the exact pinned-wheel cause, CPU reproduction, failed-report resumption
+and cross-package smoke-count defects, and a focused repair/acceptance sequence.
+That initial diagnosis was proposal-only; the subsequent authorized repair is
+recorded above and in its linked repair evidence.
+The original failure consumed one recorded smoke attempt; a complete fresh
+24-attempt matrix would require an explicitly adopted scope amendment, not a
+counter reset. Submitted artifacts remain unchanged; their resume payload was
+not supplied, so original worker rows could not be audited in this investigation.
+
+The user's `notebooks/run/final-online-1/notebook-exec.ipynb` stopped before model
+calls: Kaggle unpacked the loose gzip input and the notebook retained disabled
+GPU/manual setup defaults. The user authorized automatic GPU mode and timing,
+removal of budget-based stops/manual forms, and measured stress/headroom acceptance
+in place of the manual complete-memory proof. The scientific amendment is in
+specification §11.3; statistical/protocol/replay gates and unchanged freeze-before-main
+remain. The original executed notebook is preserved byte-for-byte. Compact raw
+payload transport prevents Kaggle fixture rewriting. Source failures now retain
+logs and skip dependent work while exporting evidence. Logs, worker intervals,
+checkpoints, failures and progress remain authoritative/derived in their existing
+stores; observed time does not assert provider release or resolve missing history.
+
+On 12 October 2026 the user authorized consolidating remaining M5/M6 engineering
+into the [course Kaggle execution package](KAGGLE_COURSE.md), rather than separate
+implementation projects. It reuses the saved course schedule, durable workers,
+allocation/attempt records and M4 reports. The delivered interface covers staged
+assets, hardware/capability/pilot, explicit audited freeze/main, quiescent portable
+exports, release-confirmed restart and independent offline reconstruction.
+[Package evidence](validation/course-kaggle-workflow.md) records executed CPU
+integration; milestone scientific/empirical statuses remain unchanged.
+
+The subsequent user request makes Run All the normal interface. The user's final
+delivery preference is online-first: a small dataset contains committed research
+code/configurations/fixtures/metadata; Kaggle downloads the original pinned
+checkpoint and hash-pinned wheels. Separate asset uploads and action switching
+are unnecessary. Safe CPU packaging loads no model. Actual
+assignment is charged from its supplied clock, including installation and review.
+Quiescent stage transitions partition that same physical assignment in the existing
+allocation ledgers; they never claim provider deallocation. Workers can re-admit
+their matching open interval at bounded window boundaries without resampling.
+All mandatory gates and separate conditional freeze/main authorizations remain.
+A completely clean pilot permits automatic family/condition/timeout review;
+recorded failures, uncertainty or near-timeout calls require explicit review.
+Reporting has an allocation-aware time limit and always retains a portable
+limited-result export when a gate/session prevents completion.
+
+The user's reported slow pre-cell Kaggle input preparation led to a compact
+two-file upload: the existing raw `.payload` archive and integrity manifest.
+An explicit execution-file list replaces whole-repository packaging. Only the
+research runtime, saved inputs, essential metadata, independent reference and
+mandatory three host checks/helper dependencies remain. The notebook verifies
+both archive and member identities before local extraction. Scientific execution,
+freeze gates and original-source resume binding are unchanged; recorded bundles
+continue with their matching original source packet.
+
+Consequential choices: the ordinary installed candidate and local snapshot are
+verified by versions/module bytes and native wheel/LFS identities. The existing
+asset builder supplies online installation, with fresh downloaded wheels reclaimed
+before checkpoint staging to limit peak disk use. Cold session preparation derives
+resource bounds from original allocations before downloads; accepted hardware is
+counted once, while pilot/main preparation does not demand fresh smoke allowance.
+Downloads/install receipts travel in the original resume bundle; environments and
+weights do not. The optional older CPU setup mode still consumes its rebuildable staging
+environment before large weight packing to limit peak disk use. Two separately recorded
+full-envelope diagnostics replace redundant smoke probes within the same cumulative
+24-attempt ceiling. They require a supported complete R7 review before admission.
+Stable replica positions carry timing forecasts across sessions, with actual
+physical UUIDs retained in allocation/load evidence. Gate-refused assigned
+intervals remain original allocation-only worker records. Audit reconstruction
+uses disposable branch-local databases and SQLite-enforced read-only parents,
+including private temporary views that omit only the current scratch branch's
+duplicate IDs. Complete reporting requires committed effects and native model
+diagnostics as well as full raw coverage; CPU/synthetic reports retain their
+original default labels and bytes. No GPU execution, accepted freeze or external
+publication is authorized by this software delivery.
+
 The [adopted course clause](../PROJECT_SPECIFICATION.md#11-adopted-absiis-course-regime)
 is the sole authority for the separate ABS/IIS regime. Sections 1-10 above retain
 the thesis engineering roadmap and its existing task/evidence state. The
@@ -1018,11 +1259,30 @@ the [local witness and complete capacity gate](validation/course-m2-attainabilit
 [paired uncertainty/missingness acceptance](validation/course-m4-uncertainty-and-missingness.md#completion-and-handoff).
 [Course/M4-T04](todos/course/M4/M4-T04-course-report-and-cpu-gate.md) now passes
 [report and M1–M4 CPU acceptance](validation/course-m4-report-and-cpu-gate.md#completion-and-handoff).
-The combined course M1–M4 CPU gate is complete; course/M5-T01 is next for
-CPU packet preparation. GPU/model acceptance, empirical
+The combined course M1–M4 CPU gate and course/M5-T01 preparation are complete.
+Course/M5-T02 owns the next hardware/memory gate. GPU/model acceptance, empirical
 execution and applicable authorization remain separate.
 
 ### Course implementation decisions
+
+Course/M5-T01 starts CPU preparation from `2753c18` on 11 October 2026.
+Reuse the accepted course M1–M4 prerequisites and direct adapter; renew the
+course candidate, complete memory decision and committed-source packet in
+[the scoped acceptance record](validation/course-m5-inference-and-smoke-preparation.md).
+The user approved a course engineering sequencing change on 11 October 2026:
+M5-T01 owns the complete input proof, conditional memory review and reviewed
+CPU packet/hardware-smoke handoff. M5-T02 owns remaining physical R7 acceptance,
+combining justified analysis and actual-host coverage under the bounded smoke.
+This supersedes the earlier requirement to close all physical memory costs
+offline before finishing preparation. No scientific limit or gate is waived:
+at least 1.5 GiB free headroom over the complete envelope still precedes pilot
+admission; CPU/source/storage/resource prerequisites and explicit authorization
+still precede GPU allocation or weight staging. Historical failed/blocked
+receipts remain unchanged. [Preparation completion](validation/course-m5-preparation-completion.md)
+reuses the accepted adapter/installed/native evidence and tighter complete input
+proof. The refreshed `3d1a19c` packet passes 11 focused checks and literal CPU
+notebook/export review with two off-output immutable database reopenings.
+Production source and thesis defaults remain unchanged; M5-T01 is done.
 
 - Reuse the existing fallback mathematical size, generators/truth/edits,
   stable IDs and manifests; add only explicit course scope to populations,
@@ -1270,6 +1530,80 @@ packet preparation is the next safe task; later gates still precede GPU use.
 
 ### Course unresolved gates
 
+Course/M5-T02 implementation starts 12 October 2026 from `2f2523f`; see
+[the hardware-smoke record](validation/course-m5-hardware-smoke.md).
+Reuse M5-T01's exact matrix, complete input proof and unchanged prerequisite
+acceptance. Prepare the executable bounded path and CPU asset preparation,
+renewing only affected source/storage/attempt/host behavior. The user reports
+full Kaggle T4 x2 quota and confirms earlier sessions stopped, while retaining
+the cumulative 30-hour project ceiling and preferring much less spending.
+Prior allocation and remaining cumulative smoke allowance are still unknown;
+reported quota does not resolve spending. Actual GPU action, physical R7
+acceptance and dependent pilot/main/freeze gates remain unaccepted.
+
+The user now owns all execution/provider work. The M5-T02 software handoff is
+complete at `c82ca7b`: existing ledgers and inference are reused for the bounded
+runner, CPU asset staging and guarded T4 x2 notebook. Fourteen focused CPU checks,
+four ordinary installed persistence checks, 29 matching modules, `pip check`
+and the literal guarded notebook/export pass. Only the final notebook's editable
+launch-field change is rechecked; prerequisite gates are reused. The
+[run steps and final local packet](validation/course-m5-hardware-smoke.md#user-run-handoff)
+are delivered without further execution questions. M5-T02 remains blocked solely
+on user-run resources/actual host/R7/release evidence; no model, pilot, freeze
+or main result is claimed.
+
+The subsequent user-requested GPU-first revision at `c8bb9bd` permits T4 x2
+from the start and one launch configuration. Asset preparation is bounded and
+charged from the actual assignment clock; installed `CourseBudget` still gates
+weights/inference and no ceiling changes. Nine focused checks pass; unchanged
+production/installed/prerequisite evidence is reused. The v3 notebook/payload
+and its guarded export are the current user-run handoff. No GPU work is executed
+by Codex and actual hardware/R7/release acceptance remains pending.
+
+The user requested an [offline R7 continuation](validation/course-m5-r7-offline-review.md)
+at `2c566b4`, preserving the scientific contract and avoiding GPU execution.
+The supplemental proof at `5ce6d5f` verifies 109,851 input + 256 output reserve
+= **110,107 resident tokens**, using separated native byte-pair certificates
+and atomic complete Hangul syllables in the proof only. Five source/five
+outside-checkout native checks pass with zero skips; the original 156,251-token
+archive, rendered bytes, protocol caps and all 29 runtime modules remain intact.
+Three actual meta-device traces and 12 inspected pinned native sources narrow
+the memory question. A further loading supplement from `f455522` verifies all
+426 language shapes from 90,240 header-only bytes, plus sequential loading and
+tied-head handling in five focused CPU checks. Five more pinned sources support
+a 3,214,021,348-byte explicit loading-tensor allowance, conditional on the NF4
+layout; physical allocator/workspace/context costs remain excluded.
+No GPU or language weights were used. Under the approved sequence above,
+M5-T01 CPU preparation is complete; physical R7 acceptance is withheld in
+M5-T02. Reuse these checks and preserve historical packets. Actual host/headroom,
+resource reconciliation and authorization remain separate prerequisites.
+
+Course/M5-T01's [safe CPU preparation](validation/course-m5-inference-and-smoke-preparation.md)
+is verified at `0260ca6`: 64 affected source/64 ordinary installed checks,
+four pinned-native source/four native installed checks and the literal new-source
+CPU notebook, integrity/export and closed-copy review pass. All 24 development
+smoke requests retain exact saved origins/seeds, native IDs/masks/text and
+4B/256/64 settings; separate physical IDs prevent implicit replay of independence
+probes. Production inference and thesis defaults remain unchanged. The new
+course source payload is bound to that committed code and the accepted CPU
+package candidate; historical source-v2/results are preserved.
+
+R7 remains unresolved: evaluating the original conditional tensor arithmetic
+at the tighter complete bound gives **7,400,914,336 bytes**, saving
+1,512,046,592 KV bytes. The largest meta trace observes 3,897,131,776 bytes
+excluding parameters and real CUDA/load/quantization behavior; it is not an
+allocator bound. Actual quantized loading, selected native workspace and
+allocator/context occupancy still lack a sufficient physical upper bound.
+Positive conditional slack proves neither fit nor terminal failure. The former
+M5-T01 requirement to close this entirely offline is superseded by the approved
+sequence: M5-T02 must combine justified analysis and actual-host coverage before
+accepting the complete-envelope memory/headroom gate or admitting any pilot.
+No M6 terminal-feasibility handoff is accepted. Reuse the completed CPU packet
+and proof; renew affected source/request and actual-host evidence, reconcile
+prior spending/quota/duration/release and honor resource/authorization gates
+before allocation or staging. No further speculative offline bound is required
+to finish preparation, and finishing preparation permits no execution.
+
 The course population/schedule, M1 input/schedule CPU gate and complete M2
 protocol/intervention/replay/witness/native-capacity gate are verified. Course
 M3 durable workers/bounded failures/accounting and portable combined lifecycle
@@ -1281,9 +1615,10 @@ and preserves thesis 60/40 behavior. The
 pinned 4B/256/64 complete input bound passes; the complete model-memory/headroom
 argument still needs actual supported-runtime evidence. Standalone run 6 and
 the CPU attention integration do not accept the new
-layout on T4 or the course pretrained model. Actual host/package/source assets,
-smoke requests, capability, complete pilot, resource reconciliation and freeze
-remain course M5 gates. Original thesis full-envelope/model obligations remain
+layout on T4 or the course pretrained model. Course source/metadata, exact smoke
+requests and CPU package provenance are prepared; actual host/package acceptance,
+capability, complete pilot, resource reconciliation and freeze remain course M5
+gates. Original thesis full-envelope/model obligations remain
 open independently. Subsequent tasks update this handoff and the existing course
 index with named executed evidence. Course M1-T01/T02, M2-T01/T02/T03, M3-T01/T02 and M4-T01/T02/T03/T04
 performed no GPU, pretrained-model or empirical run and accepted no freeze.

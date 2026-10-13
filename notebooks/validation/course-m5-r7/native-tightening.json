@@ -1,0 +1,202 @@
+{
+  "model": "Qwen/Qwen3.5-4B",
+  "revision": "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a",
+  "limits": {
+    "context_tokens": 262144,
+    "distinct_references": 8,
+    "feedback_tokens": 32,
+    "output_tokens": 256,
+    "prose_tokens": 64,
+    "recipients": 3
+  },
+  "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+  "source_capacity_sha256": "aabdf10abf8c18b29137a0c441a77f8bd09157840bd198d889ddd8d341f45390",
+  "audited_entries": 248077,
+  "unicode_scalars": 1112064,
+  "eligible_byte_pairs": 4203,
+  "own_tokens_per_physical_token_upper": 32,
+  "prose_tokens_per_counted_token_upper": 32,
+  "largest_own": [
+    [
+      58180,
+      32,
+      32
+    ],
+    [
+      85748,
+      32,
+      32
+    ],
+    [
+      60365,
+      31,
+      31
+    ],
+    [
+      191401,
+      31,
+      29
+    ],
+    [
+      194854,
+      31,
+      29
+    ],
+    [
+      206661,
+      31,
+      29
+    ],
+    [
+      210650,
+      31,
+      29
+    ],
+    [
+      218637,
+      31,
+      29
+    ],
+    [
+      231628,
+      31,
+      29
+    ],
+    [
+      235179,
+      31,
+      29
+    ],
+    [
+      240474,
+      31,
+      29
+    ],
+    [
+      244365,
+      31,
+      29
+    ]
+  ],
+  "largest_prose": [
+    [
+      58180,
+      32,
+      32
+    ],
+    [
+      85748,
+      32,
+      32
+    ],
+    [
+      60365,
+      31,
+      31
+    ],
+    [
+      69751,
+      30,
+      30
+    ],
+    [
+      138563,
+      30,
+      30
+    ],
+    [
+      142608,
+      30,
+      30
+    ],
+    [
+      143132,
+      30,
+      30
+    ],
+    [
+      147126,
+      30,
+      30
+    ],
+    [
+      147476,
+      30,
+      30
+    ],
+    [
+      189153,
+      30,
+      30
+    ],
+    [
+      202938,
+      30,
+      30
+    ],
+    [
+      216342,
+      30,
+      30
+    ]
+  ],
+  "accounting": [
+    {
+      "task": "top_k",
+      "size": "fallback",
+      "nontext_bytes": 9301,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 109722,
+      "resident_tokens_upper": 109978
+    },
+    {
+      "task": "prefix_sum",
+      "size": "fallback",
+      "nontext_bytes": 9393,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 109814,
+      "resident_tokens_upper": 110070
+    },
+    {
+      "task": "difference_array",
+      "size": "fallback",
+      "nontext_bytes": 9430,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 109851,
+      "resident_tokens_upper": 110107
+    },
+    {
+      "task": "distributed_sort",
+      "size": "fallback",
+      "nontext_bytes": 9425,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 109846,
+      "resident_tokens_upper": 110102
+    },
+    {
+      "task": "bfs_distance",
+      "size": "fallback",
+      "nontext_bytes": 7014,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 107435,
+      "resident_tokens_upper": 107691
+    }
+  ],
+  "input_tokens_upper": 109851,
+  "resident_tokens_upper": 110107,
+  "original_resident_tokens_upper": 156251,
+  "scope": "Supplemental complete native capacity argument only; no runtime bytes/caps changed or model/GPU admission.",
+  "model_weights_loaded": false,
+  "gpu_execution": false,
+  "memory_preparation_admitted": false
+}

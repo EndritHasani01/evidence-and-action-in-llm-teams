@@ -1,6 +1,15 @@
 # Course study: lessons and fresh-session handoff
 
-Updated 11 October 2026 through course/M4-T04. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
+Updated 12 October 2026 through the course/M5-T02 software handoff. This is a starting guide, not a second specification, task tracker or passing gate. Verify the current repository and linked evidence before acting; dated observations below may be superseded.
+
+Current execution ownership: the user will run all Kaggle/provider work.
+Course/M5-T02 implementation and the guarded T4 x2 notebook/source packet are
+delivered; the current v3 packet supports T4 x2 from the start with one launch
+configuration. Follow [the three run steps](../validation/course-m5-hardware-smoke.md#user-run-handoff).
+Focused source/installed checks and the guarded notebook/export pass. Actual
+hardware/R7/resource/release acceptance remains pending; reuse prerequisite
+evidence and do not repeat broad preparation or request execution details to
+finish the local software scope.
 
 Current course contract handoff, 9 October 2026: the user explicitly approved
 design/resource adoption after preparation at `ef4c3f6` and the earlier pending
@@ -59,7 +68,22 @@ zero skips, eight report scopes reproduced twice and five portable reports
 with 35 deterministic SVG/PNG pairs. The 22-row/seven-category audit reuses
 unchanged prerequisite acceptance. All five retained thesis portable reports
 reassemble/export byte-identically; 1,616 protected starting files remain intact.
-Course/M5-T01 CPU preparation is next.
+Course/M5-T01 now has passing CPU adapter/native/installed and exact-input
+packet checks, linked in [its preparation evidence](../validation/course-m5-inference-and-smoke-preparation.md).
+The [offline R7 supplement](../validation/course-m5-r7-offline-review.md)
+verifies a tighter 110,107-token complete input bound with unchanged bytes/caps;
+five source/five outside-checkout native checks pass. Its conditional subtotal
+is 7,400,914,336 bytes, with three meta traces and 12 native source inspections.
+The loading supplement verifies 426 language header shapes and maintained
+sequential materialization/tied-head handling in five CPU checks, with zero
+weight payload read. Its 3,214,021,348-byte explicit loading-tensor allowance
+excludes physical CUDA reservation/workspace/context costs.
+[M5-T01 is done](../validation/course-m5-preparation-completion.md): 11 focused
+checks and the refreshed `3d1a19c` CPU packet/notebook/export pass. The user
+approved moving physical R7 acceptance to M5-T02, where justified analysis and
+actual-host coverage must close loading, workspace, allocator/context occupancy
+and headroom before pilot admission. The CPU review stages no weights and
+admits no GPU work. This is not terminal infeasibility and does not enable M6.
 Actual runtime/resource and GPU/model gates remain separate.
 Thesis runtime defaults and all original
 todos/evidence remain unchanged.
@@ -75,7 +99,7 @@ git branch --show-current
 git log -1 --oneline
 ```
 
-At this checkpoint, `docs/validation/m5-inference-preparation.md` has a pre-existing local edit. Preserve it and other uncommitted work. Stage explicit task files and inspect the staged diff before committing. Missing Git metadata or root files require diagnosis and artifact preservation, not a reset, clean, deletion or fresh repository initialization.
+Earlier course checkpoints preserved a local edit in `docs/validation/m5-inference-preparation.md`; it is committed at the M5 starting baseline `2753c18` and remains byte-identical. Check current status and preserve any new unrelated work. Stage explicit task files and inspect the staged diff before committing. Missing Git metadata or root files require diagnosis and artifact preservation, not a reset, clean, deletion or fresh repository initialization.
 
 Read in this order:
 
@@ -84,7 +108,7 @@ Read in this order:
 3. The [course index](../todos/course/README.md), then one selected course task and its prerequisite evidence. Qualify IDs as `course/M2-T01`: the [thesis tree](../todos/README.md) uses the same short ID format for different tasks.
 4. The [course proposal](abs-iis-course-study-proposal.md) for proposed scope, and the [research synthesis](../implementation-research/SYNTHESIS.md) plus only the investigations relevant to that task.
 
-The next engineering task is [course/M5-T01](../todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md), ready for CPU packet preparation after course M1–M4 acceptance. Read its task and runtime/resource handoff before preparing a new committed-source packet; actual GPU allocation/inference needs separate prerequisites and authorization. Reuse original workers and saved derived tables, including unknown selected costs, intended diagnostic denominators and shared-response bounds. Direct uncertainty/report/assembly API consumers pass `regime="course"`; the CLI forwards the saved manifest regime. Keep saved course inputs, explicit `COURSE_LIMITS`, pinned 4B settings, literal `run_inputs` bindings and exact original-prefix/B/C parent identities. Status and analysis CLI infer the declared main count from the manifest (20 course, 60 thesis; nested thesis 40 remains explicit); analysis repeats follow the assigned continuation streams. The task index owns current readiness and counts; this document does not duplicate them.
+The next required task is [course/M5-T02](../todos/course/M5/M5-T02-course-hardware-smoke-and-memory.md), using the [completed preparation handoff](../validation/course-m5-preparation-completion.md#m5-t02-entry-and-acceptance). Its software implementation and user-run packet are delivered; operator resource/provider facts, host/R7 acceptance and confirmed release remain pending. The user owns execution; no further execution questions are needed for the local implementation. Reuse original workers and saved derived tables, including unknown selected costs, intended diagnostic denominators and shared-response bounds. Direct uncertainty/report/assembly API consumers pass `regime="course"`; the CLI forwards the saved manifest regime. Keep saved course inputs, explicit `COURSE_LIMITS`, pinned 4B settings, literal `run_inputs` bindings and exact original-prefix/B/C parent identities. Status and analysis CLI infer the declared main count from the manifest (20 course, 60 thesis; nested thesis 40 remains explicit); analysis repeats follow the assigned continuation streams. The task index owns current readiness and counts; this document does not duplicate them.
 
 ## Reuse evidence within its actual scope
 
@@ -101,6 +125,7 @@ The next engineering task is [course/M5-T01](../todos/course/M5/M5-T01-course-in
 | [Course M4 diagnostics/policy costs](../validation/course-m4-diagnostics-and-policy-costs.md): seven retained scopes, independent original references and 217 source/217 installed passes | Reuse unchanged production diagnostics/costs, original IDs, checkpoints and the narrow literal source rubric. Initial C/K coverage includes tombstones but excludes pending; C/F remote inventories exclude the injected revision. The full intended scope has 22 observed K/36 unknown world-event-replicate selections, not 58 independent worlds or a constant rule across missing boundaries. Wrong last candidates preserve residual errors, missing evidence and future costs stay unavailable, and 34 native nonempty history counts need a matching tokenizer. The independent hand costs are 261-263 attempt-seconds/400 synthetic allocated seconds; they predict no GPU timing. All 1,519 protected starting files and the unstaged M5 edit remain unchanged. Course uncertainty/report acceptance remains later work. |
 | [Course M4 report/CPU gate](../validation/course-m4-report-and-cpu-gate.md#completion-and-handoff): eight repeated scopes, five portable reports, 52 source/52 installed passes and 22 coverage rows/seven categories | Reuse existing read-only report/export/case logic and accepted prerequisites. Scope must match uncertainty; complete means recorded supplied synthetic slots, including failures/controls/repeats. Literal terminal evidence leaves tables/coverage unchanged; the synthetic example accepts no actual model failure or main freeze and does not unblock M6. Original thesis exports remain byte-identical. The existing scripted word counter is explicitly non-native; CLI nonempty history counts require a matching tokenizer. Actual runtime/model/resource admission remains M5. |
 | [Kaggle run 5](../validation/m5-kaggle-full-preparation-run-5.md): 97 CPU checks pass, zero skips, installed provenance and off-host snapshots checked | The earlier unchanged CPU preparation is accepted. Course/source/environment changes need relevant new checks; they do not invalidate unrelated evidence or justify another generic preflight by default. |
+| [Course M5-T01 completion](../validation/course-m5-preparation-completion.md): reused 64 source/64 installed and four native source/four native installed checks, 110,107-token complete proof, 11 focused packet checks and reviewed new-source notebook/export | Reuse the pinned 4B/256/64 adapter, exact 24 requests and original records. Conditional memory/loading arithmetic accepts no physical peak; R7 belongs to M5-T02 under the approved sequence. Prior spending/quota/release and actual-host acceptance remain unknown. No GPU/staging admission or terminal model failure is established. |
 | [Kaggle run 6](../validation/m5-t4-compatibility-run-6.md): standalone attention/NF4 diagnostic passes on both T4s | This is actual library evidence, with a host environment different from the full candidate. It contains no pretrained-model generation and does not establish full candidate, language loading, state, memory or capability acceptance. |
 | [Offline attention/memory audit](../validation/m5-attention-memory.md) | The opt-in adapter and bounded prefill are CPU/source verified. Its new head/mask/chunk layout still needs actual candidate CUDA validation. Smaller prefill chunks preserve all input/cache content; they do not shorten the scientific context or prove complete-envelope fit. |
 | Existing `m5-kaggle-source-v2` and historical notebook results | Preserve them. The payload contains earlier source and cannot deliver the new attention adapter or future course changes. Prepare a new committed-source packet with renewed provenance when needed, rather than treating an old source marker as evidence of current bytes. |

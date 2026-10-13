@@ -1,0 +1,186 @@
+test_assigned_host_without_actual_clock_stops_before_environment_or_downloads (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_assigned_host_without_actual_clock_stops_before_environment_or_downloads) ... ok
+test_assigned_preparation_charges_the_original_clock_and_preserves_release_time (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_assigned_preparation_charges_the_original_clock_and_preserves_release_time) ... ok
+test_code_checkpoint_and_package_drift_are_rejected_before_loading (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_code_checkpoint_and_package_drift_are_rejected_before_loading) ... ok
+test_controlled_cpu_stager_keeps_runtime_and_build_setuptools_separate (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_controlled_cpu_stager_keeps_runtime_and_build_setuptools_separate) ... ok
+test_default_staging_is_disabled_and_exports_no_fabricated_fit_or_weights (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_default_staging_is_disabled_and_exports_no_fabricated_fit_or_weights) ... ok
+test_delivered_notebook_has_disabled_defaults_and_bounded_child_execution (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_delivered_notebook_has_disabled_defaults_and_bounded_child_execution) ... ok
+test_exact_source_and_assets_bind_installed_code_and_do_not_accept_gpu_memory (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_exact_source_and_assets_bind_installed_code_and_do_not_accept_gpu_memory) ... ok
+test_installed_admission_does_not_reset_an_existing_assignment_clock (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_installed_admission_does_not_reset_an_existing_assignment_clock) ... ok
+test_source_marker_and_bytes_cannot_be_relabelled (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_source_marker_and_bytes_cannot_be_relabelled) ... ok
+test_live_process_or_unowned_file_prevents_cache_reclamation (tests.test_course_online_setup.FallbackCacheSafetyTests.test_live_process_or_unowned_file_prevents_cache_reclamation) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpd7wxju9b\\output\\preflight-results.zip",
+  "zip_sha256": "ba30311040c273acdb9c283db6388cc66f816751f09782b4fa7eb2ea34c3bc34",
+  "zip_bytes": 407
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp8byjiujf\\output\\preflight-results.zip",
+  "zip_sha256": "0bca44c905d28937400b0999066f5212ebefe6bb032753322c184500a88fc312",
+  "zip_bytes": 2358
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp8byjiujf\\online-output\\preflight-results.zip",
+  "zip_sha256": "7988411ab4824f10b618b545a270d1d45dc383273d7da8bfac6f23f2dea212e6",
+  "zip_bytes": 2524
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp8byjiujf\\cpu-output\\preflight-results.zip",
+  "zip_sha256": "c59ec2153fd5c7aa273fe39a617d32a0a36460d308b05f614b3292bda2179766",
+  "zip_bytes": 710
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp8byjiujf\\assigned-output\\preflight-results.zip",
+  "zip_sha256": "da1604ccf19b5a65fd55590509da58c177e9445ca267364ee1a29c9e4e9d91ee",
+  "zip_bytes": 2435
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpo282yq1z\\output\\preflight-results.zip",
+  "zip_sha256": "01c779cc1ff6a0ad9ec0d494ceb0fc135e1604948c66b5cc3f8a0d7ce134cdfa",
+  "zip_bytes": 383
+}
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpobp53rzy\scratch\hub | free=0.50 GiB required=1.25 GiB | refused
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp9wmky2no\scratch\hub | free=0.50 GiB required=1.25 GiB | refused
+ok
+test_low_space_reclaims_only_retired_snapshot_and_keeps_evidence (tests.test_course_online_setup.FallbackCacheSafetyTests.test_low_space_reclaims_only_retired_snapshot_and_keeps_evidence) ... Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe8bw5n5v\scratch\hub | free=0.50 GiB required=1.25 GiB | refused
+Storage [fallback-after-cache-reclaim]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe8bw5n5v\scratch\hub | free=4.00 GiB required=1.25 GiB | admitted
+ok
+test_literal_cells_keep_root_cause_latest_resume_and_exports_across_retries (tests.test_course_online_setup.NotebookSetupFailureTests.test_literal_cells_keep_root_cause_latest_resume_and_exports_across_retries) ... CPU bootstrap failure fixture; no inference
+scratch_capacity: path=/CPU/cache available=123 additional_required=20648488160
+Setup: retaining diagnostics; checking installation/download resumption
+CPU bootstrap failure fixture; no inference
+scratch_capacity: path=/CPU/cache available=123 additional_required=20648488160
+Setup: retaining diagnostics; checking installation/download resumption
+CPU bootstrap failure fixture; no inference
+ok
+test_portable_backup_refusal_preserves_previous_export (tests.test_course_online_setup.NotebookSetupFailureTests.test_portable_backup_refusal_preserves_previous_export) ... scratch_capacity: path=/CPU/cache available=123 additional_required=20648488160
+Retain course-results.zip, course-resume.payload and the executed notebook. Stop the interactive Kaggle session normally. Observation timestamps do not prove provider release.
+RuntimeError: Source setup failed; see logs/source-error.txt. No experiment was started.
+Retain course-results.zip, course-resume.payload and the executed notebook. Stop the interactive Kaggle session normally. Observation timestamps do not prove provider release.
+Storage [portable-backup]: C:\Users\EndritHasani\AppData\Local\Temp\tmpgoobkqks | free=0.00 GiB required=0.25 GiB | refused
+ok
+test_bootstrap_selects_existing_fallback_before_weights_and_keeps_base_history (tests.test_course_online_setup.OnlineSetupRepairTests.test_bootstrap_selects_existing_fallback_before_weights_and_keeps_base_history) ... ok
+test_cache_credit_ignores_duplicate_partial_and_requires_native_hash (tests.test_course_online_setup.OnlineSetupRepairTests.test_cache_credit_ignores_duplicate_partial_and_requires_native_hash) ... ok
+test_changed_source_resume_is_refused_before_subprocess (tests.test_course_online_setup.OnlineSetupRepairTests.test_changed_source_resume_is_refused_before_subprocess) ... ok
+test_damaged_installation_rebuild_preserves_old_evidence (tests.test_course_online_setup.OnlineSetupRepairTests.test_damaged_installation_rebuild_preserves_old_evidence) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp17bsz3wt\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "3376a0e835bc86fc89f3d5026e34d61f7f430d19265d21a12afefe423877836b",
+  "zip_bytes": 428
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp6x00v84q\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp6x00v84q\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp6x00v84q\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp6x00v84q\workspace\gpu-environment\scratch\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp6x00v84q\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp6x00v84q\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp6x00v84q\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "e89218d06ffbd295aecd86d9e6fa1a4344a6c1762d9ff6d7977b6151b02cafba",
+  "zip_bytes": 6099
+}
+Setup: verifying the completed installation; dependency install is not repeated
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp6x00v84q\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp6x00v84q\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_download_interruption_reuses_verified_installation (tests.test_course_online_setup.OnlineSetupRepairTests.test_download_interruption_reuses_verified_installation) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp6x00v84q\\workspace\\gpu-environment\\bootstrap-damaged\\preflight-results.zip",
+  "zip_sha256": "4093c72877455451564f1678222d075aeb748a5de44c9fa6f1def2172c1bd0d7",
+  "zip_bytes": 4491
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpnzkffzaz\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpnzkffzaz\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpnzkffzaz\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpnzkffzaz\workspace\gpu-environment\scratch\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpnzkffzaz\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpnzkffzaz\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpnzkffzaz\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "aa5153ab39699279675c059d89324aecfd3db82160e1d829fea9f18d1cd9edef",
+  "zip_bytes": 5241
+}
+Setup: verifying the completed installation; dependency install is not repeated
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpnzkffzaz\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_early_capacity_failure_exports_facts_without_installing (tests.test_course_online_setup.OnlineSetupRepairTests.test_early_capacity_failure_exports_facts_without_installing) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpnzkffzaz\\workspace\\gpu-environment\\bootstrap-retry\\preflight-results.zip",
+  "zip_sha256": "8802eb26c3970096614a176ae431b4181def736c442d2bcc543854fca67c2653",
+  "zip_bytes": 3725
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmplhae3a0r\workspace\gpu-environment\scratch | free=10.00 GiB required=21.25 GiB | refused
+ok
+test_missing_temporary_installation_is_rebuilt_without_duplicate_directories (tests.test_course_online_setup.OnlineSetupRepairTests.test_missing_temporary_installation_is_rebuilt_without_duplicate_directories) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmplhae3a0r\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "b4d88662c7a937f26960388a411b36bdf8ea9bdb40b895d54313911c5be1dcd6",
+  "zip_bytes": 1790
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp_6yahfny\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "ab3153913b2d018fa45648baa9f30b9fa75f6fe06e58142f7f8993b31af27e90",
+  "zip_bytes": 6095
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp_6yahfny\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_observational_resume_uses_selected_child_and_never_manual_budget_admission (tests.test_course_online_setup.OnlineSetupRepairTests.test_observational_resume_uses_selected_child_and_never_manual_budget_admission) ... ok
+test_oversized_partial_is_refused_before_downloading (tests.test_course_online_setup.OnlineSetupRepairTests.test_oversized_partial_is_refused_before_downloading) ... ok
+test_rejected_temporary_location_automatically_tries_next (tests.test_course_online_setup.OnlineSetupRepairTests.test_rejected_temporary_location_automatically_tries_next) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp_6yahfny\\workspace\\gpu-environment\\bootstrap-new-session\\preflight-results.zip",
+  "zip_sha256": "0e6862b525ec616b3844030106bb14a9dbceea356958f40479b5c1c432285ab9",
+  "zip_bytes": 6222
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpundtugaa\temp-full | free=0.50 GiB required=1.25 GiB | refused
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpundtugaa\temp-fit | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpundtugaa\temp-fit\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpundtugaa\temp-fit | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpundtugaa\temp-fit\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpundtugaa\temp-fit | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpundtugaa\temp-fit\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_success_uses_real_online_path_and_actual_cache_admission (tests.test_course_online_setup.OnlineSetupRepairTests.test_success_uses_real_online_path_and_actual_cache_admission) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpundtugaa\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "8bc97b5c7117ea833465726d34195d99da0a586deeaa427b8e33e69a7c912471",
+  "zip_bytes": 6211
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpzbr5y0au\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpzbr5y0au\external-cache | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpzbr5y0au\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpzbr5y0au\external-cache
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpzbr5y0au\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpzbr5y0au\external-cache | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_undersized_preferred_cache_moves_without_reinstalling (tests.test_course_online_setup.OnlineSetupRepairTests.test_undersized_preferred_cache_moves_without_reinstalling) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpzbr5y0au\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "31ce9e071021796ae82ff6b59d1335278a545074fb4bcb776a138e6c6e0fd9b3",
+  "zip_bytes": 6165
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\preferred-cache | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\preferred-cache
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\preferred-cache | free=100.00 GiB required=1.25 GiB | admitted
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpoeg_ei4y\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "9e7de8ccae987d3a2675df8fb82dd11f008a68062ad5c462f48d9c4ec9fedc49",
+  "zip_bytes": 5294
+}
+Setup: verifying the completed installation; dependency install is not repeated
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\preferred-cache | free=0.50 GiB required=1.25 GiB | refused
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\preferred-cache | free=0.50 GiB required=1.25 GiB | refused
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch\hub
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpoeg_ei4y\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 2.970s
+
+OK
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpoeg_ei4y\\workspace\\gpu-environment\\bootstrap-new-cache\\preflight-results.zip",
+  "zip_sha256": "9ce0ebbdc59ca7a9dfe4ecb87964972d417595d1689b25dfa45b0787e7a77fbc",
+  "zip_bytes": 5800
+}

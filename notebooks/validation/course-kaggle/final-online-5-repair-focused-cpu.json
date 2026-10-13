@@ -1,0 +1,19 @@
+{
+  "tests_run": 84,
+  "retained_prerequisite_tests": 1,
+  "total_passed": 85,
+  "passed": true,
+  "modules": [
+    "tests.test_course_online_setup",
+    "tests.test_course_smoke_assets",
+    "tests.test_course_kaggle_assets",
+    "tests.test_kaggle_preflight",
+    "tests.test_course_kaggle_workflow",
+    "tests.test_course_qualification",
+    "tests.test_course_run_all"
+  ],
+  "gpu_calls": 0,
+  "weight_downloads": 0,
+  "runner": "python -m unittest; Windows spawn-safe; UTF-8 log",
+  "retained_prerequisite": "test_actual_24_row_controller_binds_new_9b_settings_and_hardware_deadline"
+}

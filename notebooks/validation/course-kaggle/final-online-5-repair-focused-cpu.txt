@@ -1,0 +1,617 @@
+test_assigned_host_without_actual_clock_stops_before_environment_or_downloads (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_assigned_host_without_actual_clock_stops_before_environment_or_downloads) ... ok
+test_assigned_preparation_charges_the_original_clock_and_preserves_release_time (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_assigned_preparation_charges_the_original_clock_and_preserves_release_time) ... ok
+test_code_checkpoint_and_package_drift_are_rejected_before_loading (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_code_checkpoint_and_package_drift_are_rejected_before_loading) ... ok
+test_controlled_cpu_stager_keeps_runtime_and_build_setuptools_separate (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_controlled_cpu_stager_keeps_runtime_and_build_setuptools_separate) ... ok
+test_default_staging_is_disabled_and_exports_no_fabricated_fit_or_weights (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_default_staging_is_disabled_and_exports_no_fabricated_fit_or_weights) ... ok
+test_delivered_notebook_has_disabled_defaults_and_bounded_child_execution (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_delivered_notebook_has_disabled_defaults_and_bounded_child_execution) ... ok
+test_exact_source_and_assets_bind_installed_code_and_do_not_accept_gpu_memory (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_exact_source_and_assets_bind_installed_code_and_do_not_accept_gpu_memory) ... ok
+test_installed_admission_does_not_reset_an_existing_assignment_clock (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_installed_admission_does_not_reset_an_existing_assignment_clock) ... ok
+test_source_marker_and_bytes_cannot_be_relabelled (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_source_marker_and_bytes_cannot_be_relabelled) ... ok
+test_live_process_or_unowned_file_prevents_cache_reclamation (tests.test_course_online_setup.FallbackCacheSafetyTests.test_live_process_or_unowned_file_prevents_cache_reclamation) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp1vqfyurk\\output\\preflight-results.zip",
+  "zip_sha256": "0ff7d69ef274e545fb63683c13009430b7d12329e6c43f1b033f271e4b4dbcdc",
+  "zip_bytes": 405
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpihergkb3\\output\\preflight-results.zip",
+  "zip_sha256": "c4f5aeada2c40bb001ea194b2fb26dbe60a3ea5c9100496be6d0b4d7f18dbe04",
+  "zip_bytes": 2357
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpihergkb3\\online-output\\preflight-results.zip",
+  "zip_sha256": "241c30047da29f3ac1bf49f34420179a435154334da50714bc4b66a47de283ca",
+  "zip_bytes": 2522
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpihergkb3\\cpu-output\\preflight-results.zip",
+  "zip_sha256": "a1fcc4c3d009fba3f69b6ff81f8ec41fd928bea561188e2e07c9842019fbb1dc",
+  "zip_bytes": 710
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpihergkb3\\assigned-output\\preflight-results.zip",
+  "zip_sha256": "ea05135fab4154e68f102591816076b790ec4f54674f990775c9883cac3a8bde",
+  "zip_bytes": 2436
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp2x_b21pr\\output\\preflight-results.zip",
+  "zip_sha256": "8d91e2661b7d0583409f366b026e07e85406f775d6a79014ce2e391285bf31a8",
+  "zip_bytes": 380
+}
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp0nrdhkv6\scratch\hub | free=0.50 GiB required=1.25 GiB | refused
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmp2vqz0ic5\scratch\hub | free=0.50 GiB required=1.25 GiB | refused
+ok
+test_low_space_reclaims_only_retired_snapshot_and_keeps_evidence (tests.test_course_online_setup.FallbackCacheSafetyTests.test_low_space_reclaims_only_retired_snapshot_and_keeps_evidence) ... Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpbjh4p57u\scratch\hub | free=0.50 GiB required=1.25 GiB | refused
+Storage [fallback-after-cache-reclaim]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpbjh4p57u\scratch\hub | free=4.00 GiB required=1.25 GiB | admitted
+ok
+test_literal_cells_keep_root_cause_latest_resume_and_exports_across_retries (tests.test_course_online_setup.NotebookSetupFailureTests.test_literal_cells_keep_root_cause_latest_resume_and_exports_across_retries) ... CPU bootstrap failure fixture; no inference
+scratch_capacity: path=/CPU/cache available=123 additional_required=20648488160
+Setup: retaining diagnostics; checking installation/download resumption
+CPU bootstrap failure fixture; no inference
+scratch_capacity: path=/CPU/cache available=123 additional_required=20648488160
+Setup: retaining diagnostics; checking installation/download resumption
+CPU bootstrap failure fixture; no inference
+ok
+test_portable_backup_refusal_preserves_previous_export (tests.test_course_online_setup.NotebookSetupFailureTests.test_portable_backup_refusal_preserves_previous_export) ... scratch_capacity: path=/CPU/cache available=123 additional_required=20648488160
+Retain course-results.zip, course-resume.payload and the executed notebook. Stop the interactive Kaggle session normally. Observation timestamps do not prove provider release.
+Storage [portable-backup]: C:\Users\EndritHasani\AppData\Local\Temp\tmpq39dn2js | free=0.00 GiB required=0.25 GiB | refused
+ok
+test_bootstrap_selects_existing_fallback_before_weights_and_keeps_base_history (tests.test_course_online_setup.OnlineSetupRepairTests.test_bootstrap_selects_existing_fallback_before_weights_and_keeps_base_history) ... ok
+test_cache_credit_ignores_duplicate_partial_and_requires_native_hash (tests.test_course_online_setup.OnlineSetupRepairTests.test_cache_credit_ignores_duplicate_partial_and_requires_native_hash) ... ok
+test_changed_source_resume_is_refused_before_subprocess (tests.test_course_online_setup.OnlineSetupRepairTests.test_changed_source_resume_is_refused_before_subprocess) ... ok
+test_damaged_installation_rebuild_preserves_old_evidence (tests.test_course_online_setup.OnlineSetupRepairTests.test_damaged_installation_rebuild_preserves_old_evidence) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpaotyv42z\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "218ec3fab9139d4e6520f3f01c9c0b39840df692e79f800b59244018a24d48d1",
+  "zip_bytes": 428
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpn4xo0rjh\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpn4xo0rjh\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpn4xo0rjh\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpn4xo0rjh\workspace\gpu-environment\scratch\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpn4xo0rjh\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpn4xo0rjh\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpn4xo0rjh\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "7c38e111f10f5658d6ee457989529700d4f6d839d5fc200bb163c716ad1fd12b",
+  "zip_bytes": 6096
+}
+Setup: verifying the completed installation; dependency install is not repeated
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpn4xo0rjh\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpn4xo0rjh\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_download_interruption_reuses_verified_installation (tests.test_course_online_setup.OnlineSetupRepairTests.test_download_interruption_reuses_verified_installation) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpn4xo0rjh\\workspace\\gpu-environment\\bootstrap-damaged\\preflight-results.zip",
+  "zip_sha256": "db3a9c989cbd455cab1eefabd64be04e4351f69479ce6439fab99ac7c56c7619",
+  "zip_bytes": 4486
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe0xl5q9p\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe0xl5q9p\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe0xl5q9p\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe0xl5q9p\workspace\gpu-environment\scratch\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe0xl5q9p\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe0xl5q9p\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpe0xl5q9p\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "072c47f6ea4e0e96e2ebd00e838f137e42613e594a700ebdb3ffa9a3e5ed1c20",
+  "zip_bytes": 5232
+}
+Setup: verifying the completed installation; dependency install is not repeated
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpe0xl5q9p\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_early_capacity_failure_exports_facts_without_installing (tests.test_course_online_setup.OnlineSetupRepairTests.test_early_capacity_failure_exports_facts_without_installing) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpe0xl5q9p\\workspace\\gpu-environment\\bootstrap-retry\\preflight-results.zip",
+  "zip_sha256": "bacaa1e630df7e5302377abecb732ed2d96661147b5e70b9607a68765ee187ae",
+  "zip_bytes": 3725
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpsda93apm\workspace\gpu-environment\scratch | free=10.00 GiB required=21.25 GiB | refused
+ok
+test_missing_temporary_installation_is_rebuilt_without_duplicate_directories (tests.test_course_online_setup.OnlineSetupRepairTests.test_missing_temporary_installation_is_rebuilt_without_duplicate_directories) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpsda93apm\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "b0d94c5c7b6a437bc68c243b2bb4281c9923e0739cf0688ca11513ca4f872313",
+  "zip_bytes": 1793
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpdoehy6u1\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "96c8285733cb29f21d1c1abe109914192ec8347e196dc925f55c0553e07ee73f",
+  "zip_bytes": 6082
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpdoehy6u1\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_observational_resume_uses_selected_child_and_never_manual_budget_admission (tests.test_course_online_setup.OnlineSetupRepairTests.test_observational_resume_uses_selected_child_and_never_manual_budget_admission) ... ok
+test_oversized_partial_is_refused_before_downloading (tests.test_course_online_setup.OnlineSetupRepairTests.test_oversized_partial_is_refused_before_downloading) ... ok
+test_rejected_temporary_location_automatically_tries_next (tests.test_course_online_setup.OnlineSetupRepairTests.test_rejected_temporary_location_automatically_tries_next) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpdoehy6u1\\workspace\\gpu-environment\\bootstrap-new-session\\preflight-results.zip",
+  "zip_sha256": "386866b4517f63522d6da4fe1f716a2dc1b4db2dbcd01ceac6be52e36678d40e",
+  "zip_bytes": 6216
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpepn8_si6\temp-full | free=0.50 GiB required=1.25 GiB | refused
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpepn8_si6\temp-fit | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpepn8_si6\temp-fit\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpepn8_si6\temp-fit | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpepn8_si6\temp-fit\hub
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpepn8_si6\temp-fit | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpepn8_si6\temp-fit\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_success_uses_real_online_path_and_actual_cache_admission (tests.test_course_online_setup.OnlineSetupRepairTests.test_success_uses_real_online_path_and_actual_cache_admission) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpepn8_si6\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "d29007fbc8be599e36ab13976721f92961643d135de18df5ecc1debf0ff9b25d",
+  "zip_bytes": 6207
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpwaj42rsi\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpwaj42rsi\external-cache | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpwaj42rsi\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpwaj42rsi\external-cache
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpwaj42rsi\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpwaj42rsi\external-cache | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_undersized_preferred_cache_moves_without_reinstalling (tests.test_course_online_setup.OnlineSetupRepairTests.test_undersized_preferred_cache_moves_without_reinstalling) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpwaj42rsi\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "50afd245086df4278a7dc640cb1d8e0ac1d34b52819391c9978b7f37eea3bd59",
+  "zip_bytes": 6158
+}
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\preferred-cache | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\preferred-cache
+Storage [expanded-installation-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\preferred-cache | free=100.00 GiB required=1.25 GiB | admitted
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpof6oh583\\workspace\\gpu-environment\\bootstrap\\preflight-results.zip",
+  "zip_sha256": "0c3eaad05881d32bbbedbc22d9fc81b0835c53598971630b70cdaa6e4b674d54",
+  "zip_bytes": 5299
+}
+Setup: verifying the completed installation; dependency install is not repeated
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\preferred-cache | free=0.50 GiB required=1.25 GiB | refused
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\preferred-cache | free=0.50 GiB required=1.25 GiB | refused
+Storage [early-install-and-checkpoint]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch | free=100.00 GiB required=1.25 GiB | admitted
+Storage [early-checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+Setup storage: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch | checkpoint cache: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch\hub
+Storage [checkpoint-cache]: C:\Users\ENDRIT~1\AppData\Local\Temp\tmpof6oh583\workspace\gpu-environment\scratch\hub | free=100.00 GiB required=1.25 GiB | admitted
+ok
+test_assigned_host_without_actual_clock_stops_before_environment_or_downloads (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_assigned_host_without_actual_clock_stops_before_environment_or_downloads) ... ok
+test_assigned_preparation_charges_the_original_clock_and_preserves_release_time (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_assigned_preparation_charges_the_original_clock_and_preserves_release_time) ... ok
+test_code_checkpoint_and_package_drift_are_rejected_before_loading (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_code_checkpoint_and_package_drift_are_rejected_before_loading) ... ok
+test_controlled_cpu_stager_keeps_runtime_and_build_setuptools_separate (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_controlled_cpu_stager_keeps_runtime_and_build_setuptools_separate) ... ok
+test_default_staging_is_disabled_and_exports_no_fabricated_fit_or_weights (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_default_staging_is_disabled_and_exports_no_fabricated_fit_or_weights) ... ok
+test_delivered_notebook_has_disabled_defaults_and_bounded_child_execution (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_delivered_notebook_has_disabled_defaults_and_bounded_child_execution) ... ok
+test_exact_source_and_assets_bind_installed_code_and_do_not_accept_gpu_memory (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_exact_source_and_assets_bind_installed_code_and_do_not_accept_gpu_memory) ... ok
+test_installed_admission_does_not_reset_an_existing_assignment_clock (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_installed_admission_does_not_reset_an_existing_assignment_clock) ... ok
+test_source_marker_and_bytes_cannot_be_relabelled (tests.test_course_smoke_assets.CourseSmokeAssetTests.test_source_marker_and_bytes_cannot_be_relabelled) ... ok
+test_early_gate_refusal_records_both_assigned_devices_without_calls (tests.test_course_kaggle_assets.PortableAssetTests.test_early_gate_refusal_records_both_assigned_devices_without_calls) ... ok
+test_export_consumes_only_fresh_rebuildable_downloads_and_keeps_receipts (tests.test_course_kaggle_assets.PortableAssetTests.test_export_consumes_only_fresh_rebuildable_downloads_and_keeps_receipts) ... ok
+test_full_missing_main_scope_audits_without_creating_control_workers (tests.test_course_kaggle_assets.PortableAssetTests.test_full_missing_main_scope_audits_without_creating_control_workers) ... ok
+test_native_lfs_download_identity_and_copied_metadata_without_model_or_sdk (tests.test_course_kaggle_assets.PortableAssetTests.test_native_lfs_download_identity_and_copied_metadata_without_model_or_sdk) ... ok
+test_two_native_range_shards_download_concurrently_without_loading_model (tests.test_course_kaggle_assets.PortableAssetTests.test_two_native_range_shards_download_concurrently_without_loading_model) ... {
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpof6oh583\\workspace\\gpu-environment\\bootstrap-new-cache\\preflight-results.zip",
+  "zip_sha256": "43c36abaa02b2149a29d83d7b661db3ec93673caef40d9d326bc205258180a07",
+  "zip_bytes": 5804
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpi8usdnqa\\output\\preflight-results.zip",
+  "zip_sha256": "49accef92942b2a09271111ddc491dbba84c9f38b7b4d826a71976ecec57e7d8",
+  "zip_bytes": 404
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp7ybsbpo7\\output\\preflight-results.zip",
+  "zip_sha256": "f909a4dead637142e7340533784ef7054cde001b01343f8002a6d0852576814d",
+  "zip_bytes": 2356
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp7ybsbpo7\\online-output\\preflight-results.zip",
+  "zip_sha256": "85f54027210126edb2b995d74cbe80425d2314f8b9e97fea1b7c1a44b3854100",
+  "zip_bytes": 2523
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp7ybsbpo7\\cpu-output\\preflight-results.zip",
+  "zip_sha256": "0553ac80bf8443219b4b74a959ac232f86d5836e9e7ecb43d147707e813c09e4",
+  "zip_bytes": 711
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmp7ybsbpo7\\assigned-output\\preflight-results.zip",
+  "zip_sha256": "87d8aa8bf108f4ceae8ab01274183c6dc75e7062e48e0b785f6e851696810b01",
+  "zip_bytes": 2436
+}
+{
+  "zip_path": "C:\\Users\\ENDRIT~1\\AppData\\Local\\Temp\\tmpa6vgfdm2\\output\\preflight-results.zip",
+  "zip_sha256": "5e1a2c757ee2a605b6a60901a9913890ea3db94fab949f52c0a0ba968c5e6111",
+  "zip_bytes": 381
+}
+Download: second.safetensors 18/18 bytes (100.0%)
+Download: first.safetensors 17/17 bytes (100.0%)
+ok
+test_real_interruption_and_machine_schema_failure (tests.test_kaggle_preflight.CommandTests.test_real_interruption_and_machine_schema_failure) ... ok
+test_real_preinstallation_process_diagnostic (tests.test_kaggle_preflight.CommandTests.test_real_preinstallation_process_diagnostic) ... ok
+test_real_stdout_stderr_exit_and_deadline (tests.test_kaggle_preflight.CommandTests.test_real_stdout_stderr_exit_and_deadline) ... ok
+test_real_timeout_reaps_owned_child_tree_and_keeps_partial_logs (tests.test_kaggle_preflight.CommandTests.test_real_timeout_reaps_owned_child_tree_and_keeps_partial_logs) ... ok
+test_ambiguous_and_corrupt_payload_stop_before_environment (tests.test_kaggle_preflight.PreflightTests.test_ambiguous_and_corrupt_payload_stop_before_environment) ... input_inventory: failed — ValueError: payload_ambiguous
+source: blocked — prerequisites: input_inventory
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: failed — ValueError: payload_size_mismatch
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: failed — ValueError: payload_hash_mismatch
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+ok
+test_archive_safety_rejects_raw_headers_before_copy (tests.test_kaggle_preflight.PreflightTests.test_archive_safety_rejects_raw_headers_before_copy) ... ok
+test_backup_and_export_failures_are_named (tests.test_kaggle_preflight.PreflightTests.test_backup_and_export_failures_are_named) ... input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: failed — ValueError: controlled SQLite failure
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+ok
+test_candidate_failures_and_bad_machine_output_export (tests.test_kaggle_preflight.PreflightTests.test_candidate_failures_and_bad_machine_output_export) ... input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled create-venv failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled download-pip-wheel failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — ValueError: pip_bootstrap_unverified_wheel
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — ValueError: pip_bootstrap_unverified_wheel
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled bootstrap-pip failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled download-candidate failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled install-candidate failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: failed — RuntimeError: controlled build-source failure
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — RuntimeError: controlled pip-check failure
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — ValueError: installed_probe_schema_or_provenance
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — FileNotFoundError: [WinError 2] The system cannot find the file specified: 'C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\tmp6kyhhda5\\output\\recovery-m5-preflight-20261013T182033896771Z-842c1a72\\installed-probe-result.json'
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: failed — RuntimeError: controlled focused-checks failure
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: failed — ValueError: test_count_or_skip: focused-checks, expected=81
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: failed — RuntimeError: controlled native-9b failure
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+ok
+test_complete_controlled_workflow_preserves_inputs_and_isolates_modes (tests.test_kaggle_preflight.PreflightTests.test_complete_controlled_workflow_preserves_inputs_and_isolates_modes) ... input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: passed
+focused_checks: passed
+native_9b: passed
+native_4b: passed
+native_capacity: passed
+filesystem_backup: passed
+ok
+test_complete_member_hash_rejects_same_marker_with_changed_fixture (tests.test_kaggle_preflight.PreflightTests.test_complete_member_hash_rejects_same_marker_with_changed_fixture) ... ok
+test_deadline_and_interruption_preserve_readable_evidence (tests.test_kaggle_preflight.PreflightTests.test_deadline_and_interruption_preserve_readable_evidence) ... input_inventory: blocked — cpu_deadline_before_stage
+source: blocked — prerequisites: input_inventory
+cpu_host: blocked — cpu_deadline_before_stage
+command_cleanup: blocked — prerequisites: source, cpu_host
+environment: blocked — prerequisites: source, cpu_host, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: blocked — cpu_deadline_before_stage
+ok
+test_generated_probe_writes_machine_file_in_real_noisy_subprocess (tests.test_kaggle_preflight.PreflightTests.test_generated_probe_writes_machine_file_in_real_noisy_subprocess) ... ok
+test_inventory_limit_symlinks_and_gpu_refusal (tests.test_kaggle_preflight.PreflightTests.test_inventory_limit_symlinks_and_gpu_refusal) ... input_inventory: passed
+source: passed
+cpu_host: failed — ValueError: cpu_stage_gpu_visible: stop session and select Accelerator None
+command_cleanup: blocked — prerequisites: cpu_host
+environment: blocked — prerequisites: cpu_host, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+ok
+test_linux_group_inspection_distinguishes_live_members_from_exited_zombies (tests.test_kaggle_preflight.PreflightTests.test_linux_group_inspection_distinguishes_live_members_from_exited_zombies) ... ok
+test_observed_transformed_input_exports_root_diagnosis (tests.test_kaggle_preflight.PreflightTests.test_observed_transformed_input_exports_root_diagnosis) ... input_inventory: failed — ValueError: payload_missing
+source: blocked — prerequisites: input_inventory
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+ok
+test_pinned_pip_download_refuses_bad_bytes_and_origins (tests.test_kaggle_preflight.PreflightTests.test_pinned_pip_download_refuses_bad_bytes_and_origins) ... ok
+test_pinned_pip_download_verifies_bytes_before_publish (tests.test_kaggle_preflight.PreflightTests.test_pinned_pip_download_verifies_bytes_before_publish) ... ok
+test_same_session_continuation_uses_existing_environment_and_keeps_failed_export (tests.test_kaggle_preflight.PreflightTests.test_same_session_continuation_uses_existing_environment_and_keeps_failed_export) ... input_inventory: passed
+source: passed
+cpu_host: passed
+command_cleanup: passed
+environment: passed
+installed_packages: failed — JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+Running pip-check ...
+Running installed-probe ...
+Running pip-list ...
+Running pip-freeze ...
+Running focused-checks ...
+focused_checks: passed
+Running native-9b ...
+native_9b: passed
+Running native-4b ...
+native_4b: passed
+Running native-capacity ...
+native_capacity: passed
+{
+  "continuation_checks_passed": true,
+  "tests_passed": 97,
+  "root_blocker": null,
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.125
+}
+Result ZIP SHA-256: 208f9cd7e8e904f0bcf8b9dce100229454db961245ff00747efb8f23772dd1cd
+{
+  "continuation_checks_passed": false,
+  "tests_passed": 0,
+  "root_blocker": "AssertionError: ",
+  "model_generations": 0,
+  "model_smoke_ready": false,
+  "gpu_native_diagnostics": null,
+  "model_smoke": null,
+  "provider_assignment_utc": null,
+  "provider_release_utc": null,
+  "observed_cpu_wall_seconds": 0.0470000000204891
+}
+Result ZIP SHA-256: 922c446260c7ed197fb483d91440bdfacf073884889bae1bcb07e4b3327a0a59
+ok
+test_shared_pool_admission_uses_the_smallest_observed_capacity (tests.test_kaggle_preflight.PreflightTests.test_shared_pool_admission_uses_the_smallest_observed_capacity) ... ok
+test_shared_pool_and_storage_failure_prevent_download (tests.test_kaggle_preflight.PreflightTests.test_shared_pool_and_storage_failure_prevent_download) ... input_inventory: passed
+source: failed — ValueError: output_evidence_reserve: path=C:\Users\EndritHasani\AppData\Local\Temp\tmpk90u_hll\output\recovery-m5-preflight-20261013T182038426836Z-b1db67f2 available=1 required=268435456
+cpu_host: passed
+command_cleanup: blocked — prerequisites: source
+environment: blocked — prerequisites: source, command_cleanup
+installed_packages: blocked — prerequisites: environment
+focused_checks: blocked — prerequisites: installed_packages
+native_9b: blocked — prerequisites: installed_packages
+native_4b: blocked — prerequisites: installed_packages
+native_capacity: blocked — prerequisites: installed_packages
+filesystem_backup: passed
+ok
+test_actual_full_pilot_raw_reconstruction_and_gate (tests.test_course_kaggle_workflow.CourseWorkflowTests.test_actual_full_pilot_raw_reconstruction_and_gate) ... ok
+test_failed_or_missing_capability_never_admits_full_pilot (tests.test_course_kaggle_workflow.CourseWorkflowTests.test_failed_or_missing_capability_never_admits_full_pilot) ... ok
+test_first90_positive_and_incomplete_denominators (tests.test_course_kaggle_workflow.CourseWorkflowTests.test_first90_positive_and_incomplete_denominators) ... ok
+test_guarded_cli_exports_a_real_blocker_without_gpu_or_weights (tests.test_course_kaggle_workflow.CourseWorkflowTests.test_guarded_cli_exports_a_real_blocker_without_gpu_or_weights) ... ok
+test_missing_duplicate_seed_and_state_corruption_fail_offline_audit (tests.test_course_kaggle_workflow.CourseWorkflowTests.test_missing_duplicate_seed_and_state_corruption_fail_offline_audit) ... ok
+test_notebook_cells_compile_guard_defaults_and_safe_archives (tests.test_course_kaggle_workflow.CourseWorkflowTests.test_notebook_cells_compile_guard_defaults_and_safe_archives) ... ok
+test_portable_backup_reopens_and_preserves_raw_calls_without_wal (tests.test_course_kaggle_workflow.CourseWorkflowTests.test_portable_backup_reopens_and_preserves_raw_calls_without_wal) ... Storage [portable-backup]: C:\Users\EndritHasani\AppData\Local\Temp\tmpnbc4jcga | free=5.84 GiB required=0.44 GiB | admitted
+ok
+test_provider_release_is_separate_and_closes_both_original_allocations (tests.test_course_kaggle_workflow.CourseWorkflowTests.test_provider_release_is_separate_and_closes_both_original_allocations) ... ok
+test_9b_worker_binding_requires_reviewed_profile_and_exact_revision (tests.test_course_qualification.QualificationTests.test_9b_worker_binding_requires_reviewed_profile_and_exact_revision) ... ok
+test_adopted_allowance_does_not_reset_history (tests.test_course_qualification.QualificationTests.test_adopted_allowance_does_not_reset_history) ... ok
+test_both_actual_native_plans_and_generation_contracts (tests.test_course_qualification.QualificationTests.test_both_actual_native_plans_and_generation_contracts) ... ok
+test_compact_durable_rounds_resume_without_provider_and_reject_profile_drift (tests.test_course_qualification.QualificationTests.test_compact_durable_rounds_resume_without_provider_and_reject_profile_drift) ... ok
+test_complete_quality_failure_selects_only_declared_fallback (tests.test_course_qualification.QualificationTests.test_complete_quality_failure_selects_only_declared_fallback) ... ok
+test_incomplete_capability_audit_defect_and_frozen_run_cannot_fall_back (tests.test_course_qualification.QualificationTests.test_incomplete_capability_audit_defect_and_frozen_run_cannot_fall_back) ... ok
+test_nested_canonical_workers_receive_real_sqlite_backups (tests.test_course_qualification.QualificationTests.test_nested_canonical_workers_receive_real_sqlite_backups) ... Storage [portable-backup]: C:\Users\EndritHasani\AppData\Local\Temp\tmppwt52v_q | free=6.22 GiB required=0.25 GiB | admitted
+ok
+test_new_instruction_preserves_every_permitted_data_byte (tests.test_course_qualification.QualificationTests.test_new_instruction_preserves_every_permitted_data_byte) ... ok
+test_wrapper_runs_only_fixed_fallback_and_resumes_selected_bundle (tests.test_course_qualification.QualificationTests.test_wrapper_runs_only_fixed_fallback_and_resumes_selected_bundle) ... ok
+test_automatic_order_freezes_before_main_and_always_finishes_analysis (tests.test_course_run_all.RunAllTests.test_automatic_order_freezes_before_main_and_always_finishes_analysis) ... ok
+test_literal_source_cell_detects_extracted_resume_and_preserves_worker_bytes (tests.test_course_run_all.RunAllTests.test_literal_source_cell_detects_extracted_resume_and_preserves_worker_bytes) ... ok
+test_locked_previous_export_is_preserved_and_complete_fresh_zip_is_returned (tests.test_course_run_all.RunAllTests.test_locked_previous_export_is_preserved_and_complete_fresh_zip_is_returned) ... Storage [portable-backup]: C:\Users\EndritHasani\AppData\Local\Temp\tmpvx2dyn5i | free=6.23 GiB required=0.25 GiB | admitted
+ok
+test_memory_capability_and_attempt_failures_never_advance_to_main (tests.test_course_run_all.RunAllTests.test_memory_capability_and_attempt_failures_never_advance_to_main) ... ok
+test_range_download_resumes_and_rejects_server_drift_using_native_hash (tests.test_course_run_all.RunAllTests.test_range_download_resumes_and_rejects_server_drift_using_native_hash) ... Download: native.bin 24/24 bytes (100.0%)
+ok
+test_scheduler_reuses_only_matching_open_assignment_and_keeps_it_chargeable (tests.test_course_run_all.RunAllTests.test_scheduler_reuses_only_matching_open_assignment_and_keeps_it_chargeable) ... ok
+test_stage_transfer_counts_every_assigned_second_once_without_release (tests.test_course_run_all.RunAllTests.test_stage_transfer_counts_every_assigned_second_once_without_release) ... ok
+test_unknown_bootstrap_clock_needs_evidence_and_original_receipt_is_preserved (tests.test_course_run_all.RunAllTests.test_unknown_bootstrap_clock_needs_evidence_and_original_receipt_is_preserved) ... ok
+
+----------------------------------------------------------------------
+Ran 84 tests in 155.338s
+
+OK
+
+Retained unchanged prerequisite from preceding spawn-safe run:
+test_actual_24_row_controller_binds_new_9b_settings_and_hardware_deadline (tests.test_course_qualification.QualificationTests.test_actual_24_row_controller_binds_new_9b_settings_and_hardware_deadline) ... ok

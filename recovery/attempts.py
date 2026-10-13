@@ -10,6 +10,7 @@ import multiprocessing as mp
 from dataclasses import dataclass
 from multiprocessing.connection import wait
 import os
+import traceback
 from queue import Empty, Queue
 from threading import Thread
 from time import monotonic
@@ -53,6 +54,7 @@ def _die_with_owner():
 
 def _serve(factory, connection):
     Thread(target=_die_with_owner, daemon=True).start()
+    phase = "provider_startup"
     try:
         provider = factory()
         if not callable(provider):
@@ -63,6 +65,7 @@ def _serve(factory, connection):
             if request is None:
                 return
             view, rendered, tokenized, seed, settings = request
+            phase = "generation"
             response = provider(view, rendered, tokenized, seed=seed, settings=settings)
             if response is None:
                 response = RecordedFailure("infrastructure_failure", "provider recorded an exhausted failed slot")
@@ -74,7 +77,9 @@ def _serve(factory, connection):
     except (EOFError, BrokenPipeError):
         pass
     except Exception as error:
-        connection.send(("error", f"{type(error).__name__}: {error}"))
+        # Keep the original child stack in the existing durable attempt reason.
+        # A string payload remains compatible with previous provider messages.
+        connection.send(("error", f"{type(error).__name__}: {error}\nphase={phase}\n{traceback.format_exc()}"))
     finally:
         connection.close()
 
@@ -91,7 +96,7 @@ class ProcessProvider:
     """
 
     def __init__(self, factory, *, timeout_seconds=120, termination_seconds=1,
-                 heartbeat_seconds=1):
+                 heartbeat_seconds=1, before_attempt=None):
         self.timeout_seconds = seconds(timeout_seconds)
         self.termination_seconds = seconds(termination_seconds)
         self.heartbeat_seconds = seconds(heartbeat_seconds)
@@ -100,8 +105,12 @@ class ProcessProvider:
                 or self.heartbeat_seconds > 60):
             raise ValueError("use a callable factory, positive bounds and a heartbeat within 60 seconds")
         self.factory = factory
+        if before_attempt is not None and not callable(before_attempt):
+            raise ValueError("physical-attempt admission must be callable or absent")
+        self.before_attempt = before_attempt
         self._process = self._connection = self._owner = self._store = None
         self._termination_unconfirmed = False
+        self._idle = False
 
     def _start(self, store, call_id, number):
         context = mp.get_context("spawn")
@@ -119,9 +128,21 @@ class ProcessProvider:
         if process is None:
             return
         if process.pid is not None:
+            deadline = monotonic() + self.termination_seconds
+            if reason == "controller_close" and self._idle and process.is_alive() and connection is not None:
+                # Idle children can release their resources through the existing
+                # stop sentinel. Never block pipe I/O or extend the TERM/KILL
+                # bounds, and never give an in-flight/hung call this grace.
+                def stop_idle():
+                    try:
+                        connection.send(None)
+                    except (EOFError, OSError):
+                        pass
+                Thread(target=stop_idle, daemon=True).start()
+                process.join(self.termination_seconds/2)
             if process.is_alive():
                 process.terminate()
-            process.join(self.termination_seconds)
+            process.join(max(0, deadline-monotonic()))
             if process.is_alive():
                 process.kill()
                 process.join(self.termination_seconds)
@@ -135,6 +156,7 @@ class ProcessProvider:
         process.close()
         self._process = self._connection = self._owner = self._store = None
         self._termination_unconfirmed = False
+        self._idle = False
 
     def close(self):
         self._stop("controller_close")
@@ -144,6 +166,7 @@ class ProcessProvider:
             raise UnresolvedAttempt("preceding provider termination remains unconfirmed")
 
     def _execute(self, store, call_id, number, request, started):
+        self._idle = False
         fresh = self._process is None
         if fresh:
             self._start(store, call_id, number)
@@ -215,12 +238,17 @@ class ProcessProvider:
             row = store.call(call_id)
             if row["status"] in ("completed", "timeout", "infrastructure_failure"):
                 return store.response(call_id)
+            if self.before_attempt is not None:
+                # Recheck physical allowance before retries as well as first calls.
+                # The controller owns this callback; it never enters a peer view.
+                self.before_attempt(store, call_id, len(store.attempts(call_id)) + 1)
             number = store.begin_attempt(call_id, timeout_seconds=self.timeout_seconds,
                                          termination_seconds=self.termination_seconds)
             started = monotonic()
             try:
                 response = self._execute(store, call_id, number,
                     (view, rendered, tokenized, seed, settings), started)
+                self._idle = True
             except InfrastructureInterruption as error:
                 store.interrupt_attempt(call_id, str(error), elapsed_seconds=monotonic() - started,
                                         termination_reason="infrastructure_interruption")

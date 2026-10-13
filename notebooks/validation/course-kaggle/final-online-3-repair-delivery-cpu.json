@@ -1,0 +1,145 @@
+{
+  "passed": true,
+  "source_commit": "d6c2d6d9336dc80e85ca3e5fc75c8f1cb2d26797",
+  "dataset_bytes": 18058741,
+  "source_members": 73,
+  "literal_notebook_executed": true,
+  "guarded_model_calls": 0,
+  "default_run_all": true,
+  "both_results_and_resume_exported": true,
+  "offline_native_asset_files_verified": 0,
+  "dataset_input_files": 3,
+  "ordinary_installed_CPU_environment": true,
+  "source_pythonpath": false,
+  "host_checks": 3,
+  "delivered_optional_device_map_contract": true,
+  "intended_main_slots": 6280,
+  "recorded_main_slots": 0,
+  "unknown_main_slots": 6280,
+  "seven_figures_svg_png": true,
+  "portable_restore_report_bytes_identical": true,
+  "native_weights_loaded": false,
+  "actual_T4_acceptance": false,
+  "repair_resume_embedded": true,
+  "preserved_native_smoke_attempts": 21,
+  "delivery": "dist\\course-kaggle-final-online-3",
+  "dataset_sha256": "44a21a5df8ded5b464d75e83c6bade75bed6c07ac79d9b3d385b18f5bfbcd1e9",
+  "notebook_sha256": "95843128849f60d94ac1c5a5646770c4fb6479670a5ffe74ff8e37c0d6ac2c93",
+  "executed_code_cells_identical": true,
+  "final_packaging_changes": "Original runtime configuration/host receipts additionally archived; notebook welcome wording corrected; execution source and database bytes unchanged",
+  "tested_candidate_dataset_sha256": "d7d7ffb0a0f5f8314be58be90855c92d994c44cd2d3e1e48cff4abf126ff1e25",
+  "worker_database_bytes_unchanged": true,
+  "pinned_candidate_packages": 97,
+  "pins_unchanged": true,
+  "cumulative_native_smoke_attempts": 22,
+  "smoke_attempt_limit": 25,
+  "remaining_smoke_attempts": 3,
+  "focused_tests": [
+    {
+      "command": "python -m unittest tests.test_course_workflow_core tests.loading_checks tests.attempt_checks -q",
+      "passed": 27
+    },
+    {
+      "command": "python -m unittest tests.test_course_hardware_integration tests.test_course_repair tests.test_course_simplified_workflow -q",
+      "passed": 17
+    },
+    {
+      "command": "python -m unittest tests.test_course_repair.CourseRepairTests.test_later_external_resume_supersedes_packaged_seed_and_two_external_histories_refuse -q",
+      "passed": 1
+    }
+  ],
+  "hardware_plan_contract": {
+    "plan_rows": 24,
+    "ordinary_probes": 21,
+    "envelope_probes": 2,
+    "controlled_hangs": 1,
+    "constructors_checked": 24,
+    "gpu_calls": 0,
+    "weights_loaded": false,
+    "generation_contract": {
+      "transformers": "5.12.0",
+      "torch": "2.11.0+cpu",
+      "tensor_device": "cpu",
+      "native_model_loaded": false,
+      "gpu_calls": 0,
+      "ordinary_settings_unchanged": true,
+      "forced_output_tokens": 256,
+      "checks": {
+        "old_none": {
+          "effective_eos": 248044,
+          "finite_check_rejected": true,
+          "processors": [
+            "MinLengthLogitsProcessor",
+            "MinNewTokensLengthLogitsProcessor",
+            "_FiniteScores",
+            "TemperatureLogitsWarper",
+            "TopKLogitsWarper",
+            "TopPLogitsWarper",
+            "MinPLogitsWarper"
+          ]
+        },
+        "diagnostic": {
+          "effective_eos": [],
+          "finite_check_rejected": false,
+          "processors": [
+            "MinLengthLogitsProcessor",
+            "MinNewTokensLengthLogitsProcessor",
+            "_FiniteScores",
+            "TemperatureLogitsWarper",
+            "TopKLogitsWarper",
+            "TopPLogitsWarper",
+            "MinPLogitsWarper"
+          ]
+        }
+      }
+    }
+  },
+  "repair_receipt": {
+    "incident": "final-online-3",
+    "authorization": "User requested full repair after the reviewed 13 October proposal",
+    "original_payload_sha256": "10eb1fc4015ff7a6cef31216be9890a405e424d57982974d48bfae62d9e61c43",
+    "original_source_commit": "075d10737c5f06a5a0de1122dac0e8236e8aac0a",
+    "corrected_source_commit": "d6c2d6d9336dc80e85ca3e5fc75c8f1cb2d26797",
+    "source_changes": [
+      "SOURCE_COMMIT.txt",
+      "recovery/attempts.py",
+      "recovery/inference.py",
+      "scripts/course_kaggle_bootstrap.py",
+      "scripts/m5_course_smoke.py",
+      "scripts/m5_course_smoke_assets.py",
+      "scripts/m5_kaggle_preflight.py",
+      "tests/generation_checks.py"
+    ],
+    "preserved_source": "repair/original-source",
+    "preserved_report": "repair/hardware/report.json",
+    "ordinary_inference_ast_unchanged": true,
+    "ordinary_requests_unchanged": true,
+    "prior_smoke_attempts": 1,
+    "preserved_current_attempts": 21,
+    "cumulative_attempts": 22,
+    "attempt_limit": 25,
+    "pending_call_ids": [
+      "course-hardware/envelope/device-0",
+      "course-hardware/envelope/device-1",
+      "smoke/course-m5/24"
+    ],
+    "worker_hashes_unchanged": {
+      "hardware/worker-0-backup.sqlite": "13cef62c8e48cdda3c9bb937f63043cdc015e6b4cefaba40ee23d07b8ef0c815",
+      "hardware/worker-0.sqlite": "259f819cc8af75ae3404f5335ee8de8ae01ff5b813a090c62bf9d8316bd6e511",
+      "hardware/worker-1-backup.sqlite": "119b6aeff56bf7e4b85c0e9bb9a0ec313df9c3a56214782fb4d056a5ecadb5ee",
+      "hardware/worker-1.sqlite": "0c3c86db380c78743e1b1153ab47d537c220095e0a3239b9a35b621d1a591d08"
+    },
+    "weights_loaded": false,
+    "gpu_calls": 0,
+    "new_attempts": 0,
+    "plan_contract": {
+      "plan_rows": 24,
+      "ordinary_probes": 21,
+      "envelope_probes": 2,
+      "controlled_hangs": 1,
+      "constructors_checked": 24,
+      "gpu_calls": 0,
+      "weights_loaded": false
+    }
+  }
+}

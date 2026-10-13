@@ -1,0 +1,12 @@
+{
+  "incident": "final-online-4",
+  "recorded_smoke_attempts": 23,
+  "worker_attempts": 22,
+  "earlier_loader_failure": 1,
+  "original_payload": {
+    "bytes": 18667863,
+    "sha256": "62fb0af5c0f22951b57f0759f5b949933f7fa6512ab3b5ebe18d7feb69161b49"
+  },
+  "evidence": "notebooks/run/final-online-4/course-resume.payload",
+  "adopted_scope": "User requested Fully repair it after the complete final-online-4 proposal; prepare 9B-first/4B-fallback package, preserving all historical evidence. GPU work requires operator Run All."
+}

@@ -64,9 +64,9 @@ def obtain_continuation_round(state: BranchState, branch: Branch, tokenizer,
     order = tuple(invocation_order)
     if len(order) != 4 or any(type(p) is not int for p in order) or set(order) != set(PEERS):
         raise ValueError("invoke every peer exactly once")
-    from .prompts import limits_from_settings
+    from .prompts import limits_from_settings, prompt_profile
     limits = limits_from_settings(settings)
-    requests = prepare_round(state, tokenizer, limits=limits)
+    requests = prepare_round(state, tokenizer, limits=limits, profile=prompt_profile(settings))
     available = {}
     for parent in parents:
         if type(parent) is not SavedRound:

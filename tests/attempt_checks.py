@@ -42,6 +42,8 @@ def process_factory(mode, trace):
     if mode == "hang_load":
         while True:
             sleep(1)
+    if mode == "defect_load":
+        raise AttributeError("CPU startup fixture: missing hf_device_map")
     return partial(process_reply, mode, trace)
 
 
@@ -394,12 +396,29 @@ class ProcessAttemptTests(unittest.TestCase):
                 runner.run_round(self.branch.branch_id, 1)
             self.assertEqual(runner.state(self.branch.branch_id), initial)
             self.assertEqual(runner.store.attempts(self.branch.calls[0].call_id)[0]["status"], "blocked")
+            reason = runner.store.attempts(self.branch.calls[0].call_id)[0]["reason"]
+            self.assertIn("phase=generation", reason)
+            self.assertIn("Traceback (most recent call last)", reason)
+            self.assertIn("process_reply", reason)
             self.assertEqual(runner.store.attempts(self.branch.calls[0].call_id)[0]["uncertain_completion"], 1)
             self.assertTrue(all(runner.store.call(c.call_id)["raw_json"] is None for c in self.branch.calls[:4]))
         with DurableRunner(self.path, TOKENIZER, self.boundary()) as runner:
             with self.assertRaises(UnresolvedAttempt):
                 runner.run_round(self.branch.branch_id, 1)
             self.assertEqual(sum(e["event"] == "generation" for e in read_trace(self.trace)), 1)
+
+    def test_startup_defect_keeps_child_traceback_and_never_enters_generation(self):
+        with DurableRunner(self.path, TOKENIZER, self.boundary("defect_load")) as runner:
+            initial = runner.start(self.world, self.branch, settings=SETTINGS)
+            with self.assertRaisesRegex(ProviderDefect, "missing hf_device_map"):
+                runner.run_round(self.branch.branch_id, 1)
+            attempt = runner.store.attempts(self.branch.calls[0].call_id)[0]
+            self.assertEqual(attempt["status"], "blocked")
+            self.assertIn("phase=provider_startup", attempt["reason"])
+            self.assertIn("Traceback (most recent call last)", attempt["reason"])
+            self.assertIn("process_factory", attempt["reason"])
+            self.assertEqual(runner.state(self.branch.branch_id), initial)
+            self.assertEqual(sum(e["event"] == "generation" for e in read_trace(self.trace)), 0)
 
     def test_context_overflow_stops_before_factory_or_attempt_and_preserves_unknown_opportunities(self):
         from recovery.prompts import MAX_CONTEXT_TOKENS

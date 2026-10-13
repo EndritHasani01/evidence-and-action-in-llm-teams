@@ -6,6 +6,7 @@ from contextlib import closing
 from datetime import datetime, timezone
 import hashlib
 import json
+from math import isfinite
 import os
 from pathlib import Path, PurePosixPath
 import platform
@@ -54,6 +55,201 @@ def save_json(path: Path, value: object) -> None:
     temporary = path.with_suffix(path.suffix + ".partial")
     temporary.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     temporary.replace(path)
+
+
+
+def assigned_preparation_window(launch, now=None, *, smoke_required=True):
+    """Conservative pre-install screen; installed CourseBudget still gates weights.
+
+    The bare bootstrap has no LangGraph/Pydantic environment yet. Check the
+    supplied bounds before downloads, without CUDA or resetting assignment time.
+    Current allocation enters the ordinary smoke ledgers from this same clock.
+    """
+    if launch.get("resource_policy") == "observe":
+        assigned = datetime.fromisoformat(launch["allocated_at"])
+        current = datetime.fromisoformat(now or utc())
+        duration = launch.get("session_limit_seconds",36000)
+        if assigned.tzinfo is None or current.tzinfo is None or type(duration) not in (int,float) or not 0 < duration <= 86400:
+            raise ValueError("bounded_observed_session_required")
+        wall = duration-(current-assigned).total_seconds()
+        if wall <= 120+EXPORT_SECONDS+124:
+            raise ValueError("session_time_needed_for_shutdown_and_export")
+        return wall
+    if not launch.get("authorization", "").strip() or launch.get("prior_sessions_released") is not True:
+        raise ValueError("authorization_or_prior_release_missing")
+    if launch.get("resume_workers"):
+        raise ValueError("assigned_preparation_requires_fresh_run; reuse admitted assets for resume")
+    budget = launch["budget"]
+    if not budget.get("prior_evidence", "").strip() or budget.get("allocation_mode") != "gpu":
+        raise ValueError("documented_prior_bounds_and_gpu_charging_required")
+    def number(value):
+        if type(value) not in (int,float) or not isfinite(value) or value < 0:
+            raise ValueError("finite_nonnegative_resource_bound_required")
+        return value
+    upper = {}
+    for name in ("development","setup","interruption","other_course","other_overall","smoke"):
+        bounds = budget.get("prior_"+name+"_gpu_hours")
+        if not isinstance(bounds,(tuple,list)) or len(bounds) != 2 or number(bounds[0]) > number(bounds[1]):
+            raise ValueError("supported_prior_allocation_and_smoke_bounds_required")
+        upper[name] = bounds[1]
+    attempts = budget.get("prior_smoke_attempts")
+    if type(attempts) is not int or not 0 <= attempts <= 24 or smoke_required and attempts == 24:
+        raise ValueError("remaining_cumulative_smoke_attempt_required")
+    remaining = []
+    for name,ceiling in (("development",8),("setup",2),("interruption",2)):
+        reserve = number(budget[name+"_reserve_gpu_hours"])
+        if reserve > ceiling:
+            raise ValueError("adopted_preparation_allowance_exceeded")
+        remaining.append(reserve-upper[name])
+    course = sum(upper[name] for name in ("development","setup","interruption","other_course"))
+    for field,ceiling,spent in (("ceiling_gpu_hours",30,course),("overall_ceiling_gpu_hours",100,course+upper["other_overall"])):
+        limit = number(budget[field])
+        if not 0 < limit <= ceiling:
+            raise ValueError("adopted_resource_ceiling_required")
+        remaining.append(limit-spent)
+    if smoke_required:
+        remaining.append(.5-upper["smoke"])
+    if not launch.get("allocated_at"):
+        raise ValueError("actual_provider_assignment_clock_required")
+    assigned = datetime.fromisoformat(launch["allocated_at"])
+    current = datetime.fromisoformat(now or utc())
+    if assigned.tzinfo is None or current.tzinfo is None:
+        raise ValueError("timezone_aware_assignment_required")
+    elapsed = (current-assigned).total_seconds()
+    if elapsed < 0:
+        raise ValueError("provider_assignment_cannot_be_in_future")
+    quota = number(launch.get("reported_quota_gpu_hours"))
+    duration = number(launch.get("provider_session_seconds"))
+    if quota == 0 or duration == 0 or not launch.get("release_instructions", "").strip():
+        raise ValueError("provider_terms_required")
+    shutdown = number(budget["shutdown_seconds"])
+    if shutdown < 120:
+        raise ValueError("at_least_120_seconds_for_provider_release_required")
+    wall = min((3600*min(remaining)-number(budget["overhead_seconds"]))/2-elapsed,
+        quota*3600/2-elapsed,duration-elapsed)
+    if wall <= shutdown+EXPORT_SECONDS+8+124:
+        raise ValueError("insufficient_remaining_time_for_preparation_attempt_export_and_release")
+    return wall
+
+
+def source_identity(root, manifest):
+    if (root/"SOURCE_COMMIT.txt").read_text().strip() != manifest["source_baseline_commit"]:
+        raise ValueError("prepared source commit differs")
+    for name, wanted in manifest["members"].items():
+        path = root/name
+        if not path.is_file() or path.is_symlink() or path.stat().st_size != wanted["bytes"] or sha256_file(path) != wanted["sha256"]:
+            raise ValueError("prepared source member differs: "+name)
+
+def validate_smoke_predecessor(root, budget):
+    """A repaired source packet cannot discard its retained incident count."""
+    evidence=Path(root)/"notebooks/validation/course-kaggle/repair-predecessor.json"
+    if evidence.exists():
+        retained=json.loads(evidence.read_bytes())
+        count=budget.get("prior_smoke_attempts")
+        if type(count) is not int or count < retained["recorded_smoke_attempts"]:
+            raise ValueError("retained_smoke_predecessor_cannot_be_reset")
+
+
+def smoke_attempt_limit(launch):
+    """Only the original ceiling or the explicitly adopted incident allowance."""
+    limit = launch.get("smoke_attempt_limit", 24)
+    if type(limit) is not int or limit not in (24, 25, 71):
+        raise ValueError("unapproved_smoke_attempt_limit")
+    if limit == 25 and (launch.get("smoke_attempt_allowance") != "final-online-2/one-time-repair"
+            or (launch.get("budget", {}).get("prior_smoke_attempts") or 0) < 1
+            or "final-online-2" not in launch.get("budget", {}).get("prior_evidence", "")):
+        raise ValueError("one_time_smoke_allowance_requires_retained_incident_evidence")
+    if limit == 71 and (launch.get("smoke_attempt_allowance") != "final-online-4/qualification" or
+            (launch.get("budget",{}).get("prior_smoke_attempts") or 0) < 23):
+        raise ValueError("qualification_allowance_requires_retained_23_attempts")
+    return limit
+
+
+def hardware_matrix_recorded(paths):
+    """All fixed outcomes can be reconstructed at the ceiling without a call."""
+    import sqlite3
+    expected = {f"smoke/course-m5/{n:02d}" for n in range(1,22)} | {
+        "course-hardware/envelope/device-0", "course-hardware/envelope/device-1", "smoke/course-m5/24"}
+    recorded = set()
+    for path in paths:
+        path = Path(path)
+        if not path.is_file():
+            return False
+        with closing(sqlite3.connect(path.resolve().as_uri()+"?mode=ro", uri=True)) as db:
+            recorded.update(r[0] for r in db.execute(
+                "SELECT call_id FROM calls WHERE status IN ('completed','timeout','infrastructure_failure')"))
+    return recorded == expected
+
+
+def smoke_attempt_usage(budget, paths=(), *, prior_paths=()):
+    """Count original smoke attempts, deduplicating references and SQLite backups.
+
+    The documented prior bound covers predecessor evidence; it is not added a
+    second time when those original rows are available. Never read pilot/main
+    paths here. Native call IDs, attempt numbers and original start times identify
+    the same record in a backup without introducing another identity system.
+    """
+    import sqlite3
+    def records(inputs):
+        found = set()
+        for path in {Path(p).resolve() for p in inputs}:
+            if not path.is_file():
+                raise ValueError("missing_original_smoke_worker: "+str(path))
+            with closing(sqlite3.connect(path.as_uri()+"?mode=ro", uri=True)) as db:
+                found.update(db.execute("SELECT call_id,number,started_at FROM attempts"))
+        return found
+    current, previous = records(paths), records(prior_paths)
+    prior = budget.get("prior_smoke_attempts")
+    if prior is not None and (type(prior) is not int or prior < 0 or not budget.get("prior_evidence", "").strip()):
+        raise ValueError("prior_smoke_attempts_require_documented_bound")
+    predecessor = max(prior or 0, len(previous-current))
+    return dict(recorded_current=len(current), retained_predecessor=predecessor,
+                total_recorded=len(current)+predecessor,
+                prior_history_scope="documented predecessor bound" if prior is not None else "only supplied original records; earlier history unknown")
+
+
+def download_native_ranges(url, destination, size, digest, *, chunk_bytes=16*1024**2):
+    """Resume rebuildable downloads using HTTP ranges and the native file hash."""
+    from urllib.request import Request, urlopen
+    from urllib.error import HTTPError, URLError
+    from http.client import IncompleteRead
+    if destination.exists():
+        if destination.stat().st_size != size or sha256_file(destination) != digest:
+            raise ValueError("native cached asset identity differs: "+destination.name)
+        print("Download: verified cached "+destination.name, flush=True)
+        return
+    partial = destination.with_suffix(destination.suffix+".partial")
+    offset = partial.stat().st_size if partial.exists() else 0
+    if offset > size:
+        raise ValueError("partial asset is larger than its pinned native size")
+    with partial.open("ab") as output:
+        while offset < size:
+            end = min(size, offset+chunk_bytes)-1
+            for attempt in range(3):
+                try:
+                    with urlopen(Request(url,headers={"Range":f"bytes={offset}-{end}",
+                            "User-Agent":"recovery-course-online-package"}),timeout=60) as response:
+                        if response.status != 206 or response.headers.get("Content-Range") != f"bytes {offset}-{end}/{size}":
+                            raise ValueError("server did not honor the exact native asset range")
+                        block = response.read(end-offset+1)
+                        if len(block) != end-offset+1:
+                            raise IncompleteRead(block, end-offset+1-len(block))
+                    break
+                except (HTTPError, URLError, TimeoutError, ConnectionError, IncompleteRead) as error:
+                    if isinstance(error, HTTPError) and error.code not in (408, 429, 500, 502, 503, 504):
+                        raise
+                    if attempt == 2:
+                        raise
+                    print(f"Download: {destination.name} retry {attempt+1}/2 at byte {offset}: {type(error).__name__}",flush=True)
+                    time.sleep(attempt+1)
+            output.write(block); output.flush()
+            offset += len(block)
+            if offset == size or offset % (256*1024**2) == 0:
+                print(f"Download: {destination.name} {offset}/{size} bytes ({100*offset/size:.1f}%)",flush=True)
+    if partial.stat().st_size != size or sha256_file(partial) != digest:
+        raise ValueError("native downloaded asset identity differs: "+destination.name)
+    partial.replace(destination)
+
 
 
 def inventory(root: Path, limit: int = INVENTORY_LIMIT) -> dict:
@@ -172,20 +368,38 @@ def filesystem_facts(paths: dict[str, Path]) -> dict:
                            "total_bytes": disk.total}
         pools[key] = {"free_bytes": min(disk.free, pools.get(key, {}).get("free_bytes", disk.free)),
                       "roles": pools.get(key, {}).get("roles", []) + [role]}
+    mountinfo = Path('/proc/self/mountinfo')
+    mounts = []
+    if mountinfo.is_file():
+        for line in mountinfo.read_text().splitlines():
+            fields = line.split()
+            if len(fields) > 5 and any(str(path) == fields[4] or str(path).startswith(fields[4].rstrip('/')+'/')
+                                       for path in paths.values()):
+                mounts.append(line)
     return {"locations": locations, "pools": pools, "quota_verified": False,
+            "observed_at": utc(), "mountinfo": mounts,
             "interpretation": "Filesystem free space is observed; shared pools are counted once."}
 
 
-def require_space(scratch: Path, output: Path, additional_scratch: int) -> dict:
+def require_space(scratch: Path, output: Path, additional_scratch: int, *, receipt=None, stage=None) -> dict:
     facts = filesystem_facts({"scratch": scratch, "output": output})
     same = scratch.stat().st_dev == output.stat().st_dev
-    if shutil.disk_usage(output).free < OUTPUT_RESERVE:
-        raise ValueError("output_evidence_reserve")
     required = additional_scratch + (OUTPUT_RESERVE if same else 0)
     scratch_pool=facts['locations']['scratch']['pool']
-    if facts['pools'][scratch_pool]['free_bytes'] < required:
-        raise ValueError(f"scratch_capacity: additional_required={required}")
-    facts.update(additional_scratch_bytes=additional_scratch, output_reserve_bytes=OUTPUT_RESERVE)
+    available = facts['pools'][scratch_pool]['free_bytes']
+    facts.update(additional_scratch_bytes=additional_scratch, output_reserve_bytes=OUTPUT_RESERVE,
+                 required_bytes=required, available_bytes=available, stage=stage,
+                 admitted=available >= required and facts['locations']['output']['free_bytes'] >= OUTPUT_RESERVE)
+    if receipt is not None:
+        save_json(Path(receipt), facts)
+        print(f"Storage [{stage}]: {scratch} | free={available/2**30:.2f} GiB "
+              f"required={required/2**30:.2f} GiB | {'admitted' if facts['admitted'] else 'refused'}",flush=True)
+    if facts['locations']['output']['free_bytes'] < OUTPUT_RESERVE:
+        raise ValueError(f"output_evidence_reserve: path={output} "
+                         f"available={facts['locations']['output']['free_bytes']} required={OUTPUT_RESERVE}")
+    if available < required:
+        raise ValueError(f"scratch_capacity: path={scratch} pool={scratch_pool} "
+                         f"available={available} additional_required={required}")
     return facts
 
 
@@ -240,7 +454,7 @@ def _stop_owned(process: subprocess.Popen) -> dict:
 
 
 def command(output: Path, name: str, args: list, *, deadline: float, timeout: float,
-            cwd: Path, env: dict) -> dict:
+            cwd: Path, env: dict, stream=False) -> dict:
     remaining = deadline - time.monotonic() - EXPORT_SECONDS
     if remaining < timeout + 7:
         raise TimeoutError(f"deadline_before_command: {name}, remaining={remaining:.1f}, bound={timeout}")
@@ -261,7 +475,27 @@ def command(output: Path, name: str, args: list, *, deadline: float, timeout: fl
             record["pid"] = process.pid
             record['tree_confirmation']='unconfirmed'
             try:
-                record["exit_code"] = process.wait(timeout=timeout)
+                if stream:
+                    print("Setup: "+name,flush=True)
+                    handles = [stdout.open("r",encoding="utf-8",errors="replace"),stderr.open("r",encoding="utf-8",errors="replace")]
+                    try:
+                        while process.poll() is None:
+                            for handle in handles:
+                                data=handle.read()
+                                if data: print(data,end="",flush=True)
+                            elapsed=time.monotonic()-started
+                            if elapsed >= timeout:
+                                raise subprocess.TimeoutExpired(args,timeout)
+                            try: process.wait(timeout=min(1,timeout-elapsed))
+                            except subprocess.TimeoutExpired: pass
+                        for handle in handles:
+                            data=handle.read()
+                            if data: print(data,end="",flush=True)
+                    finally:
+                        for handle in handles: handle.close()
+                    record["exit_code"] = process.returncode
+                else:
+                    record["exit_code"] = process.wait(timeout=timeout)
                 record["status"] = "passed" if process.returncode == 0 else "failed"
                 record["leader_exited"] = True
                 if os.name != "nt" and _group_exists(process.pid):
@@ -392,29 +626,30 @@ def pip_wheel_download_script(metadata: dict, destination: Path) -> str:
         "print(json.dumps(dict(expected,verified=True)))", ""])
 
 
-def installed_probe_script(expected: dict, versions: dict, result_path: Path) -> str:
+def installed_probe_script(expected: dict, versions: dict, result_path: Path, *, gpu=True) -> str:
     hashes = {n: item["sha256"] for n, item in expected["members"].items()
               if n.startswith("recovery/") and n.endswith(".py")}
     return "\n".join([
         "import hashlib,json,sys,site", "from pathlib import Path",
         "from importlib.metadata import version", "import recovery,recovery.inference,recovery.runner",
         "from langgraph.checkpoint.sqlite import SqliteSaver",
-        "from transformers import Qwen3_5ForCausalLM", "import torch",
+        "from transformers import Qwen3_5ForCausalLM; import torch" if gpu else "import importlib.util; assert importlib.util.find_spec('torch') is None",
         f"wanted={versions!r}", "actual={n:version(n) for n in wanted}",
         "assert actual==wanted, {'expected':wanted,'actual':actual}",
         "assert sys.prefix!=sys.base_prefix and site.ENABLE_USER_SITE is False",
-        "assert torch.__version__=='2.11.0+cu128' and torch.version.cuda=='12.8'",
+        "assert torch.__version__=='2.11.0+cu128' and torch.version.cuda=='12.8'" if gpu else "",
         "package=Path(recovery.__file__).resolve().parent", f"expected={hashes!r}",
         "observed={'recovery/'+p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in package.glob('*.py')}",
         "assert observed==expected, 'source-to-installed module bytes differ'",
         "assert package.is_relative_to(Path(sys.prefix).resolve()), 'base/source import contamination'",
         f"Path({str(result_path)!r}).write_text(json.dumps({{'versions':actual,'executable':sys.executable,'prefix':sys.prefix,",
         "'sys_path':sys.path,'module_root':str(package),'verified_module_hashes':observed,",
-        "'qwen_text_class':Qwen3_5ForCausalLM.__name__,'torch_cuda_build':torch.version.cuda,",
+        "'qwen_text_class':Qwen3_5ForCausalLM.__name__,'torch_cuda_build':torch.version.cuda," if gpu else
+        "'qwen_text_class':None,'torch_cuda_build':None,",
         "'gpu_native_diagnostics':None,'model_generations':0}),encoding='utf-8')", ""])
 
 
-def installed_provenance(result_path: Path, expected: dict, versions: dict) -> dict:
+def installed_provenance(result_path: Path, expected: dict, versions: dict, *, gpu=True) -> dict:
     # Third-party imports may print diagnostics; machine evidence has its own file.
     if result_path.stat().st_size > 2*2**20:
         raise ValueError('installed_probe_result_too_large')
@@ -423,8 +658,8 @@ def installed_provenance(result_path: Path, expected: dict, versions: dict) -> d
                      if n.startswith('recovery/') and n.endswith('.py')}
     if (not isinstance(result,dict) or result.get('versions')!=versions
             or result.get('verified_module_hashes')!=wanted_hashes
-            or result.get('qwen_text_class')!='Qwen3_5ForCausalLM'
-            or result.get('torch_cuda_build')!='12.8' or result.get('model_generations')!=0):
+            or result.get('qwen_text_class')!=('Qwen3_5ForCausalLM' if gpu else None)
+            or result.get('torch_cuda_build')!=('12.8' if gpu else None) or result.get('model_generations')!=0):
         raise ValueError('installed_probe_schema_or_provenance')
     return result
 

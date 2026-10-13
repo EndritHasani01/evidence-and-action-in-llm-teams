@@ -359,7 +359,8 @@ def assemble_report(worlds, branches, tables, traces, *, provenance=None, regime
     return report
 
 
-def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, provenance=None, regime="thesis", terminal_feasibility=None):
+def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, provenance=None, regime="thesis", terminal_feasibility=None,
+               execution_evidence=None):
     """One read-only worker snapshot feeds every table and unaltered excerpt."""
     from .analysis import analyze_estimands, prose_activity
     from .costs import cost_records, timestamp
@@ -388,6 +389,28 @@ def report_run(worlds, branches, paths, *, now, seed=20261006, tokenizer=None, p
     report = assemble_report(worlds, branches, tables, traces, provenance=provenance,
         regime=regime, terminal_feasibility=terminal_feasibility)
     report["settings"]["generation_settings"] = sorted({r["settings_json"] for r in inputs.values()})
+    if execution_evidence is not None:
+        if (regime != "course" or execution_evidence.get("audit_passed") is not True
+                or execution_evidence.get("status") not in ("feasibility", "model_incomplete", "model_complete")):
+            raise ValueError("actual course reporting requires an explicit passed artifact audit")
+        if execution_evidence["status"] == "model_complete" and (
+                tables["coverage"]["unknown"] or len(worlds) != 20 or worlds[0].development
+                or execution_evidence.get("committed_schedule_complete") is not True
+                or not execution_evidence.get("accepted_main_freeze")):
+            raise ValueError("complete empirical reporting requires the frozen full 20-world schedule")
+        report["kind"] = ("Exploratory course model results" if execution_evidence["status"] == "model_complete"
+                          else "Limited course feasibility or incomplete model results")
+        traces["kind"] = report["kind"]
+        tables["kind"] = report["kind"]
+        report["execution"].update(execution_evidence)
+        report["execution"]["coverage_scope"] = "Full original course main manifest; development evidence is reported separately."
+        report["execution"]["unavailable_reason"] = (None if execution_evidence["status"] == "model_complete" else
+            "Unexecuted main outcomes remain unknown; available feasibility evidence does not complete the experiment.")
+        # The last three interpretations describe synthetic instruments only.
+        report["interpretations"] = report["interpretations"][:-3] + [
+            "The independently audited original model records supply these outcomes; CPU tests and development controls do not estimate main treatment effects.",
+            "Only completion of the full frozen 20-world schedule and artifact checks constitutes empirical completion. Unexecuted slots remain unknown."]
+        report["execution"]["terminal_feasibility"] = (dict(terminal_feasibility) if terminal_feasibility else None)
     return dict(tables=tables, report=report, traces=traces,
         inputs=dict(worlds=[asdict(w) for w in worlds], branches=[asdict(b) for b in branches]))
 
@@ -414,12 +437,12 @@ def _table(rows, fields):
         "<tr>"+"".join("<td>"+cell(r.get(f))+"</td>" for f in fields)+"</tr>" for r in rows)+"</tbody></table></div>"
 
 
-def _page(title, body):
+def _page(title, body, *, label=LABEL):
     return "<!doctype html><html lang='en'><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"+f"<title>{escape(title)}</title>"+"""<style>
 body{max-width:1160px;margin:40px auto;padding:0 24px;color:#182a39;background:#fff;font:16px/1.6 system-ui,sans-serif}
 h1,h2,h3{line-height:1.2}h2{margin-top:48px}a{color:#165e86}aside{padding:12px 18px;background:#edf3f7;border-left:4px solid #165e86}
 img{width:100%;height:auto}.scroll{overflow:auto}table{border-collapse:collapse;font-size:13px;width:100%;margin:18px 0}th,td{border-bottom:1px solid #ccd5dd;padding:8px;text-align:left;vertical-align:top}th{background:#edf3f7}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f6f8;padding:16px;font-size:12px}code{overflow-wrap:anywhere}details{margin:16px 0}nav a{margin-right:16px}.muted{color:#546575}
-</style>"""+"<body><h1>"+escape(title)+"</h1><aside>"+escape(LABEL)+"</aside>"+body+"</body></html>\n"
+</style>"""+"<body><h1>"+escape(title)+"</h1><aside>"+escape(label)+"</aside>"+body+"</body></html>\n"
 
 
 def _literal_html(text):
@@ -448,7 +471,7 @@ def _cases_html(report):
             body += _literal_html(row["raw_reply"]["text"] if row["raw_reply"] else "No recorded raw reply; see the linked failure/unknown trace.")
         for row in card["incoming_prose"]:
             body += "<p>Incoming message <a href='calls.html#"+quote(row["message_id"], safe="")+"'>"+escape(row["message_id"])+"</a>; delivery <code>"+escape(row["delivery_id"])+"</code>.</p>"+_literal_html(row["text"])
-    return _page("Matched case cards", body)
+    return _page("Matched case cards", body, label=report["kind"])
 
 
 def _calls_html(traces):
@@ -466,7 +489,7 @@ def _calls_html(traces):
             seen_messages.add(row["message_id"])
             body += "<details id='"+escape(row["delivery_id"], quote=True)+"'><summary"+message_anchor+">"+escape(row["message_id"])+"</summary>"
             body += _table([row], ("branch_id", "delivery_id", "first_usable", "recipient"))+_literal_html(row["text"])+"</details>"
-    return _page("Original call and message traces", body)
+    return _page("Original call and message traces", body, label=traces["kind"])
 
 
 def _report_html(report, figures):
@@ -476,6 +499,10 @@ def _report_html(report, figures):
         body += "<h2>Exploratory course scope and execution status</h2>"+_table([report["scope"]], ("regime", "size", "domain", "scheduled_worlds", "populations"))
         body += _table([report["provenance"]], ("manifest", "schedule", "source_bundle", "source_scope", "workers", "history_counter"))
         body += _table([report["execution"]], ("status", "coverage_status", "coverage_scope", "accepted_main_freeze", "model_capability", "gpu_memory_headroom", "unavailable_reason"))
+        cumulative = report["execution"].get("cumulative_allocation")
+        if cumulative is not None:
+            body += "<h3>Cumulative course allocation</h3>"+_table([cumulative],
+                ("course_gpu_hours", "overall_gpu_hours", "remaining_reserves_gpu_hours", "admission_reason"))
         evidence = report["execution"]["terminal_feasibility"]
         if evidence is not None:
             body += "<h3>Supplied terminal feasibility evidence</h3><p>Source: <code>"+escape(evidence["source"])+"</code>. This document does not change execution coverage or pass a gate.</p>"+_literal_html(evidence["text"])
@@ -483,7 +510,9 @@ def _report_html(report, figures):
         body += "<p>"+escape(references["interpretation"])+"</p>"
         body += _table(references["main"]+references["focal"], ("N", "sd", "multiplier", "reference"))
         body += "<p>Practical difference reference: "+str(references["practical_difference"])+"; not an equivalence margin.</p>"
-        body += "<details><summary>Recorded generation settings; no accepted model freeze</summary>"+_table(
+        summary = ("Recorded generation settings" if report["kind"] != LABEL else
+                   "Recorded generation settings; no accepted model freeze")
+        body += "<details><summary>"+summary+"</summary>"+_table(
             [dict(settings=s) for s in report["settings"].get("generation_settings", ())], ("settings",))+"</details>"
     body += "<p>"+escape(report["history_tokenizer"])+". N/A is unavailable or structurally inapplicable, with the reason and denominator retained in the scientific tables.</p>"
     body += "<p>"+escape(report["settings"]["uncertainty"]["cluster"])+"</p>"
@@ -512,7 +541,7 @@ def _report_html(report, figures):
             body += _table(report["trajectory_changes"], ("world_id", "event", "policy", "replicate_zero_category", "replicate_one_category", "complete_pair"))+"</details>"
     body += "<h2>Limitations and unfavorable-outcome interpretation</h2><ul>"+"".join("<li>"+escape(s)+"</li>" for s in report["interpretations"])+"</ul>"
     body += "<p>Case status: "+escape(report["selection"]["status"])+"; selected IDs: "+escape(", ".join(r["world_id"] for r in report["cases"]) or "none")+". Absent signs are reported on the <a href='cases.html'>case-selection page</a>.</p>"
-    return _page("Recovery report — synthetic validation", body)
+    return _page("Recovery report — "+("synthetic validation" if report["kind"] == LABEL else report["kind"]), body, label=report["kind"])
 
 
 def write_report(directory, result, *, figures=False):

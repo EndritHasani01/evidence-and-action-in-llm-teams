@@ -1,0 +1,27 @@
+{
+  "command": [
+    ".venv/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "unittest",
+    "tests.test_course_smoke_preparation",
+    "tests.course_inference_checks",
+    "tests.course_settings_checks",
+    "tests.test_inference_preparation",
+    "tests.inference_checks.DecodingTests",
+    "tests.inference_checks.BackendTests",
+    "tests.test_kaggle_bundle",
+    "tests.test_model_feasibility",
+    "-v"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T19:30:43.178867+00:00",
+  "source_head": "16e939565806733c665ac27d515ee126c301ffe3",
+  "seconds": 6.969000000040978,
+  "exit_code": 0,
+  "log": "source-accepted.txt.gz",
+  "hash_seed": "37",
+  "temporary_root": "E:\\CodexTemp\\recovery-course-m5-preparation-20261011"
+}

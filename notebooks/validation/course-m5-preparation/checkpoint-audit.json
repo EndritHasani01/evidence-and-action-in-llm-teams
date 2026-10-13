@@ -1,0 +1,76 @@
+{
+  "status": "passed",
+  "task_status": "blocked",
+  "r7_preparation_admitted": false,
+  "baseline": "2753c18cfd729bfd507b49026dcd8c0941de2d19",
+  "audited_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+  "protected_files_identical": 1659,
+  "thesis_defaults_todos_historical_artifacts_preserved": true,
+  "plan_sections_1_to_10_identical": true,
+  "course_task_states": {
+    "done": 11,
+    "blocked": 10
+  },
+  "reused_course_m4_gate": {
+    "status": "passed and unchanged",
+    "plan_rows": 22,
+    "consistency_categories": 7
+  },
+  "suites": {
+    "source-final": {
+      "methods": 64,
+      "skipped": 0,
+      "source_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+      "exit_code": 0
+    },
+    "installed-corrected": {
+      "methods": 64,
+      "skipped": 0,
+      "source_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+      "exit_code": 0
+    },
+    "native-course-final": {
+      "methods": 4,
+      "skipped": 0,
+      "source_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+      "exit_code": 0
+    },
+    "native-installed": {
+      "methods": 4,
+      "skipped": 0,
+      "source_head": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+      "exit_code": 0
+    },
+    "core-corrected": {
+      "methods": 37,
+      "skipped": 2,
+      "source_head": "16e939565806733c665ac27d515ee126c301ffe3",
+      "exit_code": 0
+    }
+  },
+  "installed_modules_identical": 29,
+  "cli_registration": {
+    "core_methods_collected": 437,
+    "full_methods_collected": 701,
+    "course_inference_registered_once_only_in_full": 5,
+    "collection_only_no_bodies_run": true
+  },
+  "exact_requests": 24,
+  "all_unexecuted": true,
+  "native_resident_bound": 156251,
+  "complete_live_memory_upper_bound_bytes": null,
+  "terminal_model_feasibility_failure": false,
+  "packet": {
+    "source_commit": "0260ca64d6bd6749e77d3580058e0c767ac08af6",
+    "payload_sha256": "5247f78fcf775c55816e72302f1a0eb99783abeec3ae028c5ff54aeb63f4d050",
+    "source_members": 211,
+    "closed_exports_reopened": 2
+  },
+  "local_references": 608,
+  "markdown_fragments": 255,
+  "inbound_references": 119,
+  "model_generations": 0,
+  "gpu_admission": false,
+  "weight_staging_permitted": false,
+  "runtime_freeze": false
+}

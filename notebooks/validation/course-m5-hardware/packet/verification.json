@@ -1,0 +1,16 @@
+{
+  "source_commit": "c1dc76735b929a74d028541d39c7215c9dd7b0f0",
+  "interpreter": "C:\\Users\\EndritHasani\\AppData\\Local\\Programs\\Python\\Python311\\python.exe",
+  "notebook_cells_executed": 4,
+  "source_members": 278,
+  "payload_bytes": 203741959,
+  "payload_sha256": "e51daa6d71a0cd7a97e56b489d1f568d71cd858a83d1507cddd9bf240d3e5989",
+  "export_zip_bytes": 5068756,
+  "export_zip_sha256": "fd4f377c91931e332e814f4e15358a6df6df2817a995e9be1fccebf8d2a6b05f",
+  "closed_export_reopened": true,
+  "model_generations": 0,
+  "pretrained_weights_staged": false,
+  "gpu_admission": false,
+  "physical_memory_accepted": false,
+  "work": "C:\\Users\\EndritHasani\\AppData\\Local\\Temp\\recovery-course-m5-hardware-notebook-v1"
+}

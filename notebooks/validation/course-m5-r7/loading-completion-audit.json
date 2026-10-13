@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "source_head": "109c8dce6d323cee494e61f3e8a28f7af064aef7",
+  "protected_files": 1734,
+  "authority_thesis_runtime_and_prerequisites": "byte-identical",
+  "pre_course_plan": "unchanged",
+  "course_tasks": {
+    "done": 11,
+    "blocked": 10
+  },
+  "native_source_checks": 5,
+  "outside_native_checks": 5,
+  "native_skips": 0,
+  "matching_runtime_modules": 29,
+  "unicode_scalars": 1112064,
+  "vocabulary_entries": 248077,
+  "complete_resident_tokens_upper": 110107,
+  "meta_cases": 3,
+  "pinned_native_sources": 12,
+  "loading_checkpoint": "109c8dce6d323cee494e61f3e8a28f7af064aef7",
+  "preserved_r7_checkpoint_files": 55,
+  "loading_checks": 5,
+  "loading_skips": 0,
+  "pinned_loading_sources": 5,
+  "checkpoint_header_bytes": 90240,
+  "tensor_payload_bytes_read": 0,
+  "explicit_loading_tensor_allowance_bytes": 3214021348,
+  "review_negative_cases": [
+    "wrong_revision",
+    "partial_family_coverage",
+    "GPU_meta_relabel",
+    "headroom_meta_relabel"
+  ],
+  "local_links_checked": 371,
+  "task_status": "blocked",
+  "r7_resolved": false,
+  "preparation_admitted": false,
+  "weight_staging_permitted": false,
+  "terminal_model_feasibility_failure": false,
+  "gpu_execution": false,
+  "model_weights_loaded": false,
+  "scope": "Verification of limited offline evidence and protected artifacts only; no M5 completion or GPU/headroom admission."
+}

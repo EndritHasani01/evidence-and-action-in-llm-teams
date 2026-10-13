@@ -189,11 +189,15 @@ class WorkerStore:
             if (regime == "course") != isinstance(budget, CourseBudget):
                 raise ValueError("course bindings require CourseBudget; thesis retains its budget representation")
         if regime == "course":
-            from .inference import QWEN_4B
+            from .inference import QWEN_4B, QWEN_9B
+            from .prompts import prompt_profile, COMPACT_PROFILE
+            accepted_models = {(QWEN_4B.model,QWEN_4B.revision)}
+            if prompt_profile(settings) == COMPACT_PROFILE:
+                accepted_models.add((QWEN_9B.model,QWEN_9B.revision))
             if (limits_from_settings(settings) != COURSE_LIMITS
-                    or (settings.get("model"), settings.get("revision")) != (QWEN_4B.model, QWEN_4B.revision)
+                    or (settings.get("model"), settings.get("revision")) not in accepted_models
                     or settings.get("generation", {}).get("max_new_tokens") != COURSE_LIMITS.output_tokens):
-                raise ValueError("course workers require explicit course limits and pinned 4B settings")
+                raise ValueError("course workers require explicit course limits and an adopted pinned candidate")
         inputs = {"worlds": [asdict(w) for w in sorted(worlds, key=lambda w: w.world_id)],
             "branches": [asdict(b) for b in sorted(branches, key=lambda b: b.branch_id)],
             "settings": json.loads(settings_json(settings)), "bounds": bounds}
@@ -268,6 +272,47 @@ class WorkerStore:
         with self.connection:
             self.connection.execute("UPDATE allocations SET stop_reason=? WHERE number=? AND stopped_at IS NULL",
                                     (reason, number))
+
+    def allocation_observation_ended(self, number, *, at, reason):
+        """End a measured notebook interval without claiming GPU deallocation."""
+        row = self.connection.execute("SELECT * FROM allocations WHERE number=?", (number,)).fetchone()
+        if row is None:
+            raise ValueError("missing allocation observation")
+        if row["stopped_at"] is not None:
+            return
+        end = datetime.fromisoformat(at)
+        if end.tzinfo is None or end < datetime.fromisoformat(row["started_at"]):
+            raise ValueError("observation end precedes its start")
+        billing = json.loads(row["billing_json"] or "{}")
+        billing.update(provider_release_confirmed=False,measurement_scope="observed_notebook_interval",
+            unobserved_provider_time="unknown",segment_end="observation_end")
+        with self.connection:
+            self.connection.execute("UPDATE allocations SET stopped_at=?,stop_reason=?,billing_json=? WHERE number=?",
+                (at,reason,record_json(billing),number))
+
+    def allocation_transferred(self, number, successor, *, at):
+        """End one accounting segment while the same provider assignment continues.
+
+        The successor's already-persisted open segment must start at this exact
+        boundary. This records a stage change, never provider deallocation.
+        """
+        row = self.connection.execute("SELECT * FROM allocations WHERE number=?", (number,)).fetchone()
+        if row is None or row["stopped_at"] is not None:
+            raise ValueError("transfer requires the original open allocation")
+        billing = json.loads(row["billing_json"] or "{}")
+        next_billing = json.loads(successor["billing_json"] or "{}")
+        if (successor["stopped_at"] is not None or successor["started_at"] != at
+                or successor["device"] != row["device"]
+                or not billing.get("provider_assignment_at")
+                or any(billing.get(k) != next_billing.get(k) for k in
+                       ("provider", "provider_assignment_at", "physical_gpu_uuid"))
+                or datetime.fromisoformat(at) < datetime.fromisoformat(row["started_at"])):
+            raise ValueError("transfer must preserve the physical assignment without a gap")
+        billing.update(provider_release_confirmed=False, segment_end="stage_transfer",
+                       successor_stage=successor["stage"])
+        with self.connection:
+            self.connection.execute("UPDATE allocations SET stopped_at=?,stop_reason=?,billing_json=? WHERE number=?",
+                (at, "stage transfer; same provider assignment remains chargeable", record_json(billing), number))
 
     def _record(self, table, where, values):
         # Table/predicate are internal constants, never user-supplied SQL.
@@ -344,7 +389,17 @@ class WorkerStore:
             "SELECT * FROM attempts WHERE call_id=? ORDER BY number", (call_id,)))
 
     def prepare_control(self, branch, settings, view, rendered, tokenized):
+        """Save one isolated request: a control or a development smoke probe.
+
+        Smoke uses the same call/attempt tables, with its actual peer and a
+        separate smoke branch; it is never relabelled as a scheduled control.
+        """
+        if (branch.phase not in ("control", "smoke") or len(branch.calls) != 1
+                or branch.calls[0].round_number != 1 or branch.calls[0].replay_parent is not None
+                or branch.calls[0].peer != view.peer or branch.task != view.task):
+            raise ValueError("one isolated non-replay control/smoke request required")
         call = branch.calls[0]
+        peer = -1 if call.peer is None else call.peer
         payload = record_json({"view": asdict(view), "rendered": asdict(rendered), "tokenized": asdict(tokenized)})
         identity = record_json(asdict(branch))
         with self.connection:
@@ -355,7 +410,7 @@ class WorkerStore:
                     raise ValueError("saved control request/settings/branch equality failed")
                 saved = self.call(call.call_id)
                 if tuple(saved[k] for k in ("branch_id", "round_number", "peer", "seed", "generation_id", "replay_parent")) != (
-                        branch.branch_id, 1, -1, call.seed, call.generation_id, None):
+                        branch.branch_id, 1, peer, call.seed, call.generation_id, None):
                     raise ValueError("saved control slot identity differs")
                 if saved["request_tokens"] != len(tokenized.input_ids):
                     raise ValueError("saved control request token count differs")
@@ -364,7 +419,7 @@ class WorkerStore:
                                     (branch.branch_id, identity, settings, payload))
             self.connection.execute("""INSERT INTO calls
                 (call_id,branch_id,round_number,peer,seed,generation_id,status,request_tokens)
-                VALUES (?, ?,1,-1,?,?,'pending',?)""", (call.call_id, branch.branch_id, call.seed, call.generation_id, len(tokenized.input_ids)))
+                VALUES (?, ?,1,?,?,?,'pending',?)""", (call.call_id, branch.branch_id, peer, call.seed, call.generation_id, len(tokenized.input_ids)))
 
     def save_control_validation(self, call_id, reply):
         raw = self.response(call_id)

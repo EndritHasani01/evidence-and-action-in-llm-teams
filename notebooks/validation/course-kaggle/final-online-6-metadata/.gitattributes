@@ -1,0 +1,3 @@
+# Native Safetensors headers include size-significant trailing JSON padding.
+# Keep exact HTTP evidence; its intentional spaces are part of the diagnosis.
+*.header.json -text whitespace=cr-at-eol,-blank-at-eol

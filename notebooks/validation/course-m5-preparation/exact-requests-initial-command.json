@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "scripts.m5_course_preparation",
+    "--tokenizer",
+    "C:/Users/ENDRIT~1/AppData/Local/Temp/recovery-capacity-wr5ya_42/4B",
+    "--inspection",
+    "notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json",
+    "--output",
+    "notebooks/validation/course-m5-preparation/inputs"
+  ],
+  "cwd": "C:\\Users\\EndritHasani\\Downloads\\recovery_blueprint\\recovery_blueprint",
+  "started_utc": "2026-10-11T19:19:51.396353+00:00",
+  "source_head": "16e939565806733c665ac27d515ee126c301ffe3",
+  "seconds": 11.827999999979511,
+  "exit_code": 1,
+  "log": "exact-requests-initial.txt.gz",
+  "hash_seed": null,
+  "temporary_root": null
+}

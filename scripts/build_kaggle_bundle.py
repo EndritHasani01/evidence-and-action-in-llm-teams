@@ -62,7 +62,12 @@ def file_sha256(path: Path) -> str:
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def archive_manifest(path: Path) -> dict:
+def archive_manifest(path: Path, *, source_commit: str = BASELINE_COMMIT,
+                     payload_name: str = PAYLOAD_NAME) -> dict:
+    if re.fullmatch(r"[0-9a-f]{40}", source_commit) is None:
+        raise ValueError("source_commit must be an exact committed source identity")
+    if not re.fullmatch(r"[a-z0-9-]+\.payload", payload_name):
+        raise ValueError("use a simple raw payload filename")
     members = {}
     with zipfile.ZipFile(path) as archive:
         for entry in archive.infolist():
@@ -89,11 +94,11 @@ def archive_manifest(path: Path) -> dict:
                 raise ValueError(f"source_member_size: {name}")
             members[name] = {"bytes": size, "sha256": digest.hexdigest()}
         marker = archive.read("SOURCE_COMMIT.txt").decode("ascii").strip()
-    if marker != BASELINE_COMMIT:
+    if marker != source_commit:
         raise ValueError("source_baseline_marker")
     return {"schema_version": 1, "kind": "canonical-m5-source",
-            "transport": "raw_payload", "payload_filename": PAYLOAD_NAME,
-            "source_baseline_commit": BASELINE_COMMIT,
+            "transport": "raw_payload", "payload_filename": payload_name,
+            "source_baseline_commit": source_commit,
             "archive_bytes": path.stat().st_size, "archive_sha256": file_sha256(path),
             "expanded_bytes": sum(x["bytes"] for x in members.values()),
             "members": dict(sorted(members.items()))}

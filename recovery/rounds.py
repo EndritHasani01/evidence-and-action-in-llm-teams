@@ -192,7 +192,7 @@ class RoundResult:
     committed: BranchState
 
 
-def prepare_round(state: BranchState, tokenizer, *, limits: ProtocolLimits = THESIS_LIMITS) -> RoundRequests:
+def prepare_round(state: BranchState, tokenizer, *, limits: ProtocolLimits = THESIS_LIMITS, profile="original") -> RoundRequests:
     if not state.committed:
         raise ValueError("commit the preceding delivery barrier before another call")
     slot = state.next_slot
@@ -200,7 +200,7 @@ def prepare_round(state: BranchState, tokenizer, *, limits: ProtocolLimits = THE
         raise ValueError("all four scheduled rounds are complete")
     views = tuple(p.view(state.task, state.size, i, slot, state.manifest)
                   for i, p in enumerate(state.peers))
-    rendered = tuple(render_request(view, limits=limits) for view in views)
+    rendered = tuple(render_request(view, limits=limits, profile=profile) for view in views)
     tokenized = tuple(tokenize_request(request, tokenizer, limits=limits) for request in rendered)
     return RoundRequests(state, slot, views, rendered, tokenized)
 

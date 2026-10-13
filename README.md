@@ -1,5 +1,16 @@
 # Recovery in distributed LLM teams
 
+The complete course Kaggle interface is in the [Kaggle runbook](docs/KAGGLE_COURSE.md).
+The Run All delivery contains `course_kaggle.ipynb`, `course-kaggle-dataset.zip`
+and `START_HERE.md`. Its small online-first dataset contains research code and
+inputs; Kaggle downloads and verifies pinned dependencies/checkpoint automatically.
+One setup cell replaces separate asset uploads and per-stage action switching.
+Hardware, capability/pilot, conditional freeze/main, backups and analysis advance
+automatically through their gates. Earlier `dist/course-kaggle-final/` artifacts
+remain preserved as the preceding single-action interface. Use Internet **On**.
+Its [CPU integration evidence](docs/validation/course-kaggle-workflow.md) is
+separate from the still-open actual-host, R7, resource, pilot and main gates.
+
 A controlled study of how multi-agent teams recover when information used during distributed problem solving is corrected.
 
 The design uses five SILO-derived task families to study retained evidence and computation, historical change information, and how recovering peers affect one another. Shared-prefix revision and no-change continuations provide matched controls.
@@ -153,7 +164,17 @@ passes 52 affected source/52 installed methods and 33 dependency-free methods
 with zero skips. Eight scopes reproduce twice; five portable reports retain
 35 deterministic SVG/PNG pairs, with original thesis exports unchanged.
 [Inference/smoke CPU preparation](docs/todos/course/M5/M5-T01-course-inference-and-smoke-preparation.md)
-is the next safe task.
+passes 64 affected source/64 installed and four native source/four native
+installed checks, with all 24 exact requests and a reviewed CPU source packet.
+The [offline R7 supplement](docs/validation/course-m5-r7-offline-review.md)
+verifies a tighter complete bound of 110,107 tokens with five source/five
+outside-checkout native checks and unchanged runtime bytes/caps. Five more CPU
+checks verify checkpoint headers and sequential loading without weight payloads.
+[M5-T01 completion](docs/validation/course-m5-preparation-completion.md) is accepted
+with 11 focused checks and the refreshed committed CPU packet/notebook/export.
+The user approved moving remaining physical R7 acceptance to M5-T02.
+Weight staging and GPU smoke still require that task's resource/authorization
+prerequisites; no terminal model failure is established.
 Runtime, model/GPU memory/headroom, capability, pilot, resource and freeze gates
 remain open. CPU admission supplies no experiment execution authorization.
 
