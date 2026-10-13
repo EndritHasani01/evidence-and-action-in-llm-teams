@@ -79,7 +79,7 @@ select **T4 ×2**, turn Internet **On**, then **Run All**.
 The notebook downloads the pinned dependencies and original model checkpoint,
 verifies their native hashes and versions, and advances automatically:
 
-The dataset contains only a packed research archive and its integrity manifest.
+The research source is a packed archive and its integrity manifest.
 Cell 3 extracts the required files locally after Kaggle starts the session.
 
 **Hardware → first 90 slots → full pilot → audit and freeze → complete main matrix

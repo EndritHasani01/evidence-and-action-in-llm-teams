@@ -1000,7 +1000,10 @@ attempts. The reviewed preparation-only continuation is produced offline: origin
 source/reports and all 21 worker outcomes are retained, corrected source is bound
 normally, and the notebook's exact-source checks remain. The repair dataset embeds
 that resume seed; a later separate export supersedes it. CPU controller and pinned
-processor checks have passed; final delivery integration is being verified. The
+processor checks and literal notebook/export/restore integration passed. The
+[implemented repair and final delivery](validation/course-kaggle-final-online-3-repair.md)
+records the exact three-file upload, original worker-byte preservation and remaining
+three diagnostics. The
 25-attempt allowance and all scientific settings/gates remain unchanged. No GPU
 execution, native full-envelope acceptance, pilot/freeze/main or publication is
 performed by this repair work.

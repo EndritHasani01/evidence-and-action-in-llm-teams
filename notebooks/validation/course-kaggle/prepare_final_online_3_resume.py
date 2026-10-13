@@ -115,6 +115,11 @@ def prepare(packet, incident, output):
             raise ValueError("ordinary inference changed beyond the diagnostic EOS correction")
         before = {p.relative_to(bundle).as_posix():digest(p) for p in (bundle/"hardware").glob("*.sqlite")}
         repair = bundle/"repair"; repair.mkdir()
+        shutil.copyfile(bundle/"operator-config.json",repair/"operator-config.json")
+        for name in ("hardware/launch.json", "hardware/host-checks.json"):
+            path = bundle/name
+            if path.exists():
+                target = repair/name; target.parent.mkdir(parents=True,exist_ok=True); shutil.copyfile(path,target)
         shutil.move(source, repair/"original-source")
         source.mkdir()
         for name, raw in current.items():

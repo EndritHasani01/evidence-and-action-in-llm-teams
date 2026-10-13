@@ -1,5 +1,9 @@
 # Kaggle final-online-3: diagnosis and complete fix proposal
 
+Implementation update: the user subsequently requested full repair. See the
+[implemented repair and tested delivery](course-kaggle-final-online-3-repair.md).
+The proposal below preserves its original diagnosis and then-pending decisions.
+
 Prepared 13 October 2026 on `feat/course-m5-inference-preparation`, inspected
 HEAD `6247ee9`. **Proposal only:** no production repair, source-binding exception,
 new notebook/package, scientific amendment or GPU execution is adopted here.
