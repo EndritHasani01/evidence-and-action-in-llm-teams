@@ -1,5 +1,7 @@
 {
   "execute_gpu": false,
+  "smoke_attempt_limit": 25,
+  "smoke_attempt_allowance": "final-online-2/one-time-repair",
   "authorizations": {
     "weights": "",
     "hardware": "",
@@ -33,8 +35,8 @@
     "prior_other_course_gpu_hours": null,
     "prior_other_overall_gpu_hours": null,
     "prior_smoke_gpu_hours": null,
-    "prior_smoke_attempts": null,
-    "prior_evidence": ""
+    "prior_smoke_attempts": 1,
+    "prior_evidence": "final-online-2 loader defect: notebooks/validation/course-kaggle/repair-predecessor.json; original worker databases unavailable; GPU-hour history remains unknown"
   },
   "hardware_review": {
     "accepted": false,

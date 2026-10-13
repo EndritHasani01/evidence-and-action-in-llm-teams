@@ -1,0 +1,15 @@
+{
+  "incident": "final-online-2",
+  "source_commit": "46a993629d285e7c302fb1d022b84b67d2effe12",
+  "recorded_smoke_attempts": 1,
+  "completed_model_generations": 0,
+  "hardware_accepted": false,
+  "reason": "ProviderDefect: AttributeError: 'Qwen3_5ForCausalLM' object has no attribute 'hf_device_map'",
+  "evidence": {
+    "course-results.zip": "a535276e918e4647e93353cf259dff8321d19d499ebbd6b8ace9522d346284db",
+    "notebook-exec.ipynb": "759edbc8e4da96fd20dc89af011c6a049891130839c6929e1a36ea13fc5696de",
+    "preflight-results.zip": "ad444a83494ae7ea386cee38af008cab413ab182e090ca89652669f46d3c22bd"
+  },
+  "evidence_scope": "Counts from submitted original receipts; original worker SQLite payload was not supplied. Earlier/later GPU time remains unknown.",
+  "authorization": "User explicitly authorized one-time cumulative 25-attempt repair allowance on 13 October 2026; PROJECT_SPECIFICATION.md section 11.3"
+}

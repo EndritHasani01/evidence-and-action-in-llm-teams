@@ -5,6 +5,13 @@ and import its matching **course_kaggle.ipynb**. Select **T4 x2**, enable **Inte
 then **Run All**. No budget, approval or memory-proof forms are required.
 With Accelerator None, the same notebook produces a CPU feasibility report.
 
+For the **final-online-2 repair**, start with only this new matching dataset and
+notebook. Keep the old executed notebook/results/resume as failed evidence; do not
+attach its source-bound resume to the repaired package. The dataset retains its
+one failed load attempt and the authorized one-time 25-attempt cumulative limit
+(one prior failure plus the unchanged 24 hardware diagnostics). No extra retry
+allowance or scientific gate relaxation is implied.
+
 The dataset contains only `course-kaggle-source.payload` and `source-manifest.json`.
 Keep the `.payload` extension: cell 3 verifies and extracts it after session startup.
 This prevents Kaggle from rewriting gzip fixtures during input preparation.
@@ -30,6 +37,13 @@ failures and unknown outcomes. Installation/download output streams live. Origin
 command logs, tracebacks, environment receipts, raw replies and checkpoints travel
 in the resume bundle. Ten-minute quiescent backups and stage-completion exports
 preserve finished calls without resampling them.
+
+Quiet operations show a 15-second heartbeat. Verified cached environments and
+checkpoint files are reused within the session; transient range-download failures
+have bounded retries. Failed setup logs remain intact when disposable setup is
+rebuilt. Completed failures, adapter defects and failed scientific gates are never
+automatically resampled. Source-compatible interrupted hardware stages resume their
+original worker records; a saved report file alone does not determine completion.
 
 Download **course-results.zip**, **course-resume.payload**, and the executed notebook.
 The results ZIP contains the summary, reports/tables/figures and gate receipts.

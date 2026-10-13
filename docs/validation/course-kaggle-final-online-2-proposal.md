@@ -1,5 +1,11 @@
 # Kaggle final-online-2: diagnosis and complete repair proposal
 
+Implementation update: the user subsequently requested full repair and explicitly
+authorized the one-time 25-attempt incident allowance. See the
+[repair evidence and delivery](course-kaggle-final-online-2-repair.md) for the
+implemented changes and executed checks. The proposal below preserves the original
+diagnosis and its then-pending decisions.
+
 Prepared 13 October 2026 on `feat/course-m5-inference-preparation`, inspected HEAD
 `870e0f3e7c3a21b0190bb0bc8eda2f2da1204d0f`. This is a proposal, not an implemented
 repair or an accepted GPU configuration. No model was loaded and no GPU call was

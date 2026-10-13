@@ -140,9 +140,55 @@ def source_identity(root, manifest):
         if not path.is_file() or path.is_symlink() or path.stat().st_size != wanted["bytes"] or sha256_file(path) != wanted["sha256"]:
             raise ValueError("prepared source member differs: "+name)
 
+def smoke_attempt_limit(launch):
+    """Only the original ceiling or the explicitly adopted incident allowance."""
+    limit = launch.get("smoke_attempt_limit", 24)
+    if type(limit) is not int or limit not in (24, 25):
+        raise ValueError("unapproved_smoke_attempt_limit")
+    if limit == 25 and (launch.get("smoke_attempt_allowance") != "final-online-2/one-time-repair"
+            or (launch.get("budget", {}).get("prior_smoke_attempts") or 0) < 1
+            or "final-online-2" not in launch.get("budget", {}).get("prior_evidence", "")):
+        raise ValueError("one_time_smoke_allowance_requires_retained_incident_evidence")
+    return limit
+
+
+def smoke_attempt_usage(budget, paths=(), *, prior_paths=()):
+    """Count original smoke attempts, deduplicating references and SQLite backups.
+
+    The documented prior bound covers predecessor evidence; it is not added a
+    second time when those original rows are available. Never read pilot/main
+    paths here. Native call IDs, attempt numbers and original start times identify
+    the same record in a backup without introducing another identity system.
+    """
+    import sqlite3
+    def records(inputs):
+        found = set()
+        for path in {Path(p).resolve() for p in inputs}:
+            if not path.is_file():
+                raise ValueError("missing_original_smoke_worker: "+str(path))
+            with closing(sqlite3.connect(path.as_uri()+"?mode=ro", uri=True)) as db:
+                found.update(db.execute("SELECT call_id,number,started_at FROM attempts"))
+        return found
+    current, previous = records(paths), records(prior_paths)
+    prior = budget.get("prior_smoke_attempts")
+    if prior is not None and (type(prior) is not int or prior < 0 or not budget.get("prior_evidence", "").strip()):
+        raise ValueError("prior_smoke_attempts_require_documented_bound")
+    predecessor = max(prior or 0, len(previous-current))
+    return dict(recorded_current=len(current), retained_predecessor=predecessor,
+                total_recorded=len(current)+predecessor,
+                prior_history_scope="documented predecessor bound" if prior is not None else "only supplied original records; earlier history unknown")
+
+
 def download_native_ranges(url, destination, size, digest, *, chunk_bytes=16*1024**2):
     """Resume rebuildable downloads using HTTP ranges and the native file hash."""
     from urllib.request import Request, urlopen
+    from urllib.error import HTTPError, URLError
+    from http.client import IncompleteRead
+    if destination.exists():
+        if destination.stat().st_size != size or sha256_file(destination) != digest:
+            raise ValueError("native cached asset identity differs: "+destination.name)
+        print("Download: verified cached "+destination.name, flush=True)
+        return
     partial = destination.with_suffix(destination.suffix+".partial")
     offset = partial.stat().st_size if partial.exists() else 0
     if offset > size:
@@ -150,17 +196,27 @@ def download_native_ranges(url, destination, size, digest, *, chunk_bytes=16*102
     with partial.open("ab") as output:
         while offset < size:
             end = min(size, offset+chunk_bytes)-1
-            with urlopen(Request(url,headers={"Range":f"bytes={offset}-{end}",
-                    "User-Agent":"recovery-course-offline-package"}),timeout=60) as response:
-                if response.status != 206 or response.headers.get("Content-Range") != f"bytes {offset}-{end}/{size}":
-                    raise ValueError("server did not honor the exact native asset range")
-                block = response.read(end-offset+1)
-                if len(block) != end-offset+1:
-                    raise ValueError("incomplete native asset range; preserve and resume the partial")
+            for attempt in range(3):
+                try:
+                    with urlopen(Request(url,headers={"Range":f"bytes={offset}-{end}",
+                            "User-Agent":"recovery-course-online-package"}),timeout=60) as response:
+                        if response.status != 206 or response.headers.get("Content-Range") != f"bytes {offset}-{end}/{size}":
+                            raise ValueError("server did not honor the exact native asset range")
+                        block = response.read(end-offset+1)
+                        if len(block) != end-offset+1:
+                            raise IncompleteRead(block, end-offset+1-len(block))
+                    break
+                except (HTTPError, URLError, TimeoutError, ConnectionError, IncompleteRead) as error:
+                    if isinstance(error, HTTPError) and error.code not in (408, 429, 500, 502, 503, 504):
+                        raise
+                    if attempt == 2:
+                        raise
+                    print(f"Download: {destination.name} retry {attempt+1}/2 at byte {offset}: {type(error).__name__}",flush=True)
+                    time.sleep(attempt+1)
             output.write(block); output.flush()
             offset += len(block)
             if offset == size or offset % (256*1024**2) == 0:
-                print(f"Offline asset: {destination.name} {offset}/{size} bytes",flush=True)
+                print(f"Download: {destination.name} {offset}/{size} bytes ({100*offset/size:.1f}%)",flush=True)
     if partial.stat().st_size != size or sha256_file(partial) != digest:
         raise ValueError("native downloaded asset identity differs: "+destination.name)
     partial.replace(destination)

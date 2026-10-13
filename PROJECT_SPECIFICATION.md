@@ -591,6 +591,17 @@ The following paragraphs describe the original resource-gated course policy,
 which remains available to earlier source-bound packages; the amendment above
 governs the simplified automatic notebook.
 
+**One-time repair amendment, 13 October 2026.** The user explicitly authorized
+one additional cumulative smoke attempt for the diagnosed `final-online-2`
+pre-generation loader failure. For this incident and its corrected package,
+retain the failed attempt as prior preparation evidence and permit at most
+25 cumulative recorded smoke attempts: that one failure plus the unchanged
+24-diagnostic hardware matrix. The original failure is not an infrastructure
+retry, never overwritten or reset. This grants no further retry allowance,
+changes no model/protocol/population/capability/headroom acceptance criterion,
+and does not change the original 24 maximum for unrelated execution packages.
+The same cumulative evidence and ceiling persist across sessions and rebuilds.
+
 Adopt a **30 aggregate allocated GPU-hour course subceiling**, within the unchanged
 **100-hour overall planning ceiling**. Count shared prior preparation once in the
 overall scientific total and include it in the course subceiling when reused.

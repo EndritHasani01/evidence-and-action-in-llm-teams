@@ -219,7 +219,7 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
         wheel_dir = scratch/"wheels"
         wheel_dir.mkdir()
         pip_wheel = tools["pip"]["wheels"][0]
-        invoke("download-pip",[interpreter,"-I","-c",pip_wheel_download_script(pip_wheel,wheel_dir/pip_wheel["filename"])],60)
+        invoke("download-pip",[interpreter,"-I","-S","-c",pip_wheel_download_script(pip_wheel,wheel_dir/pip_wheel["filename"])],60)
         pip_lock = scratch/"pip.lock"
         pip_lock.write_text(f"pip=={tools['pip']['version']} --hash=sha256:{pip_wheel['sha256']}\n")
         invoke("bootstrap-pip",[interpreter,"-I","-c",PIP_WHEEL_RUNNER,wheel_dir/pip_wheel["filename"],
@@ -262,6 +262,13 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
         probe = output/"installed.json"
         invoke("installed-provenance",[interpreter,"-I","-c",installed_probe_script(manifest,versions,probe,gpu=not cpu_only)],30)
         installed_provenance(probe,manifest,versions,gpu=not cpu_only)
+        if "tests/loading_checks.py" in manifest["members"]:
+            invoke("loading-contract",[interpreter,"-I","-c",
+                "import sys,types,unittest; from pathlib import Path; "
+                "tests=types.ModuleType('tests'); tests.__path__=[str(Path(sys.argv[1])/'tests')]; "
+                "sys.modules['tests']=tests; "
+                "result=unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromName('tests.loading_checks')); "
+                "sys.exit(not result.wasSuccessful())",root],30)
         if cpu_only:
             report.update(status="prepared",interpreter=str(interpreter),assets_receipt=None,hf_cache=None,
                 environment_only=True,note="Hash-pinned CPU analysis/tokenizer/rendering environment; no torch or model weights")
@@ -283,8 +290,14 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
                 if not path.resolve().is_relative_to(scratch.resolve()) or path.is_symlink():
                     raise ValueError("download cleanup escaped the fresh owned scratch")
                 path.unlink()
-            require_space(scratch,output,weight_bytes+BUILD_RESERVE)
-        cache = scratch/"hub"
+        cache = Path(launch.get("hf_cache") or scratch/"hub") if online else scratch/"hub"
+        if online:
+            snapshot=cache/("models--"+inspection["model"].replace("/","--"))/"snapshots"/inspection["revision"]
+            staged=sum(p.stat().st_size for name in inspection["checkpoint_index"].get("shard_files",())
+                for p in (snapshot/name,snapshot/(name+".partial")) if p.is_file() and not p.is_symlink())
+            # Reused bytes still undergo native hash/range verification below.
+            # They reduce incoming disk needs, not the scientific acceptance rule.
+            require_space(scratch,output,max(0,weight_bytes-staged)+BUILD_RESERVE)
         env.update(HF_HUB_OFFLINE="0",TRANSFORMERS_OFFLINE="0",HF_HUB_CACHE=str(cache))
         weight_receipt = output/"weights.json"
         manifest_path = output/"source-manifest.json"
@@ -297,7 +310,7 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
             shutil.rmtree(venv)
             require_space(scratch,output,weight_bytes+BUILD_RESERVE)
             weight_interpreter = sys.executable
-        invoke("stage-pinned-checkpoint",[weight_interpreter,"-I",root/"scripts/m5_course_smoke_assets.py",
+        invoke("stage-pinned-checkpoint",[weight_interpreter,"-I"]+(["-S"] if online or portable_assets else [])+[root/"scripts/m5_course_smoke_assets.py",
             "weights","--root",root,"--manifest",manifest_path,"--cache",cache,"--receipt",weight_receipt]+
             (["--stdlib","--range-bytes",str(16*1024**2)] if online else ["--stdlib"] if portable_assets else []),600)
         weights = read(weight_receipt)

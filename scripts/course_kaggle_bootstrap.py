@@ -27,7 +27,8 @@ if not __package__:
     sys.modules.setdefault("scripts", namespace)
 
 from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, sha256_file, save_json,
-    candidate_environment, command, source_identity, assigned_preparation_window, EXPORT_SECONDS, utc)
+    candidate_environment, command, source_identity, assigned_preparation_window, EXPORT_SECONDS, utc,
+    smoke_attempt_usage, smoke_attempt_limit)
 
 
 def preparation_budget(root, bundle, config, saved):
@@ -125,6 +126,19 @@ def online(root, config_path, scratch, output):
     bundle = config_path.resolve().parent
     saved = json.loads((bundle/"run.json").read_bytes()) if (bundle/"run.json").exists() else None
     action = "main" if saved and saved["freeze"] else "pilot" if saved else "hardware"
+    report_path = bundle/"hardware/report.json"
+    if saved is None and report_path.exists():
+        report = json.loads(report_path.read_bytes())
+        stop = report.get("root_blocker") or report.get("smoke", {}).get("stop_reason")
+        if stop and not str(stop).startswith(("KeyboardInterrupt:", "BudgetStop: allocation_deadline")):
+            raise ValueError("saved_hardware_failure_before_downloads: "+str(stop))
+    if config.get("resource_policy") == "observe" and saved is None:
+        # This is stdlib-only and happens before multi-GB dependency downloads.
+        paths = list(bundle.glob("hardware/worker-*.sqlite"))
+        prior_paths = list(bundle.glob("refusals/*/worker-*.sqlite"))
+        usage = smoke_attempt_usage(config["budget"],paths,prior_paths=prior_paths)
+        if usage["total_recorded"] >= smoke_attempt_limit(config):
+            raise ValueError("recorded_smoke_attempt_limit_before_downloads")
     if not config.get("authorizations", {}).get(action, "").strip():
         raise ValueError("explicit_"+action+"_authorization_missing")
     launch = dict(stage_weights=True,execute_gpu=False,authorization=config["authorizations"]["weights"],
@@ -132,7 +146,9 @@ def online(root, config_path, scratch, output):
         prior_sessions_released=config.get("prior_sessions_released",False),allocated_at=config.get("allocated_at"),
         provider_session_seconds=config.get("provider_session_seconds"),release_instructions=config.get("release_instructions",""),
         budget=(saved["budget"] if saved else config["budget"]) if config.get("resource_policy") == "observe" else preparation_budget(root,bundle,config,saved),
-        resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000),resume_workers=[])
+        resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000),resume_workers=[],
+        smoke_attempt_limit=config.get("smoke_attempt_limit",24),smoke_attempt_allowance=config.get("smoke_attempt_allowance"),
+        hf_cache=config.get("hf_cache"))
     from scripts.m5_course_smoke_assets import prepare
     result = prepare(root,manifest,launch,scratch,output,online_config=config_path,smoke_required=saved is None)
     if result["status"] != "prepared":

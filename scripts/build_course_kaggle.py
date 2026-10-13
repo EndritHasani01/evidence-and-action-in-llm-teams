@@ -20,7 +20,7 @@ REPORT_PACKAGES = ("matplotlib", "contourpy", "cycler", "fonttools", "kiwisolver
 RUNTIME_SCRIPTS = ("course_kaggle_workflow", "course_kaggle_bootstrap", "m5_course_smoke",
     "m5_course_smoke_assets", "m5_course_preparation", "m5_kaggle_preflight", "m5_model_feasibility")
 HOST_HELPERS = ("worker_checks", "attempt_checks", "durable_checks", "event_checks",
-    "replay_checks", "round_checks", "protocol_checks", "worker_fixture", "references")
+    "replay_checks", "round_checks", "protocol_checks", "worker_fixture", "references", "loading_checks")
 FIXTURES = ("population_course.json", "schedules_course.json", "course_capacity.json.gz",
     "population_target.json", "population_fallback.json")
 SOURCE_PATHS = ("recovery", "pyproject.toml", "PROJECT_SPECIFICATION.md", "tests/__init__.py",
@@ -28,6 +28,7 @@ SOURCE_PATHS = ("recovery", "pyproject.toml", "PROJECT_SPECIFICATION.md", "tests
     *("tests/"+name+".py" for name in HOST_HELPERS),
     *("tests/fixtures/"+name for name in FIXTURES),
     "configs/course-kaggle.json", "configs/course-smoke-launch.json", "configs/course-cpu-reproduction.txt",
+    "notebooks/validation/course-kaggle/repair-predecessor.json",
     "notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz",
     "notebooks/validation/course-m5-preparation/inputs/memory-review.json",
     "notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json",
@@ -233,7 +234,7 @@ else:
 def bounded_child(arguments,limit):
     # The repo owns scientific work; this cell only streams its process output.
     logs=bundle/'logs'; logs.mkdir(exist_ok=True)
-    log=logs/('action-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'.log')
+    log=logs/('action-'+time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+str(time.time_ns())+'.log')
     process=subprocess.Popen([str(a) for a in arguments],stdout=subprocess.PIPE,stderr=subprocess.STDOUT,
         text=True,bufsize=1,start_new_session=(os.name!='nt'),cwd=workspace,
         env=dict(os.environ,MPLBACKEND='Agg'))
@@ -242,10 +243,15 @@ def bounded_child(arguments,limit):
         for line in process.stdout: lines.put(line)
     reader=threading.Thread(target=collect,daemon=True); reader.start()
     deadline=time.monotonic()+limit
+    started=time.monotonic(); heartbeat=started
     try:
         with log.open('w',encoding='utf-8') as output:
-            while process.poll() is None or not lines.empty():
+            while process.poll() is None or reader.is_alive() or not lines.empty():
                 if time.monotonic()>=deadline: raise TimeoutError('Notebook controller deadline; preserve/export and Stop Session')
+                if time.monotonic()-heartbeat>=15:
+                    print(time.strftime('%H:%M:%S UTC',time.gmtime()),'|',Path(str(arguments[2])).name,
+                          '| elapsed',round(time.monotonic()-started),'s | log:',log.name,flush=True)
+                    heartbeat=time.monotonic()
                 try: line=lines.get(timeout=1)
                 except queue.Empty: continue
                 output.write(line); output.flush(); print(line,end='',flush=True)
@@ -259,6 +265,7 @@ def bounded_child(arguments,limit):
                 else: process.kill()
                 process.wait(timeout=5)
         reader.join(timeout=2)
+        if not reader.is_alive(): process.stdout.close()
     return process.returncode
 
 try:
@@ -284,6 +291,28 @@ try:
         kind='setup' if ACTION=='setup' else 'gpu-environment' if gpu_action or gpu_receipt.exists() or assets and not cpu_receipt.exists() else 'cpu-environment'
         environment=workspace/kind
         receipt=environment/'bootstrap'/'bootstrap.json'
+        if receipt.exists():
+            previous=json.loads(receipt.read_bytes())
+            python=Path(previous.get('interpreter','/missing'))
+            asset_path=previous.get('assets_receipt')
+            reusable=previous.get('status')!='blocked' and python.is_file()
+            if asset_path:
+                reusable=reusable and Path(asset_path).is_file() and Path(previous.get('hf_cache','/missing')).is_dir()
+            if reusable and asset_path:
+                # A saved setup receipt is not proof that cached files still match.
+                verification=[python,'-I','-c',
+                    "import sys,types; from pathlib import Path; scripts=types.ModuleType('scripts'); scripts.__path__=[str(Path(sys.argv[1])/'scripts')]; sys.modules['scripts']=scripts; from scripts.m5_course_smoke_assets import verify_assets; import json; verify_assets(Path(sys.argv[1]),dict(source_manifest=str(Path(sys.argv[1])/'source-manifest.json'),assets_receipt=sys.argv[2],hf_cache=sys.argv[3]))",
+                    source,asset_path,previous['hf_cache']]
+                reusable=bounded_child(verification,180)==0
+            if not reusable:
+                # Preserve every failed environment; rebuild only disposable setup.
+                print('Setup: saved environment unavailable/failed; preserving it and rebuilding',flush=True)
+                cache=Path(previous.get('hf_cache') or environment/'scratch/hub')
+                if cache.is_dir():
+                    CONFIG['hf_cache']=str(cache)
+                    config_path.write_text(json.dumps(CONFIG,indent=2)+'\\n')
+                environment=environment/('retry-'+str(time.time_ns()))
+                receipt=environment/'bootstrap'/'bootstrap.json'
         if not receipt.exists():
             arguments=[sys.executable,'-I',source/'scripts/course_kaggle_bootstrap.py']
             if ACTION=='setup': arguments+=['setup','--config',config_path]
@@ -293,6 +322,12 @@ try:
             else: arguments+=['cpu','--config',config_path]
             arguments+=['--root',source,'--scratch',environment/'scratch','--output',environment/'bootstrap']
             if bounded_child(arguments,1800)!=0: raise RuntimeError('Bootstrap failed; its receipt and logs are retained')
+            pointer=workspace/kind/'bootstrap'/'bootstrap.json'
+            if pointer!=receipt:
+                pointer.parent.mkdir(parents=True,exist_ok=True)
+                # Preserve original receipt/logs; the pointer holds the verified current setup.
+                if pointer.exists(): shutil.copyfile(pointer,pointer.with_name('bootstrap-before-'+str(time.time_ns())+'.json'))
+                shutil.copyfile(receipt,pointer)
         runtime=json.loads(receipt.read_bytes())
         if runtime.get('status')=='blocked': raise RuntimeError(runtime['reason'])
         # Preserve setup/hash/version evidence in every portable resume export.
@@ -314,8 +349,12 @@ try:
                 '--root',source,'--bundle',bundle,'--config',config_path,'--action',ACTION]
             limit=(CONFIG.get('provider_session_seconds') or CONFIG['max_work_seconds'])+2100 if gpu_action else 2100
             code=bounded_child(arguments,limit)
-            print('Workflow returned',code,'; the final cell exports results and resume evidence.')
+            final=json.loads((bundle/'last-action.json').read_bytes()) if (bundle/'last-action.json').exists() else {}
+            print('Workflow:',final.get('status','no final receipt'),'| process exit',code,
+                  '|',final.get('reason') or 'Final cell exports results and resume evidence.',flush=True)
 except (Exception,KeyboardInterrupt) as error:
+    (bundle/'logs').mkdir(exist_ok=True)
+    (bundle/'logs'/('notebook-error-'+str(time.time_ns())+'.txt')).write_text(traceback.format_exc(),encoding='utf-8')
     failure=dict(action=ACTION,status='blocked_or_safely_stopped',reason=type(error).__name__+': '+str(error),
         gates_bypassed=False,assignment_clock=CONFIG.get('allocated_at'),provider_release_confirmed=False)
     (bundle/'last-action.json').write_text(json.dumps(failure,indent=2)+'\\n')
@@ -357,7 +396,7 @@ summary+='<h1>Course research result</h1><p><b>'+html.escape(status)+'</b></p><p
 if coverage: summary+='<p>Fixed main population coverage: '+html.escape(json.dumps(coverage))+'</p>'
 summary+='<p>Original replies and failures are retained in course-resume.payload. Unexecuted outcomes remain unknown. No failed scientific check was bypassed.</p>'
 if analysis.get('report'): summary+='<p><a href="'+html.escape(analysis['report'],quote=True)+'">Open the independently reproduced analysis</a></p>'
-summary+='<p>Retain both ZIPs and this executed notebook. Stop any interactive GPU session and retain its real release receipt.</p></body></html>'
+summary+='<p>Retain course-results.zip, course-resume.payload and this executed notebook. Stop the interactive Kaggle session normally.</p></body></html>'
 (bundle/'RESULT.html').write_text(summary,encoding='utf-8')
 resume_export=workspace/'course-resume.payload'
 partial=resume_export.with_suffix('.tmp')
@@ -394,14 +433,14 @@ if (bundle/'analysis-receipt.json').exists():
     analysis=json.loads((bundle/'analysis-receipt.json').read_bytes())
     display(FileLink(str(bundle/analysis['report'])))
     print(analysis['status'],analysis['coverage'])
-print('Retain the ZIP(s) and actual executed notebook. For GPU actions: Stop Session now and verify provider deallocation. Record its UTC release and evidence for the next session.')
+print('Retain course-results.zip, course-resume.payload and the executed notebook. Stop the interactive Kaggle session normally. Observation timestamps do not prove provider release.')
 """
     return dict(nbformat=4, nbformat_minor=5,
         metadata=dict(kernelspec=dict(display_name="Python 3", language="python", name="python3"), language_info=dict(name="python")),
         cells=[cell("markdown", introduction, "welcome"), cell("code", select, "action"),
             cell("code", bootstrap, "source"), cell("markdown", "## Automatic configuration\nThe notebook detects GPU mode, records observed session timestamps, and saves the same scientific configuration for resumption. No manual budget or memory-proof form is required. Unobserved provider time remains unknown.\n", "config-notes"),
             cell("code", settings, "configuration"), cell("markdown", "## Run and monitor\nThe package streams progress every 15 seconds and exports quiescent SQLite backups at ten-minute boundaries. Interrupted/invalid replies remain recorded. A failed gate stops subsequent work.\n", "execution-notes"),
-            cell("code", run, "execute"), cell("markdown", "## Results and safe resume\nThe cell below always runs after an orchestration stop. Download both ZIPs and the executed notebook. A later Run All resumes the same saved inputs; actual provider release still needs a receipt.\n", "export-notes"), cell("code", export, "export")])
+            cell("code", run, "execute"), cell("markdown", "## Results and safe resume\nDownload course-results.zip, course-resume.payload and this executed notebook. A later Run All with the SAME dataset and latest payload resumes eligible interrupted work without resampling completed calls. A diagnosed adapter defect or failed scientific gate remains a limited result. Stop interactive sessions normally; no manual release form is required.\n", "export-notes"), cell("code", export, "export")])
 
 
 def build(root, output, *, base_manifest=None, extra_report_wheels=None, assets_cache=None):

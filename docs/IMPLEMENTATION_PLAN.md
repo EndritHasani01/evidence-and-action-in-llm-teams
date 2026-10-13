@@ -990,6 +990,20 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The `final-online-2` repair is implemented on 13 October 2026. Loading audits use
+actual parameter/buffer/NF4-state placement and tolerate absent dispatch metadata;
+child defects retain full phase/traceback evidence. Hardware resumption follows
+original failure/attempt state, completed outcomes are never resampled, and cold
+setup refuses retained fatal hardware failures before downloads. Cumulative smoke
+counts include documented predecessors and deduplicate original backups. The user
+explicitly authorized the one-time 25-attempt incident allowance in specification
+§11.3; the package retains the failed attempt and unchanged 24 diagnostics.
+Pinned online setup checks the delivered loading contract, retries transient
+ranges, verifies/reuses cache, and preserves failed setup when rebuilding. Native
+GPU/model feasibility, full-input headroom, capability/pilot/freeze/main remain
+operator-run gates. The [repair evidence](validation/course-kaggle-final-online-2-repair.md)
+records actual focused checks and the exact rebuilt notebook/package integration.
+
 On 13 October 2026 the submitted `final-online-2` run completed verified online
 setup and the three affected host checks, then stopped on the adapter's direct
 `hf_device_map` access: the pinned single-device loader legitimately omits that

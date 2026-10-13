@@ -18,6 +18,7 @@ from pathlib import Path, PurePosixPath
 import shutil
 import sqlite3
 import sys
+import traceback
 import tempfile
 from time import monotonic
 import zipfile
@@ -658,7 +659,8 @@ def hardware_gate(bundle, review, *, assignment=None):
         and free_min >= MIN_HEADROOM and (measured or supported) and host_passed and cache_passed)
     return dict(passed=passed, status="passed" if passed else "review_required" if complete_probes and free_min >= MIN_HEADROOM else "incomplete_or_failed",
         complete_resident_tokens_upper=110107, complete_envelope_probes=len(probes),
-        ordinary_completed=len(ordinary), actual_minimum_free_bytes=free_min, observed_device_peak_bytes=observed_peak,
+        ordinary_completed=len(ordinary), actual_minimum_free_bytes=free_min if samples else None,
+        observed_device_peak_bytes=observed_peak if samples else None,
         complete_live_memory_upper_bound_bytes=bound, review=review, host_checks=host_receipt,
         native_load_checks_passed=valid_loads, provider_release_confirmed=released,
         accounting_segment_closed=segment_closed, inference_processes_quiescent=quiescent,
@@ -728,6 +730,8 @@ def bind_candidate(root, bundle, config, *, verify_environment=True):
     if config.get("resource_policy") == "observe":
         candidate["resource_policy"] = "observe"
         candidate["hardware_acceptance"] = config.get("hardware_review", {}).get("acceptance")
+        candidate["smoke_attempt_limit"] = config.get("smoke_attempt_limit",24)
+        candidate["smoke_attempt_allowance"] = config.get("smoke_attempt_allowance")
     if path.exists():
         saved = read(path)
         if record_json({k:v for k,v in saved.items() if k != "freeze"}) != record_json({k:v for k,v in candidate.items() if k != "freeze"}):
@@ -793,7 +797,8 @@ def hardware(root, bundle, config):
         hf_cache=config["hf_cache"], assets_receipt=config["assets_receipt"],
         source_manifest=str(Path(root)/"source-manifest.json"), resume_workers=[], complete_envelope_diagnostics=True)
     launch["continuous_assignment"] = config.get("continuous_assignment", False)
-    launch.update(resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000))
+    launch.update(resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000),
+        smoke_attempt_limit=config.get("smoke_attempt_limit",24),smoke_attempt_allowance=config.get("smoke_attempt_allowance"))
     launch["prior_allocation_workers"] = [str(p) for p in refused_workers(bundle)]
     if (Path(bundle)/"hardware").exists():
         if not all(p.exists() for p in worker_paths(bundle, "hardware")):
@@ -920,7 +925,9 @@ def execute(root, bundle, config, action):
         if capability["status"] == "failed":
             stopped = "capability screen failed; no recovery spending admitted"
     result = dict(action=action, stop_reason=stopped, counts=progress["counts"], provider_release_confirmed=False,
-        instruction="Download course-resume.zip and executed notebook, then Stop Session. Record actual provider release for the next CPU/session action.")
+        instruction=("Download course-resume.payload and executed notebook; stop the interactive Kaggle session normally."
+            if config.get("resource_policy") == "observe" else
+            "Download course-resume.zip and executed notebook; stop the session and retain actual provider release evidence."))
     save(Path(bundle)/"last-execution.json", result)
     return result
 
@@ -1066,7 +1073,8 @@ def run_all(root, bundle, config):
         events.append(dict(stage=stage, at=utc_now(), result=result))
         save(Path(bundle)/"automatic-run.json", dict(status="running", stages=events))
         backup_bundle(bundle, Path(bundle).parent/("course-resume.payload" if config.get("resource_policy") == "observe" else "course-resume.zip"))
-        print("Run All: "+stage+" finished; portable evidence updated", flush=True)
+        outcome = result.get("status", "recorded")
+        print("Run All: "+stage+" | "+outcome+" | portable evidence updated", flush=True)
     def inference(stage):
         last_count = -1
         while True:
@@ -1088,7 +1096,34 @@ def run_all(root, bundle, config):
         if config.get("resource_policy") != "observe" and config.get("prior_sessions_released") is not True:
             raise BudgetStop("prior_provider_release_unconfirmed")
         session_window(config)
-        if not (Path(bundle)/"hardware/report.json").exists():
+        hardware_report = Path(bundle)/"hardware/report.json"
+        resume_hardware = not hardware_report.exists()
+        if hardware_report.exists():
+            previous = read(hardware_report)
+            stop = previous.get("root_blocker") or previous.get("smoke", {}).get("stop_reason")
+            if stop:
+                # Resume only an interrupted controller window, never a diagnosed
+                # provider defect, a final model failure or a failed science gate.
+                recoverable = str(stop).startswith(("KeyboardInterrupt:", "BudgetStop: allocation_deadline"))
+                paths = worker_paths(bundle,"hardware")
+                if recoverable and all(p.exists() for p in paths):
+                    plan=Path(bundle)/"hardware/executed-plan.json"
+                    hang_ids={row["smoke_call_id"] for row in read(plan).get("rows",[]) if row.get("controlled_hang")} if plan.exists() else set()
+                    with ExitStack() as stack:
+                        stores = [WorkerStore(p,readonly=True) for p in paths]
+                        for store in stores: stack.callback(store.close)
+                        recoverable = not any(store.connection.execute(
+                            "SELECT 1 FROM attempts WHERE status IN ('blocked','infrastructure_failure') LIMIT 1").fetchone()
+                            for store in stores)
+                        recoverable &= not any(row["call_id"] not in hang_ids for store in stores
+                            for row in store.connection.execute("SELECT call_id FROM calls WHERE status IN ('timeout','infrastructure_failure')"))
+                else:
+                    recoverable = False
+                if not recoverable:
+                    raise BudgetStop(str(stop))
+                resume_hardware = True
+                print("Run All: hardware | resuming original interrupted work",flush=True)
+        if resume_hardware:
             result = hardware(root, bundle, config)
             record("hardware", result)
             if result.get("root_blocker") or result.get("smoke", {}).get("stop_reason"):
@@ -1096,7 +1131,7 @@ def run_all(root, bundle, config):
         gate = hardware_gate(bundle, config.get("hardware_review", {}), assignment=config["allocated_at"])
         save(Path(bundle)/"hardware-gate.json", gate)
         if not gate["passed"]:
-            raise BudgetStop("complete_hardware_and_supported_R7_memory_gate_not_passed")
+            raise BudgetStop("complete_hardware_stress_headroom_cache_and_loading_gate_not_passed")
         if not gate["accounting_segment_closed"]:
             record("hardware_to_development", transfer_assignment(bundle, "hardware", "development", config))
         run = bind_candidate(root, bundle, config)
@@ -1126,6 +1161,8 @@ def run_all(root, bundle, config):
             raise BudgetStop("fixed_main_schedule_incomplete")
     except (Exception, KeyboardInterrupt) as error:
         reason = f"{type(error).__name__}: {error}"
+        save(Path(bundle)/"logs/workflow-error.json",dict(stage=action,exception_type=type(error).__name__,
+            reason=str(error),traceback=traceback.format_exc(),at=utc_now()))
         print("Run All stopped at "+action+": "+reason, flush=True)
         try:
             record_refused_allocation(root, bundle, config, "pilot" if action == "freeze" else action, reason)
@@ -1175,6 +1212,8 @@ def run_all(root, bundle, config):
         record("analysis", analysis)
     except (Exception, KeyboardInterrupt) as error:
         analysis_error = f"{type(error).__name__}: {error}"
+        save(Path(bundle)/"logs/analysis-error.json",dict(exception_type=type(error).__name__,
+            reason=str(error),traceback=traceback.format_exc(),at=utc_now()))
         events.append(dict(stage="analysis", status="failed", reason=analysis_error))
         reason = reason or analysis_error
     finally:
@@ -1185,8 +1224,10 @@ def run_all(root, bundle, config):
         analysis["status"] == "model_complete" and reason is None else "limited_result",
         reason=reason, analysis=analysis, stages=events, gates_bypassed=False,
         provider_release_confirmed=False,
-        instruction="Download course-resume.zip and course-results.zip. Stop any interactive session; "
-                    "retain actual provider release time/evidence before another GPU session.")
+        instruction=("Download course-resume.payload and course-results.zip; stop the interactive Kaggle session normally. "
+                     "Resume with the matching dataset and latest payload; observed time never proves provider deallocation."
+                     if config.get("resource_policy") == "observe" else
+                     "Download course-resume.zip and course-results.zip. Stop the interactive session and retain actual release evidence."))
     save(Path(bundle)/"automatic-run.json", result)
     return result
 
@@ -1230,6 +1271,8 @@ def main(argv=None):
     except (Exception, KeyboardInterrupt) as error:
         result = dict(action=args.action, status="blocked_or_safely_stopped", reason=f"{type(error).__name__}: {error}",
             remaining_outcomes="unknown", gates_bypassed=False)
+        save(bundle/"logs/controller-error.json",dict(action=args.action,reason=result["reason"],
+            traceback=traceback.format_exc(),at=utc_now()))
         try:
             record_refused_allocation(root, bundle, config, args.action, result["reason"])
         except Exception as accounting_error:

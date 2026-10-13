@@ -166,7 +166,13 @@ class CourseWorkflowTests(unittest.TestCase):
         options=next(c for c in document["cells"] if c["id"] == "action")
         text="".join(options["source"])
         self.assertIn('ACTION = "run_all"',text)
-        self.assertIn("ENABLE_GPU = False",text)
+        values={}
+        with patch("pathlib.Path.is_dir",return_value=False): exec(text,values)
+        self.assertFalse(values["ENABLE_GPU"])
+        with patch("pathlib.Path.is_dir",return_value=True), \
+             patch("pathlib.Path.iterdir",return_value=iter([Path("CPU GPU-presence fixture")])):
+            exec(text,values)
+        self.assertTrue(values["ENABLE_GPU"])
         with tempfile.TemporaryDirectory() as directory:
             archive=Path(directory)/"unsafe.zip"
             with zipfile.ZipFile(archive,"w") as z:

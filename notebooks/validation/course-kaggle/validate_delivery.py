@@ -104,6 +104,11 @@ def main():
     assert not list(bundle.rglob("worker-*.sqlite"))
     command("three-host-checks",[python,"-I",source/"scripts/m5_course_smoke.py","--root",source,
         "--launch",source/"configs/course-smoke-launch.json","--output",work/"unused-host-output","--host-checks"],timeout=180)
+    command("delivered-loading-contract",[python,"-I","-c",
+        "import sys,types,unittest; from pathlib import Path; "
+        "tests=types.ModuleType('tests'); tests.__path__=[str(Path(sys.argv[1])/'tests')]; sys.modules['tests']=tests; "
+        "result=unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromName('tests.loading_checks')); "
+        "sys.exit(not result.wasSuccessful())",source])
     analyzed=command("offline-analysis",base+["--action","analyze"],timeout=300)
     receipt=json.loads((bundle/"analysis-receipt.json").read_bytes())
     assert receipt["status"]=="feasibility" and receipt["coverage"]["unknown"]==6280
@@ -133,6 +138,7 @@ def main():
         default_run_all=True,both_results_and_resume_exported=True,offline_native_asset_files_verified=asset_files,
         dataset_input_files=summary.get("dataset_input_files",len(manifest["members"])+1),
         ordinary_installed_CPU_environment=True,source_pythonpath=False,host_checks=3,
+        delivered_optional_device_map_contract=True,
         intended_main_slots=6280,recorded_main_slots=0,unknown_main_slots=6280,
         seven_figures_svg_png=True,portable_restore_report_bytes_identical=True,
         native_weights_loaded=False,actual_T4_acceptance=False)

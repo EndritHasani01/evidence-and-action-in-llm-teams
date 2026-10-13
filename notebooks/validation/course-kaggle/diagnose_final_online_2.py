@@ -5,10 +5,12 @@ weights, fix production code, or certify physical model placement.
 """
 
 import argparse
+import ast
 import hashlib
 import json
 from pathlib import Path
 import sys
+import subprocess
 import zipfile
 
 
@@ -38,11 +40,16 @@ def diagnose(incident, wheel=None):
                 commands.append({key: command.get(key) for key in
                                  ("name", "status", "elapsed_seconds", "started_utc", "ended_utc")})
         weights = json.loads(preflight.read("weights.json"))
+    original = subprocess.check_output(["git", "show", manifest["source_baseline_commit"]+":recovery/inference.py"])
+    audit_node = next(n for n in ast.parse(original).body if isinstance(n,ast.FunctionDef) and n.name == "audit_language_load")
+    namespace = {}
+    exec(compile(ast.Module(body=[audit_node],type_ignores=[]), "submitted-source/recovery/inference.py", "exec"),namespace)
+    historical_audit = namespace["audit_language_load"]
     model = Qwen3_5ForCausalLM()
-    baseline = audit_language_load(model, LOADING_INFO)["device_map"]
+    baseline = historical_audit(model, LOADING_INFO)["device_map"]
     del model.hf_device_map
     try:
-        audit_language_load(model, LOADING_INFO)
+        historical_audit(model, LOADING_INFO)
     except AttributeError as error:
         reproduced = f"{type(error).__name__}: {error}"
     else:
@@ -58,7 +65,15 @@ def diagnose(incident, wheel=None):
     budget.update(prior_smoke_attempts=24, prior_evidence="Synthetic CPU diagnostic: 24 prior recorded attempts")
     launch = dict(resource_policy="observe", authorization="CPU diagnosis only; no inference",
                   budget=budget, allocated_at=utc(), session_limit_seconds=36000)
-    _, window = admission(launch, next_attempt=True)
+    from recovery.accounting import BudgetStop
+    try:
+        _, window = admission(launch, next_attempt=True)
+        prior_limit_enforced = False
+    except BudgetStop:
+        prior_limit_enforced = True
+    corrected_model = Qwen3_5ForCausalLM()
+    del corrected_model.hf_device_map
+    corrected_report = audit_language_load(corrected_model, LOADING_INFO)
     wheel_evidence = None
     if wheel:
         pinned = next(w for w in manifest["candidate_wheels"] if w["name"] == "transformers")
@@ -87,7 +102,8 @@ def diagnose(incident, wheel=None):
                 commands=commands, pinned_loader=wheel_evidence,
                 cpu_reproductions=dict(baseline_device_map=baseline, missing_map_error=reproduced,
                                        off_device_tensor_rejected=cpu_rejected,
-                                       observe_admits_prior_24_with_empty_current_stores=window > 0),
+                                       current_prior_limit_enforced=prior_limit_enforced,
+                                       current_absent_map_accepted=corrected_report["device_map"] is None),
                 diagnostic_gpu_calls=0, diagnostic_weights_loaded=False,
                 evidence_limits=["No course-resume.payload supplied: original SQLite attempts/processes were not inspected",
                                  "No successful native load report or model generation; no T4 feasibility established"])

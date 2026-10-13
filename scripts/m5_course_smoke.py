@@ -37,7 +37,7 @@ from recovery.tasks import Task
 from recovery.t4_attention import T4_ATTENTION
 from recovery.workers import _own_file
 from scripts.m5_course_preparation import peer_view, read, verify_requests
-from scripts.m5_kaggle_preflight import export_evidence, save_json, utc
+from scripts.m5_kaggle_preflight import export_evidence, save_json, utc, smoke_attempt_usage, smoke_attempt_limit
 
 CANDIDATE = replace(QWEN_4B, attention=T4_ATTENTION)
 EXPORT_SECONDS = 15
@@ -85,11 +85,15 @@ def admission(launch, stores=(), *, now=None, next_attempt=False):
                 saved = [WorkerStore(Path(p),readonly=True) for p in launch["resume_workers"]]
                 for store in saved: stack.callback(store.close)
                 current = resources(saved,budget,now)
-                attempts = sum(s.connection.execute("SELECT COUNT(*) FROM attempts").fetchone()[0] for s in saved)
+                paths = [s.path for s in saved]
         else:
             current = resources(stores,budget,now)
-            attempts = sum(s.connection.execute("SELECT COUNT(*) FROM attempts").fetchone()[0] for s in stores)
-        if next_attempt and attempts >= 24:
+            paths = [s.path for s in stores]
+        usage = smoke_attempt_usage(launch["budget"],paths,prior_paths=launch.get("prior_allocation_workers", ()))
+        current["smoke_attempt_usage"] = usage
+        limit = smoke_attempt_limit(launch)
+        current["smoke_attempt_limit"] = limit
+        if next_attempt and usage["total_recorded"] >= limit:
             raise BudgetStop("recorded_smoke_attempt_limit")
         from scripts.m5_kaggle_preflight import assigned_preparation_window
         return current, assigned_preparation_window(launch,now)
@@ -381,6 +385,7 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                 tokenized = TokenizedRequest(row["tokenized"]["text"],tuple(row["tokenized"]["input_ids"]),tuple(row["tokenized"]["attention_mask"]))
                 store = stores[index]
                 store.prepare_control(branch,settings_json(settings),view,rendered,tokenized)
+                print(f"Hardware: {row['smoke_call_id']} | device {index} | input {len(tokenized.input_ids)} tokens | loading/generation",flush=True)
                 if row["confirmed_restart_before"] or row["controlled_hang"]:
                     providers[index].close()
                 if row["controlled_hang"]:
@@ -422,6 +427,12 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                     destination = output/(store.path.stem+f"-backup-session-{count}.sqlite")
                 store.backup(destination)
             cost = resources(stores,budget,utc())
+            if launch.get("resource_policy") == "observe":
+                cost["smoke_attempt_usage"] = smoke_attempt_usage(launch["budget"],paths,
+                    prior_paths=launch.get("prior_allocation_workers", ()))
+                cost["smoke_attempt_limit"] = smoke_attempt_limit(launch)
+                cost["remaining_smoke_attempts"] = max(0,cost["smoke_attempt_limit"]-cost["smoke_attempt_usage"]["total_recorded"])
+                cost["execution_policy"] = "GPU hours are observational; the cumulative smoke-attempt limit remains enforced"
             finished = sum(store.connection.execute("SELECT count(*) FROM calls WHERE status='completed'").fetchone()[0] for store in stores)
             attempts = sum(store.connection.execute("SELECT count(*) FROM attempts WHERE call_id != ?",(packet["requests"][-1]["smoke_call_id"],)).fetchone()[0] for store in stores)
     return dict(stop_reason=stopped,process_cleanup=cleanup,resources=cost,
@@ -430,7 +441,8 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
         largest_prepared_request_resident_tokens=max(row["resident_tokens_with_reserve"] for row in packet["requests"]),
         provider_release_confirmed=False,physical_memory_accepted=False,
         complete_live_memory_upper_bound_bytes=None,actual_headroom_acceptance=None,
-        r7_status="incomplete: supported complete-envelope review required",pilot_admitted=False)
+        r7_status="measured stress acceptance pending workflow audit" if launch.get("resource_policy") == "observe" else
+            "incomplete: supported complete-envelope review required",pilot_admitted=False)
 
 
 def run(root, launch, output):
@@ -469,6 +481,7 @@ def run(root, launch, output):
         report.update(status="incomplete",gpu_admission=True,model_generations=None)
         report["smoke"] = execute_requests(root,packet,launch,[row[0].strip() for row in rows],output,tokenizer=tokenizer,
             complete_envelope=launch.get("complete_envelope_diagnostics",False))
+        report["model_generations"] = report["smoke"]["completed_model_generations"]
     except (Exception,KeyboardInterrupt) as error:
         report["root_blocker"] = f"{type(error).__name__}: {error}"
     finally:
