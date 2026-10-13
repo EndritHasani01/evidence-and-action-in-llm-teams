@@ -990,6 +990,26 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The latest submitted run is `final-online-4`, not `final-online-3`. Its code
+cells match the repaired delivery, all 73 committed source members verify, and
+all 21 original call/attempt rows are unchanged. The first actual full-envelope
+probe then recorded a terminal 120-second timeout: provider startup consumed
+20.62 seconds, no reply or full-envelope memory evidence returned, and bounded
+termination was confirmed. Cumulative preparation is 23/25; two remaining slots
+cannot repair that failed matrix. Main coverage remains 0/6,280 recorded. The
+[in-depth diagnosis and complete proposal](validation/course-kaggle-final-online-4-proposal.md)
+separates this hardware/runtime failure from the earlier repaired software
+defects and from the poor original protocol/answer outcomes. It proposes live
+phase progress, honest evidence-scoped reporting, diagnostic-only timing review,
+compact uniform output instructions and pinned 9B qualification with a declared
+4B fallback. CPU meta architecture estimates make 9B plausible, not T4-accepted.
+The [read-only CPU receipt](../notebooks/validation/course-kaggle/final-online-4-analysis.json)
+records archive/source/notebook/worker checks, mathematical counterexamples and
+conditional memory estimates. This work changes no production behavior,
+scientific configuration, attempt allowance or frozen settings and makes zero
+GPU calls. The proposed model/rendering/deadline and extra-attempt scopes require
+explicit adoption before execution; no new notebook/package is claimed here.
+
 The user requested full repair of the `final-online-3` proposal. The implemented
 corrections use the existing `RenderedRequest` schema and explicit empty diagnostic
 EOS, preserve parent-controller tracebacks, and check the complete plan and real
