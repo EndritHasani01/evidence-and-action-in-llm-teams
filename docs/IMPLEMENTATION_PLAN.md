@@ -990,6 +990,24 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The latest submitted run is now `final-online-5`. Its code matches the delivered
+final-online-4 notebook and all 85 manifested source files verify. All twelve
+setup commands passed, including installed provenance and the full native CPU
+hardware-plan/generation-processor checks. Before any checkpoint download or model
+loading, the online storage guard refused 20,648,488,160 additional bytes. No worker
+databases or new model attempts exist; the historical 23 and adopted 71 ceiling
+remain unchanged, with all 6,280 main outcomes unknown. The later user screenshot
+shows 2.2/57.6 GiB session-level disk usage and idle T4s. Original path-specific
+free/total/mount readings were discarded, so global disk exhaustion is not proven.
+The [complete diagnosis and repair proposal](validation/course-kaggle-final-online-5-proposal.md)
+addresses measured temporary storage selection, early phase-aware admission, the
+wrong cache-pool check, installation reuse, exact remaining checkpoint bytes,
+fallback cache capacity, root-cause reporting and the missed online-bootstrap
+test boundary. Its [read-only CPU receipt](../notebooks/validation/course-kaggle/final-online-5-analysis.json)
+reproduces the guard and cache-pool counterexamples and verifies the unchanged
+submission. These are proposed production repairs; no new upload, GPU work,
+scientific design change, freeze or main execution is claimed.
+
 The user subsequently requested full repair of the `final-online-4` proposal.
 Its scoped adoption is recorded in specification §11.3. The implementation
 adds a persisted compact prompt profile while preserving original rendering,
@@ -1014,7 +1032,8 @@ byte-identical analysis with seven SVG/PNG pairs. The final two-file ZIP is
 records source `4deee72`, artifact hashes, limits and the practical upload path.
 Earlier source-bound artifacts and original submitted evidence remain.
 
-The latest submitted run is `final-online-4`, not `final-online-3`. Its code
+The preceding `final-online-4` submission was analysed after correcting the
+earlier folder reference from `final-online-3`. Its code
 cells match the repaired delivery, all 73 committed source members verify, and
 all 21 original call/attempt rows are unchanged. The first actual full-envelope
 probe then recorded a terminal 120-second timeout: provider startup consumed
