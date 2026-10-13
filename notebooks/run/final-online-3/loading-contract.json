@@ -1,0 +1,22 @@
+{
+  "name": "loading-contract",
+  "args": [
+    "/kaggle/working/course-workspace-075d10737c5f/gpu-environment/scratch/venv/bin/python",
+    "-I",
+    "-c",
+    "import sys,types,unittest; from pathlib import Path; tests=types.ModuleType('tests'); tests.__path__=[str(Path(sys.argv[1])/'tests')]; sys.modules['tests']=tests; result=unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromName('tests.loading_checks')); sys.exit(not result.wasSuccessful())",
+    "/kaggle/working/course-workspace-075d10737c5f/bundle/source"
+  ],
+  "cwd": "/kaggle/working/course-workspace-075d10737c5f/gpu-environment/scratch",
+  "started_utc": "2026-10-13T09:37:06.601075+00:00",
+  "timeout_seconds": 30,
+  "stdout": "logs/loading-contract.stdout.txt",
+  "stderr": "logs/loading-contract.stderr.txt",
+  "status": "passed",
+  "leader_exited": true,
+  "tree_confirmation": "exited",
+  "pid": 285,
+  "exit_code": 0,
+  "ended_utc": "2026-10-13T09:37:06.715877+00:00",
+  "elapsed_seconds": 0.1147469469999578
+}

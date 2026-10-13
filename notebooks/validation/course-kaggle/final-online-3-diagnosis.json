@@ -1,0 +1,405 @@
+{
+  "analysis_date": "2026-10-13",
+  "source_commit": "075d10737c5f06a5a0de1122dac0e8236e8aac0a",
+  "incident_files": {
+    "course-results.zip": {
+      "bytes": 1148229,
+      "sha256": "041b140b75bbb58a3f509f69b3ddeaaab867d07a8d5b3516f0c2f086eea7a8ba"
+    },
+    "course-resume.payload": {
+      "bytes": 9682817,
+      "sha256": "10eb1fc4015ff7a6cef31216be9890a405e424d57982974d48bfae62d9e61c43"
+    },
+    "last-action.json": {
+      "bytes": 14529,
+      "sha256": "6f50957d52798d6ae608d5c78cb830ded42a5aab33383d23c8a2391e89dd363b"
+    },
+    "loading-contract.json": {
+      "bytes": 1004,
+      "sha256": "be1fa09000227f6d4616065a5f0d5c8ad78ee8d5f411fb1e6e426738db6ef7f0"
+    },
+    "notebook-exec.ipynb": {
+      "bytes": 136102,
+      "sha256": "b302bf0f48c0970073cf3cf734d4bf429185799acd59523e4c8b9638f3b94544"
+    },
+    "preflight-results.zip": {
+      "bytes": 52941,
+      "sha256": "6fb8fbbb2eb7a0c1a66e8418e1d4b996c8d14d206198480bc0dd4c337df1f6ad"
+    },
+    "prospective-admission.json": {
+      "bytes": 1049,
+      "sha256": "b2a40440974064bece755732fb491f12fc6922553bc275b708612352ddcae7e6"
+    },
+    "report.html": {
+      "bytes": 95107,
+      "sha256": "d7aa6267fbadc8b107eab4ce3f90dc3bcd5c04e50026c62afaad3e07f3dd10e2"
+    },
+    "stage-pinned-checkpoint.json": {
+      "bytes": 1212,
+      "sha256": "a259c4bc7da94938356c41a691c33f8906b0d9a362130d0746205ef07edff9e7"
+    }
+  },
+  "source_members_verified": 72,
+  "observed_stop_reason": "TypeError: RenderedRequest.__init__() got an unexpected keyword argument 'system'",
+  "planner_constructor_failures": [
+    {
+      "call_id": "course-hardware/envelope/device-0",
+      "error": "RenderedRequest.__init__() got an unexpected keyword argument 'system'"
+    },
+    {
+      "call_id": "course-hardware/envelope/device-1",
+      "error": "RenderedRequest.__init__() got an unexpected keyword argument 'system'"
+    }
+  ],
+  "corrected_plan_rows_constructible": 24,
+  "hardware_gate": {
+    "acceptance": "measured_stress",
+    "accounting_segment_closed": true,
+    "actual_minimum_free_bytes": 11191255040,
+    "complete_envelope_probes": 0,
+    "complete_live_memory_upper_bound_bytes": null,
+    "complete_resident_tokens_upper": 110107,
+    "host_checks": {
+      "reported_seconds": 4.941,
+      "scope": "Source-mode candidate-host checks; no physical model generation.",
+      "skipped": 0,
+      "tests": 3
+    },
+    "inference_processes_quiescent": true,
+    "native_load_checks_passed": true,
+    "note": "Measured complete-input stress/headroom acceptance; no formal memory proof claimed",
+    "observed_device_peak_bytes": 4444782592,
+    "ordinary_completed": 21,
+    "passed": false,
+    "provider_release_confirmed": false,
+    "review": {
+      "acceptance": "measured_stress"
+    },
+    "status": "incomplete_or_failed"
+  },
+  "recorded_attempts": 21,
+  "raw_validations_reproduced": 21,
+  "validation_groups": [
+    {
+      "status": "invalid",
+      "feedback": "json",
+      "termination": "length",
+      "count": 12
+    },
+    {
+      "status": "invalid",
+      "feedback": "candidate_shape",
+      "termination": "eos",
+      "count": 5
+    },
+    {
+      "status": "valid",
+      "feedback": null,
+      "termination": "eos",
+      "count": 2
+    },
+    {
+      "status": "invalid",
+      "feedback": "message_schema",
+      "termination": "eos",
+      "count": 2
+    }
+  ],
+  "attempt_details": [
+    {
+      "call_id": "smoke/course-m5/01",
+      "worker": 0,
+      "input_tokens": 1134,
+      "generated_tokens": 256,
+      "elapsed_seconds": 51.142268523999974,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/02",
+      "worker": 0,
+      "input_tokens": 1118,
+      "generated_tokens": 107,
+      "elapsed_seconds": 13.561421321000012,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "candidate_shape"
+    },
+    {
+      "call_id": "smoke/course-m5/03",
+      "worker": 0,
+      "input_tokens": 1191,
+      "generated_tokens": 256,
+      "elapsed_seconds": 29.600132271000007,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/04",
+      "worker": 0,
+      "input_tokens": 1125,
+      "generated_tokens": 213,
+      "elapsed_seconds": 25.328289196000014,
+      "status": "completed",
+      "validation": "valid",
+      "feedback": null
+    },
+    {
+      "call_id": "smoke/course-m5/05",
+      "worker": 0,
+      "input_tokens": 715,
+      "generated_tokens": 256,
+      "elapsed_seconds": 29.09409178199985,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/06",
+      "worker": 0,
+      "input_tokens": 2007,
+      "generated_tokens": 174,
+      "elapsed_seconds": 21.78746762800006,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "candidate_shape"
+    },
+    {
+      "call_id": "smoke/course-m5/07",
+      "worker": 0,
+      "input_tokens": 2027,
+      "generated_tokens": 152,
+      "elapsed_seconds": 19.440012302000014,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "candidate_shape"
+    },
+    {
+      "call_id": "smoke/course-m5/08",
+      "worker": 0,
+      "input_tokens": 1125,
+      "generated_tokens": 86,
+      "elapsed_seconds": 10.828618103000053,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "candidate_shape"
+    },
+    {
+      "call_id": "smoke/course-m5/09",
+      "worker": 0,
+      "input_tokens": 2515,
+      "generated_tokens": 256,
+      "elapsed_seconds": 31.56000270300001,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/10",
+      "worker": 0,
+      "input_tokens": 2463,
+      "generated_tokens": 256,
+      "elapsed_seconds": 31.563431963000085,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/11",
+      "worker": 0,
+      "input_tokens": 2647,
+      "generated_tokens": 256,
+      "elapsed_seconds": 31.81224810699996,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/12",
+      "worker": 0,
+      "input_tokens": 2483,
+      "generated_tokens": 247,
+      "elapsed_seconds": 30.55767261899996,
+      "status": "completed",
+      "validation": "valid",
+      "feedback": null
+    },
+    {
+      "call_id": "smoke/course-m5/13",
+      "worker": 0,
+      "input_tokens": 1566,
+      "generated_tokens": 256,
+      "elapsed_seconds": 30.522142368999994,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/14",
+      "worker": 0,
+      "input_tokens": 2070,
+      "generated_tokens": 242,
+      "elapsed_seconds": 29.61953452700004,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "message_schema"
+    },
+    {
+      "call_id": "smoke/course-m5/15",
+      "worker": 0,
+      "input_tokens": 2070,
+      "generated_tokens": 181,
+      "elapsed_seconds": 22.66285235400005,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "message_schema"
+    },
+    {
+      "call_id": "smoke/course-m5/16",
+      "worker": 0,
+      "input_tokens": 2074,
+      "generated_tokens": 256,
+      "elapsed_seconds": 31.072921296999994,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/17",
+      "worker": 0,
+      "input_tokens": 2074,
+      "generated_tokens": 256,
+      "elapsed_seconds": 30.746532130000105,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/18",
+      "worker": 0,
+      "input_tokens": 22200,
+      "generated_tokens": 256,
+      "elapsed_seconds": 59.787154483999984,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/19",
+      "worker": 0,
+      "input_tokens": 22219,
+      "generated_tokens": 256,
+      "elapsed_seconds": 59.328643990000046,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    },
+    {
+      "call_id": "smoke/course-m5/20",
+      "worker": 1,
+      "input_tokens": 1118,
+      "generated_tokens": 107,
+      "elapsed_seconds": 30.675233302999914,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "candidate_shape"
+    },
+    {
+      "call_id": "smoke/course-m5/21",
+      "worker": 1,
+      "input_tokens": 715,
+      "generated_tokens": 256,
+      "elapsed_seconds": 28.840341941000133,
+      "status": "completed",
+      "validation": "invalid",
+      "feedback": "json"
+    }
+  ],
+  "attempt_seconds_total": 649.5310129140003,
+  "attempt_seconds_median": 30.522142368999994,
+  "processes": [
+    {
+      "worker": 0,
+      "pid": 341,
+      "started_at": "2026-10-13T09:42:44.804295+00:00",
+      "ready_at": "2026-10-13T09:43:04.879471+00:00",
+      "stopped_at": "2026-10-13T09:53:35.037557+00:00",
+      "actual_tensor_devices": [
+        "cuda:0"
+      ],
+      "device_map": null,
+      "recurrent_fast_path": false,
+      "attention_checks": 3
+    },
+    {
+      "worker": 1,
+      "pid": 380,
+      "started_at": "2026-10-13T09:52:35.228765+00:00",
+      "ready_at": "2026-10-13T09:52:51.472732+00:00",
+      "stopped_at": "2026-10-13T09:53:35.290489+00:00",
+      "actual_tensor_devices": [
+        "cuda:0"
+      ],
+      "device_map": null,
+      "recurrent_fast_path": false,
+      "attention_checks": 3
+    }
+  ],
+  "observed_allocations": [
+    {
+      "number": 1,
+      "device": "kaggle-t4-slot-0",
+      "stage": "development",
+      "started_at": "2026-10-13T09:31:48+00:00",
+      "stopped_at": "2026-10-13T09:53:36.167372+00:00",
+      "deadline_at": null,
+      "budget_json": "{\"allocation_mode\":\"gpu\",\"ceiling_gpu_hours\":30,\"development_reserve_gpu_hours\":8,\"interruption_reserve_gpu_hours\":2,\"overall_ceiling_gpu_hours\":100,\"overhead_seconds\":0,\"prior_development_gpu_hours\":null,\"prior_evidence\":\"final-online-2 loader defect: notebooks/validation/course-kaggle/repair-predecessor.json; original worker databases unavailable; GPU-hour history remains unknown\",\"prior_interruption_gpu_hours\":null,\"prior_other_course_gpu_hours\":null,\"prior_other_overall_gpu_hours\":null,\"prior_setup_gpu_hours\":null,\"prior_smoke_attempts\":1,\"prior_smoke_gpu_hours\":null,\"setup_reserve_gpu_hours\":2,\"shutdown_seconds\":120}",
+      "billing_json": "{\"measurement_scope\":\"observed_notebook_interval\",\"physical_gpu_uuid\":\"GPU-99c895b4-8655-69da-b3c8-2e7a349bdaf0\",\"provider\":\"kaggle\",\"provider_assignment_at\":\"2026-10-13T09:31:48+00:00\",\"provider_release_confirmed\":false,\"release_instructions\":\"Download both exports, then Stop Session and verify deallocation in Kaggle session management.\",\"segment_end\":\"observation_end\",\"unobserved_provider_time\":\"unknown\"}",
+      "stop_reason": "saved notebook observation ended; time outside recorded activity remains unknown"
+    },
+    {
+      "number": 1,
+      "device": "kaggle-t4-slot-1",
+      "stage": "development",
+      "started_at": "2026-10-13T09:31:48+00:00",
+      "stopped_at": "2026-10-13T09:53:36.167372+00:00",
+      "deadline_at": null,
+      "budget_json": "{\"allocation_mode\":\"gpu\",\"ceiling_gpu_hours\":30,\"development_reserve_gpu_hours\":8,\"interruption_reserve_gpu_hours\":2,\"overall_ceiling_gpu_hours\":100,\"overhead_seconds\":0,\"prior_development_gpu_hours\":null,\"prior_evidence\":\"final-online-2 loader defect: notebooks/validation/course-kaggle/repair-predecessor.json; original worker databases unavailable; GPU-hour history remains unknown\",\"prior_interruption_gpu_hours\":null,\"prior_other_course_gpu_hours\":null,\"prior_other_overall_gpu_hours\":null,\"prior_setup_gpu_hours\":null,\"prior_smoke_attempts\":1,\"prior_smoke_gpu_hours\":null,\"setup_reserve_gpu_hours\":2,\"shutdown_seconds\":120}",
+      "billing_json": "{\"measurement_scope\":\"observed_notebook_interval\",\"physical_gpu_uuid\":\"GPU-e9acdcb2-5310-01e5-c1c0-d7d05529f925\",\"provider\":\"kaggle\",\"provider_assignment_at\":\"2026-10-13T09:31:48+00:00\",\"provider_release_confirmed\":false,\"release_instructions\":\"Download both exports, then Stop Session and verify deallocation in Kaggle session management.\",\"segment_end\":\"observation_end\",\"unobserved_provider_time\":\"unknown\"}",
+      "stop_reason": "saved notebook observation ended; time outside recorded activity remains unknown"
+    }
+  ],
+  "retained_prior_attempts": 1,
+  "attempt_limit": 25,
+  "remaining_attempts": 3,
+  "disposable_continuation": {
+    "reused_without_provider": 21,
+    "pending_only": [
+      "course-hardware/envelope/device-0",
+      "course-hardware/envelope/device-1",
+      "smoke/course-m5/24"
+    ],
+    "run_bindings_unchanged": true,
+    "completed_rows_unchanged": true,
+    "new_attempts": 0
+  },
+  "eos_configuration_contract": {
+    "wheel_sha256": "500be9eb644ede81c3103eee7687fc36d05dd75d1c76686c3820b26396fe7c7c",
+    "native_config_implementation_identical": true,
+    "model_config_eos": 248044,
+    "current_prepared_eos": 248044,
+    "proposed_prepared_eos": [],
+    "min_new_tokens": 256,
+    "max_new_tokens": 256,
+    "scope": "Actual pinned configuration function; no model or Torch execution"
+  },
+  "investigation_gpu_calls": 0,
+  "investigation_weights_loaded": false,
+  "limitations": [
+    "Continuation is proven only at storage/request level; source-provenance repair is not implemented or authorized",
+    "No full-envelope generation, pilot, freeze or main experiment in the submitted run",
+    "EOS masking/finite-check conflict is a pinned-code prediction for the unexecuted diagnostic path"
+  ]
+}

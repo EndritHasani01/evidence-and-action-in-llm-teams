@@ -990,6 +990,24 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The subsequent `final-online-3` submission completed pinned online setup, both
+native T4 replica loading audits, and all 21 ordinary hardware probes. It stopped
+before the first full-envelope attempt because the generated request includes an
+unsupported `RenderedRequest.system` field. Exact pinned-library inspection also
+found ineffective diagnostic EOS suppression: `None` inherits model EOS, creating
+intentional nonfinite masking before the finite-score audit. The
+[full diagnosis and fix proposal](validation/course-kaggle-final-online-3-proposal.md)
+records both defects, the missed CPU integration boundaries, and a proposed narrow
+source-bound preparation continuation. Disposable CPU copies reused all 21 exact
+saved replies without provider/admission or new attempts; all raw validations
+matched. Cumulative usage is 22/25 including the retained predecessor, leaving
+only the two full-envelope diagnostics and controlled hang. Hardware acceptance
+remains unestablished; capability/pilot/freeze/main remain unexecuted, and all main
+logical uses remain unknown.
+This investigation changes no production behavior, source-binding rule or
+scientific configuration and makes no GPU call. The native acceptance and scoped
+continuation are proposed, not implemented or authorized by this document.
+
 The `final-online-2` repair is implemented on 13 October 2026. Loading audits use
 actual parameter/buffer/NF4-state placement and tolerate absent dispatch metadata;
 child defects retain full phase/traceback evidence. Hardware resumption follows
@@ -1011,7 +1029,8 @@ annotation. No model generation completed; all 6,280 main logical slots remain
 unknown. The [incident diagnosis and repair proposal](validation/course-kaggle-final-online-2-proposal.md)
 records the exact pinned-wheel cause, CPU reproduction, failed-report resumption
 and cross-package smoke-count defects, and a focused repair/acceptance sequence.
-It is a proposal only; production behavior and the specification remain unchanged.
+That initial diagnosis was proposal-only; the subsequent authorized repair is
+recorded above and in its linked repair evidence.
 The original failure consumed one recorded smoke attempt; a complete fresh
 24-attempt matrix would require an explicitly adopted scope amendment, not a
 counter reset. Submitted artifacts remain unchanged; their resume payload was
