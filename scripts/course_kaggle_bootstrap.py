@@ -39,7 +39,9 @@ def qualification_choice(bundle, config):
     """
     if config.get("candidate_order") != ["9B","4B"]:
         raise ValueError("qualification order must be the adopted 9B then 4B")
-    prior = 23
+    prior = config.get("budget",{}).get("prior_smoke_attempts",23)
+    if type(prior) is not int or prior < 23:
+        raise ValueError("qualification_cannot_reset_retained_preparation_history")
     for label in config["candidate_order"]:
         target = Path(bundle)/"candidates"/label
         action = target/"automatic-run.json"

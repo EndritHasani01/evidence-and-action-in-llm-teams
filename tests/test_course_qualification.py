@@ -153,6 +153,11 @@ class QualificationTests(unittest.TestCase):
         self.assertEqual(smoke_attempt_limit(launch),71)
         launch["budget"]["prior_smoke_attempts"] = 22
         with self.assertRaises(ValueError): smoke_attempt_limit(launch)
+        with tempfile.TemporaryDirectory() as directory:
+            cfg = dict(candidate_order=["9B","4B"],budget=dict(prior_smoke_attempts=30))
+            self.assertEqual(qualification_choice(Path(directory),cfg),("9B",30))
+            cfg["budget"]["prior_smoke_attempts"] = 22
+            with self.assertRaises(ValueError): qualification_choice(Path(directory),cfg)
 
     def test_9b_worker_binding_requires_reviewed_profile_and_exact_revision(self):
         from recovery.accounting import MonitoringCourseBudget

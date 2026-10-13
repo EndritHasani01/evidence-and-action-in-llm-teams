@@ -1321,7 +1321,7 @@ def run_qualification(root, bundle, config):
             result["report"] = "candidates/"+label+"/"+analysis["report"]
             save(bundle/"analysis-receipt.json",dict(analysis,report=result["report"]))
             result["analysis"] = dict(analysis,report=result["report"])
-        physical = 23
+        physical = config["budget"]["prior_smoke_attempts"]
         for path in (bundle/"candidates").glob("*/hardware/worker-*.sqlite"):
             with closing(sqlite3.connect(path.resolve().as_uri()+"?mode=ro",uri=True)) as db:
                 physical += db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
