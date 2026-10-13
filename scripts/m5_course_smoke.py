@@ -37,7 +37,8 @@ from recovery.tasks import Task
 from recovery.t4_attention import T4_ATTENTION
 from recovery.workers import _own_file
 from scripts.m5_course_preparation import peer_view, read, verify_requests
-from scripts.m5_kaggle_preflight import export_evidence, save_json, utc, smoke_attempt_usage, smoke_attempt_limit
+from scripts.m5_kaggle_preflight import (export_evidence, save_json, utc, smoke_attempt_usage,
+    smoke_attempt_limit, validate_smoke_predecessor)
 
 CANDIDATE = replace(QWEN_4B, attention=T4_ATTENTION)
 EXPORT_SECONDS = 15
@@ -78,6 +79,8 @@ def admission(launch, stores=(), *, now=None, next_attempt=False):
     now = now or utc()
     budget = (MonitoringCourseBudget if launch.get("resource_policy") == "observe" else CourseBudget)(**launch["budget"])
     if isinstance(budget, MonitoringCourseBudget):
+        if launch.get("source_manifest"):
+            validate_smoke_predecessor(Path(launch["source_manifest"]).parent,launch["budget"])
         if not launch.get("authorization", "").strip():
             raise BudgetStop("course_execution_authorization_missing")
         if not stores and launch.get("resume_workers"):

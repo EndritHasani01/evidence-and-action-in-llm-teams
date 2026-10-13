@@ -20,7 +20,8 @@ from recovery.storage import WorkerStore
 from scripts.course_kaggle_workflow import run_all
 from scripts.course_kaggle_bootstrap import online
 from scripts.m5_course_smoke import admission
-from scripts.m5_kaggle_preflight import download_native_ranges, smoke_attempt_usage, smoke_attempt_limit, utc
+from scripts.m5_kaggle_preflight import (download_native_ranges, smoke_attempt_usage, smoke_attempt_limit,
+    validate_smoke_predecessor, utc)
 from scripts.build_course_kaggle import notebook
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -49,6 +50,8 @@ class CourseRepairTests(unittest.TestCase):
             smoke_attempt_limit(launch)
         launch.pop("smoke_attempt_limit")
         self.assertEqual(smoke_attempt_limit(launch), 24)
+        with self.assertRaisesRegex(ValueError,"predecessor_cannot_be_reset"):
+            validate_smoke_predecessor(ROOT,dict(prior_smoke_attempts=0))
 
     def test_backups_and_predecessor_bound_are_counted_once(self):
         with tempfile.TemporaryDirectory() as directory:

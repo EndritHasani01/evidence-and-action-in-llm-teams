@@ -28,7 +28,7 @@ if not __package__:
 
 from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, sha256_file, save_json,
     candidate_environment, command, source_identity, assigned_preparation_window, EXPORT_SECONDS, utc,
-    smoke_attempt_usage, smoke_attempt_limit)
+    smoke_attempt_usage, smoke_attempt_limit, validate_smoke_predecessor)
 
 
 def preparation_budget(root, bundle, config, saved):
@@ -121,6 +121,7 @@ def online(root, config_path, scratch, output):
     config = json.loads(config_path.read_bytes())
     manifest = json.loads((root/"source-manifest.json").read_bytes())
     source_identity(root,manifest)
+    validate_smoke_predecessor(root,config["budget"])
     if not config.get("authorizations", {}).get("weights", "").strip():
         raise ValueError("explicit pinned checkpoint download authorization required")
     bundle = config_path.resolve().parent

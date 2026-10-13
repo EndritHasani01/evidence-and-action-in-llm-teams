@@ -140,6 +140,16 @@ def source_identity(root, manifest):
         if not path.is_file() or path.is_symlink() or path.stat().st_size != wanted["bytes"] or sha256_file(path) != wanted["sha256"]:
             raise ValueError("prepared source member differs: "+name)
 
+def validate_smoke_predecessor(root, budget):
+    """A repaired source packet cannot discard its retained incident count."""
+    evidence=Path(root)/"notebooks/validation/course-kaggle/repair-predecessor.json"
+    if evidence.exists():
+        retained=json.loads(evidence.read_bytes())
+        count=budget.get("prior_smoke_attempts")
+        if type(count) is not int or count < retained["recorded_smoke_attempts"]:
+            raise ValueError("retained_smoke_predecessor_cannot_be_reset")
+
+
 def smoke_attempt_limit(launch):
     """Only the original ceiling or the explicitly adopted incident allowance."""
     limit = launch.get("smoke_attempt_limit", 24)
