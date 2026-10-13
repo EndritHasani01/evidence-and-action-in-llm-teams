@@ -398,6 +398,15 @@ class NotebookSetupFailureTests(unittest.TestCase):
                 self.assertIsNone(z.testzip())
                 self.assertIn(reason,z.read('RESULT.html').decode())
                 self.assertIn('Setup stopped before weights',z.read('RESULT.html').decode())
+            # A later source refusal must not inherit old bootstrap or GPU locals.
+            values.update(SOURCE_READY=False,receipt={'stale':'allocation receipt'},assigned=True)
+            with patch('subprocess.Popen',side_effect=AssertionError('no child on source refusal')):
+                exec(execution,values)
+            final=json.loads((bundle/'last-action.json').read_bytes())
+            self.assertIn('Source setup failed',final['reason'])
+            exec(export,values)
+            with zipfile.ZipFile(workspace/'course-results.zip') as z:
+                self.assertIn('Source setup failed',z.read('RESULT.html').decode())
 
     def test_portable_backup_refusal_preserves_previous_export(self):
         from scripts.course_kaggle_workflow import backup_bundle

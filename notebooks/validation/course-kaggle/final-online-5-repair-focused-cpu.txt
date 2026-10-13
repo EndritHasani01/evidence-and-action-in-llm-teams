@@ -614,4 +614,4 @@ Ran 84 tests in 155.338s
 OK
 
 Retained unchanged prerequisite from preceding spawn-safe run:
-test_actual_24_row_controller_binds_new_9b_settings_and_hardware_deadline (tests.test_course_qualification.QualificationTests.test_actual_24_row_controller_binds_new_9b_settings_and_hardware_deadline) ... ok
+test_actual_24_row_controller_binds_new_9b_settings_and_hardware_deadline (tests.test_course_qualification.QualificationTests.test_actual_24_row_controller_binds_new_9b_settings_and_hardware_deadline) ... ok

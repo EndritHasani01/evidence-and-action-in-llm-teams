@@ -47,5 +47,37 @@ be forced into the changed package. Later sessions use this same repaired datase
 and their matching latest export. [Setup, progression and resume instructions](../KAGGLE_COURSE.md)
 describe the single Run All path and retained scientific gates.
 
-Final package hashes and delivered-notebook execution evidence are recorded after
-building from the committed implementation.
+The final [delivered-notebook CPU receipt](../../notebooks/validation/course-kaggle/final-online-5-repair-delivery-cpu.json)
+and [executed notebook](../../notebooks/validation/course-kaggle/final-online-5-repair-executed-cpu.ipynb)
+verify literal execution of the final upload notebook, its ordinary installed CPU
+environment, three host checks, the loading contract, both exports and a restored
+analysis with byte-identical output and seven SVG/PNG pairs. The final notebook
+also resets stale bootstrap/assignment locals on rerun; the
+[follow-up CPU checks](../../notebooks/validation/course-kaggle/final-online-5-repair-notebook-cpu.txt)
+exercise source refusal after a failed bootstrap and confirm that its actual cause
+and exports survive. Native Linux installation, large download and physical T4
+acceptance remain unexecuted. Main coverage is 0 recorded / 6,280 unknown.
+
+The runtime is bound to commit `ae0b98f5774f6217fb2f2dfb8118ef0ac56c3afe`.
+The final notebook template safeguard does not change those 85 runtime members.
+All 97 reviewed dependency pins remain identical to the preceding packet.
+
+| Ready artifact | Bytes | SHA-256 |
+|---|---:|---|
+| [Dataset ZIP](../../dist/course-kaggle-final-online-5/course-kaggle-dataset.zip) | 4,678,127 | `a6761077fad41d26645b170cc6147705675ff095998fe627a9329e316029aa44` |
+| [Upload notebook](../../dist/course-kaggle-final-online-5/course_kaggle.ipynb) | 35,020 | `cbd7d8291d0cb9877e595d19a81376b390dae2f502ba27e7aaf9972734e3ca15` |
+
+The dataset contains exactly `course-kaggle-source.payload` and
+`source-manifest.json`; it contains no checkpoint, dependency wheels, worker
+databases or old resume seed. Kaggle prepares two input files, then cell 3 verifies
+and extracts the 85 canonical runtime members. An identical
+[fixed notebook](../../notebooks/run/final-online-5/notebook-fixed.ipynb) is also
+retained beside the unchanged submission.
+
+Upload this fresh dataset and matching notebook, select **T4×2**, enable
+**Internet**, then **Run All**. Attach no old resume payload for this first run.
+Cell 7 owns automatic storage/setup, hardware, first-90 capability, full pilot,
+conditional freeze/main and analysis. Cell 9 publishes results and the latest
+matching resume payload. Use that payload with this same dataset for a later
+session. Passing software checks does not bypass any scientific gate; an actual
+failure preserves its evidence and yields a limited result.

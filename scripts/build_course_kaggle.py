@@ -283,6 +283,9 @@ def bounded_child(arguments,limit):
         if not reader.is_alive(): process.stdout.close()
     return process.returncode
 
+receipt=None
+bootstrap_output=None
+assigned=False
 try:
     if not SOURCE_READY:
         raise RuntimeError('Source setup failed; see logs/source-error.txt. No experiment was started.')
@@ -406,10 +409,10 @@ except (Exception,KeyboardInterrupt) as error:
         except Exception: physical_devices=[]
         old_run=json.loads((bundle/'run.json').read_bytes()) if (bundle/'run.json').exists() else None
         stage='main' if old_run and old_run['freeze'] else 'pilot' if old_run else 'hardware'
-        receipt=dict(config=CONFIG,allocated_at=CONFIG.get('allocated_at'),physical_devices=physical_devices,
+        refusal_receipt=dict(config=CONFIG,allocated_at=CONFIG.get('allocated_at'),physical_devices=physical_devices,
             stage=stage,reason=failure['reason'],observed_at=time.strftime('%Y-%m-%dT%H:%M:%S+00:00',time.gmtime()))
         refusals=bundle/'bootstrap-refusals'; refusals.mkdir(exist_ok=True)
-        (refusals/(time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+str(time.time_ns())+'.json')).write_text(json.dumps(receipt,indent=2)+'\\n')
+        (refusals/(time.strftime('%Y%m%dT%H%M%S',time.gmtime())+'-'+str(time.time_ns())+'.json')).write_text(json.dumps(refusal_receipt,indent=2)+'\\n')
     print(failure['reason'])
 
 """

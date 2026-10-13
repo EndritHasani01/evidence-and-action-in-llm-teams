@@ -1008,6 +1008,16 @@ settings, 23 historical attempts, 71 ceiling, raw/replay rules and every empiric
 gate remain unchanged. Packaging and literal delivered-notebook evidence follow
 in the [repair handoff](validation/course-kaggle-final-online-5-repair.md).
 
+The final 4,678,127-byte two-file dataset and 35,020-byte notebook are delivered
+in `dist/course-kaggle-final-online-5`, with unchanged 97 dependency pins and 85
+runtime members bound to `ae0b98f`. The final literal notebook also passed ordinary
+CPU installation, three host/loading checks, exports and byte-identical restored
+analysis with seven SVG/PNG pairs; the [delivery receipt](../notebooks/validation/course-kaggle/final-online-5-repair-delivery-cpu.json)
+records the final notebook hash. A focused follow-up verifies accurate source-error
+reporting after earlier bootstrap failures. Native Linux download/install and T4
+acceptance remain unexecuted; all 6,280 main outcomes remain unknown. No additional
+scientific configuration, allowance or frozen-state change occurred.
+
 The latest submitted run is now `final-online-5`. Its code matches the delivered
 final-online-4 notebook and all 85 manifested source files verify. All twelve
 setup commands passed, including installed provenance and the full native CPU
