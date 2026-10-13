@@ -162,6 +162,22 @@ def smoke_attempt_limit(launch):
     return limit
 
 
+def hardware_matrix_recorded(paths):
+    """All fixed outcomes can be reconstructed at the ceiling without a call."""
+    import sqlite3
+    expected = {f"smoke/course-m5/{n:02d}" for n in range(1,22)} | {
+        "course-hardware/envelope/device-0", "course-hardware/envelope/device-1", "smoke/course-m5/24"}
+    recorded = set()
+    for path in paths:
+        path = Path(path)
+        if not path.is_file():
+            return False
+        with closing(sqlite3.connect(path.resolve().as_uri()+"?mode=ro", uri=True)) as db:
+            recorded.update(r[0] for r in db.execute(
+                "SELECT call_id FROM calls WHERE status IN ('completed','timeout','infrastructure_failure')"))
+    return recorded == expected
+
+
 def smoke_attempt_usage(budget, paths=(), *, prior_paths=()):
     """Count original smoke attempts, deduplicating references and SQLite backups.
 

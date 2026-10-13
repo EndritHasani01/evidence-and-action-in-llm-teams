@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 from recovery.inference import QWEN_4B, candidate_settings
-from recovery.prompts import COURSE_LIMITS, TokenizedRequest
+from recovery.prompts import COURSE_LIMITS, RenderedRequest, TokenizedRequest
 from recovery.runner import WorkerReader
 from recovery.workers import LocalScheduler, WorkerSpec
 from scripts.m5_course_preparation import read
@@ -53,6 +53,9 @@ class WorkflowCoreTests(unittest.TestCase):
         packet = read(ROOT/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
         from tests.inference_mocks import Tokenizer
         rows = hardware_plan(packet, Tokenizer())
+        for row in rows:
+            RenderedRequest(**row["rendered"])
+            TokenizedRequest(**row["tokenized"])
         self.assertEqual(len(rows), 24)
         self.assertEqual(len({r["physical_generation_id"] for r in rows}), 24)
         probes = [r for r in rows if r.get("hardware_diagnostic")]
@@ -72,7 +75,7 @@ class WorkflowCoreTests(unittest.TestCase):
         self.assertTrue(result.backend["hardware_diagnostic"])
         self.assertEqual(len(result.response.token_ids), 256)
         self.assertTrue(result.backend["cache"]["initial_empty"])
-        self.assertIsNone(value.model.calls[-1]["config"]["eos_token_id"])
+        self.assertEqual(value.model.calls[-1]["config"]["eos_token_id"], [])
         self.assertEqual(value.settings["generation"]["eos_token_id"], [248044, 248046])
         with self.assertRaises(ValueError):
             value.probe_envelope(replace(tokens, input_ids=(1,)), seed=71)

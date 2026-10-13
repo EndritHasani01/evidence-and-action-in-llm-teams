@@ -81,6 +81,26 @@ class CourseRepairTests(unittest.TestCase):
                     online(root, config_path, root / "scratch", root / "output")
                 prepare.assert_not_called()
 
+    def test_later_external_resume_supersedes_packaged_seed_and_two_external_histories_refuse(self):
+        import ast
+        import hashlib
+        from scripts.build_course_kaggle import notebook
+        tree=ast.parse("".join(notebook("unused","commit")["cells"][2]["source"]))
+        function=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=="attached")
+        with tempfile.TemporaryDirectory() as directory:
+            inputs=Path(directory); seed=inputs/"dataset"; seed.mkdir()
+            (seed/"source-manifest.json").write_bytes(b"current manifest")
+            (seed/"course-resume.payload").write_bytes(b"seed")
+            namespace=dict(inputs=inputs,Path=Path,hashlib=hashlib,
+                EXPECTED_MANIFEST_SHA256=hashlib.sha256(b"current manifest").hexdigest())
+            exec(compile(ast.Module(body=[function],type_ignores=[]),"literal-notebook-attached","exec"),namespace)
+            self.assertEqual(namespace["attached"]("course-resume.zip"),seed/"course-resume.payload")
+            latest=inputs/"latest"; latest.mkdir(); (latest/"course-resume.payload").write_bytes(b"later")
+            self.assertEqual(namespace["attached"]("course-resume.zip"),latest/"course-resume.payload")
+            second=inputs/"second"; second.mkdir(); (second/"course-resume.payload").write_bytes(b"another")
+            with self.assertRaisesRegex(ValueError,"Select one exact"):
+                namespace["attached"]("course-resume.zip")
+
     def test_known_hardware_defect_stops_before_cold_setup_downloads(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory); (root/"hardware").mkdir()

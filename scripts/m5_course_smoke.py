@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import traceback
 from time import sleep
 
 # -I direct-script execution uses installed recovery, plus source-only scripts.
@@ -300,9 +301,36 @@ def hardware_plan(packet, tokenizer):
             physical_generation_id=f"course-hardware/envelope/device-{worker}",
             intended_worker=worker, confirmed_restart_before=True, hardware_diagnostic=True,
             input_tokens=109851, resident_tokens_with_reserve=110107,
-            rendered=dict(system="Hardware memory diagnostic; no scientific scoring", content=text),
+            rendered=asdict(RenderedRequest(content=text)),
             tokenized=dict(text=text, input_ids=ids, attention_mask=[1]*109851))
     return rows
+
+
+def check_hardware_plan(root, packet, tokenizer):
+    """Exercise every real request boundary before weights or provider startup."""
+    from scripts.m5_course_preparation import verify_native_requests
+    verify_requests(root, packet)
+    verify_native_requests(root, tokenizer, packet)
+    rows = hardware_plan(packet, tokenizer)
+    if len(rows) != 24 or len({r["physical_generation_id"] for r in rows}) != 24:
+        raise ValueError("the fixed 24 distinct hardware diagnostics are required")
+    for i, row in enumerate(rows):
+        RenderedRequest(**row["rendered"])
+        TokenizedRequest(**row["tokenized"])
+        if row.get("hardware_diagnostic"):
+            if (i not in (21, 22) or row["intended_worker"] != i-21 or
+                    row["smoke_call_id"] != f"course-hardware/envelope/device-{i-21}" or
+                    len(row["tokenized"]["input_ids"]) != 109851 or
+                    row["tokenized"]["attention_mask"] != [1]*109851 or
+                    row["input_tokens"] != 109851 or row["resident_tokens_with_reserve"] != 110107 or
+                    not row["confirmed_restart_before"] or row["controlled_hang"]):
+                raise ValueError("complete-envelope diagnostic identity/tensor differs")
+        elif row != packet["requests"][i]:
+            raise ValueError("ordinary hardware request differs from its saved input")
+    if sum(bool(r.get("hardware_diagnostic")) for r in rows) != 2 or not rows[-1]["controlled_hang"]:
+        raise ValueError("two full-envelope probes and the original timeout are required")
+    return dict(plan_rows=24, ordinary_probes=21, envelope_probes=2, controlled_hangs=1,
+                constructors_checked=24, gpu_calls=0, weights_loaded=False)
 
 
 def controlled_hang(*args, **kwargs):
@@ -319,7 +347,7 @@ def host_checks(root,launch,stores,output):
     """Affected Linux persistence/cleanup checks; no generic CPU acceptance rerun."""
     import time
     from scripts.m5_kaggle_preflight import command, test_result, EXPORT_SECONDS as COMMAND_EXPORT_SECONDS
-    _,wall = admission(launch,stores,next_attempt=True)
+    _,wall = admission(launch,stores,next_attempt=False)
     timeout = min(30,int(wall-launch["budget"]["shutdown_seconds"]-COMMAND_EXPORT_SECONDS-8))
     if timeout < 1:
         raise BudgetStop("insufficient_time_for_affected_host_checks")
@@ -373,6 +401,8 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
             admission(launch,stores,next_attempt=True)
         for device in devices:
             providers.append(ProcessProvider(factory(device),before_attempt=before_attempt))
+        row = None
+        phase = "host_checks"
         try:
             host_output = output
             if launch.get("resume_in_place"):
@@ -382,24 +412,34 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                 save_json(host_output/"launch.json",launch)
             save_json(output/"host-checks.json",host_checks(root,launch,stores,host_output))
             for row, branch in zip(rows,branches):
+                phase = "request_preparation"
                 index = row["intended_worker"]
                 view = peer_view(row["view"])
                 rendered = RenderedRequest(**row["rendered"])
                 tokenized = TokenizedRequest(row["tokenized"]["text"],tuple(row["tokenized"]["input_ids"]),tuple(row["tokenized"]["attention_mask"]))
                 store = stores[index]
                 store.prepare_control(branch,settings_json(settings),view,rendered,tokenized)
-                print(f"Hardware: {row['smoke_call_id']} | device {index} | input {len(tokenized.input_ids)} tokens | loading/generation",flush=True)
+                reused = store.call(row["smoke_call_id"])["status"] in ("completed", "timeout", "infrastructure_failure")
+                print(f"Hardware: {row['smoke_call_id']} | device {index} | input {len(tokenized.input_ids)} tokens | {'reusing saved outcome' if reused else 'loading/generation'}",flush=True)
                 if row["confirmed_restart_before"] or row["controlled_hang"]:
                     providers[index].close()
                 if row["controlled_hang"]:
                     providers[index] = ProcessProvider(hang_factory,before_attempt=before_attempt)
                 elif row.get("hardware_diagnostic"):
                     providers[index] = ProcessProvider(EnvelopeFactory(devices[index]),before_attempt=before_attempt)
+                phase = "provider_attempt"
                 response = providers[index].obtain(store,row["smoke_call_id"],view,rendered,tokenized,
                     seed=row["seed"],settings=settings)
+                phase = "raw_validation"
                 validation = failed_reply(view) if isinstance(response,RecordedFailure) else validate_reply(view,response,tokenizer,limits=COURSE_LIMITS)
                 store.save_control_validation(row["smoke_call_id"],validation)
                 print(row["smoke_call_id"],store.call(row["smoke_call_id"])["status"],flush=True)
+                completed_ids = {c[0] for s in stores for c in s.connection.execute("SELECT call_id FROM calls WHERE status='completed'")}
+                ordinary = sum(r["smoke_call_id"] in completed_ids for r in rows[:21])
+                envelopes = sum(r["smoke_call_id"] in completed_ids for r in rows[21:23]) if complete_envelope else 0
+                usage = smoke_attempt_usage(launch["budget"],paths,prior_paths=launch.get("prior_allocation_workers", ()))
+                hang = store.call(row["smoke_call_id"])["status"] == "timeout" if row["controlled_hang"] else False
+                print(f"Hardware progress: ordinary {ordinary}/21 | envelope {envelopes}/2 | cleanup {int(hang)}/1 | cumulative attempts {usage['total_recorded']}/{smoke_attempt_limit(launch)}",flush=True)
                 attempt = store.attempts(row["smoke_call_id"])[-1]
                 facts = json.loads(attempt["backend_json"]) if attempt["backend_json"] else {}
                 observed_free = [sample["free_bytes"] for sample in facts.get("observed_model_edge_memory",[])]
@@ -413,6 +453,13 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                     break
         except (Exception,KeyboardInterrupt) as error:
             stopped = f"{type(error).__name__}: {error}"
+            call_id = row["smoke_call_id"] if row else None
+            store = stores[row["intended_worker"]] if row else None
+            save_json(output/("controller-error-"+datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")+".json"),
+                dict(reason=stopped, exception_type=type(error).__name__, phase=phase,
+                     call_id=call_id, worker=row["intended_worker"] if row else None,
+                     attempt_started=bool(store.connection.execute("SELECT 1 FROM attempts WHERE call_id=? LIMIT 1", (call_id,)).fetchone()) if store else False,
+                     traceback=traceback.format_exc()))
         finally:
             cleanup = []
             for provider in providers:
@@ -464,7 +511,9 @@ def run(root, launch, output):
     try:
         if launch.get("execute_gpu") is not True:
             raise BudgetStop("gpu_execution_disabled")
-        admission(launch,next_attempt=True)
+        # Saved terminal outcomes can be reconstructed at the cumulative ceiling.
+        # Every NEW attempt still performs the strict check in before_attempt.
+        admission(launch,next_attempt=False)
         save_json(output/"launch.json",launch)
         # Import/read native assets only after authorization and resources pass.
         os.environ.update(HF_HUB_OFFLINE="1",TRANSFORMERS_OFFLINE="1",HF_HUB_CACHE=launch["hf_cache"])
@@ -487,6 +536,7 @@ def run(root, launch, output):
         report["model_generations"] = report["smoke"]["completed_model_generations"]
     except (Exception,KeyboardInterrupt) as error:
         report["root_blocker"] = f"{type(error).__name__}: {error}"
+        report["traceback"] = traceback.format_exc()
     finally:
         save_json(output/"report.json",report)
         exported = export_evidence(output)
@@ -501,9 +551,18 @@ def main():
     parser.add_argument("--output",type=Path,required=True)
     parser.add_argument("--check-admission-only",action="store_true")
     parser.add_argument("--host-checks",action="store_true")
+    parser.add_argument("--check-plan-only",action="store_true")
     args = parser.parse_args()
     launch = read(args.launch)
-    if args.host_checks:
+    if args.check_plan_only:
+        from tests.generation_checks import check_generation_contract
+        tokenizer = TokenizerFactory(CANDIDATE,str(args.root/"metadata/4B"),COURSE_LIMITS)()
+        packet = read(args.root/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
+        result = check_hardware_plan(args.root, packet, tokenizer)
+        result["generation_contract"] = check_generation_contract(tokenizer, packet["settings"])
+        save_json(args.output, result)
+        print(json.dumps(result,indent=2))
+    elif args.host_checks:
         import unittest
         names = ["tests.worker_checks.ParentAccessTests.test_controls_are_durable_empty_send_full_shape_and_reject_input_drift",
             "tests.durable_checks.DurableTests.test_checkpoint_write_failure_before_and_after_commit_has_one_authoritative_effect",

@@ -273,6 +273,11 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
             report.update(status="prepared",interpreter=str(interpreter),assets_receipt=None,hf_cache=None,
                 environment_only=True,note="Hash-pinned CPU analysis/tokenizer/rendering environment; no torch or model weights")
             return report
+        # Construct every hardware row and exercise real pinned generation
+        # processors on CPU before downloading weights or creating GPU workers.
+        invoke("hardware-plan-contract",[interpreter,"-I",root/"scripts/m5_course_smoke.py",
+            "--root",root,"--launch",root/"configs/course-smoke-launch.json",
+            "--output",output/"hardware-plan-contract.json","--check-plan-only"],60)
         # Reuse the full resource calculation only inside the installed candidate;
         # the bare CPU bootstrap must not assume LangGraph/Pydantic are installed.
         launch_path = output/"launch.json"

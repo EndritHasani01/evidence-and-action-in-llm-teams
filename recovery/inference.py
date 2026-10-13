@@ -337,7 +337,10 @@ class TransformersBackend:
             # claim that regeneration will be exact on another order/device.
             config = GenerationConfig(**self.settings["generation"])
             if force_output_reserve:
-                config.eos_token_id = None
+                # None inherits the checkpoint EOS in the pinned Transformers.
+                # An explicit empty list disables EOS without -inf min-length
+                # masking before our numerical audit. Only diagnostics use it.
+                config.eos_token_id = []
                 config.min_new_tokens = config.max_new_tokens = self.limits.output_tokens
             with torch.inference_mode():
                 output = self.model.generate(input_ids=inputs, attention_mask=mask,

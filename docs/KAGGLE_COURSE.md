@@ -5,14 +5,18 @@ and import its matching **course_kaggle.ipynb**. Select **T4 x2**, enable **Inte
 then **Run All**. No budget, approval or memory-proof forms are required.
 With Accelerator None, the same notebook produces a CPU feasibility report.
 
-For the **final-online-2 repair**, start with only this new matching dataset and
-notebook. Keep the old executed notebook/results/resume as failed evidence; do not
-attach its source-bound resume to the repaired package. The dataset retains its
-one failed load attempt and the authorized one-time 25-attempt cumulative limit
-(one prior failure plus the unchanged 24 hardware diagnostics). No extra retry
-allowance or scientific gate relaxation is implied.
+For the **final-online-3 repair**, upload the ZIP and matching notebook from
+`dist/course-kaggle-final-online-3`. Attach only that new dataset for this first
+repaired run. It includes a reviewed resume seed: all 21 completed native probes,
+the original failed-load predecessor, unchanged worker databases, old source and
+diagnostics. Cell 3 restores it automatically. Do not attach the old final-online-3
+payload separately. The controller reuses the 21 replies and runs only the two
+full-input probes and controlled timeout, within the existing **22/25** usage.
+No extra retry allowance or scientific gate relaxation is implied.
 
-The dataset contains only `course-kaggle-source.payload` and `source-manifest.json`.
+The ordinary source dataset contains `course-kaggle-source.payload` and
+`source-manifest.json`. The incident repair ZIP also contains the
+`course-resume.payload` seed: **three opaque files**, no model weights or wheels.
 Keep the `.payload` extension: cell 3 verifies and extracts it after session startup.
 This prevents Kaggle from rewriting gzip fixtures during input preparation.
 Attach only the matching compact dataset, plus the latest matching resume payload.
@@ -38,6 +42,9 @@ command logs, tracebacks, environment receipts, raw replies and checkpoints trav
 in the resume bundle. Ten-minute quiescent backups and stage-completion exports
 preserve finished calls without resampling them.
 
+Before checkpoint download, every hardware request is constructed and the pinned
+generation processors are checked on CPU. Diagnostic EOS is explicitly disabled
+to force all 256 steps without triggering the numerical audit on EOS masking.
 Quiet operations show a 15-second heartbeat. Verified cached environments and
 checkpoint files are reused within the session; transient range-download failures
 have bounded retries. Failed setup logs remain intact when disposable setup is
@@ -50,7 +57,9 @@ The results ZIP contains the summary, reports/tables/figures and gate receipts.
 The resume payload is an ordinary ZIP with a transport-safe extension and contains
 source, exact inputs, original worker SQLite backups and debug logs. Do not unpack
 it before attaching it to Kaggle. In another session, attach the SAME dataset and
-latest resume payload and Run All. Inputs/source/configuration must match exactly.
+one separately uploaded latest resume payload and Run All. That external export
+takes precedence over the packaged repair seed. Inputs/source/configuration must
+match exactly; two external histories require an explicit selection.
 After an interactive run, stop the Kaggle session normally.
 
 Timing is observational: logs and original allocation/process/attempt records

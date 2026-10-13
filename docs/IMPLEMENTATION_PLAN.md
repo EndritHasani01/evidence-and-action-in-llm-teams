@@ -990,6 +990,21 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The user requested full repair of the `final-online-3` proposal. The implemented
+corrections use the existing `RenderedRequest` schema and explicit empty diagnostic
+EOS, preserve parent-controller tracebacks, and check the complete plan and real
+pinned generation processors on CPU before checkpoint download. Idle providers
+use the existing stop sentinel within unchanged TERM/KILL bounds. Recorded matrix
+outcomes can be reconstructed at the cumulative ceiling without admitting new
+attempts. The reviewed preparation-only continuation is produced offline: original
+source/reports and all 21 worker outcomes are retained, corrected source is bound
+normally, and the notebook's exact-source checks remain. The repair dataset embeds
+that resume seed; a later separate export supersedes it. CPU controller and pinned
+processor checks have passed; final delivery integration is being verified. The
+25-attempt allowance and all scientific settings/gates remain unchanged. No GPU
+execution, native full-envelope acceptance, pilot/freeze/main or publication is
+performed by this repair work.
+
 The subsequent `final-online-3` submission completed pinned online setup, both
 native T4 replica loading audits, and all 21 ordinary hardware probes. It stopped
 before the first full-envelope attempt because the generated request includes an

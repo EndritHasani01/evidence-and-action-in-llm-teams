@@ -110,6 +110,7 @@ class ProcessProvider:
         self.before_attempt = before_attempt
         self._process = self._connection = self._owner = self._store = None
         self._termination_unconfirmed = False
+        self._idle = False
 
     def _start(self, store, call_id, number):
         context = mp.get_context("spawn")
@@ -127,9 +128,21 @@ class ProcessProvider:
         if process is None:
             return
         if process.pid is not None:
+            deadline = monotonic() + self.termination_seconds
+            if reason == "controller_close" and self._idle and process.is_alive() and connection is not None:
+                # Idle children can release their resources through the existing
+                # stop sentinel. Never block pipe I/O or extend the TERM/KILL
+                # bounds, and never give an in-flight/hung call this grace.
+                def stop_idle():
+                    try:
+                        connection.send(None)
+                    except (EOFError, OSError):
+                        pass
+                Thread(target=stop_idle, daemon=True).start()
+                process.join(self.termination_seconds/2)
             if process.is_alive():
                 process.terminate()
-            process.join(self.termination_seconds)
+            process.join(max(0, deadline-monotonic()))
             if process.is_alive():
                 process.kill()
                 process.join(self.termination_seconds)
@@ -143,6 +156,7 @@ class ProcessProvider:
         process.close()
         self._process = self._connection = self._owner = self._store = None
         self._termination_unconfirmed = False
+        self._idle = False
 
     def close(self):
         self._stop("controller_close")
@@ -152,6 +166,7 @@ class ProcessProvider:
             raise UnresolvedAttempt("preceding provider termination remains unconfirmed")
 
     def _execute(self, store, call_id, number, request, started):
+        self._idle = False
         fresh = self._process is None
         if fresh:
             self._start(store, call_id, number)
@@ -233,6 +248,7 @@ class ProcessProvider:
             try:
                 response = self._execute(store, call_id, number,
                     (view, rendered, tokenized, seed, settings), started)
+                self._idle = True
             except InfrastructureInterruption as error:
                 store.interrupt_attempt(call_id, str(error), elapsed_seconds=monotonic() - started,
                                         termination_reason="infrastructure_interruption")

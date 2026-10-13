@@ -20,7 +20,7 @@ REPORT_PACKAGES = ("matplotlib", "contourpy", "cycler", "fonttools", "kiwisolver
 RUNTIME_SCRIPTS = ("course_kaggle_workflow", "course_kaggle_bootstrap", "m5_course_smoke",
     "m5_course_smoke_assets", "m5_course_preparation", "m5_kaggle_preflight", "m5_model_feasibility")
 HOST_HELPERS = ("worker_checks", "attempt_checks", "durable_checks", "event_checks",
-    "replay_checks", "round_checks", "protocol_checks", "worker_fixture", "references", "loading_checks")
+    "replay_checks", "round_checks", "protocol_checks", "worker_fixture", "references", "loading_checks", "generation_checks")
 FIXTURES = ("population_course.json", "schedules_course.json", "course_capacity.json.gz",
     "population_target.json", "population_fallback.json")
 SOURCE_PATHS = ("recovery", "pyproject.toml", "PROJECT_SPECIFICATION.md", "tests/__init__.py",
@@ -97,6 +97,9 @@ Linux x86_64 **Python 3.13** candidate; incompatible images stop safely.
 
 Keep the dataset private. Later sessions also attach **course-resume.payload**;
 Run All resumes exact saved inputs without resampling completed calls.
+An incident repair dataset includes its reviewed resume payload automatically.
+Attach only that matching dataset for the first repaired run. In later sessions,
+one separately attached latest resume takes precedence over the packaged seed.
 For durable background execution, use **Save Version → Save & Run All**;
 see the [Kaggle notebook guide](https://www.kaggle.com/docs/notebooks).
 """
@@ -126,6 +129,12 @@ inputs=Path(os.environ.get('COURSE_INPUT','/kaggle/input'))
 def attached(name,explicit=None):
     if explicit: return Path(explicit).resolve()
     matches=(list(inputs.rglob('course-resume*.payload'))+list(inputs.rglob('course-resume*.zip'))) if name=='course-resume.zip' else list(inputs.rglob(name))
+    if name=='course-resume.zip' and len(matches)>1:
+        external=[p for p in matches if not (p.parent/'source-manifest.json').is_file()
+            or hashlib.sha256((p.parent/'source-manifest.json').read_bytes()).hexdigest()!=EXPECTED_MANIFEST_SHA256]
+        if len(external)==1:
+            print('Resume: using the separately attached export instead of the packaged repair seed')
+            matches=external
     if len(matches)>1: raise ValueError('Select one exact '+name+' in the options cell')
     return matches[0] if matches else None
 def extract_fresh(archive,target):
@@ -198,6 +207,11 @@ for name,expected in manifest['members'].items():
     if p.is_symlink() or not p.is_file() or p.stat().st_size!=expected['bytes'] or hashlib.sha256(p.read_bytes()).hexdigest()!=expected['sha256']:
         raise ValueError('Canonical source changed: '+name)
 display(HTML('<div style="padding:16px;background:#e8f3f3;border-radius:10px"><b>Source verified</b> · '+EXPECTED_SOURCE_COMMIT[:12]+'<br>20 main worlds · 6,280 logical main uses · 5 separate development worlds</div>'))
+repair_receipt=bundle/'repair/receipt.json'
+if repair_receipt.exists():
+    repaired=json.loads(repair_receipt.read_bytes())
+    print('Repair resume: preserving',repaired['preserved_current_attempts'],'original outcomes;',
+          repaired['cumulative_attempts'],'of',repaired['attempt_limit'],'attempts already recorded.',flush=True)
 """
     bootstrap = ("import os,json,traceback\nfrom pathlib import Path\nSOURCE_READY=False\nsource=None\n"
         f"workspace=Path(os.environ.get('COURSE_WORKSPACE','/kaggle/working/course-workspace-{commit[:12]}')).resolve()\n"

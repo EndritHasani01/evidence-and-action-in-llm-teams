@@ -28,7 +28,7 @@ if not __package__:
 
 from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, sha256_file, save_json,
     candidate_environment, command, source_identity, assigned_preparation_window, EXPORT_SECONDS, utc,
-    smoke_attempt_usage, smoke_attempt_limit, validate_smoke_predecessor)
+    smoke_attempt_usage, smoke_attempt_limit, validate_smoke_predecessor, hardware_matrix_recorded)
 
 
 def preparation_budget(root, bundle, config, saved):
@@ -138,7 +138,8 @@ def online(root, config_path, scratch, output):
         paths = list(bundle.glob("hardware/worker-*.sqlite"))
         prior_paths = list(bundle.glob("refusals/*/worker-*.sqlite"))
         usage = smoke_attempt_usage(config["budget"],paths,prior_paths=prior_paths)
-        if usage["total_recorded"] >= smoke_attempt_limit(config):
+        canonical = [bundle/f"hardware/worker-{i}.sqlite" for i in range(2)]
+        if usage["total_recorded"] >= smoke_attempt_limit(config) and not hardware_matrix_recorded(canonical):
             raise ValueError("recorded_smoke_attempt_limit_before_downloads")
     if not config.get("authorizations", {}).get(action, "").strip():
         raise ValueError("explicit_"+action+"_authorization_missing")

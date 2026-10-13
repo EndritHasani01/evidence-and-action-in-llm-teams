@@ -31,6 +31,7 @@ def main():
     dataset.mkdir(parents=True)
     summary=json.loads((packet/"package-summary.json").read_bytes())
     asset_files=0
+    repair_seed=summary.get("repair_resume_embedded",False)
     with zipfile.ZipFile(packet/"course-kaggle-dataset.zip") as z:
         manifest=json.loads(z.read("source-manifest.json"))
         if manifest["payload_filename"] in z.namelist():
@@ -38,6 +39,8 @@ def main():
             # than Kaggle input preparation, must unpack the runtime source.
             for name in (manifest["payload_filename"],"source-manifest.json"):
                 z.extract(name,dataset)
+            if repair_seed:
+                z.extract("course-resume.payload",dataset)
             assert summary["dataset_input_files"] == len(z.infolist())
             import shutil
             # A disposable installation source is independent of the notebook's
@@ -91,17 +94,33 @@ def main():
     nbformat.write(notebook,work/"executed-run-all.ipynb")
     bundle=work/"workspace/bundle"; source=bundle/"source"
     assert (work/"workspace/course-resume.payload").exists() and (work/"workspace/course-results.zip").exists()
-    assert not list(bundle.rglob("worker-*.sqlite"))
+    workers=list((bundle/"hardware").glob("worker-*.sqlite"))
+    if repair_seed:
+        import sqlite3
+        from contextlib import closing
+        def attempt_count():
+            count=0
+            for index in range(2):
+                with closing(sqlite3.connect((bundle/f"hardware/worker-{index}.sqlite").as_uri()+"?mode=ro",uri=True)) as db:
+                    count+=db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
+            return count
+        assert attempt_count()==21
+        assert (bundle/"repair/original-source/source-manifest.json").is_file()
+        assert not (bundle/"hardware/report.json").exists()
+    else:
+        assert not workers
     config=json.loads((bundle/"operator-config.json").read_bytes())
-    assert config["execute_gpu"] is False and not any(config["authorizations"].values())
+    assert config["execute_gpu"] is False
+    if not repair_seed: assert not any(config["authorizations"].values())
     automatic=json.loads((bundle/"automatic-run.json").read_bytes())
     assert automatic["status"]=="limited_result" and automatic["gates_bypassed"] is False
     base=[python,"-I",source/"scripts/course_kaggle_workflow.py","--root",source,"--bundle",bundle,
           "--config",bundle/"operator-config.json"]
     command("guarded-hardware",base+["--action","hardware"],allowed=(2,))
     blocked=json.loads((bundle/"last-action.json").read_bytes())
-    assert "authorization_missing" in blocked["reason"]
-    assert not list(bundle.rglob("worker-*.sqlite"))
+    assert ("gpu_execution_disabled" if repair_seed else "authorization_missing") in blocked["reason"]
+    if repair_seed: assert attempt_count()==21
+    else: assert not list(bundle.rglob("worker-*.sqlite"))
     command("three-host-checks",[python,"-I",source/"scripts/m5_course_smoke.py","--root",source,
         "--launch",source/"configs/course-smoke-launch.json","--output",work/"unused-host-output","--host-checks"],timeout=180)
     command("delivered-loading-contract",[python,"-I","-c",
@@ -141,7 +160,8 @@ def main():
         delivered_optional_device_map_contract=True,
         intended_main_slots=6280,recorded_main_slots=0,unknown_main_slots=6280,
         seven_figures_svg_png=True,portable_restore_report_bytes_identical=True,
-        native_weights_loaded=False,actual_T4_acceptance=False)
+        native_weights_loaded=False,actual_T4_acceptance=False,
+        repair_resume_embedded=repair_seed,preserved_native_smoke_attempts=21 if repair_seed else 0)
     (work/"delivery-evidence.json").write_text(json.dumps(facts,indent=2)+"\n",encoding="utf-8")
     print(json.dumps(facts,indent=2))
 
