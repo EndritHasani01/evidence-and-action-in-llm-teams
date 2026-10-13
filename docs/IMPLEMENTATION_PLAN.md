@@ -990,6 +990,19 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+On 13 October 2026 the submitted `final-online-2` run completed verified online
+setup and the three affected host checks, then stopped on the adapter's direct
+`hf_device_map` access: the pinned single-device loader legitimately omits that
+annotation. No model generation completed; all 6,280 main logical slots remain
+unknown. The [incident diagnosis and repair proposal](validation/course-kaggle-final-online-2-proposal.md)
+records the exact pinned-wheel cause, CPU reproduction, failed-report resumption
+and cross-package smoke-count defects, and a focused repair/acceptance sequence.
+It is a proposal only; production behavior and the specification remain unchanged.
+The original failure consumed one recorded smoke attempt; a complete fresh
+24-attempt matrix would require an explicitly adopted scope amendment, not a
+counter reset. Submitted artifacts remain unchanged; their resume payload was
+not supplied, so original worker rows could not be audited in this investigation.
+
 The user's `notebooks/run/final-online-1/notebook-exec.ipynb` stopped before model
 calls: Kaggle unpacked the loose gzip input and the notebook retained disabled
 GPU/manual setup defaults. The user authorized automatic GPU mode and timing,
