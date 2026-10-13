@@ -118,10 +118,28 @@ def audit_language_load(model, loading_info):
             or "model.embed_tokens.weight" not in parameters
             or not tied and "lm_head.weight" not in parameters):
         raise ValueError("verify the actual language embedding/output head, including ties")
-    tensors = tuple(parameters.items()) + tuple(model.named_buffers())
+    buffers = dict(model.named_buffers())
+    # NF4 state is not necessarily registered as a parameter or buffer. Audit
+    # the tensor fields of the pinned bitsandbytes QuantState (including nested
+    # double-quantization state); shapes/block sizes remain ordinary metadata.
+    quantization_tensors = {}
+    for name, parameter in parameters.items():
+        state = getattr(parameter, "quant_state", None)
+        for suffix in ("", ".state2"):
+            current = state if not suffix else getattr(state, "state2", None)
+            if current is None:
+                continue
+            for field in ("absmax", "code", "offset"):
+                tensor = getattr(current, field, None)
+                if tensor is not None and hasattr(tensor, "device"):
+                    quantization_tensors[name+".quant_state"+suffix+"."+field] = tensor
+    tensors = tuple(parameters.items()) + tuple(buffers.items()) + tuple(quantization_tensors.items())
+    device_map = getattr(model, "hf_device_map", None)
     if (not tensors or any(t.device.type != "cuda" or t.device.index != 0 for _, t in tensors)
-            or not model.hf_device_map
-            or any(str(device) not in ("0", "cuda:0") for device in model.hf_device_map.values())):
+            or device_map is not None and (not isinstance(device_map, dict) or not device_map
+                or any(type(key) is not str for key in device_map)
+                or any(isinstance(device, bool) or str(device) not in ("0", "cuda:0")
+                       for device in device_map.values()))):
         raise ValueError("one complete local CUDA replica; no CPU/disk offload or device splitting")
     # Ordinary floating tensors are FP16 or supported sensitive FP32; packed
     # bitsandbytes tensors can be uint8. Never blanket-cast the loaded model.
@@ -132,7 +150,12 @@ def audit_language_load(model, loading_info):
                              for key, value in loading_info.items()}, "class": type(model).__name__,
             "parameters": {name: {"shape": list(t.shape), "dtype": str(t.dtype),
                                     "device": str(t.device)} for name, t in parameters.items()},
-            "tied_output_head": tied, "device_map": dict(model.hf_device_map)}
+            "buffers": {name: {"shape": list(t.shape), "dtype": str(t.dtype), "device": str(t.device)}
+                        for name, t in buffers.items()},
+            "quantization_tensors": {name: {"shape": list(t.shape), "dtype": str(t.dtype), "device": str(t.device)}
+                                     for name, t in quantization_tensors.items()},
+            "actual_tensor_devices": sorted({f"{t.device.type}:{t.device.index}" for _, t in tensors}),
+            "tied_output_head": tied, "device_map": dict(device_map) if device_map is not None else None}
 
 
 @dataclass(frozen=True)
@@ -185,6 +208,7 @@ class ModelFactory:
         tokenizer = TokenizerFactory(self.candidate, limits=self.limits)()
         quantization = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
             bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=torch.float16)
+        print("Model load: pinned weights on physical device "+self.cuda_visible_devices, flush=True)
         model, info = AutoModelForCausalLM.from_pretrained(self.candidate.model,
             revision=self.candidate.revision, trust_remote_code=False,
             quantization_config=quantization, dtype=torch.float16,
@@ -200,11 +224,12 @@ class ModelFactory:
                 or actual_quantization.bnb_4bit_use_double_quant is not True
                 or actual_quantization.bnb_4bit_compute_dtype != torch.float16):
             raise ValueError("actual quantization must match explicit NF4/double/FP16 settings")
+        print("Model load: audit actual tensors, quantization and loading diagnostics", flush=True)
         report = audit_language_load(model, info)
         import importlib.metadata
         from transformers import GenerationConfig
         source_module = sys.modules[type(model).__module__]
-        report.update(model=self.candidate.model, revision=self.candidate.revision,
+        report.update(model=self.candidate.model, revision=self.candidate.revision, requested_device_map={"": 0},
                       cuda_visible_devices=self.cuda_visible_devices,
                       device_name=torch.cuda.get_device_name(0), cuda=torch.version.cuda)
         report.update(attention=getattr(model.config, "_attn_implementation", None),

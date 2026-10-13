@@ -10,6 +10,7 @@ import multiprocessing as mp
 from dataclasses import dataclass
 from multiprocessing.connection import wait
 import os
+import traceback
 from queue import Empty, Queue
 from threading import Thread
 from time import monotonic
@@ -53,6 +54,7 @@ def _die_with_owner():
 
 def _serve(factory, connection):
     Thread(target=_die_with_owner, daemon=True).start()
+    phase = "provider_startup"
     try:
         provider = factory()
         if not callable(provider):
@@ -63,6 +65,7 @@ def _serve(factory, connection):
             if request is None:
                 return
             view, rendered, tokenized, seed, settings = request
+            phase = "generation"
             response = provider(view, rendered, tokenized, seed=seed, settings=settings)
             if response is None:
                 response = RecordedFailure("infrastructure_failure", "provider recorded an exhausted failed slot")
@@ -74,7 +77,9 @@ def _serve(factory, connection):
     except (EOFError, BrokenPipeError):
         pass
     except Exception as error:
-        connection.send(("error", f"{type(error).__name__}: {error}"))
+        # Keep the original child stack in the existing durable attempt reason.
+        # A string payload remains compatible with previous provider messages.
+        connection.send(("error", f"{type(error).__name__}: {error}\nphase={phase}\n{traceback.format_exc()}"))
     finally:
         connection.close()
 

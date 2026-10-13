@@ -80,6 +80,47 @@ class InferencePreparationTests(unittest.TestCase):
         model.head.dtype = "torch.float32"
         audit_language_load(model, LOADING_INFO)
 
+    def test_single_device_loader_can_omit_dispatch_annotation(self):
+        model = Qwen3_5ForCausalLM()
+        del model.hf_device_map
+        report = audit_language_load(model, LOADING_INFO)
+        self.assertIsNone(report["device_map"])
+        self.assertFalse(hasattr(model, "hf_device_map"))
+        self.assertEqual(report["actual_tensor_devices"], ["cuda:0"])
+        for device in ("cpu", "meta", "cuda:1"):
+            model.embedding = Tensor(device=device)
+            with self.subTest(device=device), self.assertRaisesRegex(ValueError, "complete local CUDA"):
+                audit_language_load(model, LOADING_INFO)
+
+    def test_optional_annotation_must_be_consistent_and_well_formed(self):
+        for value in ({}, [], {"": "cpu"}, {"": "disk"}, {"": 1}, {"": False}, {1: 0}):
+            model = Qwen3_5ForCausalLM()
+            model.hf_device_map = value
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                audit_language_load(model, LOADING_INFO)
+        for value in (0, "0", "cuda:0"):
+            model.hf_device_map = {"": value}
+            self.assertEqual(audit_language_load(model, LOADING_INFO)["device_map"], {"": value})
+
+    def test_buffers_and_nested_nf4_state_are_audited_without_annotation(self):
+        from types import SimpleNamespace
+        model = Qwen3_5ForCausalLM()
+        del model.hf_device_map
+        buffer = Tensor()
+        model.named_buffers = lambda: iter((("sensitive_buffer", buffer),))
+        nested = Tensor()
+        model.embedding.quant_state = SimpleNamespace(absmax=Tensor(), code=Tensor(), offset=0.0,
+            state2=SimpleNamespace(absmax=nested, code=Tensor()))
+        report = audit_language_load(model, LOADING_INFO)
+        self.assertIn("sensitive_buffer", report["buffers"])
+        self.assertIn("model.embed_tokens.weight.quant_state.state2.absmax", report["quantization_tensors"])
+        for tensor in (buffer, nested):
+            original = tensor.device
+            tensor.device = Tensor(device="cpu").device
+            with self.assertRaises(ValueError):
+                audit_language_load(model, LOADING_INFO)
+            tensor.device = original
+
     def test_loader_sets_visibility_before_any_cuda_call_and_requests_native_nf4(self):
         import os
         from types import SimpleNamespace
