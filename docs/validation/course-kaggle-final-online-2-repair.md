@@ -44,9 +44,25 @@ was corrected to supply the real source-cell globals; the actual setup retry bod
 now passes and preserves original failure logs. Failed transcripts were not
 represented as successful receipts.
 
-Exact delivered notebook/package execution and restore evidence will be added after
-the rebuilt artifacts pass the literal integration check. Production GPU execution
-is not part of these local checks.
+The final delivery uses source `075d10737c5f06a5a0de1122dac0e8236e8aac0a`:
+
+- [Fixed notebook](../../notebooks/run/final-online-2/notebook-fixed.ipynb), identical
+  to `dist/course-kaggle-repaired-final/course_kaggle.ipynb`.
+- `dist/course-kaggle-repaired-final/course-kaggle-dataset.zip`: 4,446,478 bytes,
+  two input files, 72 essential packed members, unchanged 97 candidate package pins.
+- Dataset SHA-256:
+  `c48f0f9143e64c58b38d37b49429dc1c75a247fda14cd0b67785d20fd8b3d5dc`.
+
+The [final delivery receipt](../../notebooks/validation/course-kaggle/final-online-2-repair-delivery-cpu.json)
+passes actual ordinary CPU installation, literal notebook Run All, guarded hardware
+refusal, three host checks, the delivered missing-device-map loading contract, both
+export types, seven SVG/PNG figures, original-source/gzip restoration and byte-identical
+read-only report reproduction. All 6,280 intended main outcomes remain unknown.
+The final notebook only corrects a markdown typo after execution; every executed
+code cell is identical. The source-bound predecessor count cannot be cleared through
+configuration overrides. Original experiment artifacts remain byte-identical.
+No native weights were loaded; actual T4 acceptance and scientific execution remain
+unverified. Production GPU execution is not part of these local checks.
 
 For the first repaired Kaggle run, attach only the new matching compact dataset and
 notebook; keep the old incident/resume separately. Source-bound old calls cannot be

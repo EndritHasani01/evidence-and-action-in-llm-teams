@@ -83,7 +83,7 @@ The dataset contains only a packed research archive and its integrity manifest.
 Cell 3 extracts the required files locally after Kaggle starts the session.
 
 **Hardware → first 90 slots → full pilot → audit and freeze → complete main matrix
-→ independently reproduced analysis ? results and resume ZIPs.**
+→ independently reproduced analysis → results and resume exports.**
 
 Progress appears every 15 seconds; portable backups update every ten minutes.
 No action switching, separate asset upload, or manual stage restart is needed.
