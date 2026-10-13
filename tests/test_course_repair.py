@@ -30,6 +30,10 @@ ROOT = Path(__file__).resolve().parents[1]
 def config():
     value = json.loads((ROOT / "configs/course-kaggle.json").read_bytes())
     value.update(resource_policy="observe", execute_gpu=True, allocated_at=utc(), max_work_seconds=36000)
+    # This suite preserves the earlier incident's 25-attempt contract. The
+    # final-online-4 two-candidate allowance has its own qualification checks.
+    value.update(smoke_attempt_limit=25,smoke_attempt_allowance="final-online-2/one-time-repair")
+    value["budget"]["prior_evidence"] = "final-online-2 retained loader failure; CPU fixture"
     value["authorizations"] = {key: "CPU fixture only" for key in value["authorizations"]}
     return value
 

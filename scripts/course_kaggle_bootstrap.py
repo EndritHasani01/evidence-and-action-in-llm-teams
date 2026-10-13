@@ -31,6 +31,43 @@ from scripts.m5_kaggle_preflight import (PIP_WHEEL_RUNNER, sha256_file, save_jso
     smoke_attempt_usage, smoke_attempt_limit, validate_smoke_predecessor, hardware_matrix_recorded)
 
 
+def qualification_choice(bundle, config):
+    """Derive the next fixed candidate from existing terminal gate evidence.
+
+    No model, dependency imports or new selection store. Incomplete sessions
+    stay on their candidate; a frozen/main candidate can never fall back.
+    """
+    if config.get("candidate_order") != ["9B","4B"]:
+        raise ValueError("qualification order must be the adopted 9B then 4B")
+    prior = 23
+    for label in config["candidate_order"]:
+        target = Path(bundle)/"candidates"/label
+        action = target/"automatic-run.json"
+        run = json.loads((target/"run.json").read_bytes()) if (target/"run.json").exists() else {}
+        result = json.loads(action.read_bytes()) if action.exists() else {}
+        reason = result.get("reason") or ""
+        gate_failure = any(code in reason for code in (
+            "complete_hardware_stress_headroom_cache_and_loading_gate_not_passed",
+            "recorded_model_attempt_failure", "observed_headroom_below_required_1_5_GiB"))
+        capability = target/"capability-gate.json"
+        if "first_90_capability_gate_not_passed" in reason and capability.exists():
+            gate_failure |= json.loads(capability.read_bytes()).get("status") == "failed"
+        pilot = target/"pilot-gate.json"
+        if "complete_pilot_acceptance_not_passed" in reason and pilot.exists():
+            gate = json.loads(pilot.read_bytes())
+            gate_failure |= gate.get("complete") is True and gate.get("audit",{}).get("passed") is True
+        hardware = target/"hardware/report.json"
+        if hardware.exists():
+            report = json.loads(hardware.read_bytes())
+            gate_failure |= "out of memory" in (report.get("root_blocker") or "").lower()
+        if label == "4B" or run.get("freeze") or not gate_failure:
+            return label, prior
+        for path in target.glob("hardware/worker-*.sqlite"):
+            with closing(sqlite3.connect(path.resolve().as_uri()+"?mode=ro",uri=True)) as db:
+                prior += db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
+    raise AssertionError("fixed candidate order exhausted")
+
+
 def preparation_budget(root, bundle, config, saved):
     """Read canonical allocation rows before large downloads, without dependencies.
 
@@ -149,6 +186,7 @@ def online(root, config_path, scratch, output):
         provider_session_seconds=config.get("provider_session_seconds"),release_instructions=config.get("release_instructions",""),
         budget=(saved["budget"] if saved else config["budget"]) if config.get("resource_policy") == "observe" else preparation_budget(root,bundle,config,saved),
         resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000),resume_workers=[],
+        **({"candidate":config["candidate"],"envelope_timeout_seconds":config.get("envelope_timeout_seconds",600)} if config.get("candidate") else {}),
         smoke_attempt_limit=config.get("smoke_attempt_limit",24),smoke_attempt_allowance=config.get("smoke_attempt_allowance"),
         hf_cache=config.get("hf_cache"))
     from scripts.m5_course_smoke_assets import prepare

@@ -33,9 +33,9 @@ if not __package__:
 from recovery.accounting import (BudgetStop, CourseBudget, MonitoringCourseBudget, FINAL, course_admission,
     budget_from_record, format_status, progress_snapshot, timestamp)
 from recovery.evaluate import evaluate_run, read_records
-from recovery.inference import TokenizerFactory
+from recovery.inference import TokenizerFactory, course_candidate
 from recovery.manifests import load_population, load_schedules
-from recovery.prompts import COURSE_LIMITS, render_request, tokenize_request
+from recovery.prompts import COURSE_LIMITS, prompt_profile, render_request, tokenize_request
 from recovery.protocol import GeneratedReply, failed_reply, validate_reply
 from recovery.rounds import deserialize_state, prepare_round, snapshot_bytes
 from recovery.runner import DurableRunner, WorkerReader
@@ -44,7 +44,7 @@ from recovery.storage import RecordedFailure, WorkerStore, record_json, settings
 from recovery.truth import solve_world
 from recovery.workers import LocalScheduler, WorkerInterrupted, WorkerSpec, _own_file
 from scripts.m5_course_smoke import CANDIDATE, SmokeFactory, resources as smoke_resources
-from scripts.m5_course_preparation import read
+from scripts.m5_course_preparation import read, preparation_files
 
 BOUNDS = dict(timeout_seconds=120., termination_seconds=1., heartbeat_seconds=1.)
 AS_OF_SEED = 20261006
@@ -209,7 +209,8 @@ def start_assignment(bundle, stage, config, budget):
 
 def all_workers(bundle):
     ordinary = tuple(p for stage in ("hardware", "development", "main") for p in worker_paths(bundle, stage) if p.exists())
-    return ordinary + refused_workers(bundle)
+    children = tuple(p for child in sorted((Path(bundle)/"candidates").glob("*")) if child.is_dir() for p in all_workers(child))
+    return ordinary + refused_workers(bundle) + children
 
 
 def refused_workers(bundle):
@@ -243,7 +244,7 @@ def record_refused_allocation(root, bundle, config, action, reason, *, devices=N
         return
     stage = "main" if action == "main" else "development"
     worlds, branches = scope(root, bundle, stage)
-    settings = read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")["settings"]
+    settings = read(preparation_files(root,CANDIDATE)["packet"])["settings"]
     saved = read(Path(bundle)/"run.json") if (Path(bundle)/"run.json").exists() else None
     budget = course_budget(config,saved["budget"] if saved else config["budget"])
     label = datetime.fromisoformat(assigned).astimezone(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
@@ -491,7 +492,7 @@ def audit_records(worlds, branches, paths, tokenizer, settings):
                 rendered, tokens = [data["rendered"]], [data["tokenized"]]
             else:
                 before = deserialize_state(data["before"])
-                prepared = prepare_round(before, tokenizer, limits=COURSE_LIMITS)
+                prepared = prepare_round(before, tokenizer, limits=COURSE_LIMITS, profile=prompt_profile(settings))
                 # Include permitted views, exact native requests and pre-delivery state.
                 re_rendered = dict(before=snapshot_bytes(prepared.before).decode("utf-8"), slot=asdict(prepared.slot),
                     rendered=[asdict(r) for r in prepared.rendered], tokenized=[asdict(t) for t in prepared.tokenized])
@@ -499,7 +500,7 @@ def audit_records(worlds, branches, paths, tokenizer, settings):
                     raise ValueError("saved native request/state differs from re-rendering")
                 views, rendered, tokens = prepared.views, data["rendered"], data["tokenized"]
             for i, view in enumerate(views):
-                rendered_now = render_request(view, limits=COURSE_LIMITS)
+                rendered_now = render_request(view, limits=COURSE_LIMITS, profile=prompt_profile(settings))
                 if (record_json(asdict(rendered_now)) != record_json(rendered[i]) or
                         record_json(asdict(tokenize_request(rendered_now, tokenizer, limits=COURSE_LIMITS))) != record_json(tokens[i])):
                     raise ValueError("native rendering/tokenization audit failed")
@@ -635,7 +636,8 @@ def hardware_gate(bundle, review, *, assignment=None):
                     ordinary.append(facts)
         finally:
             store.close()
-    complete_probes = (len(probes) == 2 and all(p.get("input_tokens") == 109851 and p.get("forced_output_tokens") == 256
+    bound_input = review.get("complete_input_tokens_upper",109851)
+    complete_probes = (len(probes) == 2 and all(p.get("input_tokens") == bound_input and p.get("forced_output_tokens") == 256
         and p.get("finite_score_steps") == 256 and p.get("cache", {}).get("initial_empty") is True for p in probes))
     samples = [s for p in ordinary+probes for s in p.get("observed_model_edge_memory", [])]
     observed_peak = max((s["total_bytes"]-s["free_bytes"] for s in samples), default=0)
@@ -658,12 +660,16 @@ def hardware_gate(bundle, review, *, assignment=None):
         and (segment_closed or assignment is not None and same_assignment and quiescent)
         and free_min >= MIN_HEADROOM and (measured or supported) and host_passed and cache_passed)
     return dict(passed=passed, status="passed" if passed else "review_required" if complete_probes and free_min >= MIN_HEADROOM else "incomplete_or_failed",
-        complete_resident_tokens_upper=110107, complete_envelope_probes=len(probes),
+        complete_resident_tokens_upper=bound_input+256, complete_envelope_probes=len(probes),
+        full_envelope_minimum_free_bytes=min((s["free_bytes"] for p in probes for s in p.get("observed_model_edge_memory",[])),default=None),
+        memory_scope="completed model-edge samples; full-envelope acceptance requires both completed probes",
         ordinary_completed=len(ordinary), actual_minimum_free_bytes=free_min if samples else None,
         observed_device_peak_bytes=observed_peak if samples else None,
         complete_live_memory_upper_bound_bytes=bound, review=review, host_checks=host_receipt,
         native_load_checks_passed=valid_loads, provider_release_confirmed=released,
         accounting_segment_closed=segment_closed, inference_processes_quiescent=quiescent,
+        terminal_attempts=[{k:r[k] for k in ("call_id","number","status","reason","timeout_seconds","elapsed_seconds","worker_pid")}
+            for r in all_attempts if r["status"] in ("timeout","infrastructure_failure") and r["call_id"] != "smoke/course-m5/24"],
         acceptance="measured_stress" if measured else "supported_memory_bound",
         note="Measured complete-input stress/headroom acceptance; no formal memory proof claimed" if measured else
             "Physical shape diagnostics alone do not prove a complete allocator/workspace bound; a supported R7 review is required")
@@ -715,7 +721,7 @@ def bind_candidate(root, bundle, config, *, verify_environment=True):
     manifest = read(Path(root)/"source-manifest.json")
     from scripts.m5_course_smoke_assets import source_identity
     source_identity(Path(root), manifest)
-    prepared = read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
+    prepared = read(preparation_files(root,CANDIDATE)["packet"])
     budget = accepted_budget(bundle, config["budget"],observe=config.get("resource_policy") == "observe")
     assets = read(config["assets_receipt"])
     for name, version in assets["versions"].items():
@@ -797,6 +803,8 @@ def hardware(root, bundle, config):
         hf_cache=config["hf_cache"], assets_receipt=config["assets_receipt"],
         source_manifest=str(Path(root)/"source-manifest.json"), resume_workers=[], complete_envelope_diagnostics=True)
     launch["continuous_assignment"] = config.get("continuous_assignment", False)
+    if config.get("candidate"):
+        launch.update(candidate=config["candidate"],envelope_timeout_seconds=config.get("envelope_timeout_seconds",600))
     launch.update(resource_policy=config.get("resource_policy"),session_limit_seconds=config.get("max_work_seconds",36000),
         smoke_attempt_limit=config.get("smoke_attempt_limit",24),smoke_attempt_allowance=config.get("smoke_attempt_allowance"))
     launch["prior_allocation_workers"] = [str(p) for p in refused_workers(bundle)]
@@ -818,7 +826,7 @@ def execute(root, bundle, config, action):
         raise BudgetStop("complete_hardware_resource_release_and_R7_gate_not_passed")
     from scripts.m5_course_smoke_assets import verify_assets
     verify_assets(Path(root), dict(source_manifest=str(Path(root)/"source-manifest.json"),
-        assets_receipt=config["assets_receipt"], hf_cache=config["hf_cache"]))
+        assets_receipt=config["assets_receipt"], hf_cache=config["hf_cache"],candidate=config.get("candidate")))
     run = bind_candidate(root, bundle, config)
     if action == "main" and not run["freeze"]:
         raise BudgetStop("explicit_frozen_main_admission_missing")
@@ -857,7 +865,7 @@ def execute(root, bundle, config, action):
         raise BudgetStop("insufficient_session_time_for_a_complete_bounded_round_backup_and_release")
     os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1", HF_HUB_CACHE=config["hf_cache"])
     paths = worker_paths(bundle, stage)
-    specs = [WorkerSpec(path, SmokeFactory(physical), cuda_visible_devices=physical, allocated_device=device,
+    specs = [WorkerSpec(path, SmokeFactory(physical,CANDIDATE), cuda_visible_devices=physical, allocated_device=device,
         allocated_at=utc_now() if config.get("continuous_assignment") else config["allocated_at"],
         continuing_assignment=continuing, provider_billing=dict(provider="kaggle", authorization=authorization,
             measurement_scope="observed_notebook_interval" if config.get("resource_policy") == "observe" else "provider_assignment",
@@ -1003,7 +1011,7 @@ def analyze(root, bundle, config):
     from recovery.report import report_run, write_report
     run_path = Path(bundle)/"run.json"
     run = read(run_path) if run_path.exists() else None
-    settings = run["settings"] if run else read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")["settings"]
+    settings = run["settings"] if run else read(preparation_files(root,CANDIDATE)["packet"])["settings"]
     if (Path(bundle)/"hardware/report.json").exists() and all(p.exists() for p in worker_paths(bundle, "hardware")):
         save(Path(bundle)/"hardware-gate.json", hardware_gate(bundle, config.get("hardware_review", {})))
     tokenizer = TokenizerFactory(CANDIDATE, str(Path(root)/"metadata/4B"), COURSE_LIMITS)()
@@ -1127,7 +1135,11 @@ def run_all(root, bundle, config):
             result = hardware(root, bundle, config)
             record("hardware", result)
             if result.get("root_blocker") or result.get("smoke", {}).get("stop_reason"):
-                raise BudgetStop(result.get("root_blocker") or result["smoke"]["stop_reason"])
+                terminal = result.get("smoke",{}).get("terminal_failure")
+                reason = result.get("root_blocker") or result["smoke"]["stop_reason"]
+                if terminal:
+                    reason += ": "+terminal["call_id"]+" | "+terminal["reason"]
+                raise BudgetStop(reason)
         gate = hardware_gate(bundle, config.get("hardware_review", {}), assignment=config["allocated_at"])
         save(Path(bundle)/"hardware-gate.json", gate)
         if not gate["passed"]:
@@ -1232,6 +1244,97 @@ def run_all(root, bundle, config):
     return result
 
 
+def run_qualification(root, bundle, config):
+    """Two explicit source-bound bundles; existing pipeline owns every stage."""
+    from copy import deepcopy
+    from scripts.course_kaggle_bootstrap import qualification_choice
+    from scripts.m5_course_smoke_assets import download_weights_stdlib, require_space
+    from scripts.m5_course_smoke import check_hardware_plan
+    global CANDIDATE
+    bundle = Path(bundle)
+    summaries = []
+    for _ in range(2):
+        label, prior = qualification_choice(bundle,config)
+        CANDIDATE = course_candidate(label)
+        child = bundle/"candidates"/label
+        selected = deepcopy(config)
+        selected.pop("candidate_order",None)
+        selected["candidate"] = label
+        selected["budget"].update(prior_smoke_attempts=prior,
+            prior_evidence=f"final-online-4 retained 23 original preparation attempts; earlier candidate hardware adds {prior-23} canonical attempts")
+        selected["hardware_review"] = read(preparation_files(root,CANDIDATE)["review"])
+        initialize(root,child)
+        own_assets = child/"asset-receipt.json"
+        if own_assets.exists():
+            selected["assets_receipt"] = str(own_assets)
+        save(child/"operator-config.json",selected)
+        if selected.get("execute_gpu"):
+            assets = read(selected["assets_receipt"])
+            if (assets["model"],assets["revision"]) != (CANDIDATE.model,CANDIDATE.revision):
+                # Only the fallback weights change; reuse the verified installed
+                # environment. Real native CPU preflight precedes its download.
+                tokenizer = TokenizerFactory(CANDIDATE,str(Path(root)/"metadata/4B"),COURSE_LIMITS)()
+                packet = read(preparation_files(root,CANDIDATE)["packet"])
+                contract = check_hardware_plan(root,packet,tokenizer)
+                from tests.generation_checks import check_generation_contract
+                contract["generation_contract"] = check_generation_contract(tokenizer,packet["settings"])
+                save(child/"environment-receipts/hardware-plan-contract.json",contract)
+                require_authorization(selected,"weights")
+                from scripts.m5_kaggle_preflight import command
+                inspection = read(preparation_files(root,CANDIDATE)["inspection"])
+                require_space(Path(selected["hf_cache"]),child,inspection["checkpoint_index"]["total_checkpoint_bytes"]+512*1024**2)
+                seconds = min(900, int(session_window(selected))-150)
+                if seconds < 1:
+                    raise BudgetStop("session_window_exhausted_before_fallback_download")
+                receipt = child/"environment-receipts/checkpoint.json"
+                command(child/"environment-receipts","stage-fallback-checkpoint",
+                    [sys.executable,"-I","-S",Path(root)/"scripts/m5_course_smoke_assets.py","weights",
+                     "--root",root,"--manifest",Path(root)/"source-manifest.json","--cache",selected["hf_cache"],
+                     "--receipt",receipt,"--stdlib","--range-bytes",str(16*1024**2),"--candidate",label],
+                    deadline=monotonic()+seconds+20,timeout=seconds,cwd=child,env=dict(os.environ),stream=True)
+                staged = read(receipt)
+                assets.update(model=CANDIDATE.model,revision=CANDIDATE.revision,checkpoint_files=staged["checkpoint_files"])
+                selected["assets_receipt"] = str(child/"asset-receipt.json")
+                save(selected["assets_receipt"],assets)
+                save(child/"operator-config.json",selected)
+        # Resume the selected fallback's exact asset binding rather than the
+        # root setup's first-candidate receipt.
+        own_assets = child/"asset-receipt.json"
+        if own_assets.exists():
+            selected["assets_receipt"] = str(own_assets)
+        elif selected.get("assets_receipt"):
+            shutil.copyfile(selected["assets_receipt"],own_assets)
+            selected["assets_receipt"] = str(own_assets)
+        result = run_all(root,child,selected)
+        save(child/"last-action.json",result)
+        summaries.append(dict(candidate=label,status=result["status"],reason=result.get("reason")))
+        # Keep the root's selected model explicit for CPU reporting and resume.
+        config["candidate"] = label
+        if selected.get("assets_receipt"):
+            config["assets_receipt"] = selected["assets_receipt"]
+        save(bundle/"operator-config.json",config)
+        current_results = child.parent/"course-results.zip"
+        if current_results.exists():
+            shutil.copyfile(current_results,bundle.parent/"course-results.zip")
+        analysis = result.get("analysis")
+        if analysis and analysis.get("report"):
+            result["report"] = "candidates/"+label+"/"+analysis["report"]
+            save(bundle/"analysis-receipt.json",dict(analysis,report=result["report"]))
+            result["analysis"] = dict(analysis,report=result["report"])
+        physical = 23
+        for path in (bundle/"candidates").glob("*/hardware/worker-*.sqlite"):
+            with closing(sqlite3.connect(path.resolve().as_uri()+"?mode=ro",uri=True)) as db:
+                physical += db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
+        result.update(selected_candidate=label,candidate_results=summaries,cumulative_preparation_attempts=physical,preparation_attempt_limit=71)
+        save(bundle/"last-action.json",result)
+        backup_bundle(bundle,bundle.parent/"course-resume.payload")
+        next_label,_ = qualification_choice(bundle,config)
+        if next_label == label or not selected.get("execute_gpu"):
+            return result
+        print("Qualification: retained "+label+" failure; proceeding to the declared "+next_label+" fallback",flush=True)
+    return result
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
@@ -1242,15 +1345,21 @@ def main(argv=None):
     root, bundle = args.root.resolve(), args.bundle.resolve()
     os.environ["MPLBACKEND"] = "Agg"  # Notebook inline backends must not leak into ordinary CPU exports.
     config = read(args.config)
+    if config.get("candidate"):
+        config["hardware_review"] = read(preparation_files(root,course_candidate(config["candidate"]))["review"])
+    global CANDIDATE
+    if config.get("candidate"):
+        CANDIDATE = course_candidate(config["candidate"])
     result = dict(action=args.action, status="blocked", inference_called=False)
     try:
-        initialize(root, bundle)
+        if not config.get("candidate_order"):
+            initialize(root, bundle)
         if config.get("resource_policy") == "observe":
             end_observations(bundle,current_assignment=config.get("allocated_at"))
         recover_bootstrap_refusals(root,bundle,config)
         confirm_previous_release(bundle, config.get("previous_session_release"))
         if args.action == "run_all":
-            result = run_all(root, bundle, config)
+            result = run_qualification(root,bundle,config) if config.get("candidate_order") else run_all(root, bundle, config)
         elif args.action == "hardware":
             result = hardware(root, bundle, config)
             if result.get("root_blocker"):
@@ -1260,10 +1369,19 @@ def main(argv=None):
         elif args.action == "freeze":
             result = freeze(root, bundle, config)
         elif args.action == "analyze":
-            result = analyze(root, bundle, config)
+            if config.get("candidate_order"):
+                child = bundle/"candidates"/config["candidate"]
+                selected = read(child/"operator-config.json") if (child/"operator-config.json").exists() else config
+                initialize(root,child)
+                result = analyze(root,child,selected)
+                result["report"] = "candidates/"+config["candidate"]+"/"+result["report"]
+                save(bundle/"analysis-receipt.json",result)
+            else:
+                result = analyze(root, bundle, config)
         elif args.action in ("inspect", "status"):
-            run = read(bundle/"run.json") if (bundle/"run.json").exists() else None
-            result = {stage:snapshot(root, bundle, stage, run) for stage in ("development", "main")}
+            selected_bundle = bundle/"candidates"/config["candidate"] if config.get("candidate_order") else bundle
+            run = read(selected_bundle/"run.json") if (selected_bundle/"run.json").exists() else None
+            result = {stage:snapshot(root, selected_bundle, stage, run) for stage in ("development", "main")}
             for stage in result:
                 print(stage+"\n"+format_status(result[stage]), flush=True)
         elif args.action == "export":

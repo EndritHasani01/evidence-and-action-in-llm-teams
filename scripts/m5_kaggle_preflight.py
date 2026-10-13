@@ -153,12 +153,15 @@ def validate_smoke_predecessor(root, budget):
 def smoke_attempt_limit(launch):
     """Only the original ceiling or the explicitly adopted incident allowance."""
     limit = launch.get("smoke_attempt_limit", 24)
-    if type(limit) is not int or limit not in (24, 25):
+    if type(limit) is not int or limit not in (24, 25, 71):
         raise ValueError("unapproved_smoke_attempt_limit")
     if limit == 25 and (launch.get("smoke_attempt_allowance") != "final-online-2/one-time-repair"
             or (launch.get("budget", {}).get("prior_smoke_attempts") or 0) < 1
             or "final-online-2" not in launch.get("budget", {}).get("prior_evidence", "")):
         raise ValueError("one_time_smoke_allowance_requires_retained_incident_evidence")
+    if limit == 71 and (launch.get("smoke_attempt_allowance") != "final-online-4/qualification" or
+            (launch.get("budget",{}).get("prior_smoke_attempts") or 0) < 23):
+        raise ValueError("qualification_allowance_requires_retained_23_attempts")
     return limit
 
 

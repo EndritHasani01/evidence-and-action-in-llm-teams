@@ -90,6 +90,27 @@ _COMMON_INSTRUCTION = (
 )
 COMMON_INSTRUCTION = _COMMON_INSTRUCTION.format(**asdict(THESIS_LIMITS))
 
+COMPACT_PROFILE = "course_compact_v1"
+COMPACT_INSTRUCTION = (
+    " Return compact single-line JSON, without Markdown or explanation. "
+    "candidate_shape describes the required answer; never copy its type, keys, "
+    "length or values schema fields into your candidate. Numeric candidates are "
+    "flat arrays of integers of exactly the declared length, in assigned output "
+    "coordinate order; input ownership does not change output coordinates. "
+    "BFS candidates map the canonical node keys directly to integer distances. "
+    "Each send uses to, source_refs and text, never recipient or and. "
+    "Full-information controls return the complete answer and send=[]."
+)
+
+
+def prompt_profile(settings):
+    profile = settings.get("prompt_profile", "original")
+    if profile not in ("original", COMPACT_PROFILE):
+        raise ValueError("unknown persisted prompt profile")
+    if profile == COMPACT_PROFILE and limits_from_settings(settings) != COURSE_LIMITS:
+        raise ValueError("compact instructions belong only to the adopted course")
+    return profile
+
 
 def _task_text(view: PeerView) -> tuple[str, str]:
     if view.task is Task.TOP_K:
@@ -163,7 +184,7 @@ class TokenizedRequest:
         return len(self.input_ids)
 
 
-def render_request(view: PeerView, *, limits: ProtocolLimits = THESIS_LIMITS) -> RenderedRequest:
+def render_request(view: PeerView, *, limits: ProtocolLimits = THESIS_LIMITS, profile="original") -> RenderedRequest:
     if type(view) is not PeerView:
         raise ValueError("renderer accepts only a permitted PeerView")
     if type(limits) is not ProtocolLimits:
@@ -246,7 +267,12 @@ def render_request(view: PeerView, *, limits: ProtocolLimits = THESIS_LIMITS) ->
                 for entry in view.source_deliveries]}}
     # Never parse/reformat own replies, sort history, or archive resolved sources.
     # Newline boundaries isolate each literal block for native NFC normalization.
-    content = _COMMON_INSTRUCTION.format(**asdict(limits)) + DATA_MARKER + json.dumps(
+    if profile not in ("original", COMPACT_PROFILE) or profile == COMPACT_PROFILE and limits != COURSE_LIMITS:
+        raise ValueError("unreviewed prompt profile/limits")
+    instruction = _COMMON_INSTRUCTION.format(**asdict(limits))
+    if profile == COMPACT_PROFILE:
+        instruction += COMPACT_INSTRUCTION
+    content = instruction + DATA_MARKER + json.dumps(
         data, ensure_ascii=True, separators=(",", ":"), allow_nan=False)
     content += "".join(header + payload + "\n" for header, payload in blocks)
     # The native template strips outer message whitespace. A fixed footer

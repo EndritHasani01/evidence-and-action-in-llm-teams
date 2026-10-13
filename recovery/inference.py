@@ -12,6 +12,7 @@ import sys
 from .prompts import (COURSE_LIMITS, THESIS_LIMITS, ProtocolLimits, limits_from_settings,
                       render_request, tokenize_request)
 from .t4_attention import PREFILL_CHUNK_SIZE, T4_ATTENTION
+from time import monotonic
 
 
 @dataclass(frozen=True)
@@ -19,6 +20,7 @@ class Candidate:
     model: str = "Qwen/Qwen3.5-9B"
     revision: str = "c202236235762e1c871ad0ccb60c8ee5ba337b9a"
     attention: str = "sdpa"
+    prompt_profile: str = "original"
 
     def __post_init__(self):
         if (self.model, self.revision) not in (
@@ -28,10 +30,20 @@ class Candidate:
             raise ValueError("use the reviewed 9B candidate or prescribed 4B fallback revision")
         if type(self.attention) is not str or self.attention not in ("sdpa", T4_ATTENTION):
             raise ValueError("use baseline SDPA or the explicit unaccepted T4 attention candidate")
+        if self.prompt_profile not in ("original", "course_compact_v1"):
+            raise ValueError("use the original or adopted compact course instructions")
 
 
 QWEN_9B = Candidate()
 QWEN_4B = Candidate("Qwen/Qwen3.5-4B", "851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a")
+
+
+def course_candidate(label):
+    from dataclasses import replace
+    if label not in ("9B", "4B"):
+        raise ValueError("only the two adopted course candidates are permitted")
+    return replace(QWEN_9B if label == "9B" else QWEN_4B,
+                   attention=T4_ATTENTION, prompt_profile="course_compact_v1")
 EOS_IDS = (248044, 248046)
 PAD_ID = 248044
 # Only a final im_end is verified message transport. endoftext is an EOS stop,
@@ -43,8 +55,10 @@ def candidate_settings(tokenizer, candidate=QWEN_9B, *, limits: ProtocolLimits =
     """Save actual template inputs and all deliberate sampling/termination choices."""
     if type(limits) is not ProtocolLimits:
         raise ValueError("settings require adopted protocol limits")
-    if limits == COURSE_LIMITS and candidate.model != QWEN_4B.model:
+    if limits == COURSE_LIMITS and candidate.model != QWEN_4B.model and candidate.prompt_profile != "course_compact_v1":
         raise ValueError("course settings require the adopted pinned 4B candidate")
+    if candidate.prompt_profile != "original" and limits != COURSE_LIMITS:
+        raise ValueError("compact instructions require course limits")
     if (tokenizer.eos_token_id != TRANSPORT_ID or tokenizer.pad_token_id != PAD_ID
             or tokenizer.convert_ids_to_tokens(TRANSPORT_ID) != "<|im_end|>"
             or tokenizer.convert_ids_to_tokens(PAD_ID) != "<|endoftext|>"
@@ -71,6 +85,8 @@ def candidate_settings(tokenizer, candidate=QWEN_9B, *, limits: ProtocolLimits =
         settings["generation"]["prefill_chunk_size"] = PREFILL_CHUNK_SIZE
     if limits != THESIS_LIMITS:
         settings["protocol_limits"] = asdict(limits)
+    if candidate.prompt_profile != "original":
+        settings["prompt_profile"] = candidate.prompt_profile
     return settings
 
 
@@ -275,24 +291,26 @@ class TransformersBackend:
         if settings_json(settings) != settings_json(self.settings):
             raise ValueError("exact model/template/decoding settings differ")
         if (len(tokenized.input_ids) + self.limits.output_tokens > self.limits.context_tokens
-                or render_request(view, limits=self.limits) != rendered
+                or render_request(view, limits=self.limits, profile=self.settings.get("prompt_profile", "original")) != rendered
                 or record_json(asdict(tokenize_request(rendered, self.tokenizer, limits=self.limits)))
                 != record_json(asdict(tokenized))):
             raise ValueError("exact permitted request/tokenization/capacity equality failed before generation")
         return self._generate(tokenized, seed)
 
-    def probe_envelope(self, tokenized, *, seed):
+    def probe_envelope(self, tokenized, *, seed, expected_input_tokens=109851):
         """A separately recorded hardware diagnostic, never a scientific reply.
 
         Force the entire output reserve at the proved complete input bound.
         Only this diagnostic suppresses EOS. Ordinary peer calls still check
         exact permitted rendering and use the unchanged sampling settings.
         """
-        if self.limits != COURSE_LIMITS or self.settings["model"] != QWEN_4B.model:
+        if self.limits != COURSE_LIMITS:
             raise ValueError("the envelope diagnostic belongs only to the course candidate")
         if type(seed) is not int or not 0 <= seed < 2**63:
             raise ValueError("use the recorded diagnostic seed")
-        if len(tokenized.input_ids) != 109851 or len(tokenized.attention_mask) != 109851:
+        if (type(expected_input_tokens) is not int or expected_input_tokens <= 0
+                or expected_input_tokens + self.limits.output_tokens > self.limits.context_tokens
+                or len(tokenized.input_ids) != expected_input_tokens or len(tokenized.attention_mask) != expected_input_tokens):
             raise ValueError("the pinned complete course input envelope is required")
         if any(value != 1 for value in tokenized.attention_mask):
             raise ValueError("probe the full unmasked input")
@@ -301,7 +319,7 @@ class TransformersBackend:
         if len(reply.response.token_ids) != 256:
             raise ValueError("the envelope diagnostic must execute all 256 output steps")
         return MeasuredReply(reply.response, reply.peak_memory_bytes, dict(reply.backend,
-            hardware_diagnostic=True, input_tokens=109851, resident_tokens_with_reserve=110107,
+            hardware_diagnostic=True, input_tokens=expected_input_tokens, resident_tokens_with_reserve=expected_input_tokens+256,
             forced_output_tokens=256, eos_suppressed_for_diagnostic=True))
 
     def _generate(self, tokenized, seed, *, force_output_reserve=False):
@@ -315,6 +333,17 @@ class TransformersBackend:
         handles = []
         cache_checks = {"calls": 0, "initial_empty": True, "same_call_cache": True}
         scores = _FiniteScores(torch)
+        started, last_progress, prefilled, pending = monotonic(), 0., 0, 0
+        def progress(force=False):
+            nonlocal last_progress
+            now = monotonic()
+            if force or now-last_progress >= 15:
+                phase = "prefill" if prefilled < len(tokenized.input_ids) else "decode"
+                print(f"Inference pid={self.pid} device={os.environ.get('CUDA_VISIBLE_DEVICES', '0')} "
+                    f"seed={seed} phase={phase} elapsed={now-started:.1f}s "
+                    f"input={prefilled}/{len(tokenized.input_ids)} decode={scores.steps}/{self.limits.output_tokens} "
+                    f"peak_reserved_mib={torch.cuda.max_memory_reserved(0)/2**20:.1f}", flush=True)
+                last_progress = now
         try:
             torch.manual_seed(seed)
             torch.cuda.manual_seed_all(seed)
@@ -324,12 +353,23 @@ class TransformersBackend:
                 raise ValueError("a new call must start with empty KV/recurrent state")
 
             def check_cache(module, args, kwargs):
+                nonlocal pending
                 cache_checks["calls"] += 1
                 if kwargs.get("past_key_values") is not cache:
                     cache_checks["same_call_cache"] = False
                     raise ValueError("generation replaced or reused an unowned cache")
+                ids = kwargs.get("input_ids")
+                pending = int(ids.shape[-1]) if ids is not None else 0
+                progress()
+
+            def completed_forward(module, args, output):
+                nonlocal prefilled
+                previous = prefilled
+                prefilled = min(len(tokenized.input_ids), prefilled+pending)
+                progress(force=previous < len(tokenized.input_ids) and prefilled == len(tokenized.input_ids))
 
             handles.append(self.model.register_forward_pre_hook(check_cache, with_kwargs=True))
+            handles.append(self.model.register_forward_hook(completed_forward))
             inputs = torch.tensor([tokenized.input_ids], dtype=torch.long, device="cuda:0")
             mask = torch.tensor([tokenized.attention_mask], dtype=torch.long, device="cuda:0")
             # A fresh config avoids inherited checkpoint penalties, stopping
@@ -347,6 +387,7 @@ class TransformersBackend:
                     generation_config=config, past_key_values=cache,
                     logits_processor=LogitsProcessorList([scores]))
             torch.cuda.synchronize(0)
+            progress(force=True)
             sequences = output.sequences.tolist()
             if (len(sequences) != 1 or sequences[0][:len(tokenized.input_ids)] != list(tokenized.input_ids)
                     or not cache_checks["calls"] or not scores.steps):

@@ -5,7 +5,26 @@ and import its matching **course_kaggle.ipynb**. Select **T4 x2**, enable **Inte
 then **Run All**. No budget, approval or memory-proof forms are required.
 With Accelerator None, the same notebook produces a CPU feasibility report.
 
-For the **final-online-3 repair**, upload the ZIP and matching notebook from
+For the **final-online-4 repair**, use `dist/course-kaggle-final-online-4`.
+Attach only its dataset for the first run; **do not attach an old final-online-3
+or final-online-4 resume payload**. The reviewed model/prompt changed, so this
+package starts fresh candidate bundles. The old 23 attempts remain counted and
+their original evidence remains preserved in the repository. The dataset ZIP
+contains only two opaque input files: packed research source and its manifest.
+It contains no checkpoint, dependency wheels or old experiment databases.
+
+Run All qualifies **Qwen3.5-9B first**, then **4B only if the declared pre-main
+qualification fails**. An interrupted session resumes the same candidate;
+incomplete evidence, a raw/effect audit defect or frozen/main failure cannot
+switch models. Both use identical compact JSON instructions, 256/64 limits and
+the original development/main schedules. The renewed complete-input bound is
+110,416 tokens plus 256 output tokens. Only the two hardware envelope probes
+have 600-second deadlines; ordinary research calls remain at 120 seconds.
+Each candidate has at most 24 hardware attempts; 23 historical plus at most 48
+new attempts give the adopted cumulative 71 ceiling. No failed reply is retried.
+First-90 and complete-pilot gates remain unchanged.
+
+The earlier **final-online-3 repair** remains preserved. Its ZIP and notebook from
 `dist/course-kaggle-final-online-3`. Attach only that new dataset for this first
 repaired run. It includes a reviewed resume seed: all 21 completed native probes,
 the original failed-load predecessor, unchanged worker databases, old source and

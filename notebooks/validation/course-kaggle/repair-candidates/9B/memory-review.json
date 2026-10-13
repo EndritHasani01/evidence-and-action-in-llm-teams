@@ -1,0 +1,66 @@
+{
+  "acceptance": "measured_stress",
+  "model": "Qwen/Qwen3.5-9B",
+  "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+  "prompt_profile": "course_compact_v1",
+  "complete_input_tokens_upper": 110416,
+  "complete_resident_tokens_upper": 110672,
+  "accounting": [
+    {
+      "task": "top_k",
+      "size": "fallback",
+      "nontext_bytes": 9866,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 110287,
+      "resident_tokens_upper": 110543
+    },
+    {
+      "task": "prefix_sum",
+      "size": "fallback",
+      "nontext_bytes": 9958,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 110379,
+      "resident_tokens_upper": 110635
+    },
+    {
+      "task": "difference_array",
+      "size": "fallback",
+      "nontext_bytes": 9995,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 110416,
+      "resident_tokens_upper": 110672
+    },
+    {
+      "task": "distributed_sort",
+      "size": "fallback",
+      "nontext_bytes": 9990,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 110411,
+      "resident_tokens_upper": 110667
+    },
+    {
+      "task": "bfs_distance",
+      "size": "fallback",
+      "nontext_bytes": 7579,
+      "template_wrapper_bytes": 69,
+      "own_payload_tokens_upper": 57344,
+      "prose_payload_tokens_upper": 43008,
+      "input_tokens_upper": 108000,
+      "resident_tokens_upper": 108256
+    }
+  ],
+  "additional_instruction_ascii_bytes": 565,
+  "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+  "prior_complete_proof": "notebooks/validation/course-m5-r7/native-tightening-source.json",
+  "gpu_execution": false,
+  "physical_memory_accepted": false,
+  "required_free_headroom_bytes": 1610612736
+}

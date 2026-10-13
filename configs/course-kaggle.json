@@ -1,7 +1,7 @@
 {
   "execute_gpu": false,
-  "smoke_attempt_limit": 25,
-  "smoke_attempt_allowance": "final-online-2/one-time-repair",
+  "smoke_attempt_limit": 71,
+  "smoke_attempt_allowance": "final-online-4/qualification",
   "authorizations": {
     "weights": "",
     "hardware": "",
@@ -35,8 +35,8 @@
     "prior_other_course_gpu_hours": null,
     "prior_other_overall_gpu_hours": null,
     "prior_smoke_gpu_hours": null,
-    "prior_smoke_attempts": 1,
-    "prior_evidence": "final-online-2 loader defect: notebooks/validation/course-kaggle/repair-predecessor.json; original worker databases unavailable; GPU-hour history remains unknown"
+    "prior_smoke_attempts": 23,
+    "prior_evidence": "final-online-4 original 22 worker attempts plus retained final-online-2 loader failure: notebooks/validation/course-kaggle/repair-candidates/predecessor.json; GPU-hour history remains unknown"
   },
   "hardware_review": {
     "accepted": false,
@@ -48,5 +48,11 @@
     "timeout_120_seconds_adequate": false
   },
   "figures": true,
-  "analysis_as_of": null
+  "analysis_as_of": null,
+  "candidate": "9B",
+  "candidate_order": [
+    "9B",
+    "4B"
+  ],
+  "envelope_timeout_seconds": 600
 }

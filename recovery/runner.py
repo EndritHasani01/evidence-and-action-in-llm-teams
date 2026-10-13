@@ -17,7 +17,7 @@ from langgraph.graph import END, START, StateGraph
 from .attempts import ProcessProvider
 from .events import start_continuation
 from .manifests import _branch
-from .prompts import COURSE_LIMITS, limits_from_settings, render_request, tokenize_request
+from .prompts import COURSE_LIMITS, limits_from_settings, prompt_profile, render_request, tokenize_request
 from .protocol import GeneratedReply, failed_reply, validate_reply
 from .replay import commit_continuation_round, obtain_continuation_round
 from .rounds import (RoundResult, commit_round, deserialize_state, initial_branch,
@@ -208,7 +208,7 @@ class DurableRunner:
         self.store.check_run(world, branch, settings)
         view = initial_view(world.world if branch.event == "original" else world.event_world(branch.event), None)
         limits = limits_from_settings(settings)
-        rendered = render_request(view, limits=limits)
+        rendered = render_request(view, limits=limits, profile=prompt_profile(settings))
         tokenized = tokenize_request(rendered, self.tokenizer, limits=limits)
         self.store.prepare_control(branch, settings_json(settings), view, rendered, tokenized)
         raw = self._generate(branch.calls[0], view, rendered, tokenized,
@@ -224,7 +224,8 @@ class DurableRunner:
         if state.next_slot is None or state.next_slot.round_number != checkpoint["round_number"]:
             raise ValueError("round differs from its committed starting checkpoint")
         requests = prepare_round(state, self.tokenizer,
-                                 limits=limits_from_settings(json.loads(checkpoint["settings_json"])))
+                                 limits=limits_from_settings(json.loads(checkpoint["settings_json"])),
+                                 profile=prompt_profile(json.loads(checkpoint["settings_json"])))
         self.store.prepare(branch, checkpoint["settings_json"], requests)
         return {"round_number": requests.slot.round_number}
 
@@ -237,7 +238,8 @@ class DurableRunner:
         if (saved_branch != branch or settings != checkpoint["settings_json"]
                 or requests.before != deserialize_state(checkpoint["committed"])
                 or requests != prepare_round(requests.before, self.tokenizer,
-                                             limits=limits_from_settings(json.loads(settings)))):
+                                             limits=limits_from_settings(json.loads(settings)),
+                                             profile=prompt_profile(json.loads(settings)))):
             raise ValueError("frozen requests/settings/state/tokenization equality failed")
         calls = tuple(c for c in branch.calls if c.round_number == r)
 

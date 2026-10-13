@@ -47,13 +47,33 @@ def cpu_candidate_wheels(manifest):
         if w["name"] not in excluded and not w["name"].startswith("nvidia-")]
 
 
+def inspection_path(root, label=None):
+    if label is not None:
+        if label not in ("9B", "4B"):
+            raise ValueError("unreviewed course candidate")
+        return Path(root)/"notebooks/validation/course-kaggle/repair-candidates"/label/"inspection.json"
+    return Path(root)/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json"
+
+
+def metadata_members(manifest, model):
+    result = {Path(p).name:(p,v) for p,v in manifest["members"].items() if p.startswith("metadata/4B/")}
+    if model.endswith("-9B"):
+        result.update({Path(p).name:(p,v) for p,v in manifest["members"].items() if p.startswith("metadata/9B/")})
+    return result
+
+
 def verify_assets(root, launch):
-    from scripts.m5_course_preparation import CANDIDATE
     manifest, assets = read(launch["source_manifest"]), read(launch["assets_receipt"])
     source_identity(root,manifest)
     if assets["source_commit"] != manifest["source_baseline_commit"]:
         raise ValueError("CPU assets belong to a different committed source")
-    if (assets["model"],assets["revision"]) != (CANDIDATE.model,CANDIDATE.revision):
+    label = launch.get("candidate") or ("9B" if assets["model"].endswith("-9B") else None)
+    if label is None:
+        from scripts.m5_course_preparation import CANDIDATE
+        inspection = dict(model=CANDIDATE.model,revision=CANDIDATE.revision)
+    else:
+        inspection = read(inspection_path(root,label))
+    if (assets["model"],assets["revision"]) != (inspection["model"],inspection["revision"]):
         raise ValueError("CPU assets candidate differs")
     for name, version in assets["versions"].items():
         if importlib.metadata.version(name) != version:
@@ -66,7 +86,7 @@ def verify_assets(root, launch):
     if package == (root/"recovery").resolve():
         raise ValueError("GPU runner must use ordinary installed recovery, not the source checkout")
     cache = Path(launch["hf_cache"]).resolve()
-    snapshot = cache/("models--"+CANDIDATE.model.replace("/","--"))/"snapshots"/CANDIDATE.revision
+    snapshot = cache/("models--"+inspection["model"].replace("/","--"))/"snapshots"/inspection["revision"]
     for name, wanted in assets["checkpoint_files"].items():
         path = snapshot/name
         if not path.is_file() or path.stat().st_size != wanted["bytes"] or sha256_file(path) != wanted["sha256"]:
@@ -104,10 +124,10 @@ def download_weights(root, manifest, cache, receipt):
         checkpoint_files=expected,snapshot=str(snapshot),gpu_execution=False,model_weights_loaded=False))
 
 
-def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None):
+def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None, candidate=None):
     """Download-only native LFS verification, without importing inference packages."""
     from urllib.request import Request, urlopen
-    inspection = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
+    inspection = read(inspection_path(root,candidate))
     model, revision = inspection["model"], inspection["revision"]
     with urlopen(Request(f"https://huggingface.co/api/models/{model}/revision/{revision}?blobs=true",
             headers={"User-Agent":"recovery-course-asset-preparation"}),timeout=30) as response:
@@ -149,14 +169,12 @@ def download_weights_stdlib(root, manifest, cache, receipt, *, range_bytes=None)
                     target,lfs["size"],lfs["sha256"],chunk_bytes=range_bytes)
         with ThreadPoolExecutor(max_workers=2) as pool:
             list(pool.map(fetch,ranged))
-    for path,wanted in manifest["members"].items():
-        if path.startswith("metadata/4B/"):
-            import shutil
-            name = Path(path).name
-            shutil.copyfile(root/path,snapshot/name)
-            if (snapshot/name).stat().st_size != wanted["bytes"] or sha256_file(snapshot/name) != wanted["sha256"]:
-                raise ValueError("pinned metadata differs: "+name)
-            expected[name] = wanted
+    import shutil
+    for name,(path,wanted) in metadata_members(manifest,model).items():
+        shutil.copyfile(root/path,snapshot/name)
+        if (snapshot/name).stat().st_size != wanted["bytes"] or sha256_file(snapshot/name) != wanted["sha256"]:
+            raise ValueError("pinned metadata differs: "+name)
+        expected[name] = wanted
     save_json(receipt,dict(model=model,revision=revision,
         checkpoint_files=expected,snapshot=str(snapshot),gpu_execution=False,model_weights_loaded=False,
         download_path="stdlib HTTPS; native revision/LFS identities; no weight conversion"))
@@ -195,7 +213,7 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
         scratch.mkdir(parents=True)
         tools = manifest["build_tools"]
         wheels = cpu_candidate_wheels(manifest) if cpu_only else manifest["candidate_wheels"]
-        inspection = read(root/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
+        inspection = read(inspection_path(root,launch.get("candidate")))
         weight_bytes = inspection["checkpoint_index"]["total_checkpoint_bytes"]
         online = online_config is not None or cpu_only
         require_space(scratch,output,(sum(w["bytes"] for w in wheels)+BUILD_RESERVE if portable_assets or online else
@@ -317,7 +335,8 @@ def prepare(root, manifest, launch, scratch, output, workflow_seconds=1800, *, p
             weight_interpreter = sys.executable
         invoke("stage-pinned-checkpoint",[weight_interpreter,"-I"]+(["-S"] if online or portable_assets else [])+[root/"scripts/m5_course_smoke_assets.py",
             "weights","--root",root,"--manifest",manifest_path,"--cache",cache,"--receipt",weight_receipt]+
-            (["--stdlib","--range-bytes",str(16*1024**2)] if online else ["--stdlib"] if portable_assets else []),600)
+            (["--stdlib","--range-bytes",str(16*1024**2)] if online else ["--stdlib"] if portable_assets else [])+
+            (["--candidate",launch["candidate"]] if launch.get("candidate") else []),900)
         weights = read(weight_receipt)
         assets = dict(source_commit=manifest["source_baseline_commit"],model=inspection["model"],revision=inspection["revision"],
             versions=versions,installed_modules=modules,checkpoint_files=weights["checkpoint_files"],
@@ -345,10 +364,11 @@ def main():
     weights.add_argument("--range-bytes",type=int)
     for name in ("root","manifest","cache","receipt"):
         weights.add_argument("--"+name,type=Path,required=True)
+    weights.add_argument("--candidate",choices=("9B","4B"))
     args = parser.parse_args()
     if args.command == "weights":
         if args.stdlib:
-            download_weights_stdlib(args.root,read(args.manifest),args.cache,args.receipt,range_bytes=args.range_bytes)
+            download_weights_stdlib(args.root,read(args.manifest),args.cache,args.receipt,range_bytes=args.range_bytes,candidate=args.candidate)
         else:
             download_weights(args.root,read(args.manifest),args.cache,args.receipt)
     else:

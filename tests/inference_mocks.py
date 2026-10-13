@@ -115,6 +115,7 @@ class Qwen3_5ForCausalLM:
         self.head = self.embedding if tied else Tensor()
         self.hf_device_map = {"": 0}
         self.hooks = []
+        self.post_hooks = []
         self.calls = []
         self.reply_ids = tuple(ord(c) for c in '{"candidate":[0,0,0,0,0,0,0,0],"send":[]}') + (TRANSPORT_ID,)
         self.fail = False
@@ -140,10 +141,14 @@ class Qwen3_5ForCausalLM:
         self.hooks.append(hook)
         return SimpleNamespace(remove=lambda: self.hooks.remove(hook))
 
+    def register_forward_hook(self, hook):
+        self.post_hooks.append(hook)
+        return SimpleNamespace(remove=lambda: self.post_hooks.remove(hook))
+
     def generate(self, **kwargs):
         import weakref
         for hook in self.hooks:
-            hook(self, (), dict(past_key_values=kwargs["past_key_values"]))
+            hook(self, (), dict(past_key_values=kwargs["past_key_values"],input_ids=kwargs["input_ids"]))
         cache = kwargs["past_key_values"]
         self.calls.append(dict(seed=kwargs["logits_processor"][0].torch.seed,
             cache=weakref.ref(cache), config=vars(kwargs["generation_config"]),
@@ -153,6 +158,8 @@ class Qwen3_5ForCausalLM:
             raise ValueError("CPU simulated generation defect")
         cache.length = 123
         cache.recurrent = True
+        for hook in self.post_hooks:
+            hook(self, (), None)
         return SimpleNamespace(sequences=Tensor([kwargs["input_ids"].tolist()[0] + list(self.reply_ids)]))
 
 

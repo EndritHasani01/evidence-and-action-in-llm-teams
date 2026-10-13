@@ -1,5 +1,10 @@
 # Kaggle final-online-4: diagnosis and complete repair proposal
 
+Implementation update: the user subsequently requested "Fully repair it".
+The scoped model/prompt/deadline/attempt adoption is in specification §11.3;
+the latest course living handoff records implemented behavior and CPU checks.
+The proposal below preserves the original diagnosis and then-pending decisions.
+
 Prepared 13 October 2026 on `feat/course-m5-inference-preparation`, inspected
 HEAD `7456186`. This is an evidence-backed proposal, not an adopted scientific
 amendment or a new execution package. Production code, model settings, attempt

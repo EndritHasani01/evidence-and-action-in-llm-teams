@@ -29,7 +29,7 @@ if not __package__:
 from recovery.accounting import CourseBudget, MonitoringCourseBudget, BudgetStop, _course_resources, course_admission, timestamp
 from recovery.attempts import ProcessProvider, MeasuredReply
 from recovery.costs import _allocation_resources
-from recovery.inference import ModelFactory, QWEN_4B, TokenizerFactory
+from recovery.inference import ModelFactory, QWEN_4B, TokenizerFactory, course_candidate
 from recovery.prompts import COURSE_LIMITS, RenderedRequest, TokenizedRequest
 from recovery.protocol import failed_reply, validate_reply
 from recovery.schedule import Branch, CallSlot
@@ -37,7 +37,7 @@ from recovery.storage import WorkerStore, RecordedFailure, record_json, settings
 from recovery.tasks import Task
 from recovery.t4_attention import T4_ATTENTION
 from recovery.workers import _own_file
-from scripts.m5_course_preparation import peer_view, read, verify_requests
+from scripts.m5_course_preparation import peer_view, read, verify_requests, preparation_files
 from scripts.m5_kaggle_preflight import (export_evidence, save_json, utc, smoke_attempt_usage,
     smoke_attempt_limit, validate_smoke_predecessor)
 
@@ -97,6 +97,8 @@ def admission(launch, stores=(), *, now=None, next_attempt=False):
         current["smoke_attempt_usage"] = usage
         limit = smoke_attempt_limit(launch)
         current["smoke_attempt_limit"] = limit
+        if next_attempt and limit == 71 and usage["recorded_current"] >= 24:
+            raise BudgetStop("fixed_candidate_24_attempt_limit")
         if next_attempt and usage["total_recorded"] >= limit:
             raise BudgetStop("recorded_smoke_attempt_limit")
         from scripts.m5_kaggle_preflight import assigned_preparation_window
@@ -217,11 +219,12 @@ def candidate_attention(torch):
 class SmokeBackend:
     def __init__(self, backend):
         self.backend = backend
-        inspection = read(Path(__file__).resolve().parents[1]/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")
+        candidate = course_candidate(backend.settings["model"].rsplit("-",1)[1]) if backend.settings.get("prompt_profile") else CANDIDATE
+        inspection = read(preparation_files(Path(__file__).resolve().parents[1],candidate)["inspection"])
         expected = inspection["language_parameters"]
         actual = dict(backend.model.named_parameters())
         if set(actual) != set(expected):
-            raise ValueError("actual language inventory differs from all 426 pinned names")
+            raise ValueError("actual language inventory differs from the pinned candidate names")
         for name,tensor in actual.items():
             shape = getattr(getattr(tensor,"quant_state",None),"shape",None) if expected[name]["kind"] == "nf4_linear" else tensor.shape
             if shape is None or list(shape) != expected[name]["shape"]:
@@ -251,12 +254,17 @@ class SmokeBackend:
 @dataclass(frozen=True)
 class SmokeFactory:
     device: str
+    candidate: object = CANDIDATE
     def __call__(self):
-        return SmokeBackend(ModelFactory(CANDIDATE,self.device,COURSE_LIMITS)())
+        return SmokeBackend(ModelFactory(self.candidate,self.device,COURSE_LIMITS)())
 
 
 class EnvelopeBackend(SmokeBackend):
     """Full-length tensor diagnostic; its output is excluded from capability."""
+
+    def __init__(self, backend, input_tokens=109851):
+        super().__init__(backend)
+        self.input_tokens = input_tokens
 
     def __call__(self, view, rendered, tokenized, *, seed, settings):
         if settings_json(settings) != settings_json(self.backend.settings):
@@ -268,7 +276,7 @@ class EnvelopeBackend(SmokeBackend):
         handles = [self.backend.model.register_forward_pre_hook(observe),
                    self.backend.model.register_forward_hook(observe)]
         try:
-            reply = self.backend.probe_envelope(tokenized, seed=seed)
+            reply = self.backend.probe_envelope(tokenized, seed=seed, expected_input_tokens=self.input_tokens)
             return MeasuredReply(reply.response, reply.peak_memory_bytes,
                 dict(reply.backend, observed_model_edge_memory=observations,
                      complete_envelope_memory_accepted=False))
@@ -280,8 +288,10 @@ class EnvelopeBackend(SmokeBackend):
 @dataclass(frozen=True)
 class EnvelopeFactory:
     device: str
+    candidate: object = CANDIDATE
+    input_tokens: int = 109851
     def __call__(self):
-        return EnvelopeBackend(ModelFactory(CANDIDATE,self.device,COURSE_LIMITS)())
+        return EnvelopeBackend(ModelFactory(self.candidate,self.device,COURSE_LIMITS)(),self.input_tokens)
 
 
 def hardware_plan(packet, tokenizer):
@@ -293,16 +303,17 @@ def hardware_plan(packet, tokenizer):
     """
     rows = deepcopy(packet["requests"])
     token_id = tokenizer.encode("a", add_special_tokens=False)[0]
-    ids = [token_id]*109851
+    bound = packet.get("complete_input_tokens_upper",109851)
+    ids = [token_id]*bound
     text = tokenizer.decode(ids, skip_special_tokens=False, clean_up_tokenization_spaces=False)
     for index, worker in ((21, 0), (22, 1)):
         row = rows[index]
         row.update(smoke_call_id=f"course-hardware/envelope/device-{worker}",
             physical_generation_id=f"course-hardware/envelope/device-{worker}",
             intended_worker=worker, confirmed_restart_before=True, hardware_diagnostic=True,
-            input_tokens=109851, resident_tokens_with_reserve=110107,
+            input_tokens=bound, resident_tokens_with_reserve=bound+256,
             rendered=asdict(RenderedRequest(content=text)),
-            tokenized=dict(text=text, input_ids=ids, attention_mask=[1]*109851))
+            tokenized=dict(text=text, input_ids=ids, attention_mask=[1]*bound))
     return rows
 
 
@@ -314,15 +325,16 @@ def check_hardware_plan(root, packet, tokenizer):
     rows = hardware_plan(packet, tokenizer)
     if len(rows) != 24 or len({r["physical_generation_id"] for r in rows}) != 24:
         raise ValueError("the fixed 24 distinct hardware diagnostics are required")
+    bound = packet.get("complete_input_tokens_upper",109851)
     for i, row in enumerate(rows):
         RenderedRequest(**row["rendered"])
         TokenizedRequest(**row["tokenized"])
         if row.get("hardware_diagnostic"):
             if (i not in (21, 22) or row["intended_worker"] != i-21 or
                     row["smoke_call_id"] != f"course-hardware/envelope/device-{i-21}" or
-                    len(row["tokenized"]["input_ids"]) != 109851 or
-                    row["tokenized"]["attention_mask"] != [1]*109851 or
-                    row["input_tokens"] != 109851 or row["resident_tokens_with_reserve"] != 110107 or
+                    len(row["tokenized"]["input_ids"]) != bound or
+                    row["tokenized"]["attention_mask"] != [1]*bound or
+                    row["input_tokens"] != bound or row["resident_tokens_with_reserve"] != bound+256 or
                     not row["confirmed_restart_before"] or row["controlled_hang"]):
                 raise ValueError("complete-envelope diagnostic identity/tensor differs")
         elif row != packet["requests"][i]:
@@ -372,6 +384,7 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
     budget = (MonitoringCourseBudget if launch.get("resource_policy") == "observe" else CourseBudget)(**launch["budget"])
     providers = []
     stopped = None
+    terminal = None
     with ExitStack() as stack:
         stores = []
         resume = launch.get("resume_workers", [])
@@ -386,7 +399,7 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
             store = WorkerStore(path)
             stack.callback(store.close)
             stores.append(store)
-            store.bind_run(worlds,branches,settings,dict(timeout_seconds=120,termination_seconds=1),budget=budget,regime="course")
+            store.bind_run(worlds,branches,settings,dict(timeout_seconds=120,termination_seconds=1,**({"envelope_timeout_seconds":launch["envelope_timeout_seconds"]} if "envelope_timeout_seconds" in launch else {})),budget=budget,regime="course")
         # Charge both assigned devices, including time before the first code cell.
         for index, (device, store) in enumerate(zip(devices,stores)):
             previous = store.connection.execute("SELECT * FROM allocations ORDER BY number DESC LIMIT 1").fetchone()
@@ -400,7 +413,8 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
         def before_attempt(*unused):
             admission(launch,stores,next_attempt=True)
         for device in devices:
-            providers.append(ProcessProvider(factory(device),before_attempt=before_attempt))
+            candidate = course_candidate(settings["model"].rsplit("-",1)[1]) if settings.get("prompt_profile") else CANDIDATE
+            providers.append(ProcessProvider(factory(device,candidate) if factory is SmokeFactory else factory(device),before_attempt=before_attempt))
         row = None
         phase = "host_checks"
         try:
@@ -426,7 +440,13 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                 if row["controlled_hang"]:
                     providers[index] = ProcessProvider(hang_factory,before_attempt=before_attempt)
                 elif row.get("hardware_diagnostic"):
-                    providers[index] = ProcessProvider(EnvelopeFactory(devices[index]),before_attempt=before_attempt)
+                    _, remaining = admission(launch,stores,next_attempt=False)
+                    if remaining < launch.get("envelope_timeout_seconds",120)+launch["budget"]["shutdown_seconds"]+EXPORT_SECONDS+4:
+                        raise BudgetStop("allocation_deadline: insufficient window for a complete bounded envelope probe")
+                    envelope_factory = (EnvelopeFactory(devices[index],candidate,packet["complete_input_tokens_upper"])
+                        if settings.get("prompt_profile") else EnvelopeFactory(devices[index]))
+                    providers[index] = ProcessProvider(envelope_factory,
+                        timeout_seconds=launch.get("envelope_timeout_seconds",120),before_attempt=before_attempt)
                 phase = "provider_attempt"
                 response = providers[index].obtain(store,row["smoke_call_id"],view,rendered,tokenized,
                     seed=row["seed"],settings=settings)
@@ -450,6 +470,9 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                     break
                 if isinstance(response,RecordedFailure) and not row["controlled_hang"]:
                     stopped = "recorded_model_attempt_failure"
+                    attempt = dict(store.attempts(row["smoke_call_id"])[-1])
+                    terminal = {key:attempt[key] for key in ("call_id","number","status","reason","timeout_seconds","elapsed_seconds","worker_pid")}
+                    print("Hardware failure: "+json.dumps(terminal,sort_keys=True),flush=True)
                     break
         except (Exception,KeyboardInterrupt) as error:
             stopped = f"{type(error).__name__}: {error}"
@@ -485,9 +508,9 @@ def execute_requests(root, packet, launch, devices, output, *, tokenizer, factor
                 cost["execution_policy"] = "GPU hours are observational; the cumulative smoke-attempt limit remains enforced"
             finished = sum(store.connection.execute("SELECT count(*) FROM calls WHERE status='completed'").fetchone()[0] for store in stores)
             attempts = sum(store.connection.execute("SELECT count(*) FROM attempts WHERE call_id != ?",(packet["requests"][-1]["smoke_call_id"],)).fetchone()[0] for store in stores)
-    return dict(stop_reason=stopped,process_cleanup=cleanup,resources=cost,
+    return dict(stop_reason=stopped,terminal_failure=terminal,process_cleanup=cleanup,resources=cost,
         completed_model_generations=finished,model_physical_attempts=attempts,
-        complete_resident_tokens_upper=110107,
+        complete_resident_tokens_upper=packet.get("complete_input_tokens_upper",109851)+256,
         largest_prepared_request_resident_tokens=max(row["resident_tokens_with_reserve"] for row in packet["requests"]),
         provider_release_confirmed=False,physical_memory_accepted=False,
         complete_live_memory_upper_bound_bytes=None,actual_headroom_acceptance=None,
@@ -526,8 +549,9 @@ def run(root, launch, output):
             raise ValueError("two distinct physical T4s required")
         report["host_inventory"] = inventory
         report["assets"] = assets
-        tokenizer = TokenizerFactory(CANDIDATE,str(root/"metadata/4B"),COURSE_LIMITS)()
-        packet = read(root/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
+        candidate = course_candidate(launch["candidate"]) if launch.get("candidate") else CANDIDATE
+        tokenizer = TokenizerFactory(candidate,str(root/"metadata/4B"),COURSE_LIMITS)()
+        packet = read(preparation_files(root,candidate)["packet"])
         from scripts.m5_course_preparation import verify_native_requests
         verify_native_requests(root,tokenizer,packet)
         report.update(status="incomplete",gpu_admission=True,model_generations=None)
@@ -556,8 +580,9 @@ def main():
     launch = read(args.launch)
     if args.check_plan_only:
         from tests.generation_checks import check_generation_contract
-        tokenizer = TokenizerFactory(CANDIDATE,str(args.root/"metadata/4B"),COURSE_LIMITS)()
-        packet = read(args.root/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
+        candidate = course_candidate(launch["candidate"]) if launch.get("candidate") else CANDIDATE
+        tokenizer = TokenizerFactory(candidate,str(args.root/"metadata/4B"),COURSE_LIMITS)()
+        packet = read(preparation_files(args.root,candidate)["packet"])
         result = check_hardware_plan(args.root, packet, tokenizer)
         result["generation_contract"] = check_generation_contract(tokenizer, packet["settings"])
         save_json(args.output, result)

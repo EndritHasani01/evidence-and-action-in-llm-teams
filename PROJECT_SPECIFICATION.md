@@ -484,7 +484,7 @@ GPU allocation, pilot/main execution or external delivery.
 
 | Parameter | Course regime |
 |---|---|
-| Model | Direct text-only Qwen3.5-4B, reviewed model/tokenizer revision `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a`; NF4/double quantization, FP16 and necessary FP32 calculations as in Section 8.1 |
+| Model | For the final-online-4 repair: Qwen3.5-9B revision `c202236235762e1c871ad0ccb60c8ee5ba337b9a` first; Qwen3.5-4B revision `851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a` as the sole declared fallback, under ?11.3. Earlier source-bound packages retain 4B. Direct text-only NF4/double quantization, FP16 and necessary FP32 calculations as in Section 8.1 |
 | Mathematical size | Numeric m=6, n=24; BFS eight nodes/twelve unique edges, uniform labelled Pruefer tree plus five uniformly sampled nonedges and equal random ownership |
 | Main/development population | 20 main worlds, four per family; five separate development worlds, one per family |
 | Peers/horizon | Four peers; four synchronous prefix and four synchronous recovery rounds |
@@ -559,6 +559,44 @@ coverage and shared-response sensitivity. Policy cost includes sixteen prefix
 plus all sixteen logical continuation calls, original replay cost and F's prefix.
 
 ### 11.3 Cumulative resources and admission
+
+**Final-online-4 repair adoption, 13 October 2026.** Following the complete
+[diagnosis and concrete proposal](docs/validation/course-kaggle-final-online-4-proposal.md),
+the user requested "Fully repair it". For its new online Run All package,
+adopt the proposed Qwen3.5-9B-first qualification order, reviewed revision
+`c202236235762e1c871ad0ccb60c8ee5ba337b9a`, with the pinned 4B above as the only
+predeclared fallback. Both use the same uniform compact-output clarification
+`course_compact_v1`, with unchanged permitted information, NF4/double FP16,
+sampling, populations, schedules, 256/64 limits, replay and scoring. Original
+rendering and source-bound older packages remain supported separately; changed
+candidate bundles cannot reuse their model replies.
+
+Renew the complete permitted-input bound using the identical pinned native
+tokenizer/template and the added instruction's conservative ASCII-byte bound.
+Each candidate must pass its fresh fixed 24-attempt hardware matrix before its
+existing first-90/full-pilot gates. Only the two forced-output hardware envelope
+probes have a 600-second diagnostic deadline; ordinary research calls retain
+120 seconds and unchanged cleanup bounds. A longer diagnostic success does not
+establish the original 120-second hardware result or ordinary-call adequacy.
+
+Retain all 23 historical preparation attempts (22 final-online-4 worker attempts
+plus the earlier loader failure). Allow at most 24 new hardware attempts for
+each of the two fixed candidates, at most 71 cumulatively including history.
+Hardware infrastructure retries consume that candidate's 24; they do not expand
+the matrix allowance. Qualify 4B only after a terminal hardware or complete
+capability/protocol failure before freeze; incomplete sessions, an independent
+raw/effect audit defect, and frozen/main failures never select another model.
+Development allows the unchanged 1,114 distinct scheduled generations per
+candidate, with at most one identical infrastructure retry per call lacking a
+durable outcome. Invalid replies, wrong answers, truncation and known timeouts
+never receive retries. Failed candidate evidence and all actual/unknown time
+remain preserved. No GPU-hour budget forms or historical hour ceilings return.
+
+This authorizes implementing the scoped repair and its upload artifacts, not
+GPU allocation here. Operator Run All on T4x2 authorizes these fixed conditional
+stages; every original hardware/capability/pilot/freeze gate still applies. If
+neither candidate passes, export a limited result with unknown main outcomes.
+Further candidates, changed frozen settings or publication need separate approval.
 
 **Course execution amendment, 12 October 2026.** The user authorized removing
 manual budget forms and budget-based execution stops, and explicitly requested

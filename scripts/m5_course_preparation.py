@@ -13,7 +13,7 @@ import json
 from math import prod
 from pathlib import Path
 
-from recovery.inference import QWEN_4B, candidate_settings
+from recovery.inference import QWEN_4B, candidate_settings, course_candidate
 from recovery.prompts import COURSE_LIMITS, render_request, tokenize_request
 from recovery.state import CandidateState, Feedback, OwnReply, PUBLIC_FEEDBACK, ReceivedProse, Slot
 from recovery.t4_attention import PREFILL_CHUNK_SIZE, T4_ATTENTION
@@ -22,6 +22,86 @@ from scripts.m5_model_feasibility import HEADROOM, model_estimates
 
 CANDIDATE = replace(QWEN_4B, attention=T4_ATTENTION)
 PAYLOAD = "course-m5-source.payload"
+
+
+def preparation_files(root, candidate):
+    if candidate.prompt_profile == "course_compact_v1":
+        base = Path(root)/"notebooks/validation/course-kaggle/repair-candidates"/candidate.model.rsplit("-",1)[1]
+        return dict(inspection=base/"inspection.json", packet=base/"smoke-requests.json.gz", review=base/"memory-review.json")
+    base = Path(root)/"notebooks/validation/course-m5-preparation"
+    return dict(inspection=base/"candidate-inspection-accepted.json",
+                packet=base/"inputs/smoke-requests.json.gz", review=base/"inputs/memory-review.json")
+
+
+def prepare_repair_candidates(root, tokenizer_directory):
+    """Renew both fixed candidates from existing witnesses and identical tokenizers.
+
+    Meta tensors only: no weights or CUDA. The complete prior Unicode/payload
+    proof remains applicable byte-for-byte; added ASCII instruction bytes use
+    the original conservative nontext byte bound, not fixture-only maxima.
+    """
+    import torch
+    from transformers import AutoTokenizer, Qwen3_5TextConfig, Qwen3_5ForCausalLM
+    from recovery.prompts import COMPACT_INSTRUCTION
+    from recovery.storage import record_json
+    directory = Path(root)/"notebooks/validation/course-kaggle/repair-candidates"
+    metadata = read(directory/"metadata.json")
+    tokenizer_directory = Path(tokenizer_directory)
+    for name, item in metadata["files"].items():
+        if item["shared_with_4B"]:
+            raw = (tokenizer_directory/name).read_bytes()
+            if len(raw) != item["bytes"] or hashlib.sha256(raw).hexdigest() != item["sha256"]:
+                raise ValueError("9B/4B shared native metadata differs: "+name)
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_directory,local_files_only=True)
+    old = read(Path(root)/"notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz")
+    proof = read(Path(root)/"notebooks/validation/course-m5-r7/native-tightening-source.json")
+    if hashlib.sha256((tokenizer_directory/"tokenizer.json").read_bytes()).hexdigest() != proof["tokenizer_sha256"]:
+        raise ValueError("complete payload proof requires the identical native tokenizer")
+    extra = len(COMPACT_INSTRUCTION.encode("ascii"))
+    for label in ("9B","4B"):
+        candidate = course_candidate(label)
+        target = directory/label
+        target.mkdir(exist_ok=True)
+        config = read(directory/"config.json" if label == "9B" else tokenizer_directory/"config.json")
+        index = read(directory/"model.safetensors.index.json" if label == "9B" else tokenizer_directory/"model.safetensors.index.json")
+        with torch.device("meta"):
+            model = Qwen3_5ForCausalLM(Qwen3_5TextConfig(**dict(config["text_config"],tie_word_embeddings=config["tie_word_embeddings"])))
+        linear = {name+".weight" for name,module in model.named_modules() if isinstance(module,torch.nn.Linear) and name != "lm_head"}
+        inventory = {}
+        for name,p in model.named_parameters():
+            key = "model.language_model"+name[5:] if name.startswith("model.") else name
+            if key not in index["weight_map"] or p.device.type != "meta":
+                raise ValueError("language parameter missing from pinned checkpoint index: "+key)
+            inventory[name] = dict(shape=list(p.shape),elements=p.numel(),kind="nf4_linear" if name in linear else "other_fp16_fp32")
+        del model
+        inspection = dict(model=candidate.model,revision=candidate.revision,config=config,language_parameters=inventory,
+            shape_only_meta_device=True,actual_language_weights_loaded=False,
+            checkpoint_index=dict(shard_files=sorted(set(index["weight_map"].values())),
+                total_checkpoint_bytes=sum(f["bytes"] for f in metadata["checkpoint_files"].values()) if label == "9B" else
+                    read(Path(root)/"notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json")["checkpoint_index"]["total_checkpoint_bytes"]))
+        accounting = [dict(r,nontext_bytes=r["nontext_bytes"]+extra,input_tokens_upper=r["input_tokens_upper"]+extra,
+                           resident_tokens_upper=r["resident_tokens_upper"]+extra) for r in proof["accounting"]]
+        bound = max(r["input_tokens_upper"] for r in accounting)
+        if bound+256 > COURSE_LIMITS.context_tokens:
+            raise ValueError("renewed complete capacity exceeds the course context")
+        review = dict(acceptance="measured_stress",model=candidate.model,revision=candidate.revision,
+            prompt_profile=candidate.prompt_profile,complete_input_tokens_upper=bound,complete_resident_tokens_upper=bound+256,
+            accounting=accounting,additional_instruction_ascii_bytes=extra,
+            tokenizer_sha256=proof["tokenizer_sha256"],prior_complete_proof="notebooks/validation/course-m5-r7/native-tightening-source.json",
+            gpu_execution=False,physical_memory_accepted=False,required_free_headroom_bytes=HEADROOM)
+        packet = deepcopy(old)
+        packet["settings"] = candidate_settings(tokenizer,candidate,limits=COURSE_LIMITS)
+        packet["complete_input_tokens_upper"] = bound
+        for row in packet["requests"]:
+            rendered = render_request(peer_view(row["view"]),limits=COURSE_LIMITS,profile=candidate.prompt_profile)
+            tokenized = tokenize_request(rendered,tokenizer,limits=COURSE_LIMITS)
+            row.update(rendered=asdict(rendered),tokenized=asdict(tokenized),settings=deepcopy(packet["settings"]),
+                input_tokens=len(tokenized.input_ids),resident_tokens_with_reserve=len(tokenized.input_ids)+256)
+        verify_native_requests(root,tokenizer,packet)
+        for name,value in (("inspection.json",inspection),("memory-review.json",review)):
+            (target/name).write_text(json.dumps(value,indent=2)+"\n",encoding="utf-8")
+        (target/"smoke-requests.json.gz").write_bytes(gzip.compress(record_json(packet).encode(),mtime=0))
+    return dict(candidates=["9B","4B"],complete_input_tokens_upper=bound,model_weights_loaded=False,gpu_calls=0)
 
 
 def read(path):
@@ -233,7 +313,7 @@ def verify_requests(root, packet):
                 or not row["origin_call_id"].startswith(row["development_world_id"]+"/")):
             raise ValueError("exact separate smoke identity/development seed origin differs")
         view = peer_view(row["view"])
-        if record_json(asdict(render_request(view, limits=COURSE_LIMITS))) != record_json(row["rendered"]):
+        if record_json(asdict(render_request(view, limits=COURSE_LIMITS, profile=packet["settings"].get("prompt_profile","original")))) != record_json(row["rendered"]):
             raise ValueError("exact permitted course rendering differs")
         if (record_json(row["settings"]) != record_json(packet["settings"])
                 or row["input_tokens"] != len(row["tokenized"]["input_ids"])
@@ -255,11 +335,12 @@ def verify_requests(root, packet):
 def verify_native_requests(root, tokenizer, packet):
     from recovery.storage import record_json
     verify_requests(root, packet)
-    expected = candidate_settings(tokenizer, CANDIDATE, limits=COURSE_LIMITS)
+    candidate = course_candidate(packet["settings"]["model"].rsplit("-",1)[1]) if packet["settings"].get("prompt_profile") else CANDIDATE
+    expected = candidate_settings(tokenizer, candidate, limits=COURSE_LIMITS)
     if record_json(packet["settings"]) != record_json(expected):
         raise ValueError("exact adopted course candidate settings differ")
     for row in packet["requests"]:
-        rendered = render_request(peer_view(row["view"]), limits=COURSE_LIMITS)
+        rendered = render_request(peer_view(row["view"]), limits=COURSE_LIMITS, profile=packet["settings"].get("prompt_profile","original"))
         native = tokenize_request(rendered, tokenizer, limits=COURSE_LIMITS)
         if record_json(asdict(native)) != record_json(row["tokenized"]):
             raise ValueError("exact native IDs/mask/template differ")

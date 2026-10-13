@@ -29,6 +29,7 @@ SOURCE_PATHS = ("recovery", "pyproject.toml", "PROJECT_SPECIFICATION.md", "tests
     *("tests/fixtures/"+name for name in FIXTURES),
     "configs/course-kaggle.json", "configs/course-smoke-launch.json", "configs/course-cpu-reproduction.txt",
     "notebooks/validation/course-kaggle/repair-predecessor.json",
+    "notebooks/validation/course-kaggle/repair-candidates",
     "notebooks/validation/course-m5-preparation/inputs/smoke-requests.json.gz",
     "notebooks/validation/course-m5-preparation/inputs/memory-review.json",
     "notebooks/validation/course-m5-preparation/candidate-inspection-accepted.json",
@@ -97,9 +98,9 @@ Linux x86_64 **Python 3.13** candidate; incompatible images stop safely.
 
 Keep the dataset private. Later sessions also attach **course-resume.payload**;
 Run All resumes exact saved inputs without resampling completed calls.
-An incident repair dataset includes its reviewed resume payload automatically.
-Attach only that matching dataset for the first repaired run. In later sessions,
-one separately attached latest resume takes precedence over the packaged seed.
+For this final-online-4 repair, attach only the new dataset for the first run.
+Do not attach old final-online-3/4 resume payloads: model/prompt bindings changed.
+Later sessions attach this same dataset and one latest matching resume export.
 For durable background execution, use **Save Version → Save & Run All**;
 see the [Kaggle notebook guide](https://www.kaggle.com/docs/notebooks).
 """
@@ -308,15 +309,15 @@ try:
         if receipt.exists():
             previous=json.loads(receipt.read_bytes())
             python=Path(previous.get('interpreter','/missing'))
-            asset_path=previous.get('assets_receipt')
+            asset_path=CONFIG.get('assets_receipt') or previous.get('assets_receipt')
             reusable=previous.get('status')!='blocked' and python.is_file()
             if asset_path:
                 reusable=reusable and Path(asset_path).is_file() and Path(previous.get('hf_cache','/missing')).is_dir()
             if reusable and asset_path:
                 # A saved setup receipt is not proof that cached files still match.
                 verification=[python,'-I','-c',
-                    "import sys,types; from pathlib import Path; scripts=types.ModuleType('scripts'); scripts.__path__=[str(Path(sys.argv[1])/'scripts')]; sys.modules['scripts']=scripts; from scripts.m5_course_smoke_assets import verify_assets; import json; verify_assets(Path(sys.argv[1]),dict(source_manifest=str(Path(sys.argv[1])/'source-manifest.json'),assets_receipt=sys.argv[2],hf_cache=sys.argv[3]))",
-                    source,asset_path,previous['hf_cache']]
+                    "import sys,types; from pathlib import Path; scripts=types.ModuleType('scripts'); scripts.__path__=[str(Path(sys.argv[1])/'scripts')]; sys.modules['scripts']=scripts; from scripts.m5_course_smoke_assets import verify_assets; import json; verify_assets(Path(sys.argv[1]),dict(source_manifest=str(Path(sys.argv[1])/'source-manifest.json'),assets_receipt=sys.argv[2],hf_cache=sys.argv[3],candidate=sys.argv[4] if len(sys.argv)>4 else None))",
+                    source,asset_path,previous['hf_cache']]+([CONFIG['candidate']] if CONFIG.get('candidate') else [])
                 reusable=bounded_child(verification,180)==0
             if not reusable:
                 # Preserve every failed environment; rebuild only disposable setup.
@@ -343,6 +344,8 @@ try:
                 if pointer.exists(): shutil.copyfile(pointer,pointer.with_name('bootstrap-before-'+str(time.time_ns())+'.json'))
                 shutil.copyfile(receipt,pointer)
         runtime=json.loads(receipt.read_bytes())
+        if CONFIG.get('assets_receipt') and Path(CONFIG['assets_receipt']).is_file():
+            runtime['assets_receipt']=CONFIG['assets_receipt']
         if runtime.get('status')=='blocked': raise RuntimeError(runtime['reason'])
         # Preserve setup/hash/version evidence in every portable resume export.
         bootstrap_evidence=bundle/'environment-receipts'/kind
@@ -401,7 +404,7 @@ from contextlib import closing
 # A small results export accompanies the complete reproducibility/resume ZIP.
 import html
 last=json.loads((bundle/'last-action.json').read_bytes()) if (bundle/'last-action.json').exists() else {}
-analysis=json.loads((bundle/'analysis-receipt.json').read_bytes()) if (bundle/'analysis-receipt.json').exists() else {}
+analysis=json.loads((bundle/'analysis-receipt.json').read_bytes()) if (bundle/'analysis-receipt.json').exists() else last.get('analysis') or {}
 status=analysis.get('status') or last.get('status','limited_result')
 reason=last.get('reason') or last.get('stop_reason') or ''
 coverage=analysis.get('coverage')
@@ -420,7 +423,7 @@ with tempfile.TemporaryDirectory() as temporary:
             if not p.is_file() or p.is_symlink() or p.name.endswith(('-wal','-shm','.owner','.tmp','.pyc')) or '__pycache__' in p.parts: continue
             target=p
             if p.name in ('worker-0.sqlite','worker-1.sqlite'):
-                target=Path(temporary)/(p.parent.name+'-'+p.name)
+                target=Path(temporary)/(str(len(z.infolist()))+'-'+p.name)
                 with closing(sqlite3.connect(p.as_uri()+'?mode=ro',uri=True)) as original,closing(sqlite3.connect(target)) as copy:
                     original.backup(copy)
                     if copy.execute('PRAGMA integrity_check').fetchone()[0]!='ok': raise ValueError('SQLite backup failed')
@@ -484,6 +487,8 @@ def build(root, output, *, base_manifest=None, extra_report_wheels=None, assets_
             if len(data) != expected["bytes"] or hashlib.sha256(data).hexdigest() != expected["sha256"]:
                 raise ValueError("pinned metadata differs")
             members[name] = data
+    for name in ("config.json","model.safetensors.index.json"):
+        members["metadata/9B/"+name] = (root/"notebooks/validation/course-kaggle/repair-candidates"/name).read_bytes()
     members["SOURCE_COMMIT.txt"] = (commit+"\n").encode()
     base_wheels = candidate["candidate_wheels"]
     extras = report_wheels(base_wheels) if extra_report_wheels is None else extra_report_wheels

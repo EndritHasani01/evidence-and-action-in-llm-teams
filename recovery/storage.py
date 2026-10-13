@@ -189,11 +189,15 @@ class WorkerStore:
             if (regime == "course") != isinstance(budget, CourseBudget):
                 raise ValueError("course bindings require CourseBudget; thesis retains its budget representation")
         if regime == "course":
-            from .inference import QWEN_4B
+            from .inference import QWEN_4B, QWEN_9B
+            from .prompts import prompt_profile, COMPACT_PROFILE
+            accepted_models = {(QWEN_4B.model,QWEN_4B.revision)}
+            if prompt_profile(settings) == COMPACT_PROFILE:
+                accepted_models.add((QWEN_9B.model,QWEN_9B.revision))
             if (limits_from_settings(settings) != COURSE_LIMITS
-                    or (settings.get("model"), settings.get("revision")) != (QWEN_4B.model, QWEN_4B.revision)
+                    or (settings.get("model"), settings.get("revision")) not in accepted_models
                     or settings.get("generation", {}).get("max_new_tokens") != COURSE_LIMITS.output_tokens):
-                raise ValueError("course workers require explicit course limits and pinned 4B settings")
+                raise ValueError("course workers require explicit course limits and an adopted pinned candidate")
         inputs = {"worlds": [asdict(w) for w in sorted(worlds, key=lambda w: w.world_id)],
             "branches": [asdict(b) for b in sorted(branches, key=lambda b: b.branch_id)],
             "settings": json.loads(settings_json(settings)), "bounds": bounds}

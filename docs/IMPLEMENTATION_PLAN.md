@@ -990,6 +990,25 @@ model generations, new GPU run, pilot/main execution or freeze occurred.
 
 ## 11. Course living handoff
 
+The user subsequently requested full repair of the `final-online-4` proposal.
+Its scoped adoption is recorded in specification §11.3. The implementation
+adds a persisted compact prompt profile while preserving original rendering,
+admits the reviewed 9B course candidate, renews both native inventories and
+complete input bounds (110,416 + 256), and restricts the 600-second deadline to
+the two envelope diagnostics. Existing process logs now retain prefill/decode
+progress and precise terminal-attempt details. Two explicit source-bound
+candidate bundles reuse the existing workflow: 9B first, 4B only after terminal
+pre-main hardware or complete capability/protocol failure; interrupted sessions,
+raw/effect audit defects and frozen/main failures cannot switch candidates.
+Historical 23 attempts remain counted; each fresh matrix has a 24-attempt cap
+within the adopted cumulative 71 scope. Seventy-seven focused CPU checks passed,
+including the real new 24-row controller with scripted providers, pinned native
+tokenization/generation processors, 9B worker binding, unchanged permitted data,
+durable exact reuse, fallback/refusal and nested SQLite backups. No GPU work,
+native 9B fit/capability acceptance, pilot/freeze/main or publication occurred.
+The lightweight generated notebook/package integration is the final delivery
+check; earlier source-bound artifacts and original submitted evidence remain.
+
 The latest submitted run is `final-online-4`, not `final-online-3`. Its code
 cells match the repaired delivery, all 73 committed source members verify, and
 all 21 original call/attempt rows are unchanged. The first actual full-envelope
