@@ -504,9 +504,18 @@ def build(root, output, *, base_manifest=None, extra_report_wheels=None, assets_
             item.external_attr = 0o100644 << 16
             archive.writestr(item, data)
     manifest = archive_manifest(raw, source_commit=commit, payload_name=raw.name)
+    preparation = preparation_review(root)
+    renewed = json.loads((root/"notebooks/validation/course-kaggle/repair-candidates/9B/memory-review.json").read_bytes())
+    preparation.update(complete_input_tokens_upper=renewed["complete_input_tokens_upper"],
+        complete_resident_tokens_upper=renewed["complete_resident_tokens_upper"],
+        prompt_profile=renewed["prompt_profile"],candidate_order=["9B","4B"])
+    # The previous conditional tensor subtotals describe 4B, not the newly
+    # qualified 9B replica. Neither candidate has physical acceptance yet.
+    preparation.pop("conditional_tensor_component_sum_bytes",None)
+    preparation.pop("conditional_loading_tensor_allowance_bytes",None)
     manifest.update(kind="course-kaggle-complete-workflow", candidate_wheels=wheels,
         build_tools=candidate["build_tools"], candidate_lock_sha256=hashlib.sha256(lock.encode()).hexdigest(),
-        preparation=preparation_review(root), inference_wheels_unchanged=True,
+        preparation=preparation, inference_wheels_unchanged=True,
         rendering_additions=extras, planned_main=dict(worlds=20, distinct_generations=5752, logical_uses=6280),
         planned_development=dict(worlds=5, distinct_generations=1114, logical_uses=1178, capability_first=90),
         gpu_execution_performed=False, model_acceptance=False, main_freeze=False)
