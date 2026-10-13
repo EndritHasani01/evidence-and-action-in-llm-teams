@@ -1327,6 +1327,7 @@ def run_qualification(root, bundle, config):
                 physical += db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
         result.update(selected_candidate=label,candidate_results=summaries,cumulative_preparation_attempts=physical,preparation_attempt_limit=71)
         save(bundle/"last-action.json",result)
+        save(bundle/"automatic-run.json",result)
         backup_bundle(bundle,bundle.parent/"course-resume.payload")
         next_label,_ = qualification_choice(bundle,config)
         if next_label == label or not selected.get("execute_gpu"):
