@@ -5,16 +5,14 @@
   "independent_cell_scopes": {
     "setup": [
       {
-        "method": "run",
-        "args": [
-          "setup"
-        ],
+        "method": "install_runtime",
+        "args": [],
         "kwargs": {}
       }
     ],
     "open-study": [
       {
-        "method": "open_study",
+        "method": "open",
         "args": [
           "new"
         ],
@@ -29,70 +27,49 @@
     ],
     "selfcheck": [
       {
-        "method": "run",
-        "args": [
-          "selfcheck"
-        ],
+        "method": "check_implementation",
+        "args": [],
         "kwargs": {}
       }
     ],
     "weights": [
       {
-        "method": "run",
-        "args": [
-          "weights"
-        ],
+        "method": "download_weights",
+        "args": [],
         "kwargs": {}
       }
     ],
     "load": [
       {
-        "method": "run",
-        "args": [
-          "load"
-        ],
+        "method": "load_models",
+        "args": [],
         "kwargs": {}
       }
     ],
     "readiness": [
       {
-        "method": "run",
-        "args": [
-          "readiness"
-        ],
+        "method": "check_readiness",
+        "args": [],
         "kwargs": {}
       }
     ],
     "direct-screen": [
       {
-        "method": "run",
-        "args": [
-          "screen"
-        ],
-        "kwargs": {
-          "mode": "direct"
-        }
+        "method": "qualify_direct",
+        "args": [],
+        "kwargs": {}
       }
     ],
     "qualification": [
       {
-        "method": "inspect",
+        "method": "inspect_qualification",
         "args": [],
-        "kwargs": {
-          "worlds": [
-            "qualification-00",
-            "qualification-01",
-            "qualification-02",
-            "qualification-03",
-            "qualification-04",
-            "qualification-05"
-          ]
-        }
+        "kwargs": {}
       }
     ],
     "thinking-screen": [
       {
-        "method": "thinking_screen",
+        "method": "qualify_thinking",
         "args": [
           null
         ],
@@ -101,25 +78,23 @@
     ],
     "envelope": [
       {
-        "method": "envelope",
+        "method": "check_headroom",
         "args": [],
         "kwargs": {}
       }
     ],
     "pilot-1": [
       {
-        "method": "run",
+        "method": "run_pilot",
         "args": [
-          "pilot"
+          1
         ],
-        "kwargs": {
-          "number": 1
-        }
+        "kwargs": {}
       }
     ],
     "review-pilot-1": [
       {
-        "method": "review_pilot",
+        "method": "record_pilot_review",
         "args": [
           1
         ],
@@ -132,18 +107,16 @@
     ],
     "pilot-2": [
       {
-        "method": "run",
+        "method": "run_pilot",
         "args": [
-          "pilot"
+          2
         ],
-        "kwargs": {
-          "number": 2
-        }
+        "kwargs": {}
       }
     ],
     "review-pilot-2": [
       {
-        "method": "review_pilot",
+        "method": "record_pilot_review",
         "args": [
           2
         ],
@@ -156,18 +129,16 @@
     ],
     "pilot-3": [
       {
-        "method": "run",
+        "method": "run_pilot",
         "args": [
-          "pilot"
+          3
         ],
-        "kwargs": {
-          "number": 3
-        }
+        "kwargs": {}
       }
     ],
     "review-pilot-3": [
       {
-        "method": "review_pilot",
+        "method": "record_pilot_review",
         "args": [
           3
         ],
@@ -180,28 +151,24 @@
     ],
     "pre-freeze": [
       {
-        "method": "preview_freeze",
+        "method": "review_configuration",
         "args": [],
         "kwargs": {}
       }
     ],
     "freeze": [
       {
-        "method": "run",
+        "method": "freeze_configuration",
         "args": [
-          "freeze"
+          ""
         ],
-        "kwargs": {
-          "notes": ""
-        }
+        "kwargs": {}
       }
     ],
     "prepare-batch": [
       {
-        "method": "run",
-        "args": [
-          "prepare_batch"
-        ],
+        "method": "prepare_main_batch",
+        "args": [],
         "kwargs": {
           "count": 2
         }
@@ -209,14 +176,14 @@
     ],
     "main-batch": [
       {
-        "method": "run_batch",
+        "method": "run_main_batch",
         "args": [],
         "kwargs": {}
       }
     ],
     "review-batch": [
       {
-        "method": "review_batch",
+        "method": "record_batch_review",
         "args": [],
         "kwargs": {
           "notes": ""
@@ -225,47 +192,33 @@
     ],
     "report": [
       {
-        "method": "final_report",
+        "method": "build_report",
         "args": [],
         "kwargs": {}
       }
     ],
     "archive": [
       {
-        "method": "run",
-        "args": [
-          "snapshot"
-        ],
-        "kwargs": {}
-      },
-      {
-        "method": "verify_checkpoint",
+        "method": "save_checkpoint",
         "args": [],
-        "kwargs": {}
+        "kwargs": {
+          "verify": true
+        }
       }
     ],
     "close": [
       {
-        "method": "run",
-        "args": [
-          "close_models"
-        ],
-        "kwargs": {}
-      },
-      {
-        "method": "run",
-        "args": [
-          "shutdown"
-        ],
+        "method": "finish_session",
+        "args": [],
         "kwargs": {}
       }
     ]
   },
   "run_all_can_execute_inference": true,
   "model_attempts": 0,
-  "source_members": 60,
-  "source_zip_bytes": 577560,
-  "source_zip_sha256": "d0dcf61988d13d6e0ad80e2b5b5103774e75e2d01eea29e259540af61a2af0d3",
+  "source_members": 62,
+  "source_zip_bytes": 587695,
+  "source_zip_sha256": "729eaea18599b58ad49b0f0632345d8502934c97bfce918bfdb4ee47a6a501e4",
   "installed_wheel_source_matches": true,
   "installed_outside_checkout_cli": true,
   "zip_expanded_source_bootstrap_and_rerun": true,
