@@ -763,3 +763,14 @@ presentation, direct execution and notebook packaging only. Specification §12,
 runtime/configuration pins, core lifecycle, fixed schedules, private views,
 500/28 admission, durability and analysis semantics are unchanged. No GPU/model,
 qualification, pilot, freeze or main execution occurred; outcomes remain unknown.
+
+Subsequent setup correction: the user's Kaggle log identifies `ensurepip` as the
+failed venv subprocess. Current setup creates/reuses a plain venv without pip,
+bootstraps the verified pip 26.2.1 wheel from accepted earlier preparation and
+preserves previous logs/files. Expected errors display their log cause. The
+public notebook uses named `Study` steps instead of `ui.run` dispatch; all 25
+cell scopes are checked, with zero `ui.` calls. Four focused setup checks and
+one real named-controller/snapshot check pass locally. The final source cache
+uses existing release commit labels and refuses cached foreign imports until
+kernel restart. Full Kaggle installation/qualification remains pending; see
+`setup-repair-checks.json` and the runbook recovery instructions.

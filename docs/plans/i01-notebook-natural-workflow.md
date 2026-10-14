@@ -345,6 +345,17 @@ Evidence: `notebooks/validation/i01-development/ordinary-cell-checks.json` and
 [implementation evidence](../validation/i01-implementation.md).
 Current operator instructions are in the [runbook](../I01_KAGGLE.md).
 
+The later user report showed a failure inside `ensurepip` and clarified that
+generic `ui.run(...)` calls still felt unnatural. The current notebook replaces
+those with named `Study` methods (`install_runtime`, `run_pilot`, fixed main-batch
+steps and reporting/recovery methods) while reusing the same resident operator.
+Environment creation now bypasses ensurepip, installs the previously accepted
+verified pip 26.2.1 wheel, preserves partial environments/logs and displays actual
+log tails. Version-labelled source extraction and a stale-import guard make
+source replacement explicit without deleting old files. Four setup checks and
+one real named-step/controller/archive integration check pass; the new record is
+`setup-repair-checks.json`. No scientific/runtime dependency pin was changed.
+
 No model/GPU inference, actual qualification, pilot, freeze, main or publication
 ran. Actual Kaggle ordinary output/interrupt/download behavior, native framing,
 Linux installation, T4 residency/headroom/competence and the empirical workflow

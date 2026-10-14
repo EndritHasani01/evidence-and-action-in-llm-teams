@@ -16,14 +16,16 @@ from recovery.i01.archive import atomic_json,digest
 def verify_notebook(notebook):
     """Execute ordinary stage cells only against a recording, zero-model stub."""
     expected={
-        'workspace':[], 'setup':['run'], 'open-study':['open_study'],
-        'selfcheck':['run'], 'weights':['run'], 'load':['run'], 'readiness':['run'],
-        'direct-screen':['run'], 'qualification':['inspect'], 'thinking-screen':['thinking_screen'],
-        'envelope':['envelope'], 'pilot-1':['run'], 'review-pilot-1':['review_pilot'],
-        'pilot-2':['run'], 'review-pilot-2':['review_pilot'], 'pilot-3':['run'],
-        'review-pilot-3':['review_pilot'], 'pre-freeze':['preview_freeze'], 'freeze':['run'],
-        'prepare-batch':['run'], 'main-batch':['run_batch'], 'review-batch':['review_batch'],
-        'report':['final_report'], 'archive':['run','verify_checkpoint'], 'close':['run','run']}
+        'workspace':[], 'setup':['install_runtime'], 'open-study':['open'],
+        'selfcheck':['check_implementation'], 'weights':['download_weights'], 'load':['load_models'],
+        'readiness':['check_readiness'], 'direct-screen':['qualify_direct'],
+        'qualification':['inspect_qualification'], 'thinking-screen':['qualify_thinking'],
+        'envelope':['check_headroom'], 'pilot-1':['run_pilot'], 'review-pilot-1':['record_pilot_review'],
+        'pilot-2':['run_pilot'], 'review-pilot-2':['record_pilot_review'], 'pilot-3':['run_pilot'],
+        'review-pilot-3':['record_pilot_review'], 'pre-freeze':['review_configuration'],
+        'freeze':['freeze_configuration'], 'prepare-batch':['prepare_main_batch'],
+        'main-batch':['run_main_batch'], 'review-batch':['record_batch_review'],
+        'report':['build_report'], 'archive':['save_checkpoint'], 'close':['finish_session']}
     cells=[c for c in notebook['cells'] if c['cell_type']=='code']
     assert [c['id'] for c in cells]==list(expected),'ordinary stage order differs'
     assert all(c['execution_count'] is None and not c['outputs'] for c in cells)
@@ -38,32 +40,28 @@ def verify_notebook(notebook):
                 return {}
             return record
     stub=Stub()
-    namespace=dict(ui=stub,START_MODE='new',SESSION_DEADLINE_UTC=None,SESSION_ALLOWANCE_EVIDENCE='')
+    namespace=dict(study=stub,START_MODE='new',SESSION_DEADLINE_UTC=None,SESSION_ALLOWANCE_EVIDENCE='')
     receipts={}
     for cell in cells:
         source=''.join(cell['source']); compile(source,cell['id'],'exec')
         tree=ast.parse(source)
-        assert not any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr in ('panel','inspect_panel','generate','start','run_all') for n in ast.walk(tree))
+        assert 'ui.' not in source
+        assert not any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr in ('panel','inspect_panel','generate','start','run_all','run','run_action','action') for n in ast.walk(tree))
         if cell['id']=='workspace': continue  # Real extraction is checked below.
         stub.calls=[]
         exec(compile(source,cell['id'],'exec'),namespace)
         assert [c['method'] for c in stub.calls]==expected[cell['id']],cell['id']
         receipts[cell['id']]=stub.calls
-        for call in stub.calls:
-            if call['method']=='run':
-                allowed=[cell['metadata']['i01']['action']]
-                if cell['id']=='close': allowed=['close_models','shutdown']
-                assert call['args'][0] in allowed,cell['id']
     for number in (1,2,3):
-        assert receipts[f'pilot-{number}'][0]['kwargs']==dict(number=number)
+        assert receipts[f'pilot-{number}'][0]['args']==[number]
         review=receipts[f'review-pilot-{number}'][0]
         assert review['args']==[number]
         assert review['kwargs']==dict(useful_communication=None,usable=None,notes='')
-    assert receipts['direct-screen'][0]['kwargs']==dict(mode='direct')
+    assert receipts['direct-screen'][0]['kwargs']=={}
     assert receipts['prepare-batch'][0]['kwargs']==dict(count=2)
     assert receipts['thinking-screen'][0]['args']==[None]
-    assert receipts['freeze'][0]['kwargs']==dict(notes='')
-    assert [c['args'][0] for c in receipts['close']]==['close_models','shutdown']
+    assert receipts['freeze'][0]['args']==['']
+    assert receipts['archive'][0]['kwargs']==dict(verify=True)
     return dict(code_cells=len(cells),widget_panels=0,independent_cell_scopes=receipts,
                 run_all_can_execute_inference=True,model_attempts=0)
 
@@ -94,8 +92,17 @@ def verify(root,delivery):
             def __init__(self,*args): pass
             def bootstrap_status(self): pass
         bootstrap="".join(cells[0]["source"]).replace("/kaggle/input",inputs.as_posix()).replace("/kaggle/working",working.as_posix())
-        bootstrap=bootstrap.replace("from recovery.i01.ui import Operator","Operator = BootstrapStub")
+        bootstrap=bootstrap.replace("from recovery.i01.notebook import Study","Study = BootstrapStub")
+        # Verification already imported recovery from the checkout, so first
+        # prove the guard rejects cached foreign code, then bypass that guard
+        # solely while exercising ZIP/extracted source selection with the stub.
         bootstrap_namespace={"BootstrapStub":BootstrapStub}
+        try:
+            exec(compile(bootstrap,'stale-import-guard','exec'),dict(bootstrap_namespace))
+        except RuntimeError as error:
+            assert 'Restart the notebook kernel' in str(error)
+        else: raise AssertionError('Cached foreign source was not rejected')
+        bootstrap=bootstrap.replace("loaded_source = sys.modules.get('recovery')","loaded_source = None")
         exec(compile(bootstrap,"n01-zip","exec"),bootstrap_namespace)
         exec(compile(bootstrap,"n01-rerun","exec"),bootstrap_namespace)
         expanded=bootstrap.replace("SOURCE_BUNDLE = None",f"SOURCE_BUNDLE = {source.as_posix()!r}")

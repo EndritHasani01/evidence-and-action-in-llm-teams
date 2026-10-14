@@ -147,3 +147,47 @@ views, fixed schedules, persistence/admission, model inference adapter, analysis
 formulas and historical research artifacts are unchanged. No GPU/model inference,
 actual qualification, pilot, freeze, main or publication ran. Linux/native/T4
 acceptance and all empirical outcomes remain the operator's later execution.
+
+## Reported ensurepip failure and named research steps
+
+The user supplied this Kaggle setup log after environment creation failed:
+
+```text
+Error: Command '['/kaggle/temp/i01/i01-venv/bin/python3', '-m', 'ensurepip', '--upgrade', '--default-pip']' returned non-zero exit status 1.
+```
+
+This locates the failure inside default pip bootstrapping, before this setup
+action installed the runtime or dispatched model calls. The deeper ensurepip
+cause is not present in that log and is not inferred.
+
+The correction reuses earlier accepted bootstrap semantics: create the plain
+venv with `--without-pip`; retrieve/verify/install pip 26.2.1 by its exact native
+wheel size/SHA256; prove pip's file/prefix belongs to the isolated interpreter.
+The wheel is the one in the preserved M5 run-5 build-tool manifest. Scientific
+dependency/runtime pins are unchanged. A recognized incomplete isolated venv
+can recover without clearing it; unknown or completed mismatching environments
+are refused. Logs append and expected subprocess failures expose their actual
+last lines through a concise notebook traceback.
+
+Four focused setup checks pass in 10.799 seconds, including real recovery of a
+tiny Windows Python 3.11 pip-less environment, correct pinned pip isolation/cache,
+corrupt-wheel refusal, preserved existing files and failure logs. Only the 1.8 MB
+installer wheel was installed; the full runtime and model weights were not.
+One real named `Study` controller/status/blocked-batch/snapshot/reconstruction
+case passes in 15.276 seconds with zero model calls. All 25 named cell scopes,
+compile/schema/empty outputs and absence of generic UI dispatch pass.
+
+`recovery/i01/notebook.py` exposes the named steps and reuses the existing
+operator/controller. The source bootstrap extracts under the existing release
+commit label and rejects cached imports from another source until restart;
+previous source directories and experiment files are preserved. The upload
+package must replace both the old notebook and old source dataset attachment.
+
+Evidence: `setup-repair-checks.json` and the regenerated `release-review.json`.
+Actual Kaggle installation after this repair, frontend/interrupt/download,
+native/model qualification and empirical execution remain unverified. No GPU
+inference, qualification, pilot, freeze or main experiment was run locally.
+
+The [Python venv documentation](https://docs.python.org/3.13/library/venv.html)
+explains that `--without-pip` skips the default ensurepip bootstrap. No unpinned
+get-pip script or inheritance of the kernel's scientific packages is used.

@@ -16,7 +16,6 @@ if SOURCE_BUNDLE is None:
         raise RuntimeError(f'Select SOURCE_BUNDLE explicitly; candidates: {source_candidates}')
     SOURCE_BUNDLE = source_candidates[0]
 selected_source = Path(SOURCE_BUNDLE)
-source_root = Path('/kaggle/working/i01-source')
 with tempfile.TemporaryDirectory(prefix='i01-source-', dir='/kaggle/working') as staging_name:
     staging = Path(staging_name)
     if selected_source.is_file():
@@ -40,6 +39,10 @@ with tempfile.TemporaryDirectory(prefix='i01-source-', dir='/kaggle/working') as
     release = json.loads((staging/'source-release.json').read_text())
     if release['format'] != 'i01-online-source-v1':
         raise RuntimeError('Wrong source release format')
+    head = release.get('git_head', '')
+    if len(head) != 40 or any(c not in '0123456789abcdef' for c in head):
+        raise RuntimeError('Invalid source release commit')
+    source_root = Path('/kaggle/working') / ('i01-source-' + head[:12])
     for relative, wanted in release['files'].items():
         path = staging/relative
         if not path.is_file() or path.stat().st_size != wanted['bytes'] or hashlib.sha256(path.read_bytes()).hexdigest() != wanted['sha256']:
@@ -48,11 +51,14 @@ with tempfile.TemporaryDirectory(prefix='i01-source-', dir='/kaggle/working') as
             raise RuntimeError('Existing source differs; select a fresh session/source directory')
     if not source_root.exists():
         shutil.copytree(staging, source_root)
+loaded_source = sys.modules.get('recovery')
+if loaded_source is not None and not Path(loaded_source.__file__).resolve().is_relative_to(source_root.resolve()):
+    raise RuntimeError('Restart the notebook kernel before using this source release; saved study files are preserved.')
 sys.path.insert(0, str(source_root))
-from recovery.i01.ui import Operator
-if 'ui' not in globals():
-    ui = Operator(source_root)
-ui.bootstrap_status()
+from recovery.i01.notebook import Study
+if 'study' not in globals():
+    study = Study(source_root)
+study.bootstrap_status()
 '''
 
 
@@ -103,36 +109,36 @@ SESSION_ALLOWANCE_EVIDENCE = ""  # Describe the actual allowance shown by Kaggle
 """
     stages=[
       ("workspace","1. Configure and inspect the workspace","Edit actual session facts here. A unique verified source ZIP/expanded directory is selected automatically; set SOURCE_BUNDLE only when ambiguous. Inventory only; no installation or generation.",configuration+BOOTSTRAP,None,False),
-      ("setup","2. Install the pinned runtime","Install/reuse the isolated pinned environment and fetch metadata/tokenizer. Live progress and /kaggle/working/i01-setup/ logs. No model loading or generation.",'ui.run("setup");\n',"setup",False),
+      ("setup","2. Install the pinned runtime","Create/recover the isolated environment without ensurepip, bootstrap verified pinned pip and install the unchanged runtime lock; fetch metadata/tokenizer. Live progress and /kaggle/working/i01-setup/ logs. No model loading or generation.",'study.install_runtime();\n',"setup",False),
       ("open-study","3. Open the study","Create fixed inputs, reopen intact files or explicitly restore into a fresh writable directory. Record this session's actual allowance/deadline. Missing facts stop here; conflicting studies are never overwritten.",
-       'ui.open_study(START_MODE, deadline=SESSION_DEADLINE_UTC,\n    allowance_evidence=SESSION_ALLOWANCE_EVIDENCE,\n    selected=globals().get("RESTORE_CHECKPOINT"),\n    tail=globals().get("RESTORE_TAIL"), evidence=globals().get("RESTORE_EVIDENCE", ""));\n',"initialize",False),
-      ("selfcheck","4. Check the implementation","Lightweight mathematics/private-view/lifecycle/durability/accounting/archive/restore and native-tokenizer checks. Temporary scripted records, zero model attempts.",'ui.run("selfcheck");\n',"selfcheck",False),
-      ("weights","5. Download verified weights","Retrieve/reuse the pinned Qwen3.5-9B files; verify native identities and actual available space. Progress appears below. No inference.",'ui.run("weights");\n',"weights",False),
-      ("load","6. Load both T4 workers","Load/attach the two resident replicas and show device/load receipts. No hidden warmup. Inspection does not unload them.",'ui.run("load");\n',"load",False),
-      ("readiness","7. Check fresh-state readiness","Exactly six short A/B/A diagnostics across both workers: ≤6 first attempts plus eligible contingency. A failed gate stops the cell with saved evidence.",'ui.run("readiness");\n',"readiness",True),
-      ("direct-screen","8. Check direct-mode competence","Twelve original/revised controls, ≤12 first attempts plus eligible contingency. Require ≥11/12 correct and zero malformed/truncated actions. Failure stops here; inspect it below.",'ui.run("screen", mode="direct");\n',"screen",True),
-      ("qualification","9. Inspect qualification","Read-only control outcomes and complete saved evidence. If direct passed, proceed to headroom. A protocol defect blocks research; only a documented competence limitation enables the optional thinking screen.",'ui.inspect(worlds=[f"qualification-{i:02d}" for i in range(6)]);\n',None,False),
+       'study.open(START_MODE, deadline=SESSION_DEADLINE_UTC,\n    allowance_evidence=SESSION_ALLOWANCE_EVIDENCE,\n    selected=globals().get("RESTORE_CHECKPOINT"),\n    tail=globals().get("RESTORE_TAIL"), evidence=globals().get("RESTORE_EVIDENCE", ""));\n',"initialize",False),
+      ("selfcheck","4. Check the implementation","Lightweight mathematics/private-view/lifecycle/durability/accounting/archive/restore and native-tokenizer checks. Temporary scripted records, zero model attempts.",'study.check_implementation();\n',"selfcheck",False),
+      ("weights","5. Download verified weights","Retrieve/reuse the pinned Qwen3.5-9B files; verify native identities and actual available space. Progress appears below. No inference.",'study.download_weights();\n',"weights",False),
+      ("load","6. Load both T4 workers","Load/attach the two resident replicas and show device/load receipts. No hidden warmup. Inspection does not unload them.",'study.load_models();\n',"load",False),
+      ("readiness","7. Check fresh-state readiness","Exactly six short A/B/A diagnostics across both workers: ≤6 first attempts plus eligible contingency. A failed gate stops the cell with saved evidence.",'study.check_readiness();\n',"readiness",True),
+      ("direct-screen","8. Check direct-mode competence","Twelve original/revised controls, ≤12 first attempts plus eligible contingency. Require ≥11/12 correct and zero malformed/truncated actions. Failure stops here; inspect it below.",'study.qualify_direct();\n',"screen",True),
+      ("qualification","9. Inspect qualification","Read-only control outcomes and complete saved evidence. If direct passed, proceed to headroom. A protocol defect blocks research; only a documented competence limitation enables the optional thinking screen.",'study.inspect_qualification();\n',None,False),
       ("thinking-screen","Optional: thinking qualification","Skip if direct passed; running this cell then makes zero calls. Otherwise supply your evidence-based competence reason only after direct failure without protocol errors. ≤12 first attempts; no automatic fallback or extra model candidate.",
-       'THINKING_COMPETENCE_REASON = None\nui.thinking_screen(THINKING_COMPETENCE_REASON);\n',"screen",True),
-      ("envelope","10. Check selected-mode headroom","The passing recorded mode is derived automatically. Two full-input/full-output probes, ≤2 first attempts. Require ≥1.5 GiB measured free headroom on each T4. Output forcing applies only to diagnostics. Restored/reloaded sessions use the separately charged reload recipe.",'ui.envelope();\n',"envelope",True)
+       'THINKING_COMPETENCE_REASON = None\nstudy.qualify_thinking(THINKING_COMPETENCE_REASON);\n',"screen",True),
+      ("envelope","10. Check selected-mode headroom","The passing recorded mode is derived automatically. Two full-input/full-output probes, ≤2 first attempts. Require ≥1.5 GiB measured free headroom on each T4. Output forcing applies only to diagnostics. Restored/reloaded sessions use the separately charged reload recipe.",'study.check_headroom();\n',"envelope",True)
     ]
     for args in stages: stage(*args)
     for n in (1,2,3):
         stage(f"pilot-{n}",f"{10+n}. Run pilot {n}",
               f"Run **pilot {n} only**, including original team, literal retain/clear siblings and original/revised controls. ≤20 first attempts plus eligible contingency. Conversation, outcomes, costs and cumulative checkpoint appear automatically. Inspect/download before review; recovery errors alone do not fail the gate.",
-              f'ui.run("pilot", number={n});\n',"pilot",True)
+              f'study.run_pilot({n});\n',"pilot",True)
         stage(f"review-pilot-{n}",f"Review pilot {n}",
               "Replace the None findings with actual True/False conclusions and write trace-based notes. Useful original communication is a human finding, not inferred from correct answers. Records only this review; no next pilot/freeze. Unreviewed never means approved.",
-              f'ui.review_pilot({n},\n    useful_communication=None,\n    usable=None,\n    notes="");\n',"review")
+              f'study.record_pilot_review({n},\n    useful_communication=None,\n    usable=None,\n    notes="");\n',"review")
     for args in [
-      ("pre-freeze","14. Review the main configuration","Read qualification, three pilot reviews, exact configuration and measured attempt/time forecast. This cell neither freezes nor generates.",'ui.preview_freeze();\n',None,False),
-      ("freeze","15. Freeze for main","Write actual review notes, then run to freeze accepted configuration. Gates require correct original teams/controls, valid protocol, documented communication/usability and adequate resources. Download the pre-main checkpoint. No main calls.",'FREEZE_NOTES = ""\nui.run("freeze", notes=FREEZE_NOTES);\n',"freeze",False),
-      ("prepare-batch","16. Prepare the next main batch","Prepare the next fixed two worlds, or return the existing incomplete scope. Change count to 1 explicitly for a one-world batch. Show IDs, remaining work, ≤19/38 first-attempt ceiling, eligible retry allowance and forecast. No generation. Repeat sections 16–18 only by choice.",'ui.run("prepare_batch", count=2);\n',"prepare_batch",False),
-      ("main-batch","17. Run the prepared main batch","Execute/resume only the saved scope: ≤19/38 first attempts plus eligible contingency. No next-batch preparation/execution. A completed saved batch displays results with zero calls. Interrupt requests pause; wait for settlement before export/closure.",'ui.run_batch();\n',"main",True),
-      ("review-batch","18. Inspect and acknowledge the batch","Inspect the previous output and complete conversation files; download the checkpoint, then run this acknowledgement. Saved batch ID is derived automatically; extra notes are optional. No claim of verified understanding/download. Return to section 16 or continue to reporting when all intended work is recorded.",'ui.review_batch(notes="");\n',"review",False),
-      ("report","19. Build the final or partial report","Read-only canonical reconstruction: twenty intended worlds, exact paired outcomes, unknown bounds, correct-prefix descriptive stratum, costs, failures, figures and limitations. No inference/reload. Download HTML/text/JSONL, CSV/plotting data and SVG/PNG.",'ui.final_report();\n',"report",False),
-      ("archive","20. Save and verify the final archive","Quiescent snapshot and exact fresh-directory analysis comparison, zero model calls. Save ZIP outside Kaggle. Save/download the executed notebook separately **without Save & Run All**. Links do not prove backup.",'ui.run("snapshot");\nui.verify_checkpoint();\n',"snapshot",False),
-      ("close","Finish the session","Run after saving the checkpoint and executed notebook. Close models/controller, then stop Kaggle through its UI. Process exit does not establish provider deallocation; partial outcomes remain partial.",'ui.run("close_models");\nui.run("shutdown");\n',"shutdown",False)
+      ("pre-freeze","14. Review the main configuration","Read qualification, three pilot reviews, exact configuration and measured attempt/time forecast. This cell neither freezes nor generates.",'study.review_configuration();\n',None,False),
+      ("freeze","15. Freeze for main","Write actual review notes, then run to freeze accepted configuration. Gates require correct original teams/controls, valid protocol, documented communication/usability and adequate resources. Download the pre-main checkpoint. No main calls.",'FREEZE_NOTES = ""\nstudy.freeze_configuration(FREEZE_NOTES);\n',"freeze",False),
+      ("prepare-batch","16. Prepare the next main batch","Prepare the next fixed two worlds, or return the existing incomplete scope. Change count to 1 explicitly for a one-world batch. Show IDs, remaining work, ≤19/38 first-attempt ceiling, eligible retry allowance and forecast. No generation. Repeat sections 16–18 only by choice.",'study.prepare_main_batch(count=2);\n',"prepare_batch",False),
+      ("main-batch","17. Run the prepared main batch","Execute/resume only the saved scope: ≤19/38 first attempts plus eligible contingency. No next-batch preparation/execution. A completed saved batch displays results with zero calls. Interrupt requests pause; wait for settlement before export/closure.",'study.run_main_batch();\n',"main",True),
+      ("review-batch","18. Inspect and acknowledge the batch","Inspect the previous output and complete conversation files; download the checkpoint, then run this acknowledgement. Saved batch ID is derived automatically; extra notes are optional. No claim of verified understanding/download. Return to section 16 or continue to reporting when all intended work is recorded.",'study.record_batch_review(notes="");\n',"review",False),
+      ("report","19. Build the final or partial report","Read-only canonical reconstruction: twenty intended worlds, exact paired outcomes, unknown bounds, correct-prefix descriptive stratum, costs, failures, figures and limitations. No inference/reload. Download HTML/text/JSONL, CSV/plotting data and SVG/PNG.",'study.build_report();\n',"report",False),
+      ("archive","20. Save and verify the final archive","Quiescent snapshot and exact fresh-directory analysis comparison, zero model calls. Save ZIP outside Kaggle. Save/download the executed notebook separately **without Save & Run All**. Links do not prove backup.",'study.save_checkpoint(verify=True);\n',"snapshot",False),
+      ("close","Finish the session","Run after saving the checkpoint and executed notebook. Close models/controller, then stop Kaggle through its UI. Process exit does not establish provider deallocation; partial outcomes remain partial.",'study.finish_session();\n',"shutdown",False)
     ]: stage(*args)
     markdown("""## Recovery and support
 
@@ -142,10 +148,10 @@ a study to work around a blocked gate.
 
 ### Status, pause and a safe checkpoint
 
-    ui.run("status");
-    ui.run("pause");  # Request only; an admitted call may still be active.
+    study.show_status();
+    study.pause();  # Request only; an admitted call may still be active.
     # Wait for settlement / confirmed bounded termination, then:
-    ui.run("snapshot");
+    study.save_checkpoint();
 
 Interrupting a generation cell already requests pause. Do not infer process death
 from a stale PID or claim interrupt immediately produced a safe checkpoint.
@@ -165,8 +171,8 @@ No archive is chosen by timestamp; a missing ZIP never silently creates a study.
 After reopening/restoring: self-check, reuse/download weights, then load workers.
 New session/replacement workers need **two contingency-charged probes**:
 
-    ui.envelope(reload=True);
-    ui.run_batch();  # Resume only a saved interrupted main scope.
+    study.check_headroom(reload=True);
+    study.run_main_batch();  # Resume only a saved interrupted main scope.
 
 Do not redo already accepted readiness/qualification just to restore the study.
 Completed calls reuse durable raw replies without generation. Load/reload evidence
@@ -176,9 +182,9 @@ remains recorded; diagnostics, retries and warmups never disappear from accounti
 
 Only after observed prior process/session exit, supply exact identifiers/evidence:
 
-    ui.client.command("reconcile", slot=0, attempt=EXACT_ATTEMPT_ID,
+    study.reconcile_attempt( slot=0, attempt=EXACT_ATTEMPT_ID,
         evidence={"termination_confirmed": True, "reason": "Actual observed exit"});
-    ui.client.command("confirm_timeout_termination", slot=0, call="EXACT_CALL_ID",
+    study.confirm_timeout_termination( slot=0, call="EXACT_CALL_ID",
         evidence={"termination_confirmed": True, "reason": "Actual observed exit"});
 
 Admitted calls without durable output stay spent/unknown. Only one identical
@@ -189,22 +195,22 @@ If saved bytes predate lost work, report partial recovery. Provide a defensible
 spending bound and affected worlds; unbounded unknown spending blocks generation
 while allowing reports:
 
-    ui.client.command("lost_spending",
+    study.record_lost_spending(
         gap={"resolved": True, "upper": ACTUAL_UPPER_BOUND, "evidence": "Actual evidence"},
         affected_worlds=["main-XX"]);
     # For unbounded loss: resolved=False, upper=None. Never assume zero.
 
 ### Complete inspection, annotation and read-only reporting
 
-    ui.inspect(world="pilot-00", phase="retain", agent=0, audit_limit=None);
-    ui.links(all_files=True);
-    ui.annotate("unique-review-id", "ambiguous", ["exact/call/id"], "Trace-based notes");
+    study.inspect(world="pilot-00", phase="retain", agent=0, audit_limit=None);
+    study.links(all_files=True);
+    study.annotate("unique-review-id", "ambiguous", ["exact/call/id"], "Trace-based notes");
 
 Filtering changes only this view. Private submissions, truth and thinking are
 audit material, never partner input. Thinking is not a faithful explanation.
 No LLM judge is used.
 
-With an initialized controller use ui.final_report(). With only intact files,
+With an initialized controller use study.build_report(). With only intact files,
 the same method reconstructs reports read-only without creating workers/CUDA.
 Outside the notebook, use its exact saved source:
 

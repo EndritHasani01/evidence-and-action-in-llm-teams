@@ -121,27 +121,27 @@ class Integration(unittest.TestCase):
         receipt=s.checkpoint("scripted-parallel")
         self.assertEqual(receipt["attempts"],4)
         self.assertEqual(receipt["integrity"],"passed")
-    def test_operator_explicit_command_is_callable(self):
-        from recovery.i01.ui import Operator
+    def test_named_study_steps_use_real_controller(self):
+        from recovery.i01.notebook import Study
         base=Path(self.temp.name)
-        ui=Operator(Path(__file__).parents[1],base/"scratch",base/"working",self.run)
-        self.assertTrue(callable(ui.run))
+        ui=Study(Path(__file__).parents[1],base/"scratch",base/"working",self.run)
+        self.assertTrue(callable(ui.install_runtime))
         self.assertEqual(ui.run_dir,self.run)
-        with self.assertRaises(ValueError): ui.run("status")
+        with self.assertRaises(ValueError): ui.show_status()
         # Real UI -> retained client -> controller, with no model or GPU call.
         ui.environment=dict(interpreter=sys.executable)
         ui.show=lambda value:None
         ui.links=lambda:None
         ui.emit=lambda event:None
         try:
-            ui.run("initialize",mode="reopen")
-            self.assertEqual(ui.run("status")["usage"]["attempts"],0)
+            ui.open('reopen',deadline=(datetime.now(timezone.utc)+timedelta(hours=2)).isoformat(),allowance_evidence='Scripted controller window only')
+            self.assertEqual(ui.show_status()["usage"]["attempts"],0)
             from recovery.i01.ui import ActionStopped
-            with self.assertRaises(ActionStopped): ui.run('prepare_batch',count=1)
+            with self.assertRaises(ActionStopped): ui.prepare_main_batch(count=1)
             self.assertEqual(ui.client.command('forecast')['remaining_attempt_allowance'],500)
-            receipt=ui.run("snapshot")
+            receipt=ui.save_checkpoint(verify=True)
             self.assertEqual(receipt["checkpoint"]["integrity"],"passed")
-            self.assertEqual(ui.run("status")["known_pairs"],0)
+            self.assertEqual(ui.show_status()["known_pairs"],0)
         finally:
             if ui.client: ui.client.close()
 

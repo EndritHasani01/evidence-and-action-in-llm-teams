@@ -1,13 +1,38 @@
 # I-01 Kaggle: ordinary notebook cells
 
 Press **Run** to perform the cell's named stage. No widget forms or extra action
-buttons. Run **one stage cell at a time**. **Run All / Save & Run All can execute
+buttons. Named research methods such as **study.install_runtime()** and
+**study.run_pilot(1)** replace string UI dispatch. Run **one stage cell at a time**. **Run All / Save & Run All can execute
 inference and multiple stages and is not a supported study execution method.**
 
 This is implementation delivery, not empirical acceptance. Actual Kaggle
 installation, native framing/capacity, T4 residency/cleanup, headroom, competence,
 pilots, freeze and main results still need operator execution. No model/GPU
 inference or experiment was run during this redesign.
+
+## Recovering the reported ensurepip setup failure
+
+The reported failure was inside Python's default pip bootstrap, before dependency
+installation/model loading. Setup now creates the isolated venv with
+--without-pip and installs the same verified pip 26.2.1 wheel used by the earlier
+accepted Kaggle bootstrap. Scientific/runtime dependency pins are unchanged.
+
+Replace **both the notebook and its source dataset attachment** with the current
+delivery, then **restart the notebook kernel**. Run the workspace cell followed
+by **study.install_runtime()**. The existing incomplete isolated venv is recovered
+without clearing it; previous failure logs and study files are preserved. An
+unknown/non-isolated directory or completed mismatching environment is refused.
+
+Source is extracted into a commit-labelled cache directory, so a new release
+does not overwrite old source. Cached imports from another release explicitly
+require a kernel restart. If multiple source attachments remain, select the exact
+current SOURCE_BUNDLE rather than guessing.
+
+Expected subprocess failures now show the actual last log lines and the full log
+path instead of an uninformative dispatcher traceback. The full logs append
+across attempts. A failed setup does not create model calls or authorize any
+later stage. This repair passed a tiny Windows environment test; actual Kaggle
+installation/qualification still needs your execution.
 
 ## First execution
 
@@ -75,10 +100,10 @@ labelled audit details and never enter partner inputs.
 Complete evidence remains in reports/conversations.html, .jsonl and .txt,
 including calls beyond the bounded default detailed display. Ordinary commands:
 
-    ui.inspect(world="pilot-00", audit_limit=None);
-    ui.inspect(world="pilot-00", phase="retain", agent=0, audit_limit=None);
-    ui.links(all_files=True);
-    ui.annotate("unique-review-id", "ambiguous", ["exact/call/id"], "Trace-based notes");
+    study.inspect(world="pilot-00", audit_limit=None);
+    study.inspect(world="pilot-00", phase="retain", agent=0, audit_limit=None);
+    study.links(all_files=True);
+    study.annotate("unique-review-id", "ambiguous", ["exact/call/id"], "Trace-based notes");
 
 Thinking is audit material, not a faithful explanation. Human annotations need
 exact trace references and frozen rubric labels; no LLM judge is used.
@@ -101,10 +126,10 @@ Interrupting a synchronous generation cell requests pause. Stop new admissions;
 let an already admitted call finish or terminate within its bound. Status may
 still show active/unresolved work; interruption is not an immediate safe snapshot.
 
-    ui.run("status");
-    ui.run("pause");  # Request only.
+    study.show_status();
+    study.pause();  # Request only.
     # Wait for settlement/confirmed bounded termination, then:
-    ui.run("snapshot");
+    study.save_checkpoint();
 
 Quiescent SQLite backup copies, integrity inventory and atomic ZIP replacement
 preserve the last valid archive on failure. The ZIP contains both canonical DBs,
@@ -130,8 +155,8 @@ spending can block admission.
 After self-check, weight reuse and loading, run **two contingency-charged**
 new-session/replacement-worker envelope probes:
 
-    ui.envelope(reload=True);
-    ui.run_batch();  # Only for a saved interrupted main scope.
+    study.check_headroom(reload=True);
+    study.run_main_batch();  # Only for a saved interrupted main scope.
 
 Already accepted readiness/competence need not be rerun just for restore.
 Completed calls reuse raw outcomes; raw-persisted calls apply effects without
@@ -140,9 +165,9 @@ not a silently upgraded UI/runtime. Older checkpoints remain readable for report
 
 Only after observing prior process/session exit, reconcile exact identifiers:
 
-    ui.client.command("reconcile", slot=0, attempt=EXACT_ATTEMPT_ID,
+    study.reconcile_attempt( slot=0, attempt=EXACT_ATTEMPT_ID,
         evidence={"termination_confirmed": True, "reason": "Actual observed exit"});
-    ui.client.command("confirm_timeout_termination", slot=0, call="EXACT_CALL_ID",
+    study.confirm_timeout_termination( slot=0, call="EXACT_CALL_ID",
         evidence={"termination_confirmed": True, "reason": "Actual observed exit"});
 
 Only one identical pre-persistence infrastructure retry is eligible after
@@ -152,7 +177,7 @@ never retry. A stale PID is not proof of death.
 If saved bytes predate lost work, record partial recovery, a defensible missing-
 spending bound and affected worlds. Lost prefixes cannot silently regenerate:
 
-    ui.client.command("lost_spending",
+    study.record_lost_spending(
         gap={"resolved": True, "upper": ACTUAL_UPPER_BOUND, "evidence": "Actual evidence"},
         affected_worlds=["main-XX"]);
 
@@ -161,7 +186,7 @@ Generation can be blocked while reporting remains available.
 
 ## Read-only reconstruction and package maintenance
 
-With a controller, use ui.final_report(). With intact files and no controller,
+With a controller, use study.build_report(). With intact files and no controller,
 that same method reconstructs reports without workers/CUDA. Outside the notebook,
 extract the checkpoint and use its exact saved source:
 
@@ -174,7 +199,7 @@ Read-only analysis creates no workers and infers no missing outcomes.
 Development rebuild and focused verification, zero model calls:
 
     python scripts/build_i01_course_notebook.py
-    python -m unittest tests.test_i01_notebook_ui tests.test_i01_integration
+    python -m unittest tests.test_i01_setup tests.test_i01_notebook_ui tests.test_i01_integration
     python scripts/build_i01_course_release.py
     python scripts/verify_i01_course_release.py
 

@@ -201,7 +201,7 @@ class Operator:
             result=self.run_action(action,**args)
             self.show(result); return result
         if not self.busy.acquire(blocking=False):
-            raise ValueError("one active notebook action; use ui.run('pause') or status")
+            raise ValueError("one active notebook action; request pause or inspect status before another stage")
         try:
             result=self.run_action(action,**args)
             self.show(result)
@@ -219,12 +219,15 @@ class Operator:
             if error: raise ActionStopped(error)
             return result
         except KeyboardInterrupt:
-            print("Pause requested. An admitted call may still be active. Run ui.run('status'); wait for settlement before snapshot/close. Rerun only the saved scope.")
+            print("Pause requested. An admitted call may still be active. Inspect status; wait for settlement before snapshot/close. Rerun only the saved scope.")
             raise
         except ActionStopped:
             raise
         except Exception as error:
-            print(f'Stopped {action}: {error}. Saved evidence remains available through ui.inspect() and ui.links().')
+            if action in ('setup','weights'):
+                print(f'Stopped {action}: {error}. Setup/download logs are in {self.working / "i01-setup"}.')
+            else:
+                print(f'Stopped {action}: {error}. Saved evidence remains available through study.inspect() and study.links().')
             raise
         finally:
             self.busy.release()
@@ -417,7 +420,7 @@ class Operator:
             o=json.loads(t["outcome"]) if t["outcome"] else None
             _details('Exact permitted prompt and private raw audit: '+t['id'],dict(prompt=req.get('rendered',''),request=req,outcome=o,effect_committed=t['effect_committed']))
             shown+=1
-        if matched>shown: print(f'Showing {shown}/{matched} detailed call audits. Complete prompts/replies/tokens remain in conversations.html/.txt/.jsonl. Use ui.inspect(..., audit_limit=None) to display all calls.')
+        if matched>shown: print(f'Showing {shown}/{matched} detailed call audits. Complete prompts/replies/tokens remain in conversations.html/.txt/.jsonl. Use study.inspect(..., audit_limit=None) to display all calls.')
         if downloads: self.links()
         return result
 

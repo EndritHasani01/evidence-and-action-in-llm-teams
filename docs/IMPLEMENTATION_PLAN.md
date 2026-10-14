@@ -42,6 +42,18 @@ execution. Scientific settings, gates and attempt limits are unchanged. Actual
 Kaggle output/interrupt/download and empirical acceptance remain pending. Active
 checkout: `E:\Github\recovery_blueprint\recovery_blueprint`.
 
+The subsequent Kaggle setup incident exposed an `ensurepip` failure inside venv
+creation. The repaired bootstrap uses `--without-pip` and the same verified
+pip 26.2.1 wheel as the accepted earlier Kaggle preparation, recovers an
+incomplete isolated environment without clearing files, preserves prior logs,
+and shows real log tails on failure. Notebook cells now use the named `Study`
+steps in `recovery/i01/notebook.py`; no `ui.` or generic action-dispatch calls
+remain in the delivered notebook. A commit-labelled source cache and stale-import
+guard prevent reusing an older release in an active kernel. Four focused setup
+checks and one actual named-step/controller/snapshot check pass locally; full
+Kaggle installation remains unverified. See `setup-repair-checks.json` and the
+runbook's exact replacement/restart instructions.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.

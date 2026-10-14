@@ -9,8 +9,29 @@ import shutil
 import subprocess
 import sys
 from time import monotonic
+from collections import deque
+from urllib.request import urlopen
 
 from .archive import atomic_json, digest
+
+
+# Same installer wheel as the accepted M5 Kaggle bootstrap. Scientific runtime
+# dependencies remain in the unchanged i01-runtime.lock.
+PIP_BOOTSTRAP = dict(version='26.2.1',filename='pip-26.2.1-py3-none-any.whl',bytes=1816632,
+    sha256='71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e',
+    url='https://files.pythonhosted.org/packages/f3/6e/1736e5b4ae2b778ef2f81c47d797de9f891d4d8acb047a24ca37a60294dd/pip-26.2.1-py3-none-any.whl')
+PIP_WHEEL_RUNNER = "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));runpy.run_module('pip',run_name='__main__',alter_sys=True)"
+
+
+class SetupFailure(ValueError):
+    def __init__(self, stage, log, code, tail):
+        self.stage,self.log,self.code,self.tail=stage,str(log),code,tail
+        super().__init__(f'{stage} failed ({code}). Full log: {log}')
+
+    def _render_traceback_(self):
+        # Expected operational failures show their cause instead of a dispatcher
+        # stack. Unexpected Python defects still retain normal tracebacks.
+        return [str(self), 'Last log lines:', self.tail]
 
 
 def host_inventory(scratch, working):
@@ -37,7 +58,8 @@ def host_inventory(scratch, working):
 def invoke(args, log, timeout=1800, *, env=None):
     log=Path(log); log.parent.mkdir(parents=True,exist_ok=True)
     print("Setup: "+log.stem,flush=True)
-    with log.open("w",encoding="utf-8") as stream:
+    with log.open("a",encoding="utf-8") as stream:
+        stream.write('\nStarting '+log.stem+'\n'); stream.flush()
         p=subprocess.Popen([str(x) for x in args],stdout=stream,stderr=subprocess.STDOUT,env=env)
         started=monotonic()
         try:
@@ -58,7 +80,53 @@ def invoke(args, log, timeout=1800, *, env=None):
                 p.kill(); p.wait(timeout=5)
             raise
     if code:
-        raise ValueError(f"{log.stem} failed ({code}); inspect {log}")
+        with log.open(encoding='utf-8',errors='replace') as stream:
+            tail=''.join(deque(stream,maxlen=40)).strip()
+        raise SetupFailure(log.stem,log,code,tail)
+
+
+def pip_wheel(scratch, receipts):
+    """Retrieve one small pinned installer; no get-pip script or base pip needed."""
+    directory=Path(scratch)/'pip-bootstrap'; directory.mkdir(parents=True,exist_ok=True)
+    target=directory/PIP_BOOTSTRAP['filename']
+    if not (target.is_file() and target.stat().st_size==PIP_BOOTSTRAP['bytes'] and digest(target)==PIP_BOOTSTRAP['sha256']):
+        print('Setup: download verified pip bootstrap wheel',flush=True)
+        partial=target.with_suffix('.partial')
+        with urlopen(PIP_BOOTSTRAP['url'],timeout=30) as response, partial.open('wb') as stream:
+            started=monotonic(); total=0
+            while True:
+                if monotonic()-started>120: raise ValueError('pip bootstrap download deadline')
+                block=response.read(256*1024)
+                if not block: break
+                total+=len(block)
+                if total>PIP_BOOTSTRAP['bytes']: raise ValueError('pip bootstrap wheel exceeds pinned size')
+                stream.write(block)
+        if partial.stat().st_size!=PIP_BOOTSTRAP['bytes'] or digest(partial)!=PIP_BOOTSTRAP['sha256']:
+            raise ValueError('pip bootstrap size/hash mismatch; no wheel execution')
+        partial.replace(target)
+    atomic_json(Path(receipts)/'pip-bootstrap-wheel.json',dict(PIP_BOOTSTRAP,verified=True))
+    return target
+
+
+def create_environment(venv, scratch, receipts, env):
+    """Create/recover a plain isolated venv, explicitly bypassing ensurepip."""
+    venv,scratch,receipts=Path(venv),Path(scratch),Path(receipts)
+    python=venv/('Scripts/python.exe' if os.name=='nt' else 'bin/python')
+    config=venv/'pyvenv.cfg'
+    if venv.exists() and any(venv.iterdir()) and (not config.is_file() or 'include-system-site-packages = false' not in config.read_text().lower()):
+        raise ValueError('Existing environment is not a verified isolated venv; choose a fresh scratch directory. No files were deleted.')
+    invoke([sys.executable,'-m','venv','--without-pip',venv],receipts/'venv.log',120,env=env)
+    if 'include-system-site-packages = false' not in config.read_text().lower():
+        raise ValueError('Environment must not inherit kernel packages')
+    wheel=pip_wheel(scratch,receipts)
+    lock=scratch/'pip-bootstrap.lock'
+    lock.write_text(f"pip=={PIP_BOOTSTRAP['version']} --hash=sha256:{PIP_BOOTSTRAP['sha256']}\n",encoding='utf-8')
+    invoke([python,'-I','-c',PIP_WHEEL_RUNNER,wheel,'--isolated','--disable-pip-version-check',
+            'install','--no-deps','--no-index','--find-links',wheel.parent,'--require-hashes',
+            '-r',lock],receipts/'bootstrap-pip.log',120,env=env)
+    probe="import pathlib,pip,sys; assert sys.prefix!=sys.base_prefix; assert pathlib.Path(pip.__file__).resolve().is_relative_to(pathlib.Path(sys.prefix).resolve()); assert pip.__version__=="+repr(PIP_BOOTSTRAP['version'])+"; print('Isolated pinned pip accepted:',pip.__version__)"
+    invoke([python,'-I','-c',probe],receipts/'pip-isolation.log',60,env=env)
+    return python
 
 
 def install(source, scratch, working):
@@ -85,14 +153,14 @@ def install(source, scratch, working):
         if saved["identity"]!=identity or not python.exists():
             raise ValueError("environment differs or missing; no mid-session replacement")
         return saved
-    if venv.exists():
-        raise ValueError("incomplete prior setup: inspect logs; choose fresh scratch explicitly")
     started=monotonic()
     (scratch/"tmp").mkdir(exist_ok=True)
-    invoke([sys.executable,"-m","venv",venv],receipts/"venv.log",120)
-    env=dict(os.environ,PIP_DEFAULT_TIMEOUT="60",HF_HUB_DOWNLOAD_TIMEOUT="60",HF_HUB_ETAG_TIMEOUT="30",
+    env={k:v for k,v in os.environ.items() if not k.startswith(('PYTHON','PIP_','VIRTUAL_ENV'))}
+    env.update(PIP_DEFAULT_TIMEOUT="60",HF_HUB_DOWNLOAD_TIMEOUT="60",HF_HUB_ETAG_TIMEOUT="30",
              HF_HUB_CACHE=str(scratch/"hf-cache"),PYTHONUNBUFFERED="1",TMPDIR=str(scratch/"tmp"),
-             TMP=str(scratch/"tmp"),TEMP=str(scratch/"tmp"))
+             TMP=str(scratch/"tmp"),TEMP=str(scratch/"tmp"),PYTHONNOUSERSITE='1',PYTHONUTF8='1',
+             PIP_CONFIG_FILE=os.devnull,PIP_DISABLE_PIP_VERSION_CHECK='1')
+    python=create_environment(venv,scratch,receipts,env)
     invoke([python,"-m","pip","--isolated","--cache-dir",scratch/"pip-cache","install","--only-binary=:all:","--require-hashes",
             "--retries","2","--index-url","https://pypi.org/simple","--extra-index-url","https://download.pytorch.org/whl/cu128",
             "--report",receipts/"dependency-install.json","-r",source/"configs/i01-runtime.lock"],receipts/"dependencies.log",3600,env=env)
@@ -103,6 +171,7 @@ def install(source, scratch, working):
     result=dict(identity=identity,interpreter=str(python),source=str(source),scratch=str(scratch),
                 working=str(working),hf_cache=str(scratch/"hf-cache"),host=host,setup_seconds=monotonic()-started,
                 versions=json.loads(probe.read_text()),model_attempts=0)
+    result['pip_bootstrap']=dict(PIP_BOOTSTRAP,ensurepip_used=False)
     atomic_json(receipt_path,result)
     return result
 
