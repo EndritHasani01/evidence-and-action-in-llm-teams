@@ -92,10 +92,23 @@ class Adapter:
             raise ValueError("exact permitted rendering/tokenization/settings/seed mismatch")
         backend.settings = request["settings"]
         backend.limits = SimpleNamespace(output_tokens=request["settings"]["generation"]["max_new_tokens"])
+        from threading import Event, Thread
+        stop=Event(); samples=[]
+        def observe_memory():
+            while not stop.is_set():
+                samples.append(backend.torch.cuda.mem_get_info(0)[0])
+                stop.wait(.05)
+        observer=Thread(target=observe_memory,daemon=True)
         started = monotonic()
-        measured = backend._generate(SimpleNamespace(input_ids=tuple(request["input_ids"]),
-                                                     attention_mask=tuple(request["attention_mask"])),
-                                     request["seed"], force_output_reserve=request["envelope"])
+        observer.start()
+        try:
+            measured = backend._generate(SimpleNamespace(input_ids=tuple(request["input_ids"]),
+                                                         attention_mask=tuple(request["attention_mask"])),
+                                         request["seed"], force_output_reserve=request["envelope"])
+        finally:
+            stop.set(); observer.join(timeout=1)
+        if observer.is_alive() or not samples:
+            raise ValueError("GPU headroom observation did not settle")
         elapsed = monotonic()-started
         reply = measured.response
         visible, thinking, framing_error = split_visible(backend.tokenizer, reply, request["settings"]["mode"])
@@ -103,7 +116,9 @@ class Adapter:
             # Forced diagnostic tokens have no scientific action/final framing.
             visible, thinking, framing_error = "", None, None
         diagnostics = measured.backend
-        diagnostics["observed_peak_free_lower_bytes"] = min(diagnostics["free_bytes_with_cache"],
+        diagnostics["observed_free_min_bytes"]=min(samples)
+        diagnostics["memory_samples"]=len(samples)
+        diagnostics["observed_peak_free_lower_bytes"] = min(min(samples),diagnostics["free_bytes_with_cache"],
             diagnostics["free_bytes_with_cache"] + diagnostics["reserved_bytes"] - diagnostics["peak_reserved_bytes"])
         return dict(raw_text=reply.text, visible_text=visible, thinking=thinking,
                     token_ids=list(reply.token_ids), termination=reply.termination,

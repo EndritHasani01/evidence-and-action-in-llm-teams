@@ -203,7 +203,8 @@ class Operator:
     def panel(self, action, title=None, ceiling=0, **defaults):
         from IPython.display import display, HTML
         title=title or action
-        display(HTML(f'<h3>{escape(title)}</h3><p>First-attempt ceiling: {ceiling}. Eligible identical infrastructure retries consume the shared 28 contingency and 500 whole-study ceiling. Successful completion starts no later stage.</p>'))
+        description=(f'First-attempt ceiling: {ceiling}. Eligible identical infrastructure retries consume the shared 28 contingency and 500 whole-study ceiling.' if ceiling else 'Zero model generations; setup, state or reporting only.')
+        display(HTML(f'<h3>{escape(title)}</h3><p>{description} Successful completion starts no later stage.</p>'))
         print(f"Explicit command: ui.run({action!r}"+"".join(f", {k}={v!r}" for k,v in defaults.items())+")")
         try:
             import ipywidgets as widgets
@@ -228,6 +229,15 @@ class Operator:
             fields[key].description=labels.get(key,key)
             fields[key].style.description_width="initial"
         button=widgets.Button(description=title,button_style="primary",layout=widgets.Layout(width="auto"))
+        if action=="screen":
+            fields["mode"].disabled=True
+            if defaults.get("mode")=="thinking":
+                direct=(self.client.command("status")["gates"].get("screen/direct",{}) if self.client else {})
+                allowed=bool(direct and not direct.get("passed") and not direct.get("protocol_errors"))
+                def thinking_enabled(change=None):
+                    button.disabled=not (allowed and fields.get("reason") and fields["reason"].value.strip())
+                if "reason" in fields: fields["reason"].observe(thinking_enabled,names="value")
+                thinking_enabled()
         output=widgets.Output(); self.outputs.append(output)
         def clicked(_):
             if self.busy.locked() and action not in ("pause","status"):

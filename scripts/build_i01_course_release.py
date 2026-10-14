@@ -21,6 +21,7 @@ def build(root, out):
         relative=[p.relative_to(root) for p in (root/"recovery").rglob("*.py")]
         relative += [Path(p) for p in ("pyproject.toml","configs/i01-course.json","configs/i01-runtime.lock",
                      "PROJECT_SPECIFICATION.md","AGENTS.md","docs/I01_KAGGLE.md",
+                     "docs/validation/i01-implementation.md",
                      "docs/plans/i01-course-implementation-wbs.md","scripts/i01_course.py",
                      "scripts/build_i01_course_notebook.py","scripts/build_i01_course_release.py")]
         # Builder can make a Python-only release before notebook completion.

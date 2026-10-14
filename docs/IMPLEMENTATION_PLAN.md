@@ -18,6 +18,15 @@ passed on Windows Python 3.11.9; these are implementation evidence only.
 The staged notebook/release is the next deliverable, followed by operator-only
 Kaggle validation. No old automatic course execution policy is inherited.
 
+The staged notebook and small online source attachment are now implemented:
+`notebooks/i01_course_kaggle.ipynb` and `dist/i01-course/` (reproducible builders).
+Notebook/release checks confirm 24 staged code cells, rendering-only Run All,
+35 explicit controls, empty research outputs, complete installed wheel/source
+identity and read-only population reconstruction. M0–M5 implementation is
+complete. M6–M7 execution paths are delivered; actual Kaggle validation and all
+research outcomes remain pending. See the WBS delivery checkpoint and runbook
+for precise operation; generated artifacts do not establish model qualification.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.

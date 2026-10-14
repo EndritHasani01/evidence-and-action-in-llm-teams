@@ -652,11 +652,43 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | M2-T01–T04 | Implemented; focused scripted checks passed | WAL/FULL episode stores, serialized 500/28 admission, idempotent raw/effects, backup/ZIP/expanded restore; target-host pending |
 | M3-T01–T04 | Implemented; target-host pending | Reviewed loader/cache engine, direct/thinking adapter, resident children/client, pinned online setup, packaged checks |
 | M4-T01–T04 | Python complete; focused integration passed | Finite gates/stages; exact scoring/uncertainty/costs; full traces, figures, export and command/UI surfaces; docs/I01_KAGGLE.md |
-| M5-T01–T04 | Pending | Notebook begins only after Python completion |
-| M6-T01–T04 | Operator execution pending | All paths must be implemented; actual-host claims withheld |
-| M7-T01–T03 | Operator execution pending | All paths must be implemented; outcomes unknown |
+| M5-T01–T04 | Implemented; delivery checks passed | notebooks/i01_course_kaggle.ipynb, source ZIP/wheel, 24 staged code cells/35 controls, explicit fallback, inspection/download/restore paths |
+| M6-T01–T04 | All execution paths implemented; operator validation pending | Actual host/UI/native checks, residency/readiness, competence/envelope, three pilots and explicit freeze have not run |
+| M7-T01–T03 | All execution/report/export paths implemented; operator execution pending | Fixed bounded batches, complete/partial reconstruction, figures, trace rubric, final archive and shutdown; outcomes unknown |
 
 Baseline: branch `feat/smaller-natural-experiment`, HEAD `0b0a44a`;
 only the user-provided WBS was untracked. Canonical I-01 evidence will use
 `worker-0.sqlite` and `worker-1.sqlite`, with stage/gate metadata owned by slot 0.
 No new progress store, cross-treatment replay or legacy-database migration.
+
+### Delivery checkpoint
+
+Milestone commits: `6875aae` adoption; `914036c` native study core;
+`05cc8d6` ledger/archive; `3bb8ccd` inference/runtime; `237c4ac` Python completion;
+`e71f99e` integration/recovery accounting. The notebook/release checkpoint follows
+these Python interfaces and uses the same library, rather than notebook science.
+
+Delivered paths: `recovery/i01/`, `scripts/i01_course.py`,
+`scripts/build_i01_course_notebook.py`, `scripts/build_i01_course_release.py`,
+`scripts/verify_i01_course_release.py`, `configs/i01-course.json`,
+`configs/i01-runtime.lock`, `notebooks/i01_course_kaggle.ipynb`, and generated
+`dist/i01-course/{i01-source.zip,i01_course_kaggle.ipynb,START_HERE.md}`.
+The ZIP is about 0.52 MiB and contains exact source/configuration and the complete
+wheel, with no weights/environment/cache. Regeneration uses the committed builder.
+
+Focused checks: packaged scripted self-check (including the concurrent last
+admission), six scripted integration tests, compile/schema/order/empty-output
+review, 23 rendering-only cells/35 controls with zero actions, small-wheel
+installation outside the checkout with byte-equal modules and read-only CLI
+population reconstruction, ZIP/native source inventory checks, report-figure
+visual inspection and local links/diff checks. Receipts are under
+`notebooks/validation/i01-development/`; detailed limits are in
+[implementation evidence](../validation/i01-implementation.md).
+
+No GPU inference, actual qualification, pilot, main, freeze or publication ran.
+The [runbook](../I01_KAGGLE.md) gives the first online T4×2 execution, all stage
+commands, exact/partial restoration, evidence-gap/termination reconciliation,
+read-only final reconstruction and shutdown. Actual frontend download/residency,
+native capacity/framing, short-envelope headroom and real model conversations
+remain Kaggle-only acceptance. M0–M5 implementation is complete; M6–M7 empirical
+completion is deliberately not claimed.
