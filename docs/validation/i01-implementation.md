@@ -33,3 +33,27 @@ native fixture mathematics and phase-final/wait/view behavior. The native-tokeni
 portion is not run by this local command and remains the N04 Kaggle prerequisite.
 Two integration faults were corrected: explicit SQLite connection closure and
 portable backup journal mode, preventing open-handle/sidecar export discrepancies.
+
+## M3 / M4 Python integration
+
+`python -m unittest tests.test_i01_integration -v` covers scripted raw-persistence
+interruption and exact resume, phase finality and retention, escaped model HTML,
+read-only twenty-world unknown coverage, missing-prerequisite refusal before
+admission, restored-envelope refusal, and the retained controller/client command
+path. A discovered Windows NumPy import deadlock was diagnosed with a bounded
+thread dump and fixed by initializing CPU plotting on the controller main thread.
+The retained client test then passed (5.710 seconds); no model was loaded.
+
+The adapter reuses the existing reviewed NF4 loader and fresh-cache/finite-score
+engine while binding exact I-01 requests and direct/thinking framing. The online
+deployment lock inherits the demonstrated Linux Python 3.13 hash lock and adds
+explicit pinned reporting dependencies with hashes from their PyPI releases.
+No GPU loading, model qualification, actual envelope, pilot or main action was
+executed. Native framing and the candidate deployment lock require Kaggle checks.
+
+The Python interfaces implement host/setup/download, initialization/restore,
+self-checks, load-only resident workers, six counted readiness calls, separate
+mode screens, selected/reload envelopes, individual pilots, human reviews,
+explicit freeze, prepared one/two-world batches, pause, annotations, read-only
+analysis, complete reports/figures, snapshots and shutdown. Two-world batches
+use one serial child per slot, global admission, and shared quiescent boundaries.
