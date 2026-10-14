@@ -23,3 +23,13 @@ world belongs to one canonical database. Admission is serialized by the one
 controller across the explicit two-store inventory; raw replies/failures and
 effects are separate transactions, with effects and checkpoint atomic together.
 Only stage/gate/session metadata is held in slot 0. Historical DBs are untouched.
+
+The packaged `recovery.i01.checks.run_checks()` passed its focused scripted
+development run (receipt: `notebooks/validation/i01-development/scripted-checks.json`).
+It checks interruption before raw persistence with one confirmed identical retry,
+interruption after raw persistence with idempotent effects, 499/500 admission,
+backup exclusion, ZIP and expanded restoration, unknown versus terminal failure,
+native fixture mathematics and phase-final/wait/view behavior. The native-tokenizer
+portion is not run by this local command and remains the N04 Kaggle prerequisite.
+Two integration faults were corrected: explicit SQLite connection closure and
+portable backup journal mode, preventing open-handle/sidecar export discrepancies.
