@@ -697,3 +697,30 @@ read-only final reconstruction and shutdown. Actual frontend download/residency,
 native capacity/framing, short-envelope headroom and real model conversations
 remain Kaggle-only acceptance. M0–M5 implementation is complete; M6–M7 empirical
 completion is deliberately not claimed.
+
+## 15. Requested notebook usability follow-up
+
+14 October 2026: the user requests planning for natural progression and explicitly
+prefers ordinary notebook cells over widget forms/buttons. The active checkout is
+`E:\Github\recovery_blueprint\recovery_blueprint`, baseline `22220b9`.
+See [the direct-cell workflow plan](i01-notebook-natural-workflow.md).
+
+| Follow-up | Status | Scope |
+|---|---|---|
+| Workflow and interaction plan | Planning complete; user-selected ordinary-cell direction recorded | Setup → separate qualification stages → three individual pilot/review pairs → explicit freeze → prepare/run/review fixed main batches → final report/export; recovery appendix |
+| UX-01–UX-04 implementation | Pending | Existing operator helpers, notebook generator, focused cell-scope verification and complete release regeneration |
+| Actual Kaggle usability/interrupt/download acceptance | Pending | Operator target-host validation; no model execution occurred during planning |
+
+For this follow-up, §7 and M5-T02's button-first/rendering-only Run All policy is
+scheduled for explicit replacement: running an ordinary cell requests its named
+bounded action. Run All can execute inference and is not a supported study
+execution method. No automatic later-stage transition, global arming flag or
+confirmation prompt is added to simulate rendering-only behavior. Human pilot
+findings and real session/restore evidence remain required; routine choices are
+derived from canonical saved state.
+
+The existing §14 delivery remains implemented with its original UI and evidence.
+This follow-up has changed no notebook, Python behavior, scientific configuration
+or research result. Preserve specification §12, all 500-attempt/isolation/resume
+guarantees and historical artifacts; implementation checks must be updated before
+describing a regenerated direct-cell package as delivered.

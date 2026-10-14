@@ -27,6 +27,16 @@ complete. M6–M7 execution paths are delivered; actual Kaggle validation and al
 research outcomes remain pending. See the WBS delivery checkpoint and runbook
 for precise operation; generated artifacts do not establish model qualification.
 
+14 October 2026 usability follow-up: the user finds the widget forms/buttons
+unnatural and requests ordinary notebook cells. The
+[natural workflow plan](plans/i01-notebook-natural-workflow.md) records the
+requested direct execution sequence, concise results, per-pilot review/download,
+fixed main loop and recovery appendix. Planning is complete; implementation is
+pending. The current notebook/release still uses the controls described above.
+The follow-up plans to replace rendering-only Run All acceptance with bounded
+per-cell execution checks; scientific settings, gates and attempt limits remain
+unchanged. The active checkout is `E:\Github\recovery_blueprint\recovery_blueprint`.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
