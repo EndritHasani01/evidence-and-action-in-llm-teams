@@ -1,10 +1,10 @@
 # I-01 course experiment: implementation plan and WBS
 
-**PROPOSED PLAN — NOT APPROVED, IMPLEMENTED, OR EXECUTED**
+**DESIGN ADOPTED — IMPLEMENTATION IN PROGRESS; KAGGLE EXECUTION NOT AUTHORIZED HERE**
 
 Prepared 14 October 2026 against repository `0b0a44a3cf3a0306559a716e5df45b3dbe074ed0`, branch `feat/smaller-natural-experiment`.
 
-This is the single implementation-planning reference for the proposed I-01 course study. It does not replace the [scientific specification](../../PROJECT_SPECIFICATION.md), amend the [repository contract](../../AGENTS.md), or authorize execution. M0 establishes the later scientific adoption. Once adopted, the existing [implementation roadmap](../IMPLEMENTATION_PLAN.md) should point to this WBS for the new regime, rather than maintain a duplicate task list.
+This is the implementation reference for the I-01 course study explicitly adopted by the user on 14 October 2026. [Specification §12](../../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime) is authoritative. Approval covers implementation and focused lightweight checks only; actual Kaggle readiness, qualification, pilots, freeze and main remain operator stages. The existing roadmap points here instead of duplicating the task list.
 
 The delivery order is **complete Python research scripts → interactive Kaggle notebook → in-notebook validation, qualification, pilots, main execution, and final outputs**. There is **no separate CPU verification phase**. Lightweight mathematical, protocol, persistence, and packaging checks are implemented with the scripts and executed inside the Kaggle workflow before expensive calls. Ordinary code review and syntax checking during development are not a separate research acceptance campaign.
 
@@ -638,4 +638,25 @@ The plan does not promise recovery from missing bytes, current Kaggle quota, sma
 - [Python 3.13 SQLite](https://docs.python.org/3.13/library/sqlite3.html#sqlite3.Connection.backup): backup and transaction primitives; quiescent cross-worker consistency is this application's responsibility.
 - [Official Qwen3.5-9B guidance](https://huggingface.co/Qwen/Qwen3.5-9B#best-practices): supported mode/settings and history conventions; advertised benchmarks do not qualify this bounded quantized setup.
 
-Only this planning document was added for this task. No scientific specification, implementation, notebook, test, or experiment artifact was changed or executed.
+## 14. Living implementation handoff
+
+14 October 2026: explicit user approval adopts Section 3's reviewed I-01 design,
+including phase-final submissions, new-value-only notices and three pilots.
+Existing thesis and earlier course artifacts remain protected. No GPU/model,
+qualification, pilot, freeze or main execution occurs during implementation.
+
+| Tasks | Status | Evidence / next dependency |
+|---|---|---|
+| M0-T01–T02 | Adopted | Specification §12; configs/i01-course.json; this handoff |
+| M1-T01–T04 | In progress | Native mathematics, permitted actions, lifecycle, fixed seeds/orders |
+| M2-T01–T04 | Pending | Episode-aware durable admission and portable snapshots |
+| M3-T01–T04 | Pending | Resident adapter, setup and embedded checks |
+| M4-T01–T04 | Pending | Complete Python workflow/report/release |
+| M5-T01–T04 | Pending | Notebook begins only after Python completion |
+| M6-T01–T04 | Operator execution pending | All paths must be implemented; actual-host claims withheld |
+| M7-T01–T03 | Operator execution pending | All paths must be implemented; outcomes unknown |
+
+Baseline: branch `feat/smaller-natural-experiment`, HEAD `0b0a44a`;
+only the user-provided WBS was untracked. Canonical I-01 evidence will use
+`worker-0.sqlite` and `worker-1.sqlite`, with stage/gate metadata owned by slot 0.
+No new progress store, cross-treatment replay or legacy-database migration.
