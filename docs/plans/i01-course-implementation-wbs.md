@@ -677,7 +677,7 @@ The ZIP is about 0.52 MiB and contains exact source/configuration and the comple
 wheel, with no weights/environment/cache. Regeneration uses the committed builder.
 
 Focused checks: packaged scripted self-check (including the concurrent last
-admission), six scripted integration tests, compile/schema/order/empty-output
+admission), seven scripted integration tests, compile/schema/order/empty-output
 review, 23 rendering-only cells/35 controls with zero actions, small-wheel
 installation outside the checkout with byte-equal modules and read-only CLI
 population reconstruction, ZIP/native source inventory checks, report-figure

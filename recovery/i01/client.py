@@ -100,8 +100,10 @@ class Client:
     def close(self):
         self.command("close",timeout=120)
         self.process.stdin.close()
-        self.process.wait(timeout=20)
+        code=self.process.wait(timeout=20)
         self.reader.join(timeout=5)
         self.process.stdout.close()
         self.log.close()
+        if code:
+            raise ValueError(f"controller shutdown exit={code}; inspect {self.log_path}")
 

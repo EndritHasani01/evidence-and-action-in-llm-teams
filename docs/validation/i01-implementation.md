@@ -82,3 +82,13 @@ Actual Kaggle widgets/download links, native tokenizer bounds/framing, Linux
 installation and T4 process residency/cleanup remain target-host checks. The
 prepared GPU readiness/envelope/competence/pilot/freeze/main paths have not been
 executed on a pretrained model. All intended I-01 main outcomes remain unknown.
+
+The small source/wheel release review passed outside the checkout: every
+installed Python module equals the source manifest, the installed CLI initializes
+and reads a twenty-world unknown study with zero attempts, and all 24 code cells
+compile/render without research actions. The source ZIP CRC/file inventory passes.
+During final real operator testing, a run-directory attribute/method collision
+was fixed; `Operator.run` now routes through the retained client/controller.
+The seventh focused integration case exercises that actual path through reopen,
+status and snapshot with zero model calls. Snapshot creates one fresh archive,
+and controller close snapshots after recording model termination.

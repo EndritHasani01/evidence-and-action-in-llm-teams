@@ -15,7 +15,7 @@ from .setup import host_inventory, install
 
 class Operator:
     def __init__(self, source, scratch="/kaggle/temp/i01", working="/kaggle/working", run="/kaggle/working/i01-study"):
-        self.source,self.scratch,self.working,self.run=map(Path,(source,scratch,working,run))
+        self.source,self.scratch,self.working,self.run_dir=map(Path,(source,scratch,working,run))
         self.client=None; self.environment=None; self.metadata=None; self.weights=None
         self.busy=threading.Lock(); self.outputs=[]
         self.deadline=None; self.allowance_evidence=None
@@ -35,13 +35,17 @@ class Operator:
             line=f"Checkpoint {event['boundary']}: {event['bytes']:,} bytes; integrity {event['integrity']}"
         elif kind=="raw_persisted":
             o=event["outcome"]; line=f"Raw saved: {event['call']} · {o.get('generated_tokens')} tokens · {o.get('ready_seconds')} ready-model seconds"
+        elif kind=="worker_progress":
+            line=f"Working · {event.get('elapsed_seconds')}s · {event.get('text')}"
+        elif kind=="action_finished":
+            line=f"{event['action']}: {event.get('error') or 'complete'} · checkpoint {event.get('checkpoint',{}).get('path','unavailable')}"
         else:
             line=canonical(event)
         print(line,flush=True)
 
     def bootstrap_status(self):
         from IPython.display import display, HTML
-        display(HTML('<h3>I-01 workspace inventory</h3><pre>'+escape(json.dumps(dict(host=self.host,source=str(self.source),run=str(self.run)),indent=2))+'</pre>'))
+        display(HTML('<h3>I-01 workspace inventory</h3><pre>'+escape(json.dumps(dict(host=self.host,source=str(self.source),run=str(self.run_dir)),indent=2))+'</pre>'))
 
     def setup(self):
         self.environment=install(self.source,self.scratch,self.working)
@@ -71,19 +75,19 @@ class Operator:
         if mode=="restore":
             if not selected or tail not in ("latest","unknown") or not evidence.strip():
                 raise ValueError("select exact bundle and document latest-snapshot or unknown-tail evidence")
-            extract_selected(selected,self.run)
+            extract_selected(selected,self.run_dir)
         elif mode=="new":
             from .workflow import initialize
             config=json.loads((self.source/"configs/i01-course.json").read_text())
-            initialize(self.run,self.source,config)
-        elif not (self.run/"run.json").exists():
+            initialize(self.run_dir,self.source,config)
+        elif not (self.run_dir/"run.json").exists():
             raise ValueError("reopen requires files intact; no implicit new study")
         if self.client is not None and self.client.process.poll() is None:
             return self.client.command("status")
-        self.client=Client(self.environment["interpreter"],self.source,self.run,self.scratch/"hf-cache",self.emit)
+        self.client=Client(self.environment["interpreter"],self.source,self.run_dir,self.scratch/"hf-cache",self.emit)
         self.receipt_session=self.client.command("status")["session"]
         if (self.working/"i01-setup").exists():
-            shutil.copytree(self.working/"i01-setup",self.run/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
+            shutil.copytree(self.working/"i01-setup",self.run_dir/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
         if mode=="restore":
             self.client.command("lost_spending",gap=dict(resolved=tail=="latest",upper=0 if tail=="latest" else None,evidence=evidence))
         # Deadlines belong to this controller session; never reuse an old one.
@@ -105,7 +109,7 @@ class Operator:
             if not self.client.command("status")["gates"].get("selfcheck"):
                 raise ValueError("native self-check prerequisite missing")
             self.weights=self._transport("weights")
-            shutil.copytree(self.working/"i01-setup",self.run/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
+            shutil.copytree(self.working/"i01-setup",self.run_dir/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
             return self.weights
         if action=="window": return self.set_window(**args)
         if self.client is None:
@@ -127,7 +131,7 @@ class Operator:
         from .archive import verify
         from .report import analysis
         import tempfile
-        selected=self.run/"exports/latest.zip"
+        selected=self.run_dir/"exports/latest.zip"
         with tempfile.TemporaryDirectory(prefix="i01-reopen-",dir=self.working) as name:
             restored=Path(name)/"snapshot"
             receipt=extract_selected(selected,restored)
@@ -152,7 +156,7 @@ class Operator:
             return result
         finally:
             self.busy.release()
-            if (self.run/"exports/latest.zip").exists(): self.links()
+            if (self.run_dir/"exports/latest.zip").exists(): self.links()
 
     def show(self, result):
         from IPython.display import display, HTML
@@ -160,7 +164,7 @@ class Operator:
 
     def links(self):
         from IPython.display import display, HTML, FileLink
-        zip_path=self.run/"exports/latest.zip"
+        zip_path=self.run_dir/"exports/latest.zip"
         def link(path):
             try: target=path.relative_to(Path.cwd())
             except ValueError: target=path
@@ -174,17 +178,17 @@ class Operator:
             display(HTML('<p>If the frontend does not open this link, use Kaggle’s Output/Files pane to download this exact path. Save it outside the session.</p>'))
             display(HTML('<details><summary>Archive contents / integrity inventory</summary><pre>'+escape(json.dumps(integrity,indent=2))+'</pre></details>'))
         for relative in ("overview.html","overview.md","conversations.html","conversations.txt","conversations.jsonl","worlds.csv","paired-results.csv","costs.csv","attempts.csv","analysis.json"):
-            p=self.run/"reports"/relative
+            p=self.run_dir/"reports"/relative
             if p.exists(): link(p)
-        for p in sorted((self.run/"reports/figures").glob("*")):
+        for p in sorted((self.run_dir/"reports/figures").glob("*")):
             if p.is_file(): link(p)
 
     def inspect(self, world=None, phase=None, agent=None):
         from .report import analysis
         from IPython.display import display, HTML
-        if not (self.run/"run.json").exists():
+        if not (self.run_dir/"run.json").exists():
             raise ValueError("initialize or restore first")
-        result=analysis(self.run)
+        result=analysis(self.run_dir)
         self.show(result["summary"])
         display(HTML('<p>All complete prompts, private audit outputs and tokens remain in the conversation files. The selector below changes only this view.</p>'))
         for t in result["traces"]:
@@ -259,8 +263,8 @@ class Operator:
         except ImportError:
             print(f"Explicit inspection: ui.inspect(world={default_world!r})"); self.links(); return
         worlds=[("All worlds","")]
-        if (self.run/"run.json").exists():
-            worlds += [(w["id"],w["id"]) for w in json.loads((self.run/"run.json").read_text())["worlds"]]
+        if (self.run_dir/"run.json").exists():
+            worlds += [(w["id"],w["id"]) for w in json.loads((self.run_dir/"run.json").read_text())["worlds"]]
         world=widgets.Dropdown(options=worlds,value=default_world if default_world in [v for _,v in worlds] else "",description="World")
         phase=widgets.Dropdown(options=[("All phases",""),("Prefix","prefix"),("Retain","retain"),("Clear","clear")],description="Phase")
         agent=widgets.Dropdown(options=[("All agents",None),("Agent 0",0),("Agent 1",1)],description="Agent")

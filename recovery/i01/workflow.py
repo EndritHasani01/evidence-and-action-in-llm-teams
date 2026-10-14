@@ -554,7 +554,7 @@ class Session:
                 methods = {"readiness":self.readiness,"screen":self.screen,"envelope":self.envelope,
                            "pilot":self.pilot,"freeze":self.freeze,"prepare_batch":self.prepare_batch,
                            "main":self.main,"review":self.review,"selfcheck":self.selfcheck,"load":self.load,
-                           "window":self.window,"snapshot":lambda:self.checkpoint("operator-snapshot")}
+                           "window":self.window,"snapshot":lambda:dict(boundary_requested="operator-snapshot")}
                 if action=="report":
                     from .report import analysis
                     methods["report"]=lambda:analysis(self.run)["summary"]

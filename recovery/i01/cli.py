@@ -98,8 +98,9 @@ def serve(run, source):
                 elif op=="close":
                     if busy:
                         session.pause.set(); raise ValueError("pause requested; wait for safe boundary then close")
+                    value=session.close_models()
                     session.checkpoint("controller-close")
-                    value=session.close_models(); send(dict(id=identity,result=value)); break
+                    send(dict(id=identity,result=value)); break
                 else:
                     raise ValueError("unknown management operation")
                 send(dict(id=identity,result=value))

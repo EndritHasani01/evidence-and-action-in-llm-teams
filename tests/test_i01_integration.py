@@ -121,6 +121,26 @@ class Integration(unittest.TestCase):
         receipt=s.checkpoint("scripted-parallel")
         self.assertEqual(receipt["attempts"],4)
         self.assertEqual(receipt["integrity"],"passed")
+    def test_operator_explicit_command_is_callable(self):
+        from recovery.i01.ui import Operator
+        base=Path(self.temp.name)
+        ui=Operator(Path(__file__).parents[1],base/"scratch",base/"working",self.run)
+        self.assertTrue(callable(ui.run))
+        self.assertEqual(ui.run_dir,self.run)
+        with self.assertRaises(ValueError): ui.run("status")
+        # Real UI -> retained client -> controller, with no model or GPU call.
+        ui.environment=dict(interpreter=sys.executable)
+        ui.show=lambda value:None
+        ui.links=lambda:None
+        ui.emit=lambda event:None
+        try:
+            ui.run("initialize",mode="reopen")
+            self.assertEqual(ui.run("status")["usage"]["attempts"],0)
+            receipt=ui.run("snapshot")
+            self.assertEqual(receipt["checkpoint"]["integrity"],"passed")
+            self.assertEqual(ui.run("status")["known_pairs"],0)
+        finally:
+            if ui.client: ui.client.close()
 
 
 if __name__=="__main__": unittest.main()
