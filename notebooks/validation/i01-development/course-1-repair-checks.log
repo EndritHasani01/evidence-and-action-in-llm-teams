@@ -1,0 +1,199 @@
+test_aba_differences_require_review_without_resampling (tests.test_i01_repairs.Repairs.test_aba_differences_require_review_without_resampling) ... ok
+test_each_replaced_load_pair_gets_two_probes_and_exact_rerun_zero (tests.test_i01_repairs.Repairs.test_each_replaced_load_pair_gets_two_probes_and_exact_rerun_zero) ... ok
+test_failed_second_world_pauses_before_first_completes (tests.test_i01_repairs.Repairs.test_failed_second_world_pauses_before_first_completes) ... ok
+test_missing_database_or_table_never_recreated (tests.test_i01_repairs.Repairs.test_missing_database_or_table_never_recreated) ... ok
+test_named_session_load_rerun_expiration_and_disconnected_inspection (tests.test_i01_repairs.Repairs.test_named_session_load_rerun_expiration_and_disconnected_inspection) ... Reusing the recorded deadline; rerunning does not extend it. Use refresh=True only with a fresh observation.
+Main paired coverage: 0/20 intended worlds. New physical attempts: 0/500; recorded contingency: 0/28. Historical 45 remain separate.
+ok
+test_original_and_revised_control_labels_and_empty_export (tests.test_i01_repairs.Repairs.test_original_and_revised_control_labels_and_empty_export) ... ok
+test_partial_initialization_is_not_published (tests.test_i01_repairs.Repairs.test_partial_initialization_is_not_published) ... ok
+test_periodic_control_export_after_settlement (tests.test_i01_repairs.Repairs.test_periodic_control_export_after_settlement) ... ok
+test_missing_or_previous_session_window_blocks_before_attempt_admission (tests.test_i01_integration.Integration.test_missing_or_previous_session_window_blocks_before_attempt_admission) ... ok
+test_missing_prerequisites_no_attempts (tests.test_i01_integration.Integration.test_missing_prerequisites_no_attempts) ... ok
+test_named_study_steps_use_real_controller (tests.test_i01_integration.Integration.test_named_study_steps_use_real_controller) ... status: result
+Measurement | Recorded value
+Status | partial
+Intended worlds | 20
+Known pairs | 0
+Clear minus retain | Unknown / not recorded
+Complete case descriptive mean | Unknown / not recorded
+Interval | Unknown / not recorded
+Correct prefix denominator | 0
+Unknown prefixes | 20
+Correct prefix interval | Unknown / not recorded
+Correct prefix mean | Unknown / not recorded
+Attempts | 0
+Contingency | 0
+Hard limit | 500
+Historical attempts separate | 45
+In flight | 0
+Physical ready seconds observed | 0
+Physical dispatch seconds observed | 0
+Attempts unknown ready seconds | 0
+Generated tokens observed | 0
+Attempts unknown generated tokens | 0
+Model load seconds observed | 0
+Failed model load seconds observed | 0
+Provider assignment release | unknown unless supplied separately; observation and process exit do not establish allocation boundaries
+Principal effort clear minus retain seconds | Unknown / not recorded
+Principal effort interval | Unknown / not recorded
+Cost complete pairs | 0
+Controller unavailable | Controller not attached; saved evidence only.
+Session | Unknown / not recorded
+Remaining session seconds | Unknown / not recorded
+Main coverage | Value
+Known paired outcomes | 0 / 20
+New physical attempts | 0 / 500
+Clear minus retain | Unknown / not recorded
+Unknown-outcome bounds | [-1.0, 1.0]
+Logical slot | Resident | Load receipt
+0 | Unknown / not recorded | Not recorded
+1 | Unknown / not recorded | Not recorded
+Budget | Value
+attempts | 0
+contingency | 0
+lost spending | {'upper': 0, 'resolved': True}
+remaining | 500
+Receipt summary; complete evidence is in the reports and checkpoint
+{
+  "status": "partial",
+  "intended_worlds": 20,
+  "known_pairs": 0,
+  "paired_counts": {
+    "unknown": 20
+  },
+  "clear_minus_retain": null,
+  "complete_case_descriptive_mean": null,
+  "missingness_bounds": [
+    -1.0,
+    1.0
+  ],
+  "interval": null,
+  "correct_prefix_denominator": 0,
+  "unknown_prefixes": 20,
+  "correct_prefix_interval": null,
+  "correct_prefix_mean": null,
+  "attempts": 0,
+  "contingency": 0,
+  "hard_limit": 500,
+  "historical_attempts_separate": 45,
+  "in_flight": 0,
+  "gates": [],
+  "terminal_reasons": {},
+  "lost_spending": {
+    "upper": 0,
+    "resolved": true
+  },
+  "physical_ready_seconds_observed": 0,
+  "physical_dispatch_seconds_observed": 0,
+  "attempts_unknown_ready_seconds": 0,
+  "generated_tokens_observed": 0,
+  "attempts_unknown_generated_tokens": 0,
+  "model_load_seconds_observed": 0,
+  "failed_model_load_seconds_observed": 0,
+  "provider_assignment_release": "unknown unless supplied separately; observation and process exit do not establish allocation boundaries",
+  "principal_effort_clear_minus_retain_seconds": null,
+  "principal_effort_interval": null,
+  "cost_complete_pairs": 0,
+  "controller_unavailable": "Controller not attached; saved evidence only.",
+  "session": null,
+  "remaining_session_seconds": null,
+  "usage": {
+    "attempts": 0,
+    "contingency": 0,
+    "lost_spending": {
+      "upper": 0,
+      "resolved": true
+    },
+    "remaining": 500
+  },
+  "models": [
+    {
+      "resident": null,
+      "load_report": null
+    },
+    {
+      "resident": null,
+      "load_report": null
+    }
+  ]
+}
+Stopped initialize: Controller exited before ready (exit=1). Full log: C:\Users\ENDRIT~1\AppData\Local\Temp\i01-integration-m962zy9g\run\receipts\controller-stderr.log. Saved evidence remains available through study.inspect() and study.links().
+ERROR
+test_parallel_writers_quiesce_for_snapshot (tests.test_i01_integration.Integration.test_parallel_writers_quiesce_for_snapshot) ... ok
+test_raw_resume_literal_siblings_report (tests.test_i01_integration.Integration.test_raw_resume_literal_siblings_report) ... ok
+test_read_only_full_population (tests.test_i01_integration.Integration.test_read_only_full_population) ... ok
+test_restore_reload_cannot_relabel_cached_envelope (tests.test_i01_integration.Integration.test_restore_reload_cannot_relabel_cached_envelope) ... ok
+test_retained_client_and_explicit_fallback (tests.test_i01_integration.Integration.test_retained_client_and_explicit_fallback) ... ERROR
+test_child_environment_preserves_credentials_and_parent (tests.test_i01_client_startup.Startup.test_child_environment_preserves_credentials_and_parent) ... ok
+test_early_exit_shows_cause_without_waiting_for_startup_timeout (tests.test_i01_client_startup.Startup.test_early_exit_shows_cause_without_waiting_for_startup_timeout) ... ok
+test_pre_ready_hang_is_terminated_and_cause_preserved (tests.test_i01_client_startup.Startup.test_pre_ready_hang_is_terminated_and_cause_preserved) ... ok
+test_client_interrupt_requests_pause_without_claiming_settlement (tests.test_i01_notebook_ui.NotebookUI.test_client_interrupt_requests_pause_without_claiming_settlement) ... ok
+test_conditional_thinking_never_falls_back_automatically (tests.test_i01_notebook_ui.NotebookUI.test_conditional_thinking_never_falls_back_automatically) ... ok
+test_conversation_and_receipts_escape_raw_text (tests.test_i01_notebook_ui.NotebookUI.test_conversation_and_receipts_escape_raw_text) ... ok
+test_keyboard_interrupt_preserves_existing_pause_path (tests.test_i01_notebook_ui.NotebookUI.test_keyboard_interrupt_preserves_existing_pause_path) ... ok
+test_open_needs_no_window_but_explicit_window_needs_actual_facts (tests.test_i01_notebook_ui.NotebookUI.test_open_needs_no_window_but_explicit_window_needs_actual_facts) ... ok
+test_pilot_review_has_no_assumed_human_findings (tests.test_i01_notebook_ui.NotebookUI.test_pilot_review_has_no_assumed_human_findings) ... ok
+test_saved_batch_only_and_derived_review_identity (tests.test_i01_notebook_ui.NotebookUI.test_saved_batch_only_and_derived_review_identity) ... ok
+test_selected_mode_and_reload_use_saved_state (tests.test_i01_notebook_ui.NotebookUI.test_selected_mode_and_reload_use_saved_state) ... ok
+test_stopped_gate_and_checkpoint_fail_cell_without_next_stage (tests.test_i01_notebook_ui.NotebookUI.test_stopped_gate_and_checkpoint_fail_cell_without_next_stage) ... ok
+test_cached_environment_rechecks_inventory_and_preserves_existing_receipts (tests.test_i01_runtime.Runtime.test_cached_environment_rechecks_inventory_and_preserves_existing_receipts) ... ok
+test_i01_factory_passes_verified_snapshot_to_reviewed_loader (tests.test_i01_runtime.Runtime.test_i01_factory_passes_verified_snapshot_to_reviewed_loader) ... ok
+test_real_venv_blocks_site_and_pth_hooks_and_preserves_spawn_prefix (tests.test_i01_runtime.Runtime.test_real_venv_blocks_site_and_pth_hooks_and_preserves_spawn_prefix) ... ok
+test_corrupt_installer_is_refused_before_execution (tests.test_i01_setup.Setup.test_corrupt_installer_is_refused_before_execution) ... ok
+test_failure_exposes_log_cause_and_preserves_previous_log (tests.test_i01_setup.Setup.test_failure_exposes_log_cause_and_preserves_previous_log) ... ok
+test_real_partial_venv_recovers_without_ensurepip (tests.test_i01_setup.Setup.test_real_partial_venv_recovers_without_ensurepip) ... ok
+test_unknown_existing_directory_is_never_cleared (tests.test_i01_setup.Setup.test_unknown_existing_directory_is_never_cleared) ... ok
+test_loader_sets_visibility_before_any_cuda_call_and_requests_native_nf4 (tests.test_inference_preparation.InferencePreparationTests.test_loader_sets_visibility_before_any_cuda_call_and_requests_native_nf4) ... Model load: pinned weights on physical device 1
+Model load: audit actual tensors, quantization and loading diagnostics
+ok
+test_course_loader_keeps_pinned_language_tie_nf4_visibility_and_limits (tests.course_inference_checks.CourseInferencePreparationTests.test_course_loader_keeps_pinned_language_tie_nf4_visibility_and_limits) ... Model load: pinned weights on physical device GPU-course-mock
+Model load: audit actual tensors, quantization and loading diagnostics
+ok
+
+======================================================================
+ERROR: test_named_study_steps_use_real_controller (tests.test_i01_integration.Integration.test_named_study_steps_use_real_controller)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "E:\Github\recovery_blueprint\recovery_blueprint\tests\test_i01_integration.py", line 158, in test_named_study_steps_use_real_controller
+    ui.open('reopen')
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\notebook.py", line 11, in open
+    def open(self, mode='new', **session_facts): return self.open_study(mode,**session_facts)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\ui.py", line 361, in open_study
+    return self.run('initialize',mode=mode,selected=selected,tail=tail,evidence=evidence)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\ui.py", line 256, in run
+    result=self.run_action(action,**args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\ui.py", line 206, in run_action
+    if action=="initialize": return self.initialize(**args)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\ui.py", line 141, in initialize
+    self.client=Client(self.environment["interpreter"],self.source,self.run_dir,self.scratch/"hf-cache",self.emit)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\client.py", line 59, in __init__
+    self._startup_failed('Controller exited before ready')
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\client.py", line 83, in _startup_failed
+    raise ControllerStartupError(f'{reason} (exit={code}). Full log: {self.log_path}',tail)
+recovery.i01.client.ControllerStartupError: Controller exited before ready (exit=1). Full log: C:\Users\ENDRIT~1\AppData\Local\Temp\i01-integration-m962zy9g\run\receipts\controller-stderr.log
+
+======================================================================
+ERROR: test_retained_client_and_explicit_fallback (tests.test_i01_integration.Integration.test_retained_client_and_explicit_fallback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "E:\Github\recovery_blueprint\recovery_blueprint\tests\test_i01_integration.py", line 106, in test_retained_client_and_explicit_fallback
+    client=Client(sys.executable,root,self.run,Path(self.temp.name)/"cache")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\client.py", line 59, in __init__
+    self._startup_failed('Controller exited before ready')
+  File "E:\Github\recovery_blueprint\recovery_blueprint\recovery\i01\client.py", line 83, in _startup_failed
+    raise ControllerStartupError(f'{reason} (exit={code}). Full log: {self.log_path}',tail)
+recovery.i01.client.ControllerStartupError: Controller exited before ready (exit=1). Full log: C:\Users\ENDRIT~1\AppData\Local\Temp\i01-integration-vvk_q4iy\run\receipts\controller-stderr.log
+
+----------------------------------------------------------------------
+Ran 37 tests in 47.944s
+
+FAILED (errors=2)
+
+Resolved: both real-controller checks pass in 26.161s; ten entry/setup/startup checks pass in 16.876s. No unresolved check.

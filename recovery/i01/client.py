@@ -25,6 +25,7 @@ def child_environment(hf_cache):
 class ControllerStartupError(ValueError):
     def __init__(self,message,tail):
         self.tail=tail
+        if tail:message+='\n'+tail.splitlines()[-1]
         super().__init__(message)
 
     def _render_traceback_(self):

@@ -2,6 +2,12 @@
 
 **14 October 2026 — analysis complete; proposed repairs are not implemented by this document.**
 
+Implementation follow-up: the user subsequently requested full repair. All
+fourteen items now have implemented responses and focused verification in
+[the repair evidence](../validation/i01-course-1-repair.md). The diagnosis and
+proposal below remain the original audit record; Kaggle model/experiment
+acceptance is still distinct from implementation acceptance.
+
 Reviewed checkout: `E:\Github\recovery_blueprint\recovery_blueprint`,
 `feat/smaller-natural-experiment`, HEAD `ebb8c7e9d42d350a50635d3df5e0bcc10d32cf17`.
 Executed source: `659c056abfd195a067aa82c99a933aead9a948f5`.

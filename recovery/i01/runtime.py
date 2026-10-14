@@ -12,6 +12,7 @@ import sys
 
 
 def configure():
+    os.environ['MPLBACKEND']='Agg'
     prefix=Path(sys.executable).absolute().parent.parent  # Do not resolve venv executable symlinks.
     config=prefix/'pyvenv.cfg'
     if config.exists():
@@ -23,10 +24,10 @@ def configure():
     sites=[prefix/'Lib/site-packages'] if os.name=='nt' else [prefix/'lib'/f'python{sys.version_info.major}.{sys.version_info.minor}'/'site-packages']
     for path in sites:
         if path.exists() and str(path) not in sys.path:sys.path.append(str(path))
-    if not config.exists():
+    source=Path(__file__).resolve().parents[2]
+    if not config.exists() or not (source/'source-release.json').exists():
         # Development-only source checks; actual setup/load validates the pinned
         # installed interpreter, packages and source before any model work.
-        source=Path(__file__).resolve().parents[2]
         if str(source) not in sys.path:sys.path.insert(0,str(source))
     return dict(prefix=str(prefix),venv=config.exists(),site_directories=[str(p) for p in sites])
 

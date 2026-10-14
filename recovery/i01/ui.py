@@ -408,7 +408,7 @@ class Operator:
     def preview_freeze(self):
         status=self.status()
         config=json.loads((self.run_dir/'run.json').read_text())['config']
-        _table(['Gate','Recorded state'],[(k,'Passed' if status['gates'].get(k,{}).get('passed') else 'Not passed / not recorded') for k in ('readiness','screen/direct','screen/thinking','envelope')], 'Qualification')
+        _table(['Gate','Recorded state'],[(k,'State review required' if k=='readiness' and status['gates'].get(k,{}).get('needs_review') and not status['gates'].get('review/readiness') else 'Passed' if status['gates'].get(k,{}).get('passed') else 'Not passed / not recorded') for k in ('readiness','screen/direct','screen/thinking','envelope')], 'Qualification')
         _table(['Pilot','Communication','Usable','Review notes'],[(i,status['gates'].get(f'review/pilot-{i}',{}).get('useful_communication'),status['gates'].get(f'review/pilot-{i}',{}).get('usable'),status['gates'].get(f'review/pilot-{i}',{}).get('notes')) for i in (1,2,3)], 'Pilot reviews')
         self.inspect(worlds=[f'pilot-{i:02d}' for i in range(3)],audit_limit=0,downloads=False)
         forecast=self.client.command('forecast')

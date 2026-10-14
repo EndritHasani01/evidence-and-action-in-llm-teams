@@ -11,13 +11,14 @@ import zipfile
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from recovery.i01.archive import atomic_json,digest
+from recovery.i01.runtime import command as runtime_command
 
 
 def verify_notebook(notebook):
     """Execute ordinary stage cells only against a recording, zero-model stub."""
     expected={
         'workspace':[], 'setup':['install_runtime'], 'open-study':['open'],
-        'selfcheck':['check_implementation'], 'weights':['download_weights'], 'load':['set_session_window','load_models'],
+        'selfcheck':['check_implementation'], 'weights':['download_weights'], 'session-window':['configure_session'], 'load':['load_models'],
         'readiness':['check_readiness'], 'direct-screen':['qualify_direct'],
         'qualification':['inspect_qualification'], 'thinking-screen':['qualify_thinking'],
         'envelope':['check_headroom'], 'pilot-1':['run_pilot'], 'review-pilot-1':['record_pilot_review'],
@@ -59,7 +60,7 @@ def verify_notebook(notebook):
         assert review['kwargs']==dict(useful_communication=None,usable=None,notes='')
     assert receipts['direct-screen'][0]['kwargs']=={}
     assert 'deadline' not in receipts['open-study'][0]['kwargs']
-    assert receipts['load'][0]['args']==[None,'']
+    assert receipts['session-window'][0]['kwargs']==dict(remaining_minutes=None,evidence='')
     assert receipts['prepare-batch'][0]['kwargs']==dict(count=2)
     assert receipts['thinking-screen'][0]['args']==[None]
     assert receipts['freeze'][0]['args']==['']
@@ -91,7 +92,7 @@ def verify(root,delivery):
         working=temp/"working"; working.mkdir()
         shutil.copy2(delivery/"i01-source.zip",inputs/"i01-source.zip")
         class BootstrapStub:
-            def __init__(self,*args): pass
+            def __init__(self,source,**kwargs):self.source=Path(source);self.run_dir=Path(kwargs['run'])
             def bootstrap_status(self): pass
         bootstrap="".join(cells[0]["source"]).replace("/kaggle/input",inputs.as_posix()).replace("/kaggle/working",working.as_posix())
         bootstrap=bootstrap.replace("from recovery.i01.notebook import Study","Study = BootstrapStub")
@@ -110,13 +111,16 @@ def verify(root,delivery):
         expanded=bootstrap.replace("SOURCE_BUNDLE = None",f"SOURCE_BUNDLE = {source.as_posix()!r}")
         exec(compile(expanded,"n01-expanded","exec"),bootstrap_namespace)
         wheels=list(source.glob("*.whl")); assert len(wheels)==1
-        installed=temp/"installed"
+        venv=temp/'venv'
+        subprocess.run([sys.executable,'-I','-S','-m','venv','--without-pip',str(venv)],check=True,timeout=60)
+        python=venv/('Scripts/python.exe' if os.name=='nt' else 'bin/python')
+        installed=venv/'Lib/site-packages' if os.name=='nt' else venv/'lib'/f'python{sys.version_info.major}.{sys.version_info.minor}'/'site-packages'
         subprocess.run([sys.executable,"-m","pip","install","--no-deps","--no-index","--target",str(installed),str(wheels[0])],check=True,timeout=60)
         for rel,wanted in manifest["files"].items():
             if rel.startswith("recovery/") and rel.endswith(".py"):
                 assert digest(installed/rel)==wanted["sha256"],rel
-        env=dict(os.environ,PYTHONPATH=str(installed))
-        command=[sys.executable,"-m","recovery.i01.cli","--source",str(source)]
+        env=dict(os.environ,PYTHONPATH='/unapproved/host/hooks',MPLBACKEND='module://unavailable_renderer')
+        command=runtime_command(python,source,'-m','recovery.i01.cli','--source',source)
         run=temp/"scripted-empty"
         subprocess.run(command+["--run",str(run),"init"],cwd=temp,env=env,check=True,stdout=subprocess.DEVNULL,timeout=30)
         status=json.loads(subprocess.check_output(command+["--run",str(run),"status"],cwd=temp,env=env,text=True,timeout=30))
@@ -127,6 +131,7 @@ def verify(root,delivery):
     receipt=dict(passed=True,**notebook_receipt,source_members=len(manifest["files"]),
                  source_zip_bytes=(delivery/"i01-source.zip").stat().st_size,source_zip_sha256=digest(delivery/"i01-source.zip"),
                  installed_wheel_source_matches=True,installed_outside_checkout_cli=True,
+                 installed_venv_isolated_entry=True,
                  zip_expanded_source_bootstrap_and_rerun=True,complete_source_preserved_in_checkpoints=True,
                  notebook_execution_outputs_empty=True,
                  kaggle_host_verified=False,qualification_pilot_main_executed=False)

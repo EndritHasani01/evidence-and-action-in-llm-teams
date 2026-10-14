@@ -813,3 +813,16 @@ policy interpretation. Startup-hook warnings and archive-freshness/ordinary-cell
 flow gaps remain. Earlier implementation passes are historical evidence, not
 acceptance of these newly found cases. Production code and all supplied run files
 were preserved; this follow-up is an audit/proposal, not completed fixes.
+
+Subsequent user-authorized full repair: F01–F14 now have implemented responses.
+[Repair evidence](../validation/i01-course-1-repair.md) maps their checks and
+limitations. Canonical protection/reporting checkpoint: `0a69b22`; isolated
+runtime/named-window/operator recovery checkpoint: `f2c4051`. The complete
+delivery has 26 ordinary cells, a separate actual-window stage, fresh explicit
+RUN_DIR, strict source bindings, isolated installed-wheel entry, and matching
+source/wheel/runbook/report/restore interfaces. Thirty-seven distinct focused
+checks pass after resolving development-entry import behavior. The regenerated
+release receipt records the final delivery identity. No source/runtime/model
+scientific pin changed; no GPU/model inference or experiment ran. All six
+course-1 files and its old source packet remain preserved. Linux/native T4
+model and empirical acceptance remain operator work, with unknown outcomes.

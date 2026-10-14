@@ -545,7 +545,7 @@ class Session:
     def prepare_batch(self, count=2):
         self.require("freeze")
         self.qualified()
-        if count not in (1,2):
+        if type(count) is not int or count not in (1,2):
             raise ValueError("one or two fixed worlds only")
         current = self.meta.meta("batch")
         if current and not current.get("complete"):

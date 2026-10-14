@@ -104,6 +104,17 @@ Saved inspection survives controller loss; operational errors and successful
 setup/download changes have durable receipts/checkpoints. Notebook/release
 integration is the remaining delivery checkpoint; no GPU/model work occurred.
 
+Course-1 delivery C4: all fourteen audit items have implemented responses;
+[repair evidence](validation/i01-course-1-repair.md) maps them to focused checks.
+The notebook has 26 ordinary code cells, a separate actual-window stage, a fresh
+explicit repaired-study destination and complete recovery/report/export paths.
+Thirty-seven distinct focused checks pass with the development-entry failure
+resolved; package receipt records isolated installed-wheel/source/bootstrap
+verification. Current [runbook](I01_KAGGLE.md) gives the first execution sequence.
+Source/model/runtime pins and scientific semantics remain preserved; no GPU
+inference or experiment occurred. Actual target-host/model acceptance remains
+pending. The supplied course-1 evidence and matching old packet are unchanged.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
