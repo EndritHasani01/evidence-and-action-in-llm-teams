@@ -1,17 +1,276 @@
 {
   "passed": true,
-  "code_cells": 24,
-  "rendered_panels": 35,
-  "source_members": 58,
-  "source_zip_bytes": 547809,
-  "source_zip_sha256": "921aed96c0b5907bb9348797fadcf82f6cb738c59ae293c3985f578d0aea823b",
+  "code_cells": 25,
+  "widget_panels": 0,
+  "independent_cell_scopes": {
+    "setup": [
+      {
+        "method": "run",
+        "args": [
+          "setup"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "open-study": [
+      {
+        "method": "open_study",
+        "args": [
+          "new"
+        ],
+        "kwargs": {
+          "deadline": null,
+          "allowance_evidence": "",
+          "selected": null,
+          "tail": null,
+          "evidence": ""
+        }
+      }
+    ],
+    "selfcheck": [
+      {
+        "method": "run",
+        "args": [
+          "selfcheck"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "weights": [
+      {
+        "method": "run",
+        "args": [
+          "weights"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "load": [
+      {
+        "method": "run",
+        "args": [
+          "load"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "readiness": [
+      {
+        "method": "run",
+        "args": [
+          "readiness"
+        ],
+        "kwargs": {}
+      }
+    ],
+    "direct-screen": [
+      {
+        "method": "run",
+        "args": [
+          "screen"
+        ],
+        "kwargs": {
+          "mode": "direct"
+        }
+      }
+    ],
+    "qualification": [
+      {
+        "method": "inspect",
+        "args": [],
+        "kwargs": {
+          "worlds": [
+            "qualification-00",
+            "qualification-01",
+            "qualification-02",
+            "qualification-03",
+            "qualification-04",
+            "qualification-05"
+          ]
+        }
+      }
+    ],
+    "thinking-screen": [
+      {
+        "method": "thinking_screen",
+        "args": [
+          null
+        ],
+        "kwargs": {}
+      }
+    ],
+    "envelope": [
+      {
+        "method": "envelope",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "pilot-1": [
+      {
+        "method": "run",
+        "args": [
+          "pilot"
+        ],
+        "kwargs": {
+          "number": 1
+        }
+      }
+    ],
+    "review-pilot-1": [
+      {
+        "method": "review_pilot",
+        "args": [
+          1
+        ],
+        "kwargs": {
+          "useful_communication": null,
+          "usable": null,
+          "notes": ""
+        }
+      }
+    ],
+    "pilot-2": [
+      {
+        "method": "run",
+        "args": [
+          "pilot"
+        ],
+        "kwargs": {
+          "number": 2
+        }
+      }
+    ],
+    "review-pilot-2": [
+      {
+        "method": "review_pilot",
+        "args": [
+          2
+        ],
+        "kwargs": {
+          "useful_communication": null,
+          "usable": null,
+          "notes": ""
+        }
+      }
+    ],
+    "pilot-3": [
+      {
+        "method": "run",
+        "args": [
+          "pilot"
+        ],
+        "kwargs": {
+          "number": 3
+        }
+      }
+    ],
+    "review-pilot-3": [
+      {
+        "method": "review_pilot",
+        "args": [
+          3
+        ],
+        "kwargs": {
+          "useful_communication": null,
+          "usable": null,
+          "notes": ""
+        }
+      }
+    ],
+    "pre-freeze": [
+      {
+        "method": "preview_freeze",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "freeze": [
+      {
+        "method": "run",
+        "args": [
+          "freeze"
+        ],
+        "kwargs": {
+          "notes": ""
+        }
+      }
+    ],
+    "prepare-batch": [
+      {
+        "method": "run",
+        "args": [
+          "prepare_batch"
+        ],
+        "kwargs": {
+          "count": 2
+        }
+      }
+    ],
+    "main-batch": [
+      {
+        "method": "run_batch",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "review-batch": [
+      {
+        "method": "review_batch",
+        "args": [],
+        "kwargs": {
+          "notes": ""
+        }
+      }
+    ],
+    "report": [
+      {
+        "method": "final_report",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "archive": [
+      {
+        "method": "run",
+        "args": [
+          "snapshot"
+        ],
+        "kwargs": {}
+      },
+      {
+        "method": "verify_checkpoint",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "close": [
+      {
+        "method": "run",
+        "args": [
+          "close_models"
+        ],
+        "kwargs": {}
+      },
+      {
+        "method": "run",
+        "args": [
+          "shutdown"
+        ],
+        "kwargs": {}
+      }
+    ]
+  },
+  "run_all_can_execute_inference": true,
+  "model_attempts": 0,
+  "source_members": 60,
+  "source_zip_bytes": 577560,
+  "source_zip_sha256": "d0dcf61988d13d6e0ad80e2b5b5103774e75e2d01eea29e259540af61a2af0d3",
   "installed_wheel_source_matches": true,
   "installed_outside_checkout_cli": true,
   "zip_expanded_source_bootstrap_and_rerun": true,
   "complete_source_preserved_in_checkpoints": true,
   "notebook_execution_outputs_empty": true,
-  "run_all_starts_actions": false,
-  "model_attempts": 0,
   "kaggle_host_verified": false,
   "qualification_pilot_main_executed": false
 }
