@@ -49,6 +49,18 @@ def initialize(run, source, config):
             shutil.copy2(source/relative,target)
     for p in list(source.glob("*.whl"))+list(source.glob("source-release.json")):
         shutil.copy2(p,run/"source"/p.name)
+    release_path=source/"source-release.json"
+    if release_path.exists():
+        release=json.loads(release_path.read_text())
+        for relative,wanted in release["files"].items():
+            rel=Path(relative)
+            if rel.is_absolute() or ".." in rel.parts:
+                raise ValueError("unsafe source-release member")
+            original=source/rel
+            if original.stat().st_size!=wanted["bytes"] or digest(original)!=wanted["sha256"]:
+                raise ValueError("exact source-release member differs: "+relative)
+            target=run/"source"/rel; target.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copy2(original,target)
     atomic_json(run/"run.json", manifest)
     binding = {"manifest":manifest}
     for slot in range(2):

@@ -41,6 +41,22 @@ def verify(root,delivery):
         for rel,wanted in manifest["files"].items():
             path=source/rel
             assert path.stat().st_size==wanted["bytes"] and digest(path)==wanted["sha256"],rel
+        # Exercise the actual bootstrap extraction/identity code for ZIP, rerun
+        # and Kaggle-expanded source inputs, replacing display construction only.
+        import shutil
+        inputs=temp/"input"; inputs.mkdir()
+        working=temp/"working"; working.mkdir()
+        shutil.copy2(delivery/"i01-source.zip",inputs/"i01-source.zip")
+        class BootstrapStub:
+            def __init__(self,*args): pass
+            def bootstrap_status(self): pass
+        bootstrap="".join(cells[0]["source"]).replace("/kaggle/input",inputs.as_posix()).replace("/kaggle/working",working.as_posix())
+        bootstrap=bootstrap.replace("from recovery.i01.ui import Operator","Operator = BootstrapStub")
+        bootstrap_namespace={"BootstrapStub":BootstrapStub}
+        exec(compile(bootstrap,"n01-zip","exec"),bootstrap_namespace)
+        exec(compile(bootstrap,"n01-rerun","exec"),bootstrap_namespace)
+        expanded=bootstrap.replace("SOURCE_BUNDLE = None",f"SOURCE_BUNDLE = {source.as_posix()!r}")
+        exec(compile(expanded,"n01-expanded","exec"),bootstrap_namespace)
         wheels=list(source.glob("*.whl")); assert len(wheels)==1
         installed=temp/"installed"
         subprocess.run([sys.executable,"-m","pip","install","--no-deps","--no-index","--target",str(installed),str(wheels[0])],check=True,timeout=60)
@@ -53,10 +69,13 @@ def verify(root,delivery):
         subprocess.run(command+["--run",str(run),"init"],cwd=temp,env=env,check=True,stdout=subprocess.DEVNULL,timeout=30)
         status=json.loads(subprocess.check_output(command+["--run",str(run),"status"],cwd=temp,env=env,text=True,timeout=30))
         assert status["attempts"]==0 and status["known_pairs"]==0 and status["missingness_bounds"]==[-1,1]
+        for rel,wanted in manifest["files"].items():
+            assert digest(run/"source"/rel)==wanted["sha256"],rel
         assert not any(".safetensors" in p or ".env" in p or "/site-packages/" in p for p in manifest["files"])
     receipt=dict(passed=True,code_cells=24,rendered_panels=stub.panels,source_members=len(manifest["files"]),
                  source_zip_bytes=(delivery/"i01-source.zip").stat().st_size,source_zip_sha256=digest(delivery/"i01-source.zip"),
                  installed_wheel_source_matches=True,installed_outside_checkout_cli=True,
+                 zip_expanded_source_bootstrap_and_rerun=True,complete_source_preserved_in_checkpoints=True,
                  notebook_execution_outputs_empty=True,run_all_starts_actions=False,model_attempts=0,
                  kaggle_host_verified=False,qualification_pilot_main_executed=False)
     atomic_json(root/"notebooks/validation/i01-development/release-review.json",receipt)
