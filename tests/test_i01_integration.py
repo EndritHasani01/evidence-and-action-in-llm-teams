@@ -141,7 +141,7 @@ class Integration(unittest.TestCase):
         ui=Study(Path(__file__).parents[1],base/"scratch",base/"working",self.run)
         self.assertTrue(callable(ui.install_runtime))
         self.assertEqual(ui.run_dir,self.run)
-        with self.assertRaises(ValueError): ui.show_status()
+        self.assertIsNotNone(ui.show_status().get('controller_unavailable'))
         # Real UI -> retained client -> controller, with no model or GPU call.
         ui.environment=dict(interpreter=sys.executable)
         ui.show=lambda value:None

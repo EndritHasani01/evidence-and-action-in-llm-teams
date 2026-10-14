@@ -91,6 +91,19 @@ and complete-package integration are the next repair checkpoint. A/B/A remains
 a diagnostic with explicit review of unexpected differences before qualification;
 no extra samples or scientific decoding changes are introduced.
 
+Course-1 runtime/operator repair C1/C3: I-01 now uses a stdlib-only `-I -S`
+entry point, explicitly restores isolated venv package paths/prefixes and does
+not process host sitecustomize/.pth hooks. Real tiny-venv/spawn checks pass.
+Setup receipts and environments use existing source-release commit labels,
+preserving earlier environments while reusing pinned HF/download caches. Cached
+setup rechecks inventory. The loader uses the verified local snapshot; thesis
+and prior course defaults are preserved by an optional local-directory argument.
+Named session configuration computes a fixed deadline from actual observed
+minutes, preserves it on rerun and requires explicit fresh observation to extend.
+Saved inspection survives controller loss; operational errors and successful
+setup/download changes have durable receipts/checkpoints. Notebook/release
+integration is the remaining delivery checkpoint; no GPU/model work occurred.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.

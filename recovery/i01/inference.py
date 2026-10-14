@@ -72,8 +72,9 @@ class ModelFactory:
         os.environ["HF_HUB_OFFLINE"] = "1"
         from recovery.inference import ModelFactory as ReviewedFactory, course_candidate
         from recovery.prompts import COURSE_LIMITS
-        backend = ReviewedFactory(course_candidate("9B"), self.device, COURSE_LIMITS)()
+        backend = ReviewedFactory(course_candidate("9B"), self.device, COURSE_LIMITS,local_directory=self.snapshot)()
         backend.load_report["i01_loading_only"] = True
+        backend.load_report['verified_snapshot']=self.snapshot
         properties=backend.torch.cuda.get_device_properties(0)
         backend.load_report["cuda_device_uuid"]=str(properties.uuid)
         backend.load_report["total_device_bytes"]=properties.total_memory

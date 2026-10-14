@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 import tempfile
 import threading
+from types import SimpleNamespace
+import sys
 import unittest
 from unittest.mock import patch
 
@@ -117,5 +119,45 @@ class Repairs(unittest.TestCase):
         (self.run/'exports').mkdir();(self.run/'exports/latest.zip').write_bytes(b'scripted archive prerequisite')
         s.review('readiness','Inspected exact fixture cache and token records; diagnostic discrepancy documented')
         self.assertTrue(s.meta.meta('review/readiness'))
+    def test_named_session_load_rerun_expiration_and_disconnected_inspection(self):
+        from recovery.i01.notebook import Study
+        from recovery.i01.ui import ActionStopped
+        s,w=self.open();s.workers=[None,None];s.meta.put_meta('selfcheck',{'passed':True,'native_tokenizer':True})
+        host={'gpus':[{'uuid':str(i),'name':'Tesla T4'} for i in range(2)]}
+        class Resident:
+            def __init__(self,factory,termination):self.slot=int(factory.device);self.process=None;self.unconfirmed=False
+            def load(self,timeout):
+                self.process=SimpleNamespace(is_alive=lambda:True)
+                self.load_report={'cuda_device_uuid':'GPU-'+str(self.slot),'total_device_bytes':1,'load_seconds':0}
+                return self.load_report
+            def close(self):self.process=None;return {'termination_confirmed':True}
+        class Client:
+            def __init__(self):self.process=SimpleNamespace(poll=lambda:None);self.dead=False
+            def command(self,op):
+                if self.dead:raise ValueError('controller exited')
+                return s.status() if op=='status' else s.forecast()
+            def action(self,action,**args):return s.run_action(action,**args)
+        base=Path(self.temp.name)
+        with patch('recovery.i01.ui.host_inventory',return_value=host):ui=Study(ROOT,base/'scratch',base/'working',self.run)
+        ui.client=Client();ui.environment={'interpreter':sys.executable};ui.weights={'snapshot':'/scripted/local/snapshot'}
+        ui.show=lambda x:None;ui.links=lambda:None
+        with self.assertRaises(ActionStopped):ui.configure_session()
+        self.assertEqual(s.admission.usage()['attempts'],0)
+        self.assertTrue((self.run/'receipts/operator-errors.jsonl').exists())
+        ui.configure_session(remaining_minutes=60,evidence='Scripted test observation only')
+        deadline=ui.deadline
+        ui.configure_session(remaining_minutes=60,evidence='Same cell rerun')
+        self.assertEqual(ui.deadline,deadline)
+        with patch('recovery.i01.setup.runtime_inventory',return_value={}),patch('recovery.i01.process.Resident',Resident),patch.dict(sys.modules,transformers=SimpleNamespace(AutoTokenizer=SimpleNamespace(from_pretrained=lambda *a,**kw:object()))),patch('recovery.i01.ui.host_inventory',return_value=host):
+            ui.load_models();refs=s.load_references();ui.load_models()
+            self.assertEqual(s.load_references(),refs)
+        self.assertEqual(s.admission.usage()['attempts'],0)
+        s.meta.put_meta('window',{'session':s.session_id,'deadline':'2000-01-01T00:00:00+00:00','evidence':'expired fixture'})
+        with patch('recovery.i01.setup.runtime_inventory',return_value={}),patch('recovery.i01.ui.host_inventory',return_value=host):
+            with self.assertRaisesRegex(ActionStopped,'deadline'):ui.load_models()
+        self.assertEqual(s.admission.usage()['attempts'],0)
+        ui.client.dead=True
+        with patch('recovery.i01.ui._display',return_value=None):
+            self.assertEqual(ui.inspect(audit_limit=0,downloads=False)['summary']['attempts'],0)
 
 if __name__=='__main__':unittest.main()

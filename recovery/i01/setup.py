@@ -13,6 +13,8 @@ from collections import deque
 from urllib.request import urlopen
 
 from .archive import atomic_json, digest
+from .runtime import command as runtime_command
+from .client import child_environment
 
 
 # Same installer wheel as the accepted M5 Kaggle bootstrap. Scientific runtime
@@ -21,6 +23,17 @@ PIP_BOOTSTRAP = dict(version='26.2.1',filename='pip-26.2.1-py3-none-any.whl',byt
     sha256='71138adf1f4ca900cdb7d289c21b7494329f2332b6d85f0e1c42108c0384ed3e',
     url='https://files.pythonhosted.org/packages/f3/6e/1736e5b4ae2b778ef2f81c47d797de9f891d4d8acb047a24ca37a60294dd/pip-26.2.1-py3-none-any.whl')
 PIP_WHEEL_RUNNER = "import runpy,sys;sys.path.insert(0,sys.argv.pop(1));runpy.run_module('pip',run_name='__main__',alter_sys=True)"
+
+
+def release_label(source):
+    path=Path(source)/'source-release.json'
+    if not path.exists():return ''
+    head=json.loads(path.read_text(encoding='utf-8'))['git_head']
+    if len(head)!=40 or any(c not in '0123456789abcdef' for c in head):raise ValueError('Invalid source release commit')
+    return '-'+head[:12]
+
+
+def setup_directory(source,working):return Path(working)/('i01-setup'+release_label(source))
 
 
 class SetupFailure(ValueError):
@@ -115,24 +128,24 @@ def create_environment(venv, scratch, receipts, env):
     config=venv/'pyvenv.cfg'
     if venv.exists() and any(venv.iterdir()) and (not config.is_file() or 'include-system-site-packages = false' not in config.read_text().lower()):
         raise ValueError('Existing environment is not a verified isolated venv; choose a fresh scratch directory. No files were deleted.')
-    invoke([sys.executable,'-m','venv','--without-pip',venv],receipts/'venv.log',120,env=env)
+    invoke([sys.executable,'-I','-S','-X','utf8','-m','venv','--without-pip',venv],receipts/'venv.log',120,env=env)
     if 'include-system-site-packages = false' not in config.read_text().lower():
         raise ValueError('Environment must not inherit kernel packages')
     wheel=pip_wheel(scratch,receipts)
     lock=scratch/'pip-bootstrap.lock'
     lock.write_text(f"pip=={PIP_BOOTSTRAP['version']} --hash=sha256:{PIP_BOOTSTRAP['sha256']}\n",encoding='utf-8')
-    invoke([python,'-I','-c',PIP_WHEEL_RUNNER,wheel,'--isolated','--disable-pip-version-check',
+    invoke(runtime_command(python,Path(__file__).parents[2],'-c',PIP_WHEEL_RUNNER,wheel,'--isolated','--disable-pip-version-check',
             'install','--no-deps','--no-index','--find-links',wheel.parent,'--require-hashes',
-            '-r',lock],receipts/'bootstrap-pip.log',120,env=env)
+            '-r',lock),receipts/'bootstrap-pip.log',120,env=env)
     probe="import pathlib,pip,sys; assert sys.prefix!=sys.base_prefix; assert pathlib.Path(pip.__file__).resolve().is_relative_to(pathlib.Path(sys.prefix).resolve()); assert pip.__version__=="+repr(PIP_BOOTSTRAP['version'])+"; print('Isolated pinned pip accepted:',pip.__version__)"
-    invoke([python,'-I','-c',probe],receipts/'pip-isolation.log',60,env=env)
+    invoke(runtime_command(python,Path(__file__).parents[2],'-c',probe),receipts/'pip-isolation.log',60,env=env)
     return python
 
 
 def install(source, scratch, working):
     source,scratch,working=Path(source),Path(scratch),Path(working)
     host=host_inventory(scratch,working)
-    receipts=working/"i01-setup"; receipts.mkdir(exist_ok=True)
+    receipts=setup_directory(source,working); receipts.mkdir(exist_ok=True)
     atomic_json(receipts/"host.json",host)
     if host["system"]!="Linux" or host["machine"]!="x86_64" or host["python_version"][:2]!=[3,13]:
         raise ValueError("reviewed runtime requires Linux x86_64 Python 3.13; stop before installing an incompatible lock")
@@ -140,40 +153,53 @@ def install(source, scratch, working):
         raise ValueError("select T4 x2 before setup")
     if host["paths"]["scratch"]["free"] < 12*2**30 or host["paths"]["working"]["free"] < 2*2**30:
         raise ValueError("insufficient measured setup/output storage")
-    venv=scratch/"i01-venv"; python=venv/"bin/python"
+    venv=scratch/('i01-venv'+release_label(source)); python=venv/"bin/python"
     from .workflow import source_files
     wheels=list(source.glob("*.whl"))
     if len(wheels)!=1:
         raise ValueError("exactly one verified source wheel required")
     identity=dict(runtime_lock=digest(source/"configs/i01-runtime.lock"),
                   source_identity=source_files(source),wheel_sha256=digest(wheels[0]))
+    env=child_environment(scratch/'hf-cache')
+    env.update(TMPDIR=str(scratch/'tmp'),TMP=str(scratch/'tmp'),TEMP=str(scratch/'tmp'),
+               PIP_CONFIG_FILE=os.devnull,PIP_DISABLE_PIP_VERSION_CHECK='1',PIP_DEFAULT_TIMEOUT='60')
+    (scratch/'tmp').mkdir(exist_ok=True)
     receipt_path=receipts/"environment.json"
     if receipt_path.exists():
         saved=json.loads(receipt_path.read_text())
         if saved["identity"]!=identity or not python.exists():
             raise ValueError("environment differs or missing; no mid-session replacement")
+        verify_environment(python,source,receipts,env)
         return saved
     started=monotonic()
     (scratch/"tmp").mkdir(exist_ok=True)
-    env={k:v for k,v in os.environ.items() if not k.startswith(('PYTHON','PIP_','VIRTUAL_ENV'))}
-    env.update(PIP_DEFAULT_TIMEOUT="60",HF_HUB_DOWNLOAD_TIMEOUT="60",HF_HUB_ETAG_TIMEOUT="30",
-             HF_HUB_CACHE=str(scratch/"hf-cache"),PYTHONUNBUFFERED="1",TMPDIR=str(scratch/"tmp"),
-             TMP=str(scratch/"tmp"),TEMP=str(scratch/"tmp"),PYTHONNOUSERSITE='1',PYTHONUTF8='1',
-             PIP_CONFIG_FILE=os.devnull,PIP_DISABLE_PIP_VERSION_CHECK='1')
     python=create_environment(venv,scratch,receipts,env)
-    invoke([python,"-m","pip","--isolated","--cache-dir",scratch/"pip-cache","install","--only-binary=:all:","--require-hashes",
+    invoke(runtime_command(python,source,'-m',"pip","--isolated","--cache-dir",scratch/"pip-cache","install","--only-binary=:all:","--require-hashes",
             "--retries","2","--index-url","https://pypi.org/simple","--extra-index-url","https://download.pytorch.org/whl/cu128",
-            "--report",receipts/"dependency-install.json","-r",source/"configs/i01-runtime.lock"],receipts/"dependencies.log",3600,env=env)
-    invoke([python,"-m","pip","--isolated","install","--no-deps","--no-index",wheels[0]],receipts/"project.log",120,env=env)
-    invoke([python,"-m","pip","check"],receipts/"pip-check.log",60,env=env)
+            "--report",receipts/"dependency-install.json","-r",source/"configs/i01-runtime.lock"),receipts/"dependencies.log",3600,env=env)
+    invoke(runtime_command(python,source,'-m',"pip","--isolated","install","--no-deps","--no-index",wheels[0]),receipts/"project.log",120,env=env)
+    verify_environment(python,source,receipts,env)
     probe=receipts/"installed.json"
-    invoke([python,"-m","recovery.i01.cli","--source",source,"runtime-inventory","--output",probe],receipts/"installed.log",120,env=env)
     result=dict(identity=identity,interpreter=str(python),source=str(source),scratch=str(scratch),
                 working=str(working),hf_cache=str(scratch/"hf-cache"),host=host,setup_seconds=monotonic()-started,
                 versions=json.loads(probe.read_text()),model_attempts=0)
     result['pip_bootstrap']=dict(PIP_BOOTSTRAP,ensurepip_used=False)
     atomic_json(receipt_path,result)
     return result
+
+
+def verify_environment(python,source,receipts,env):
+    receipts=Path(receipts)
+    code="import json,pip,sys; from pathlib import Path; from recovery.i01.runtime import inventory; assert pip.__version__=="+repr(PIP_BOOTSTRAP['version'])+"; assert Path(pip.__file__).resolve().is_relative_to(Path(sys.prefix).resolve()); print(json.dumps(inventory()))"
+    path=receipts/'startup.log'
+    invoke(runtime_command(python,source,'-c',code),path,60,env=env)
+    # Logs append; the final JSON line belongs to this successful invocation.
+    data=json.loads(path.read_text(encoding='utf-8').splitlines()[-1])
+    if not data['venv'] or not data['isolated'] or not data['site_processing_disabled'] or data['hook_automatically_imported']:
+        raise ValueError('Isolated startup acceptance failed; inspect startup.log')
+    atomic_json(receipts/'startup.json',data)
+    invoke(runtime_command(python,source,'-m','pip','check'),receipts/'pip-check.log',60,env=env)
+    invoke(runtime_command(python,source,'-m','recovery.i01.cli','--source',source,'runtime-inventory','--output',receipts/'installed.json'),receipts/'installed.log',120,env=env)
 
 
 def runtime_inventory(source):
@@ -197,7 +223,7 @@ def download(source, scratch, working, *, weights=False):
     from huggingface_hub import HfApi, snapshot_download
     source,scratch,working=Path(source),Path(scratch),Path(working)
     config=json.loads((source/"configs/i01-course.json").read_text())
-    receipts=working/"i01-setup"; receipts.mkdir(parents=True,exist_ok=True)
+    receipts=setup_directory(source,working); receipts.mkdir(parents=True,exist_ok=True)
     info=HfApi().model_info(config["model"],revision=config["revision"],files_metadata=True)
     if info.sha!=config["revision"]:
         raise ValueError("pinned model revision differs")
@@ -208,7 +234,7 @@ def download(source, scratch, working, *, weights=False):
     needed=sum(f.size or 0 for f in files)
     # Hugging Face cache shares verified blobs across metadata and weight stages.
     free=shutil.disk_usage(scratch).free
-    already=working/"i01-setup"/("weights.json" if weights else "metadata.json")
+    already=receipts/("weights.json" if weights else "metadata.json")
     cache=scratch/"hf-cache"/"models--Qwen--Qwen3.5-9B"/"blobs"
     missing=0
     for f in files:

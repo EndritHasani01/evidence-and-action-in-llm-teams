@@ -11,6 +11,7 @@ import uuid
 from collections import deque
 
 from .core import canonical
+from .runtime import command as runtime_command
 
 
 def child_environment(hf_cache):
@@ -42,9 +43,9 @@ class Client:
         self.log_start=self.log.tell()
         self.log.write('\nController startup\n'); self.log.flush()
         try:
-            self.process=subprocess.Popen([str(python),"-u","-m","recovery.i01.cli","--source",str(source),"--run",str(run),"serve"],
+            self.process=subprocess.Popen(runtime_command(python,source,'-m','recovery.i01.cli','--source',source,'--run',run,'serve'),
                                           stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.log,
-                                          text=True,bufsize=1,env=child_environment(hf_cache))
+                                          text=True,encoding='utf-8',bufsize=1,env=child_environment(hf_cache),cwd=Path(run).resolve())
         except Exception:
             self.log.close()
             raise

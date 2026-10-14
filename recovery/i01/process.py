@@ -17,6 +17,8 @@ from .store import utc
 
 def child(factory, pipe):
     import sys
+    from .runtime import configure
+    configure()  # Python 3.13 -S spawn starts with base prefixes; restore the venv.
     sys.stdout = sys.stderr  # Keep controller stdout exclusively JSON protocol.
     from recovery.attempts import _die_with_owner
     Thread(target=_die_with_owner, daemon=True).start()

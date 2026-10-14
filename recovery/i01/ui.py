@@ -11,11 +11,16 @@ import threading
 from .archive import atomic_json, digest, extract_selected
 from .client import Client, child_environment
 from .core import canonical
-from .setup import host_inventory, install
+from .setup import host_inventory, install, setup_directory
+from .runtime import command as runtime_command
+from .store import utc
+import math
+import traceback
 
 
 class ActionStopped(ValueError):
     """A finite action stopped; its durable evidence remains inspectable."""
+    def _render_traceback_(self):return [str(self),'No later stage has started. Inspect receipts/checkpoint for full evidence.']
 
 
 def _display(body, plain):
@@ -56,9 +61,10 @@ class Operator:
         self.client=None; self.environment=None; self.metadata=None; self.weights=None
         self.busy=threading.Lock(); self.outputs=[]
         self.deadline=None; self.allowance_evidence=None
+        self.setup_dir=setup_directory(self.source,self.working)
         self.host=host_inventory(self.scratch,self.working)
         for name in ("environment","metadata","weights"):
-            path=self.working/"i01-setup"/(name+".json")
+            path=self.setup_dir/(name+".json")
             if path.exists(): setattr(self,name,json.loads(path.read_text()))
 
     def emit(self, event):
@@ -90,23 +96,27 @@ class Operator:
         _table(['Device','Model','UUID','Memory (MiB)'],[(g['index'],g['name'],g['uuid'],g['memory_mib']) for g in self.host['gpus']], 'Actual GPU inventory')
         _table(['Storage','Path','Free GiB'],[(k,v['path'],round(v['free']/2**30,2)) for k,v in self.host['paths'].items()])
         if self.host.get('gpus_error'): print('GPU inventory unavailable: '+self.host['gpus_error'])
+        print('Session window: '+('recorded locally; confirm current-controller status before loading' if self.deadline else 'unset; preparation is available, model loading requires actual facts in its dedicated cell.'))
         print('Next: run Install the pinned runtime. Host acceptance still occurs before installation.')
 
     def setup(self):
         self.environment=install(self.source,self.scratch,self.working)
         result=self._transport("metadata")
         self.metadata=result
+        if self.client is not None:
+            shutil.copytree(self.setup_dir,self.run_dir/'receipts/setup'/self.receipt_session,dirs_exist_ok=True)
+            self.external_checkpoint('verified-setup')
         return self.environment
 
     def _transport(self, command):
         if self.environment is None:
             raise ValueError("complete Online setup first")
         from .setup import invoke
-        log=self.working/"i01-setup"/(command+"-command.log")
-        invoke([self.environment["interpreter"],"-m","recovery.i01.cli","--source",self.source,command,
-                "--scratch",self.scratch,"--working",self.working],log,3600,
+        log=self.setup_dir/(command+"-command.log")
+        invoke(runtime_command(self.environment["interpreter"],self.source,'-m','recovery.i01.cli','--source',self.source,command,
+                '--scratch',self.scratch,'--working',self.working),log,3600,
                env=self._env())
-        return json.loads((self.working/"i01-setup"/(command+".json")).read_text())
+        return json.loads((self.setup_dir/(command+".json")).read_text())
 
     def _env(self):
         return child_environment(self.scratch/'hf-cache')
@@ -130,8 +140,8 @@ class Operator:
             return self.client.command("status")
         self.client=Client(self.environment["interpreter"],self.source,self.run_dir,self.scratch/"hf-cache",self.emit)
         self.receipt_session=self.client.command("status")["session"]
-        if (self.working/"i01-setup").exists():
-            shutil.copytree(self.working/"i01-setup",self.run_dir/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
+        if self.setup_dir.exists():
+            shutil.copytree(self.setup_dir,self.run_dir/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
         if mode=="restore":
             self.client.command("lost_spending",gap=dict(resolved=tail=="latest",upper=0 if tail=="latest" else None,evidence=evidence))
         # Deadlines belong to this controller session; never reuse an old one.
@@ -140,20 +150,58 @@ class Operator:
             if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
                 self.show(receipt)
                 raise ActionStopped(receipt.get('error') or receipt['checkpoint']['error'])
+        self.external_checkpoint('study-open')
         return self.client.command("status")
 
-    def set_window(self, deadline, evidence):
+    def set_window(self, deadline=None, evidence='', *, remaining_minutes=None, refresh=False):
+        if type(refresh) is not bool:raise ActionStopped('refresh must be an explicit True/False choice based on a fresh observation.')
+        if remaining_minutes is not None and deadline is not None:
+            raise ActionStopped('Supply remaining_minutes or an absolute deadline, not both.')
+        if remaining_minutes is not None:
+            if type(remaining_minutes) not in (int,float) or not math.isfinite(remaining_minutes) or remaining_minutes<=0:
+                raise ActionStopped('remaining_minutes must be the actual positive duration shown by Kaggle.')
+            if self.deadline and not refresh:
+                if datetime.fromisoformat(self.deadline)>datetime.now(timezone.utc):
+                    print('Reusing the recorded deadline; rerunning does not extend it. Use refresh=True only with a fresh observation.')
+                    deadline=self.deadline;evidence=self.allowance_evidence
+                else:raise ActionStopped('Recorded deadline expired. Supply a fresh actual observation with refresh=True.')
+            else:
+                from datetime import timedelta
+                deadline=(datetime.now(timezone.utc)+timedelta(minutes=remaining_minutes)).isoformat()
         if not isinstance(deadline,str) or not isinstance(evidence,str) or not evidence.strip():
-            raise ValueError('Set the actual UTC session deadline and allowance evidence in the configuration cell.')
-        value=datetime.fromisoformat(deadline)
+            raise ActionStopped('Set actual remaining_minutes (or deadline) and allowance evidence in Record this session window. No model was loaded or admitted.')
+        try:value=datetime.fromisoformat(deadline)
+        except ValueError as error:raise ActionStopped('Deadline must be a future ISO time with a UTC offset.') from error
         if value.tzinfo is None or value<=datetime.now(timezone.utc):
-            raise ValueError('Session deadline must be an actual future time with a UTC offset.')
+            raise ActionStopped('Session deadline must be an actual future time with a UTC offset.')
         self.deadline,self.allowance_evidence=deadline,evidence
         if self.client:
             return self.client.action("window",deadline=deadline,evidence=evidence)
         return dict(deadline=deadline,evidence=evidence,apply_after_initialization=True)
 
+    def external_checkpoint(self,boundary):
+        if self.client is None:return None
+        receipt=self.client.action('snapshot',boundary=boundary)
+        if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
+            raise ActionStopped(receipt.get('error') or receipt['checkpoint']['error'])
+        return receipt.get('checkpoint')
+
+    def operation_error(self,action,error):
+        destination=self.run_dir/'receipts' if (self.run_dir/'run.json').exists() else self.setup_dir
+        destination.mkdir(parents=True,exist_ok=True)
+        receipt=dict(at=utc(),action=action,error=f'{type(error).__name__}: {error}',traceback=traceback.format_exc(),source=str(self.source),checkpoint=None)
+        if self.client is not None:
+            try:
+                status=self.client.command('status');receipt['attempts']=status['usage']['attempts']
+                if status['gates'].get('action',{}).get('status')!='running':receipt['checkpoint']='pending'
+            except (ValueError,OSError,KeyError):receipt['attempts']=None
+        with (destination/'operator-errors.jsonl').open('a',encoding='utf-8') as stream:stream.write(canonical(receipt)+'\n')
+        if receipt['checkpoint']=='pending':
+            try:self.external_checkpoint('operator-error-'+action)
+            except (ValueError,OSError) as exc:print('Failure checkpoint unavailable: '+str(exc))
+
     def run_action(self, action, **args):
+        if action=='status':return self.status()
         if action=="setup": return self.setup()
         if action=="initialize": return self.initialize(**args)
         if action=="weights":
@@ -161,7 +209,8 @@ class Operator:
             if not self.client.command("status")["gates"].get("selfcheck"):
                 raise ValueError("native self-check prerequisite missing")
             self.weights=self._transport("weights")
-            shutil.copytree(self.working/"i01-setup",self.run_dir/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
+            shutil.copytree(self.setup_dir,self.run_dir/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
+            self.external_checkpoint('verified-weights')
             return self.weights
         if action=="window": return self.set_window(**args)
         if self.client is None:
@@ -217,22 +266,30 @@ class Operator:
                 error=error or f'{action} gate did not pass. Inspect the recorded evidence; no later stage has started.'
             if action=='selfcheck' and isinstance(payload,dict) and not payload.get('native_tokenizer'):
                 error=error or 'Native tokenizer acceptance is required; the scripted-only receipt does not qualify this host.'
+            if action=='readiness' and isinstance(payload,dict) and payload.get('needs_review') and not self.status()['gates'].get('review/readiness'):
+                error=error or 'A/B/A replies differ. Inspect saved tokens/cache diagnostics, then study.record_state_review(notes) before qualification. No extra samples.'
             if error: raise ActionStopped(error)
             return result
         except KeyboardInterrupt:
             print("Pause requested. An admitted call may still be active. Inspect status; wait for settlement before snapshot/close. Rerun only the saved scope.")
             raise
-        except ActionStopped:
+        except ActionStopped as error:
+            try:self.operation_error(action,error)
+            except Exception as failure:print('Could not save the operational receipt: '+str(failure))
             raise
         except Exception as error:
+            try:self.operation_error(action,error)
+            except Exception as failure:print('Could not save the operational receipt: '+str(failure))
             if action in ('setup','weights'):
-                print(f'Stopped {action}: {error}. Setup/download logs are in {self.working / "i01-setup"}.')
+                print(f'Stopped {action}: {error}. Setup/download logs are in {self.setup_dir}.')
             else:
                 print(f'Stopped {action}: {error}. Saved evidence remains available through study.inspect() and study.links().')
             raise
         finally:
             self.busy.release()
-            if (self.run_dir/"exports/latest.zip").exists(): self.links()
+            if (self.run_dir/"exports/latest.zip").exists():
+                try:self.links()
+                except OSError as exc:print('Download listing unavailable: '+str(exc))
 
     def show(self, result):
         action=getattr(self,'_last_action','Result')
@@ -253,6 +310,7 @@ class Operator:
                 print(f"Competence: {payload['correct']}/12 correct; {payload['protocol_errors']} protocol errors. Required: at least 11/12 and zero protocol errors.")
             if action=='readiness' and payload.get('results'):
                 _table(['Slot','Probe','Raw visible reply','Finite score steps','Fresh cache'],[(r['slot'],r['label'],r['outcome'].get('visible_text'),r['outcome'].get('backend',{}).get('finite_score_steps'),r['outcome'].get('backend',{}).get('cache',{}).get('initial_empty')) for r in payload['results']])
+                print('A/B/A equal by slot: '+str(payload.get('ABA_equal'))+'; '+str(payload.get('equality_policy','')))
             if action=='prepare_batch':
                 _table(['Prepared scope','Value'],[('Worlds',', '.join(payload.get('worlds',[])) or 'No remaining worlds'),('First-attempt ceiling',payload.get('first_ceiling')),('Eligible retry allowance',payload.get('eligible_retry_allowance'))])
                 if payload.get('forecast'):
@@ -266,7 +324,8 @@ class Operator:
                 _table(['Slot','Generated tokens','Observed free headroom (GiB)','Failure'],[(i,o.get('generated_tokens'),round(o['backend']['observed_peak_free_lower_bytes']/2**30,3) if o.get('backend',{}).get('observed_peak_free_lower_bytes') is not None else None,o.get('failure') or 'None recorded') for i,o in enumerate(payload['results'])])
             # Full replies/tokens live in the trace files; avoid embedding them in
             # every hidden receipt DOM as well as the dedicated audit display.
-            compact={k:v for k,v in payload.items() if k not in ('results','manifest','sessions','identity','versions','host')}
+            compact={k:v for k,v in payload.items() if k not in ('results','manifest','sessions','identity','versions','host','tokenizer')}
+            if payload.get('tokenizer'):compact['tokenizer']={k:v for k,v in payload['tokenizer'].items() if k!='template'}
             if payload.get('results') is not None: compact['raw_result_count']=len(payload['results'])
             if 'gates' in compact: compact['gates']=list(compact['gates'])
             _details('Receipt summary; complete evidence is in the reports and checkpoint',compact)
@@ -277,8 +336,17 @@ class Operator:
         if checkpoint: print('Checkpoint: '+str(checkpoint.get('error') or checkpoint.get('integrity','not recorded')))
 
     def status(self):
-        if self.client is None: raise ValueError('Open or restore the study first.')
-        return self.client.command('status')
+        if self.client is not None:
+            try:return self.client.command('status')
+            except (ValueError,OSError) as error:notice=str(error)
+        else:notice='Controller not attached; saved evidence only.'
+        if not (self.run_dir/'run.json').is_file():raise ValueError('Open or restore the study first.')
+        from .report import analysis
+        s=analysis(self.run_dir)['summary'];gap=s['lost_spending']
+        return dict(s,controller_unavailable=notice,session=None,remaining_session_seconds=None,
+                    usage=dict(attempts=s['attempts'],contingency=s['contingency']+(gap.get('upper') or 0),lost_spending=gap,
+                               remaining=500-s['attempts']-(gap.get('upper') or 0) if gap.get('resolved') else None),
+                    models=[dict(resident=None,load_report=None) for _ in range(2)])
 
     def open_study(self, mode='new', *, deadline=None, allowance_evidence='', selected=None, tail=None, evidence=''):
         if deadline is not None or allowance_evidence:
@@ -298,7 +366,7 @@ class Operator:
         if mode: return mode
         for mode in ('direct','thinking'):
             if gates.get('screen/'+mode,{}).get('passed'): return mode
-        raise ValueError('No passing competence screen. Inspect qualification before envelope or pilots.')
+        raise ActionStopped('No passing competence screen. Inspect qualification before envelope or pilots.')
 
     def thinking_screen(self, reason=None):
         direct=self.status()['gates'].get('screen/direct',{})
@@ -306,21 +374,21 @@ class Operator:
             print('Direct mode passed. Thinking qualification is skipped; zero new attempts.')
             return dict(skipped=True)
         if not direct or direct.get('protocol_errors') or not isinstance(reason,str) or not reason.strip():
-            raise ValueError('Thinking requires a recorded direct competence limitation without protocol errors and your explicit justification.')
+            raise ActionStopped('Thinking requires a recorded direct competence limitation without protocol errors and your explicit justification.')
         return self.run('screen',mode='thinking',reason=reason)
 
     def envelope(self, *, reload=False):
         return self.run('envelope',mode=self.selected_mode(),reload=reload)
 
     def review_pilot(self, number, *, useful_communication=None, usable=None, notes=''):
-        if type(number) is not int or number not in (1,2,3): raise ValueError('Pilot number must be 1, 2 or 3.')
+        if type(number) is not int or number not in (1,2,3): raise ActionStopped('Pilot number must be 1, 2 or 3.')
         if type(useful_communication) is not bool or type(usable) is not bool or not notes.strip():
-            raise ValueError('Inspect this pilot, then supply actual communication/usability findings (True or False) and review notes. Unreviewed is not approved.')
+            raise ActionStopped('Inspect this pilot, then supply actual communication/usability findings (True or False) and review notes. Unreviewed is not approved.')
         return self.run('review',scope=f'pilot-{number}',notes=notes,useful_communication=useful_communication,usable=usable)
 
     def run_batch(self):
         batch=self.status()['gates'].get('batch')
-        if not batch: raise ValueError('Run Prepare the next main batch first.')
+        if not batch: raise ActionStopped('Run Prepare the next main batch first.')
         if batch.get('complete'):
             print('The saved batch is complete; zero new calls. Inspect/acknowledge it before preparing another.')
             self.inspect(worlds=batch.get('worlds',[]))
@@ -329,7 +397,7 @@ class Operator:
 
     def review_batch(self, notes=''):
         batch=self.status()['gates'].get('batch')
-        if not batch or not batch.get('complete'): raise ValueError('Run or resume the saved batch before acknowledging it.')
+        if not batch or not batch.get('complete'): raise ActionStopped('Run or resume the saved batch before acknowledging it.')
         if batch['id']=='main-complete':
             print('All main scopes are recorded. Next: build the final report.')
             return batch
@@ -362,7 +430,7 @@ class Operator:
                 with zipfile.ZipFile(zip_path) as z: integrity=json.loads(z.read("integrity.json"))
                 caption=f"{zip_path.stat().st_size:,} bytes · {integrity['boundary']} · {integrity['created_at']}"
                 _display('<p><strong>'+link(zip_path,'Download latest cumulative checkpoint')+'</strong><br>'+escape(caption)+'</p>', 'Checkpoint: '+str(zip_path)+'\n'+caption)
-                _details('Checkpoint SHA256 and integrity inventory',dict(sha256=digest(zip_path),**integrity))
+                _details('Checkpoint identity; full inventory is inside the ZIP',dict(sha256=digest(zip_path),file_count=len(integrity['files']),**{k:v for k,v in integrity.items() if k!='files'}))
             except (OSError,ValueError,KeyError,zipfile.BadZipFile) as error:
                 print(f'Checkpoint inventory unavailable: {error}. Inspect {zip_path}; do not claim restore acceptance.')
             _display('<p>Save this ZIP outside Kaggle. It advances after later actions. If the link is unsupported, download <code>'+escape(str(zip_path))+'</code> from Output/Files. Link creation does not verify a download.</p>',f'Save outside Kaggle using Output/Files: {zip_path}; a link does not verify downloading.')
@@ -431,7 +499,7 @@ class Operator:
         return result
 
     def final_report(self):
-        if self.client is not None:
+        if self.client is not None and not self.status().get('controller_unavailable'):
             receipt=self.run('report')
         else:
             from .report import write_report

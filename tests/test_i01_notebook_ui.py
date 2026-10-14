@@ -48,7 +48,7 @@ class NotebookUI(unittest.TestCase):
             self.client.reply=reply
             with self.assertRaises(ActionStopped): self.ui.run('screen',mode='direct')
             self.assertFalse(self.ui.busy.locked())
-        self.assertEqual([c[0] for c in self.client.calls],['screen']*3)
+        self.assertEqual([c[0] for c in self.client.calls if c[0]!='status'],['screen']*3)
 
     def test_conditional_thinking_never_falls_back_automatically(self):
         self.client.gates={'screen/direct':dict(passed=True,protocol_errors=0)}

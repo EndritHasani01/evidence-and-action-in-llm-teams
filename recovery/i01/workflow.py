@@ -443,6 +443,8 @@ class Session:
         return self.meta.meta("selected_mode")
 
     def load_references(self):
+        if any(w is None or hasattr(w,'process') and (w.process is None or not w.process.is_alive() or w.unconfirmed) for w in self.workers):
+            raise ValueError('Both resident replicas must be alive with confirmed load evidence')
         refs=[s.meta('resident_load') for s in self.stores]
         if not all(refs): raise ValueError('Both successful replica load records are required')
         return refs
@@ -617,7 +619,7 @@ class Session:
                 methods = {"readiness":self.readiness,"screen":self.screen,"envelope":self.envelope,
                            "pilot":self.pilot,"freeze":self.freeze,"prepare_batch":self.prepare_batch,
                            "main":self.main,"review":self.review,"selfcheck":self.selfcheck,"load":self.load,
-                           "window":self.window,"snapshot":lambda:dict(boundary_requested="operator-snapshot")}
+                           "window":self.window,"snapshot":lambda boundary='operator-snapshot':dict(boundary_requested=boundary)}
                 if action=="report":
                     from .report import analysis
                     methods["report"]=lambda:analysis(self.run)["summary"]
@@ -631,7 +633,7 @@ class Session:
             finally:
                 self.meta.put_meta("action",dict(name=action,args=args,status="stopped" if error else "complete",error=error,at=utc()))
                 try:
-                    checkpoint=self.checkpoint("action/"+action)
+                    checkpoint=self.checkpoint(args.get('boundary','action/snapshot') if action=='snapshot' else 'action/'+action)
                 except Exception as exc:
                     checkpoint=dict(error=f"{type(exc).__name__}: {exc}",last_valid_preserved=True)
                 self.emit("action_finished",action=action,error=error,result=result,checkpoint=checkpoint)

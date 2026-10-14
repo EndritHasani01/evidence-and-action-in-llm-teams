@@ -42,6 +42,12 @@ class Store:
             tables={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
             if not {'meta','episodes','calls','attempts','sessions','annotations'} <= tables:
                 raise ValueError(f"Incomplete canonical schema: {path}; no tables were recreated")
+            columns={'meta':{'key','value'},'episodes':{'id','state'},'calls':{'id','episode','request','outcome','effect_committed'},
+                     'attempts':{'id','call_id','number','stage','contingency','admitted_at','finished_at','status','evidence'},
+                     'sessions':{'id','evidence'},'annotations':{'id','evidence'}}
+            for table,expected in columns.items():
+                if {r['name'] for r in db.execute('PRAGMA table_info('+table+')')}!=expected:
+                    raise ValueError(f'Incompatible canonical columns: {path}: {table}')
             if db.execute('PRAGMA quick_check').fetchone()[0]!='ok':
                 raise ValueError(f"Corrupt canonical database: {path}")
             metadata={r['key']:json.loads(r['value']) for r in db.execute("SELECT * FROM meta WHERE key IN ('schema','binding')")}
