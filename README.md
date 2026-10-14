@@ -1,5 +1,12 @@
 # Recovery in distributed LLM teams
 
+The current I-01 course preparation is a separate, explicitly adopted study:
+see the [I-01 Kaggle runbook](docs/I01_KAGGLE.md) and
+[implementation WBS](docs/plans/i01-course-implementation-wbs.md).
+Its finite-stage notebook uses explicit operator controls, twenty paired worlds
+and a hard 500-attempt ceiling. It does not inherit the historical Run All flow
+below. GPU/model qualification and empirical outcomes remain pending.
+
 The complete course Kaggle interface is in the [Kaggle runbook](docs/KAGGLE_COURSE.md).
 The Run All delivery contains `course_kaggle.ipynb`, `course-kaggle-dataset.zip`
 and `START_HERE.md`. Its small online-first dataset contains research code and

@@ -1,0 +1,174 @@
+"""Finite CLI and retained local JSON command loop for the I-01 notebook."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import sys
+import threading
+
+from .archive import atomic_json, digest, extract_selected
+from .core import canonical
+
+
+def serve(run, source):
+    # Initialize CPU plotting extensions on the controller's main thread before
+    # entering blocking stdin I/O (Windows NumPy DLL initialization can deadlock
+    # when its first import happens on an action thread).
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot
+    from .workflow import Session
+    output_lock=threading.Lock()
+    def send(value):
+        with output_lock:
+            print(canonical(value),flush=True)
+    session=Session(run,source,progress=lambda e:send(dict(event=e)))
+    active=None
+    completed={}
+    def execute(identity,action,args):
+        result=session.run_action(action,**args)
+        completed[identity]=result
+        send(dict(done=identity,result=result))
+    try:
+        send(dict(ready=True,study=session.manifest["study_id"]))
+        for line in sys.stdin:
+            identity=None
+            try:
+                req=json.loads(line); identity=req["id"]; op=req["op"]
+                busy=active is not None and active["thread"].is_alive()
+                if op=="start":
+                    if busy:
+                        if active["action"]==req["action"] and active["args"]==req.get("args",{}):
+                            value=dict(attached=active["id"])
+                        else:
+                            raise ValueError("one active action; pause or wait before another")
+                    else:
+                        session.meta.put_meta("operator_authorization",dict(action=req["action"],args=req.get("args",{}),evidence=req.get("authorization","Explicit finite CLI request")))
+                        thread=threading.Thread(target=execute,args=(identity,req["action"],req.get("args",{})),daemon=True)
+                        active=dict(id=identity,action=req["action"],args=req.get("args",{}),thread=thread)
+                        thread.start(); value=dict(started=identity)
+                elif op=="pause":
+                    session.pause.set(); value=dict(pause_requested=True,quiescent=not busy)
+                elif op=="status":
+                    value=session.status()
+                elif op=="result":
+                    value=completed.get(req["action_id"],dict(pending=True))
+                elif op=="close_models":
+                    value=session.close_models()
+                    session.checkpoint("close-models")
+                elif op=="reconcile":
+                    if busy: raise ValueError("pause before reconciliation")
+                    # A stale PID alone is not termination evidence. Operator must
+                    # confirm old controller/model exit before this command.
+                    session.admission.reconcile(session.stores[req["slot"]],req["attempt"],req["evidence"])
+                    value=dict(reconciled=True)
+                elif op=="lost_spending":
+                    if busy: raise ValueError("pause before evidence-gap reconciliation")
+                    gap=req["gap"]
+                    if gap.get("resolved") and (type(gap.get("upper")) is not int or not 0<=gap["upper"]<=28 or not gap.get("evidence")):
+                        raise ValueError("bounded missing attempts and evidence required; unknown is not zero")
+                    session.meta.put_meta("lost_spending",gap)
+                    session.meta.put_meta("blocked_worlds",req.get("affected_worlds",[]))
+                    value=gap
+                elif op=="annotate":
+                    if busy: raise ValueError("pause before annotations")
+                    ann=req["annotation"]
+                    if ann["label"] not in session.config["rubric"] or not ann.get("notes") or not ann.get("calls"):
+                        raise ValueError("frozen label, notes and exact call references required")
+                    call_ids={r["id"] for s in session.stores for r in s.rows("calls")}
+                    if any(c not in call_ids for c in ann["calls"]):
+                        raise ValueError("annotation references unknown call")
+                    with session.meta.transaction():
+                        session.meta.db.execute("INSERT OR REPLACE INTO annotations VALUES (?,?)",(ann["id"],canonical(ann)))
+                    value=ann
+                elif op=="close":
+                    if busy:
+                        session.pause.set(); raise ValueError("pause requested; wait for safe boundary then close")
+                    session.checkpoint("controller-close")
+                    value=session.close_models(); send(dict(id=identity,result=value)); break
+                else:
+                    raise ValueError("unknown management operation")
+                send(dict(id=identity,result=value))
+            except Exception as error:
+                send(dict(id=identity,error=f"{type(error).__name__}: {error}"))
+    finally:
+        session.pause.set()
+        # EOF means notebook owner disappeared. Terminate children immediately;
+        # admitted outcomes without persistence remain unresolved and spent.
+        if active is not None and active["thread"].is_alive():
+            for w in session.workers:
+                if w is not None:
+                    w.close()
+            active["thread"].join(2*session.config["termination_seconds"]+5)
+        if active is None or not active["thread"].is_alive():
+            session.close()
+        else:
+            # Process exit releases SQLite and OS ownership; child sentinel kills
+            # any descendant whose termination acknowledgement was uncertain.
+            os._exit(73)
+
+
+def parser():
+    p=argparse.ArgumentParser(description="I-01 finite research stages; no automatic progression")
+    p.add_argument("--source",type=Path,default=Path(__file__).parents[2])
+    p.add_argument("--run",type=Path)
+    sub=p.add_subparsers(dest="command",required=True)
+    sub.add_parser("serve")
+    sub.add_parser("init")
+    restore=sub.add_parser("restore"); restore.add_argument("selected",type=Path); restore.add_argument("--tail",choices=["latest","unknown"],required=True); restore.add_argument("--evidence",required=True)
+    check=sub.add_parser("selfcheck"); check.add_argument("--metadata",type=Path)
+    inventory=sub.add_parser("runtime-inventory"); inventory.add_argument("--output",type=Path,required=True)
+    for name in ("status","report"):
+        item=sub.add_parser(name)
+        if name=="report": item.add_argument("--output",type=Path)
+    for name in ("metadata","weights"):
+        item=sub.add_parser(name); item.add_argument("--scratch",type=Path,required=True); item.add_argument("--working",type=Path,required=True)
+    stage=sub.add_parser("action"); stage.add_argument("action"); stage.add_argument("--args",default="{}"); stage.add_argument("--deadline",required=True); stage.add_argument("--allowance-evidence",required=True); stage.add_argument("--authorize",required=True)
+    return p
+
+
+def main(argv=None):
+    args=parser().parse_args(argv)
+    config=json.loads((args.source/"configs/i01-course.json").read_text())
+    if args.command=="runtime-inventory":
+        from .setup import runtime_inventory
+        result=runtime_inventory(args.source); atomic_json(args.output,result)
+    elif args.command in ("metadata","weights"):
+        from .setup import download
+        result=download(args.source,args.scratch,args.working,weights=args.command=="weights")
+    elif args.command=="init":
+        from .workflow import initialize
+        result=initialize(args.run,args.source,config)
+    elif args.command=="restore":
+        from .workflow import Session
+        receipt=extract_selected(args.selected,args.run)
+        session=Session(args.run,args.source)
+        try:
+            session.meta.put_meta("lost_spending",dict(upper=0 if args.tail=="latest" else None,resolved=args.tail=="latest",evidence=args.evidence))
+            result=dict(restored=receipt,continuation_requires_current_session_reload=True,tail=args.tail)
+        finally:
+            session.close()
+    elif args.command=="selfcheck":
+        from .checks import run_checks
+        result=run_checks(args.metadata,config)
+    elif args.command in ("status","report"):
+        from .report import analysis, write_report
+        result=analysis(args.run)["summary"] if args.command=="status" else write_report(args.run,args.output or args.run/"reports")
+    elif args.command=="serve":
+        serve(args.run,args.source); return
+    else:
+        from .workflow import Session
+        # One-shot calls close models; use serve/client for resident inference.
+        session=Session(args.run,args.source,progress=lambda e:print(canonical(e),flush=True))
+        try:
+            session.window(args.deadline,args.allowance_evidence)
+            session.meta.put_meta("operator_authorization",dict(action=args.action,evidence=args.authorize))
+            result=session.run_action(args.action,**json.loads(args.args))
+        finally:
+            session.close()
+    print(json.dumps(result,indent=2))
+
+
+if __name__=="__main__":
+    main()

@@ -651,7 +651,7 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | M1-T01–T04 | Implemented; native checks passed | recovery/i01/core.py; validation/i01-implementation.md; native tokenizer pending |
 | M2-T01–T04 | Implemented; focused scripted checks passed | WAL/FULL episode stores, serialized 500/28 admission, idempotent raw/effects, backup/ZIP/expanded restore; target-host pending |
 | M3-T01–T04 | Implemented; target-host pending | Reviewed loader/cache engine, direct/thinking adapter, resident children/client, pinned online setup, packaged checks |
-| M4-T01–T04 | Python implemented; release review in progress | Finite gates/stages; exact scoring/uncertainty/costs; full traces, figures, export and command/UI surfaces |
+| M4-T01–T04 | Python complete; focused integration passed | Finite gates/stages; exact scoring/uncertainty/costs; full traces, figures, export and command/UI surfaces; docs/I01_KAGGLE.md |
 | M5-T01–T04 | Pending | Notebook begins only after Python completion |
 | M6-T01–T04 | Operator execution pending | All paths must be implemented; actual-host claims withheld |
 | M7-T01–T03 | Operator execution pending | All paths must be implemented; outcomes unknown |

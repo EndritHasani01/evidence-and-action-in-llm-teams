@@ -1,0 +1,64 @@
+"""Build the small private online source attachment; no dependencies/weights."""
+
+import argparse
+import json
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import zipfile
+
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+from recovery.i01.archive import atomic_json, digest, inventory
+
+
+def build(root, out):
+    root,out=Path(root).resolve(),Path(out).resolve()
+    out.mkdir(parents=True,exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix="i01-release-",dir=out) as temp:
+        source=Path(temp)/"source"; source.mkdir()
+        relative=[p.relative_to(root) for p in (root/"recovery").rglob("*.py")]
+        relative += [Path(p) for p in ("pyproject.toml","configs/i01-course.json","configs/i01-runtime.lock",
+                     "PROJECT_SPECIFICATION.md","AGENTS.md","docs/I01_KAGGLE.md",
+                     "docs/plans/i01-course-implementation-wbs.md","scripts/i01_course.py",
+                     "scripts/build_i01_course_notebook.py","scripts/build_i01_course_release.py")]
+        # Builder can make a Python-only release before notebook completion.
+        if (root/"notebooks/i01_course_kaggle.ipynb").exists():
+            relative.append(Path("notebooks/i01_course_kaggle.ipynb"))
+        for rel in relative:
+            destination=source/rel; destination.parent.mkdir(parents=True,exist_ok=True)
+            shutil.copy2(root/rel,destination)
+        subprocess.run([sys.executable,"-m","pip","wheel","--no-deps","--no-build-isolation",
+                        "--wheel-dir",str(source),str(root)],check=True,timeout=120)
+        wheels=list(source.glob("*.whl"))
+        if len(wheels)!=1: raise ValueError("one complete wheel required")
+        with zipfile.ZipFile(wheels[0]) as z:
+            if "recovery/i01/workflow.py" not in z.namelist() or "recovery/i01/ui.py" not in z.namelist():
+                raise ValueError("wheel is missing I-01 package")
+        head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip()
+        dirty=subprocess.check_output(["git","status","--porcelain"],cwd=root,text=True).splitlines()
+        manifest=dict(format="i01-online-source-v1",git_head=head,working_tree=dirty,
+                      files=inventory(source),model_weights_included=False,dependencies_included=False)
+        atomic_json(source/"source-release.json",manifest)
+        target=out/"i01-source.zip"; partial=out/"i01-source.zip.partial"
+        with zipfile.ZipFile(partial,"w",zipfile.ZIP_DEFLATED) as z:
+            for p in sorted(source.rglob("*")):
+                if p.is_file(): z.write(p,p.relative_to(source).as_posix())
+        with zipfile.ZipFile(partial) as z:
+            if z.testzip() is not None: raise ValueError("source ZIP CRC failure")
+        partial.replace(target)
+        shutil.copy2(source/"source-release.json",out/"source-release.json")
+        shutil.copy2(wheels[0],out/wheels[0].name)
+        notebook=root/"notebooks/i01_course_kaggle.ipynb"
+        if notebook.exists(): shutil.copy2(notebook,out/notebook.name)
+        shutil.copy2(root/"docs/I01_KAGGLE.md",out/"START_HERE.md")
+        atomic_json(out/"delivery.json",dict(source_zip=str(target),bytes=target.stat().st_size,sha256=digest(target),
+                    notebook=str(out/"i01_course_kaggle.ipynb"),source_head=head,files=list(manifest["files"]),
+                    implemented=True,kaggle_verified=False,model_attempts=0))
+        return target
+
+
+if __name__=="__main__":
+    p=argparse.ArgumentParser(); p.add_argument("--output",type=Path,default=Path("dist/i01-course"))
+    args=p.parse_args(); print(build(Path(__file__).resolve().parents[1],args.output))

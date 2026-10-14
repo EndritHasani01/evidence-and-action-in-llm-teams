@@ -10,6 +10,14 @@ notebook. Use focused lightweight checks; no GPU inference, qualification,
 pilots, freeze or main execution during preparation. Earlier thesis/course
 handoffs below remain historical and independently scoped.
 
+Python completion now implements all I-01 scientific, inference, durable stage,
+accounting, reporting, archive and restore responsibilities in `recovery/i01/`.
+The [operator runbook](I01_KAGGLE.md) documents finite APIs and exact recovery.
+Five focused scripted integration checks and the packaged scripted self-check
+passed on Windows Python 3.11.9; these are implementation evidence only.
+The staged notebook/release is the next deliverable, followed by operator-only
+Kaggle validation. No old automatic course execution policy is inherited.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.
