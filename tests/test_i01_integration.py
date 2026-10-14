@@ -136,6 +136,9 @@ class Integration(unittest.TestCase):
         try:
             ui.run("initialize",mode="reopen")
             self.assertEqual(ui.run("status")["usage"]["attempts"],0)
+            from recovery.i01.ui import ActionStopped
+            with self.assertRaises(ActionStopped): ui.run('prepare_batch',count=1)
+            self.assertEqual(ui.client.command('forecast')['remaining_attempt_allowance'],500)
             receipt=ui.run("snapshot")
             self.assertEqual(receipt["checkpoint"]["integrity"],"passed")
             self.assertEqual(ui.run("status")["known_pairs"],0)

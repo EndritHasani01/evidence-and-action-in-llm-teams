@@ -52,6 +52,8 @@ def serve(run, source):
                     session.pause.set(); value=dict(pause_requested=True,quiescent=not busy)
                 elif op=="status":
                     value=session.status()
+                elif op=="forecast":
+                    value=session.forecast()
                 elif op=="result":
                     value=completed.get(req["action_id"],dict(pending=True))
                 elif op=="close_models":
