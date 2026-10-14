@@ -109,8 +109,8 @@ RUN_DIR = "/kaggle/working/i01-repaired-study"  # Preserve the earlier i01-study
 
 """
     stages=[
-      ("workspace","1. Configure and inspect the workspace","Edit actual session facts here. A unique verified source ZIP/expanded directory is selected automatically; set SOURCE_BUNDLE only when ambiguous. Inventory only; no installation or generation.",configuration+BOOTSTRAP,None,False),
-      ("setup","2. Install the pinned runtime","Create/recover the isolated environment without ensurepip, bootstrap verified pinned pip and install the unchanged runtime lock; fetch metadata/tokenizer. Live progress and /kaggle/working/i01-setup/ logs. No model loading or generation.",'study.install_runtime();\n',"setup",False),
+      ("workspace","1. Configure and inspect the workspace","Choose the start mode and study destination here. A unique verified source ZIP/expanded directory is selected automatically; set SOURCE_BUNDLE only when ambiguous. Inventory only; no installation or generation. Record current session facts later in stage 6.",configuration+BOOTSTRAP,None,False),
+      ("setup","2. Install the pinned runtime","Create/recover the isolated environment without ensurepip, bootstrap verified pinned pip and install the unchanged runtime lock; fetch metadata/tokenizer. Live progress and release-labelled i01-setup-<source> logs under /kaggle/working. No model loading or generation.",'study.install_runtime();\n',"setup",False),
       ("open-study","3. Open the study","Create fixed inputs, reopen intact files or explicitly restore into a fresh writable directory. Opening and inspection need no model allocation or session window. Conflicting studies are never overwritten.",
        'study.open(START_MODE,\n    selected=globals().get("RESTORE_CHECKPOINT"),\n    tail=globals().get("RESTORE_TAIL"), evidence=globals().get("RESTORE_EVIDENCE", ""));\n',"initialize",False),
       ("selfcheck","4. Check the implementation","Lightweight mathematics/private-view/lifecycle/durability/accounting/archive/restore and native-tokenizer checks. Temporary scripted records, zero model attempts.",'study.check_implementation();\n',"selfcheck",False),

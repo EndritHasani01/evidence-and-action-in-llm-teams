@@ -128,7 +128,7 @@ def verify(root,delivery):
         for rel,wanted in manifest["files"].items():
             assert digest(run/"source"/rel)==wanted["sha256"],rel
         assert not any(".safetensors" in p or ".env" in p or "/site-packages/" in p for p in manifest["files"])
-    receipt=dict(passed=True,**notebook_receipt,source_members=len(manifest["files"]),
+    receipt=dict(passed=True,**notebook_receipt,source_head=manifest['git_head'],source_members=len(manifest["files"]),
                  source_zip_bytes=(delivery/"i01-source.zip").stat().st_size,source_zip_sha256=digest(delivery/"i01-source.zip"),
                  installed_wheel_source_matches=True,installed_outside_checkout_cli=True,
                  installed_venv_isolated_entry=True,
