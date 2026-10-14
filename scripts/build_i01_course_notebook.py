@@ -96,7 +96,7 @@ exclude eligible retries, which consume shared 28 contingency and study allowanc
 Models stay resident during inspection and between stages. Interrupt requests
 pause; an admitted call must settle within its bound. Recovery recipes are below.
 """)
-    configuration="""# Supply facts from the CURRENT Kaggle session; no duration or quota is guessed.
+    configuration="""# Supply CURRENT session facts before loading models; no duration/quota is guessed.
 START_MODE = "new"  # "reopen" for intact files; "restore" for a selected archive.
 SESSION_DEADLINE_UTC = None  # Actual future ISO time: YYYY-MM-DDTHH:MM:SS+00:00.
 SESSION_ALLOWANCE_EVIDENCE = ""  # Describe the actual allowance shown by Kaggle.
@@ -110,11 +110,11 @@ SESSION_ALLOWANCE_EVIDENCE = ""  # Describe the actual allowance shown by Kaggle
     stages=[
       ("workspace","1. Configure and inspect the workspace","Edit actual session facts here. A unique verified source ZIP/expanded directory is selected automatically; set SOURCE_BUNDLE only when ambiguous. Inventory only; no installation or generation.",configuration+BOOTSTRAP,None,False),
       ("setup","2. Install the pinned runtime","Create/recover the isolated environment without ensurepip, bootstrap verified pinned pip and install the unchanged runtime lock; fetch metadata/tokenizer. Live progress and /kaggle/working/i01-setup/ logs. No model loading or generation.",'study.install_runtime();\n',"setup",False),
-      ("open-study","3. Open the study","Create fixed inputs, reopen intact files or explicitly restore into a fresh writable directory. Record this session's actual allowance/deadline. Missing facts stop here; conflicting studies are never overwritten.",
-       'study.open(START_MODE, deadline=SESSION_DEADLINE_UTC,\n    allowance_evidence=SESSION_ALLOWANCE_EVIDENCE,\n    selected=globals().get("RESTORE_CHECKPOINT"),\n    tail=globals().get("RESTORE_TAIL"), evidence=globals().get("RESTORE_EVIDENCE", ""));\n',"initialize",False),
+      ("open-study","3. Open the study","Create fixed inputs, reopen intact files or explicitly restore into a fresh writable directory. Opening and inspection need no model allocation or session window. Conflicting studies are never overwritten.",
+       'study.open(START_MODE,\n    selected=globals().get("RESTORE_CHECKPOINT"),\n    tail=globals().get("RESTORE_TAIL"), evidence=globals().get("RESTORE_EVIDENCE", ""));\n',"initialize",False),
       ("selfcheck","4. Check the implementation","Lightweight mathematics/private-view/lifecycle/durability/accounting/archive/restore and native-tokenizer checks. Temporary scripted records, zero model attempts.",'study.check_implementation();\n',"selfcheck",False),
       ("weights","5. Download verified weights","Retrieve/reuse the pinned Qwen3.5-9B files; verify native identities and actual available space. Progress appears below. No inference.",'study.download_weights();\n',"weights",False),
-      ("load","6. Load both T4 workers","Load/attach the two resident replicas and show device/load receipts. No hidden warmup. Inspection does not unload them.",'study.load_models();\n',"load",False),
+      ("load","6. Load both T4 workers","Record this session's actual future deadline and allowance evidence from the configuration cell, then load/attach two resident replicas and show device/load receipts. Missing facts stop before loading. No hidden warmup. Inspection does not unload them.",'study.set_session_window(SESSION_DEADLINE_UTC, SESSION_ALLOWANCE_EVIDENCE);\nstudy.load_models();\n',"load",False),
       ("readiness","7. Check fresh-state readiness","Exactly six short A/B/A diagnostics across both workers: ≤6 first attempts plus eligible contingency. A failed gate stops the cell with saved evidence.",'study.check_readiness();\n',"readiness",True),
       ("direct-screen","8. Check direct-mode competence","Twelve original/revised controls, ≤12 first attempts plus eligible contingency. Require ≥11/12 correct and zero malformed/truncated actions. Failure stops here; inspect it below.",'study.qualify_direct();\n',"screen",True),
       ("qualification","9. Inspect qualification","Read-only control outcomes and complete saved evidence. If direct passed, proceed to headroom. A protocol defect blocks research; only a documented competence limitation enables the optional thinking screen.",'study.inspect_qualification();\n',None,False),

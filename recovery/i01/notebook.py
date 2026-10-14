@@ -9,6 +9,7 @@ from .ui import Operator
 class Study(Operator):
     def install_runtime(self): return self.run('setup')
     def open(self, mode='new', **session_facts): return self.open_study(mode,**session_facts)
+    def set_session_window(self, deadline, evidence): return self.run('window',deadline=deadline,evidence=evidence)
     def check_implementation(self): return self.run('selfcheck')
     def download_weights(self): return self.run('weights')
     def load_models(self): return self.run('load')

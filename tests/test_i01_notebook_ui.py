@@ -93,9 +93,15 @@ class NotebookUI(unittest.TestCase):
         self.assertIn('not verified',self.client.calls[-1][1]['notes'])
         self.assertNotIn('prepare_batch',[c[0] for c in self.client.calls])
 
-    def test_actual_session_evidence_required_before_open(self):
+    def test_open_needs_no_window_but_explicit_window_needs_actual_facts(self):
         self.ui.client=None
-        with self.assertRaises(ValueError): self.ui.open_study()
+        self.ui.deadline='stale'; self.ui.allowance_evidence='old session'
+        with patch.object(self.ui,'run',return_value={'attempts':0}) as run:
+            self.ui.open_study('reopen')
+            run.assert_called_once_with('initialize',mode='reopen',selected=None,tail=None,evidence='')
+        self.assertIsNone(self.ui.deadline)
+        self.assertIsNone(self.ui.allowance_evidence)
+        with self.assertRaises(ValueError): self.ui.set_window(None,'')
         with self.assertRaises(ValueError): self.ui.set_window('2099-01-01T10:00:00','observed allowance')
         with self.assertRaises(ValueError): self.ui.set_window((datetime.now(timezone.utc)-timedelta(seconds=1)).isoformat(),'observed allowance')
         self.assertFalse(self.client.calls)

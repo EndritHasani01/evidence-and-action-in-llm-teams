@@ -9,7 +9,7 @@ import subprocess
 import threading
 
 from .archive import atomic_json, digest, extract_selected
-from .client import Client
+from .client import Client, child_environment
 from .core import canonical
 from .setup import host_inventory, install
 
@@ -78,6 +78,8 @@ class Operator:
             line=f"{event['action']}: {event.get('error') or 'complete'} · checkpoint {event.get('checkpoint',{}).get('path','unavailable')}"
         elif kind=="action_stopped":
             line=f"Stopped {event['action']}: {event['error']}"
+        elif kind=='controller_exit':
+            line=f"Controller exited with code {event['exitcode']}" if event.get('exitcode') is not None else 'Controller output closed; process exit is not yet confirmed'
         else:
             line=f"{kind or 'Progress'}: "+str(event.get('text',event.get('error','recorded in the stage receipt')))
         print(line,flush=True)
@@ -107,8 +109,7 @@ class Operator:
         return json.loads((self.working/"i01-setup"/(command+".json")).read_text())
 
     def _env(self):
-        import os
-        return dict(os.environ,HF_HUB_CACHE=str(self.scratch/"hf-cache"),HF_HUB_ETAG_TIMEOUT="30",HF_HUB_DOWNLOAD_TIMEOUT="60")
+        return child_environment(self.scratch/'hf-cache')
 
     def initialize(self, mode="new", selected=None, tail=None, evidence=""):
         if self.environment is None:
@@ -280,10 +281,15 @@ class Operator:
         return self.client.command('status')
 
     def open_study(self, mode='new', *, deadline=None, allowance_evidence='', selected=None, tail=None, evidence=''):
-        receipt=self.set_window(deadline,allowance_evidence)
-        if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
-            self.show(receipt)
-            raise ActionStopped(receipt.get('error') or receipt['checkpoint']['error'])
+        if deadline is not None or allowance_evidence:
+            receipt=self.set_window(deadline,allowance_evidence)
+            if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
+                self.show(receipt)
+                raise ActionStopped(receipt.get('error') or receipt['checkpoint']['error'])
+        elif self.client is None or self.client.process.poll() is not None:
+            # Opening/inspection is zero-generation preparation. A new
+            # controller must not inherit an old session's allowance.
+            self.deadline=self.allowance_evidence=None
         return self.run('initialize',mode=mode,selected=selected,tail=tail,evidence=evidence)
 
     def selected_mode(self):

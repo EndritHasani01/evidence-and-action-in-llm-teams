@@ -1,0 +1,24 @@
+{
+  "passed": true,
+  "tests": 14,
+  "seconds": 22.269,
+  "environment": "Windows Python 3.11.9",
+  "command": "python -m unittest tests.test_i01_client_startup tests.test_i01_notebook_ui tests.test_i01_integration.Integration.test_named_study_steps_use_real_controller tests.test_i01_integration.Integration.test_missing_or_previous_session_window_blocks_before_attempt_admission -v",
+  "real_controller_under_hostile_notebook_environment": true,
+  "parent_environment_preserved": true,
+  "authentication_and_proxies_retained": true,
+  "early_exit_and_pre_ready_timeout_cleanup": true,
+  "current_failure_tail_and_previous_logs_preserved": true,
+  "open_inspect_and_checkpoint_without_session_window": true,
+  "missing_or_stale_window_refused_before_attempt_admission": true,
+  "fresh_checkpoint_reconstruction": true,
+  "model_attempts": 0,
+  "scientific_runtime_pins_changed": false,
+  "kaggle_controller_verified": false,
+  "reported_kaggle_setup": {
+    "source": "4db263ea25c8",
+    "seconds": 177.78004193399994,
+    "model_attempts": 0,
+    "controller_startup": "failed: inherited inline MPLBACKEND and sitecustomize warning"
+  }
+}

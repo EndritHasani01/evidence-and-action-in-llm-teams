@@ -5,6 +5,8 @@ from pathlib import Path
 import tempfile
 import unittest
 import sys
+import os
+from unittest.mock import patch
 
 from recovery.i01.core import canonical
 from recovery.i01.workflow import Session, initialize
@@ -75,6 +77,18 @@ class Integration(unittest.TestCase):
             with self.assertRaises(ValueError): call()
         self.assertEqual(s.admission.usage()["attempts"],0)
         self.assertEqual(w.calls,0)
+    def test_missing_or_previous_session_window_blocks_before_attempt_admission(self):
+        worker=Scripted([])
+        self.session=Session(self.run,providers=[worker,Scripted([])],prepare_request=prepare)
+        s=self.session
+        request=prepare({'scripted':'window gate'},1,'direct')
+        for old in (None,dict(session='previous-controller',deadline='2099-01-01T00:00:00+00:00',evidence='old allowance')):
+            if old: s.meta.put_meta('window',old)
+            with self.assertRaisesRegex(ValueError,'insufficient session time'):
+                s.call(0,'scripted-window','scripted-window/prefix',request,'pilot')
+            self.assertEqual(s.admission.usage()['attempts'],0)
+            self.assertEqual(worker.calls,0)
+            self.assertFalse(s.active_calls)
     def test_restore_reload_cannot_relabel_cached_envelope(self):
         s,w=self.open([])
         s.meta.put_meta("screen/direct",dict(passed=True))
@@ -133,15 +147,28 @@ class Integration(unittest.TestCase):
         ui.show=lambda value:None
         ui.links=lambda:None
         ui.emit=lambda event:None
+        hostile=base/'hostile'; hostile.mkdir()
+        sentinel=base/'startup-hook-ran'
+        (hostile/'sitecustomize.py').write_text(
+            f'from pathlib import Path\nPath({str(sentinel)!r}).write_text("contaminated")\nraise RuntimeError("host notebook hook leaked")\n')
+        polluted=dict(PYTHONPATH=str(hostile),MPLBACKEND='module://missing_notebook_renderer',
+                      MPLCONFIGDIR=str(hostile),PYTHONUSERBASE=str(hostile))
         try:
-            ui.open('reopen',deadline=(datetime.now(timezone.utc)+timedelta(hours=2)).isoformat(),allowance_evidence='Scripted controller window only')
+            with patch.dict(os.environ,polluted):
+                ui.open('reopen')
+                self.assertEqual(os.environ['MPLBACKEND'],polluted['MPLBACKEND'])
             self.assertEqual(ui.show_status()["usage"]["attempts"],0)
+            self.assertIsNone(ui.show_status()['remaining_session_seconds'])
+            self.assertFalse(sentinel.exists())
+            self.assertNotIn('host notebook hook leaked',ui.client.log_path.read_text())
             from recovery.i01.ui import ActionStopped
             with self.assertRaises(ActionStopped): ui.prepare_main_batch(count=1)
             self.assertEqual(ui.client.command('forecast')['remaining_attempt_allowance'],500)
             receipt=ui.save_checkpoint(verify=True)
             self.assertEqual(receipt["checkpoint"]["integrity"],"passed")
             self.assertEqual(ui.show_status()["known_pairs"],0)
+            ui.set_session_window((datetime.now(timezone.utc)+timedelta(hours=2)).isoformat(),'Scripted controller window only')
+            self.assertGreater(ui.show_status()['remaining_session_seconds'],0)
         finally:
             if ui.client: ui.client.close()
 

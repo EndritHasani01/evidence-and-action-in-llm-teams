@@ -26,7 +26,7 @@ def build(root, out):
                      "scripts/build_i01_course_notebook.py","scripts/build_i01_course_release.py")]
         relative += [Path("scripts/verify_i01_course_release.py"),Path("tests/__init__.py"),Path("tests/test_i01_integration.py")]
         relative += [Path('tests/test_i01_notebook_ui.py'),Path('docs/plans/i01-notebook-natural-workflow.md')]
-        relative += [Path('tests/test_i01_setup.py')]
+        relative += [Path('tests/test_i01_setup.py'),Path('tests/test_i01_client_startup.py')]
         # Builder can make a Python-only release before notebook completion.
         if (root/"notebooks/i01_course_kaggle.ipynb").exists():
             relative.append(Path("notebooks/i01_course_kaggle.ipynb"))

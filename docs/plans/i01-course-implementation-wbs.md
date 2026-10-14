@@ -774,3 +774,15 @@ one real named-controller/snapshot check pass locally. The final source cache
 uses existing release commit labels and refuses cached foreign imports until
 kernel restart. Full Kaggle installation/qualification remains pending; see
 `setup-repair-checks.json` and the runbook recovery instructions.
+
+Controller follow-up: the operator reports successful Kaggle setup in 177.780
+seconds with zero model attempts. The next log identifies inherited inline
+MPLBACKEND plus Python startup-hook contamination. The fix sanitizes only child
+environments, selects Agg before import and exposes/cleans up startup failures.
+Opening/inspection is now available without session facts; the ordinary load
+cell records the actual window, with unchanged backend admission/export checks.
+Fourteen focused tests pass in 22.269 seconds; no dependency/scientific settings
+change and no model calls. See controller-startup-checks.json. Rebuilt package
+verification is recorded in release-review.json. Existing bound studies retain
+their matching source; the runbook supplies a temporary spawn-environment
+recovery cell. Kaggle controller/model/experiment acceptance remains pending.

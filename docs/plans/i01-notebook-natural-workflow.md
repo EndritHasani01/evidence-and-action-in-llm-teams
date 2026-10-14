@@ -361,3 +361,14 @@ ran. Actual Kaggle ordinary output/interrupt/download behavior, native framing,
 Linux installation, T4 residency/headroom/competence and the empirical workflow
 remain operator acceptance. Existing scientific outcomes are neither replaced
 nor inferred by this UI revision.
+
+Controller-startup follow-up: reported Kaggle installation now completes, but
+inherited inline plotting/Python startup settings prevent controller attachment.
+The child runtime now isolates those settings and selects Agg before import;
+failed startup displays actual stderr and confirms bounded process cleanup.
+Opening/inspection can precede session facts; Load both T4 workers records the
+actual window before model allocation. The notebook retains 25 ordinary cells
+and named methods. Fourteen focused checks pass in 22.269 seconds with zero
+model attempts (controller-startup-checks.json); target-host controller/model
+and empirical acceptance remain pending. Bound source and scientific settings
+remain preserved, with a same-source recovery recipe for the current session.

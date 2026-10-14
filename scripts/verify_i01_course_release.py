@@ -17,7 +17,7 @@ def verify_notebook(notebook):
     """Execute ordinary stage cells only against a recording, zero-model stub."""
     expected={
         'workspace':[], 'setup':['install_runtime'], 'open-study':['open'],
-        'selfcheck':['check_implementation'], 'weights':['download_weights'], 'load':['load_models'],
+        'selfcheck':['check_implementation'], 'weights':['download_weights'], 'load':['set_session_window','load_models'],
         'readiness':['check_readiness'], 'direct-screen':['qualify_direct'],
         'qualification':['inspect_qualification'], 'thinking-screen':['qualify_thinking'],
         'envelope':['check_headroom'], 'pilot-1':['run_pilot'], 'review-pilot-1':['record_pilot_review'],
@@ -58,6 +58,8 @@ def verify_notebook(notebook):
         assert review['args']==[number]
         assert review['kwargs']==dict(useful_communication=None,usable=None,notes='')
     assert receipts['direct-screen'][0]['kwargs']=={}
+    assert 'deadline' not in receipts['open-study'][0]['kwargs']
+    assert receipts['load'][0]['args']==[None,'']
     assert receipts['prepare-batch'][0]['kwargs']==dict(count=2)
     assert receipts['thinking-screen'][0]['args']==[None]
     assert receipts['freeze'][0]['args']==['']

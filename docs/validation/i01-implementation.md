@@ -191,3 +191,38 @@ inference, qualification, pilot, freeze or main experiment was run locally.
 The [Python venv documentation](https://docs.python.org/3.13/library/venv.html)
 explains that `--without-pip` skips the default ensurepip bootstrap. No unpinned
 get-pip script or inheritance of the kernel's scientific packages is used.
+
+## Reported Kaggle controller startup incident (14 October 2026)
+
+The operator reported successful runtime installation in 177.780 seconds and
+zero model attempts under source 4db263ea25c8, Python 3.13.15 and two distinct
+Tesla T4 devices. The next supplied stderr contains a sitecustomize warning for
+missing wrapt and a fatal Matplotlib backend error for
+module://matplotlib_inline.backend_inline. This identifies inherited notebook
+environment settings; it does not establish controller/model acceptance.
+
+The correction strips inherited Python/pip/plotting overrides only in child
+environments and selects Agg before import. Authentication/proxies remain
+available; scientific/runtime pins, saved source binding, settings, attempt
+accounting and old logs remain unchanged. Early exit is detected immediately,
+with the current startup's stderr tail and bounded child cleanup. The runbook
+provides temporary environment cleanup for the already installed matching
+source; upgrading a bound study's source is prohibited.
+
+Opening/inspection without a session window is now supported. The load cell
+explicitly records actual session deadline/allowance before loading. Existing
+backend load/call checks still reject absent or previous-controller windows,
+before physical admission. No quota duration or allowance is inferred.
+
+Fourteen focused checks pass in 22.269 seconds on Windows Python 3.11.9: three
+child-environment/startup-failure cases, nine ordinary-interface cases, one real
+controller launched under hostile inline/PYTHONPATH/sitecustomize settings with
+zero attempts and fresh checkpoint reconstruction, and one scripted missing/
+previous-session admission refusal with zero provider calls. Parent environment
+and prior logs are preserved. These are lightweight implementation checks;
+Kaggle controller attachment, native checks, T4 residency/headroom/competence,
+pilot/freeze/main execution and frontend/download acceptance remain pending.
+
+Evidence: controller-startup-checks.json and the regenerated release-review.json
+under notebooks/validation/i01-development/. The complete package retains
+25 ordinary code cells and an unchanged scientific runtime lock.

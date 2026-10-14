@@ -5,8 +5,8 @@ buttons. Named research methods such as **study.install_runtime()** and
 **study.run_pilot(1)** replace string UI dispatch. Run **one stage cell at a time**. **Run All / Save & Run All can execute
 inference and multiple stages and is not a supported study execution method.**
 
-This is implementation delivery, not empirical acceptance. Actual Kaggle
-installation, native framing/capacity, T4 residency/cleanup, headroom, competence,
+This is implementation delivery, not empirical acceptance. The operator reported
+successful Kaggle runtime installation; native framing/capacity, T4 residency/cleanup, headroom, competence,
 pilots, freeze and main results still need operator execution. No model/GPU
 inference or experiment was run during this redesign.
 
@@ -31,8 +31,50 @@ current SOURCE_BUNDLE rather than guessing.
 Expected subprocess failures now show the actual last log lines and the full log
 path instead of an uninformative dispatcher traceback. The full logs append
 across attempts. A failed setup does not create model calls or authorize any
-later stage. This repair passed a tiny Windows environment test; actual Kaggle
-installation/qualification still needs your execution.
+later stage. This repair passed a tiny Windows environment test. The operator
+subsequently reported Kaggle setup completion in 177.780 seconds with zero model
+attempts; controller startup then exposed a separate environment conflict.
+
+## Recovering the reported controller startup failure
+
+The supplied log shows the child inheriting Kaggle's inline MPLBACKEND and a
+Python startup hook that imports unavailable wrapt. Matplotlib fails during
+import, before the old controller can select Agg. Current subprocesses remove
+inherited Python/pip/plotting overrides, retain authentication/proxy settings,
+and select Agg before import. Dependency pins are unchanged. An exited child is
+detected promptly; startup failures display the new stderr tail, preserve older
+logs and confirm bounded process cleanup.
+
+For the already installed 4db263ea25c8 source and intact study, run this recovery
+cell after the failed controller has exited. It temporarily cleans the spawn
+environment and reopens the same scientific binding; no reinstall is needed:
+
+```python
+import os
+from unittest.mock import patch
+
+controller_env = {k: v for k, v in os.environ.items()
+                  if not k.startswith(("PYTHON", "PIP_", "VIRTUAL_ENV", "MPL"))}
+controller_env.update(MPLBACKEND="Agg", PYTHONNOUSERSITE="1",
+                      PYTHONUTF8="1", PYTHONUNBUFFERED="1")
+with patch.dict(os.environ, controller_env, clear=True):
+    study.open("reopen", deadline=SESSION_DEADLINE_UTC,
+               allowance_evidence=SESSION_ALLOWANCE_EVIDENCE)
+```
+
+The parent environment is restored afterward. For subsequent old-release
+metadata/weight subprocesses, use the same temporary context if needed.
+Keep the actual configured deadline future and allowance evidence nonempty for
+this old API. Then continue with Check the implementation. Do not substitute a
+new source release into an existing bound study. Retain its matching attachment
+for later restore. The permanent fix is included in the new notebook/source
+package for a fresh study; an older package copy is kept under
+dist/i01-course-4db263ea25c8.
+
+Current study opening/inspection requires no session window. Before loading,
+the ordinary load cell records the actual session deadline/allowance. Backend
+checks still reject missing/stale windows before model loading or admitting
+generation; the 500-attempt ceiling and export reserve are unchanged.
 
 ## First execution
 
@@ -42,7 +84,8 @@ installation/qualification still needs your execution.
    Select **GPU T4 ×2**, enable **Internet**, and keep the study private.
 3. In **Configure and inspect the workspace**, supply SESSION_DEADLINE_UTC as
    the actual future ISO time with UTC offset, and SESSION_ALLOWANCE_EVIDENCE
-   from the current Kaggle UI. Leave START_MODE = "new" for a fresh study.
+   from the current Kaggle UI before loading models. Opening and inspection can
+   proceed while these facts are unset. Leave START_MODE = "new" for a fresh study.
    Source selection is automatic only when one verified candidate exists;
    otherwise set SOURCE_BUNDLE exactly.
 4. Run **Install the pinned runtime**, then **Open the study**. The reviewed
@@ -52,7 +95,8 @@ installation/qualification still needs your execution.
 5. Separately run **Check the implementation**, **Download verified weights**,
    and **Load both T4 workers**. Lightweight native/scripted checks must pass.
    Downloads reuse verified cached/partial bytes, verify Git/LFS identities and
-   measured storage. Loading performs no hidden warmup.
+   measured storage. The load cell first records the actual current session
+   window; missing facts stop before loading. Loading performs no hidden warmup.
 6. Run **Check fresh-state readiness** (six first attempts maximum), then
    **Check direct-mode competence** (twelve). Inspect qualification. Failed
    gates stop the cell after saving evidence and exposing its checkpoint.

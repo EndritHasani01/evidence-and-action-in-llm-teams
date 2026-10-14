@@ -15,6 +15,7 @@ def serve(run, source):
     # Initialize CPU plotting extensions on the controller's main thread before
     # entering blocking stdin I/O (Windows NumPy DLL initialization can deadlock
     # when its first import happens on an action thread).
+    os.environ['MPLBACKEND']='Agg'
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot
