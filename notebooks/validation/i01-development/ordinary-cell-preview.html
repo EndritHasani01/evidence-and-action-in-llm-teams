@@ -1,0 +1,1118 @@
+<html><meta charset="utf-8"><title>Synthetic I-01 ordinary-cell output</title><style>body{font:16px system-ui;line-height:1.55;margin:30px auto;max-width:1100px}details{margin:.6em 0}pre{white-space:pre-wrap;overflow-wrap:anywhere}h3{margin-top:1.4em}a{color:#145bc1}</style><h1>Synthetic UI review ? zero model calls</h1><p>Temporary scripted store; demonstrates presentation only. These are not research outcomes.</p><h3>Pilot — result</h3><table style="border-collapse:collapse;width:100%;text-align:left"><thead><tr><th style="padding:.5em;border-bottom:1px solid #888">Measurement</th><th style="padding:.5em;border-bottom:1px solid #888">Recorded value</th></tr></thead><tbody><tr><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">Pilot</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">1</td></tr><tr><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">World</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">pilot-00</td></tr></tbody></table><details><summary>Receipt summary; complete evidence is in the reports and checkpoint</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;pilot&quot;: 1,
+  &quot;world&quot;: &quot;pilot-00&quot;
+}</pre></details><h3>Recorded outcomes</h3><table style="border-collapse:collapse;width:100%;text-align:left"><thead><tr><th style="padding:.5em;border-bottom:1px solid #888">World</th><th style="padding:.5em;border-bottom:1px solid #888">Original team</th><th style="padding:.5em;border-bottom:1px solid #888">Retain</th><th style="padding:.5em;border-bottom:1px solid #888">Clear</th><th style="padding:.5em;border-bottom:1px solid #888">Original control</th><th style="padding:.5em;border-bottom:1px solid #888">Revised control</th></tr></thead><tbody><tr><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">pilot-00</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">Correct</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">Correct</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">Correct</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">Unknown / not executed</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">Unknown / not executed</td></tr></tbody></table><h3>Phase effort (unknown is not zero)</h3><table style="border-collapse:collapse;width:100%;text-align:left"><thead><tr><th style="padding:.5em;border-bottom:1px solid #888">World</th><th style="padding:.5em;border-bottom:1px solid #888">Phase</th><th style="padding:.5em;border-bottom:1px solid #888">Calls</th><th style="padding:.5em;border-bottom:1px solid #888">Generated tokens</th><th style="padding:.5em;border-bottom:1px solid #888">Ready-model seconds</th><th style="padding:.5em;border-bottom:1px solid #888">Messages</th></tr></thead><tbody><tr><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">pilot-00</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">prefix</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">0.002</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td></tr><tr><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">pilot-00</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">retain</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">0.002</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td></tr><tr><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">pilot-00</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">clear</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">0.002</td><td style="padding:.5em;border-bottom:1px solid #8884;vertical-align:top;overflow-wrap:anywhere">2</td></tr></tbody></table><h4>pilot-00/prefix · both_submitted</h4><p><strong>Agent 0 · pilot-00/prefix/agent-0/invocation-0</strong> → Agent 1</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Scripted proposal: 988</pre><p><strong>Agent 1 · pilot-00/prefix/agent-1/invocation-0</strong> → Agent 0</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Scripted agreement: 988</pre><details><summary>Private evaluator audit: submissions, retained history and phase boundary</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;events&quot;: [
+    {
+      &quot;action&quot;: {
+        &quot;message&quot;: &quot;Scripted proposal: 988&quot;,
+        &quot;submit&quot;: 988,
+        &quot;wait&quot;: false
+      },
+      &quot;agent&quot;: 0,
+      &quot;call&quot;: &quot;pilot-00/prefix/agent-0/invocation-0&quot;,
+      &quot;error&quot;: null
+    },
+    {
+      &quot;action&quot;: {
+        &quot;message&quot;: &quot;Scripted agreement: 988&quot;,
+        &quot;submit&quot;: 988,
+        &quot;wait&quot;: false
+      },
+      &quot;agent&quot;: 1,
+      &quot;call&quot;: &quot;pilot-00/prefix/agent-1/invocation-0&quot;,
+      &quot;error&quot;: null
+    }
+  ],
+  &quot;history&quot;: [
+    [
+      {
+        &quot;action&quot;: {
+          &quot;message&quot;: &quot;Scripted proposal: 988&quot;,
+          &quot;submit&quot;: 988,
+          &quot;wait&quot;: false
+        },
+        &quot;kind&quot;: &quot;own_action&quot;
+      },
+      {
+        &quot;kind&quot;: &quot;received_message&quot;,
+        &quot;sender&quot;: 1,
+        &quot;text&quot;: &quot;Scripted agreement: 988&quot;
+      }
+    ],
+    [
+      {
+        &quot;kind&quot;: &quot;received_message&quot;,
+        &quot;sender&quot;: 0,
+        &quot;text&quot;: &quot;Scripted proposal: 988&quot;
+      },
+      {
+        &quot;action&quot;: {
+          &quot;message&quot;: &quot;Scripted agreement: 988&quot;,
+          &quot;submit&quot;: 988,
+          &quot;wait&quot;: false
+        },
+        &quot;kind&quot;: &quot;own_action&quot;
+      }
+    ]
+  ],
+  &quot;next&quot;: 0,
+  &quot;phase&quot;: &quot;prefix&quot;,
+  &quot;submissions&quot;: [
+    988,
+    988
+  ],
+  &quot;terminal&quot;: &quot;both_submitted&quot;,
+  &quot;turns&quot;: [
+    1,
+    1
+  ],
+  &quot;unused&quot;: [
+    2,
+    2
+  ],
+  &quot;waiting&quot;: [
+    false,
+    false
+  ],
+  &quot;world&quot;: &quot;pilot-00&quot;
+}</pre></details><h4>pilot-00/retain · both_submitted</h4><p><strong>Agent 0 · pilot-00/retain/agent-0/invocation-0</strong> → Agent 1</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Scripted proposal: 932</pre><p><strong>Agent 1 · pilot-00/retain/agent-1/invocation-0</strong> → Agent 0</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Scripted agreement: 932</pre><details><summary>Private evaluator audit: submissions, retained history and phase boundary</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;events&quot;: [
+    {
+      &quot;action&quot;: {
+        &quot;message&quot;: &quot;Scripted proposal: 932&quot;,
+        &quot;submit&quot;: 932,
+        &quot;wait&quot;: false
+      },
+      &quot;agent&quot;: 0,
+      &quot;call&quot;: &quot;pilot-00/retain/agent-0/invocation-0&quot;,
+      &quot;error&quot;: null
+    },
+    {
+      &quot;action&quot;: {
+        &quot;message&quot;: &quot;Scripted agreement: 932&quot;,
+        &quot;submit&quot;: 932,
+        &quot;wait&quot;: false
+      },
+      &quot;agent&quot;: 1,
+      &quot;call&quot;: &quot;pilot-00/retain/agent-1/invocation-0&quot;,
+      &quot;error&quot;: null
+    }
+  ],
+  &quot;history&quot;: [
+    [
+      {
+        &quot;action&quot;: {
+          &quot;message&quot;: &quot;Scripted proposal: 988&quot;,
+          &quot;submit&quot;: 988,
+          &quot;wait&quot;: false
+        },
+        &quot;kind&quot;: &quot;own_action&quot;
+      },
+      {
+        &quot;kind&quot;: &quot;received_message&quot;,
+        &quot;sender&quot;: 1,
+        &quot;text&quot;: &quot;Scripted agreement: 988&quot;
+      },
+      {
+        &quot;action&quot;: {
+          &quot;message&quot;: &quot;Scripted proposal: 932&quot;,
+          &quot;submit&quot;: 932,
+          &quot;wait&quot;: false
+        },
+        &quot;kind&quot;: &quot;own_action&quot;
+      },
+      {
+        &quot;kind&quot;: &quot;received_message&quot;,
+        &quot;sender&quot;: 1,
+        &quot;text&quot;: &quot;Scripted agreement: 932&quot;
+      }
+    ],
+    [
+      {
+        &quot;kind&quot;: &quot;received_message&quot;,
+        &quot;sender&quot;: 0,
+        &quot;text&quot;: &quot;Scripted proposal: 988&quot;
+      },
+      {
+        &quot;action&quot;: {
+          &quot;message&quot;: &quot;Scripted agreement: 988&quot;,
+          &quot;submit&quot;: 988,
+          &quot;wait&quot;: false
+        },
+        &quot;kind&quot;: &quot;own_action&quot;
+      },
+      {
+        &quot;kind&quot;: &quot;received_message&quot;,
+        &quot;sender&quot;: 0,
+        &quot;text&quot;: &quot;Scripted proposal: 932&quot;
+      },
+      {
+        &quot;action&quot;: {
+          &quot;message&quot;: &quot;Scripted agreement: 932&quot;,
+          &quot;submit&quot;: 932,
+          &quot;wait&quot;: false
+        },
+        &quot;kind&quot;: &quot;own_action&quot;
+      }
+    ]
+  ],
+  &quot;next&quot;: 0,
+  &quot;phase&quot;: &quot;retain&quot;,
+  &quot;submissions&quot;: [
+    932,
+    932
+  ],
+  &quot;terminal&quot;: &quot;both_submitted&quot;,
+  &quot;turns&quot;: [
+    1,
+    1
+  ],
+  &quot;unused&quot;: [
+    2,
+    2
+  ],
+  &quot;waiting&quot;: [
+    false,
+    false
+  ],
+  &quot;world&quot;: &quot;pilot-00&quot;
+}</pre></details><h4>pilot-00/clear · both_submitted</h4><p><strong>Agent 0 · pilot-00/clear/agent-0/invocation-0</strong> → Agent 1</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Scripted proposal: 932</pre><p><strong>Agent 1 · pilot-00/clear/agent-1/invocation-0</strong> → Agent 0</p><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Scripted agreement: 932</pre><details><summary>Private evaluator audit: submissions, retained history and phase boundary</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;events&quot;: [
+    {
+      &quot;action&quot;: {
+        &quot;message&quot;: &quot;Scripted proposal: 932&quot;,
+        &quot;submit&quot;: 932,
+        &quot;wait&quot;: false
+      },
+      &quot;agent&quot;: 0,
+      &quot;call&quot;: &quot;pilot-00/clear/agent-0/invocation-0&quot;,
+      &quot;error&quot;: null
+    },
+    {
+      &quot;action&quot;: {
+        &quot;message&quot;: &quot;Scripted agreement: 932&quot;,
+        &quot;submit&quot;: 932,
+        &quot;wait&quot;: false
+      },
+      &quot;agent&quot;: 1,
+      &quot;call&quot;: &quot;pilot-00/clear/agent-1/invocation-0&quot;,
+      &quot;error&quot;: null
+    }
+  ],
+  &quot;history&quot;: [
+    [
+      {
+        &quot;action&quot;: {
+          &quot;message&quot;: &quot;Scripted proposal: 932&quot;,
+          &quot;submit&quot;: 932,
+          &quot;wait&quot;: false
+        },
+        &quot;kind&quot;: &quot;own_action&quot;
+      },
+      {
+        &quot;kind&quot;: &quot;received_message&quot;,
+        &quot;sender&quot;: 1,
+        &quot;text&quot;: &quot;Scripted agreement: 932&quot;
+      }
+    ],
+    [
+      {
+        &quot;kind&quot;: &quot;received_message&quot;,
+        &quot;sender&quot;: 0,
+        &quot;text&quot;: &quot;Scripted proposal: 932&quot;
+      },
+      {
+        &quot;action&quot;: {
+          &quot;message&quot;: &quot;Scripted agreement: 932&quot;,
+          &quot;submit&quot;: 932,
+          &quot;wait&quot;: false
+        },
+        &quot;kind&quot;: &quot;own_action&quot;
+      }
+    ]
+  ],
+  &quot;next&quot;: 0,
+  &quot;phase&quot;: &quot;clear&quot;,
+  &quot;submissions&quot;: [
+    932,
+    932
+  ],
+  &quot;terminal&quot;: &quot;both_submitted&quot;,
+  &quot;turns&quot;: [
+    1,
+    1
+  ],
+  &quot;unused&quot;: [
+    2,
+    2
+  ],
+  &quot;waiting&quot;: [
+    false,
+    false
+  ],
+  &quot;world&quot;: &quot;pilot-00&quot;
+}</pre></details><details><summary>Private evaluator audit: source edits and exact truth</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">[
+  {
+    &quot;id&quot;: &quot;pilot-00&quot;,
+    &quot;group&quot;: &quot;pilot&quot;,
+    &quot;index&quot;: 0,
+    &quot;original&quot;: [
+      [
+        932,
+        -841,
+        161,
+        698,
+        568,
+        784,
+        698,
+        16,
+        845,
+        -978,
+        685,
+        -334,
+        2,
+        872,
+        906,
+        988,
+        678,
+        -336,
+        -925,
+        821
+      ],
+      [
+        613,
+        411,
+        599,
+        491,
+        291,
+        -96,
+        220,
+        261,
+        -323,
+        923,
+        500,
+        102,
+        -976,
+        224,
+        -688,
+        -23,
+        -796,
+        -962,
+        -521,
+        -918
+      ]
+    ],
+    &quot;revised&quot;: [
+      [
+        932,
+        -841,
+        161,
+        698,
+        568,
+        784,
+        698,
+        16,
+        845,
+        -978,
+        685,
+        -334,
+        2,
+        872,
+        906,
+        672,
+        678,
+        -336,
+        -925,
+        821
+      ],
+      [
+        613,
+        411,
+        599,
+        491,
+        291,
+        -96,
+        220,
+        261,
+        -323,
+        923,
+        500,
+        102,
+        -976,
+        224,
+        -688,
+        -23,
+        -796,
+        -962,
+        -521,
+        -918
+      ]
+    ],
+    &quot;owner&quot;: 0,
+    &quot;row&quot;: 15,
+    &quot;before&quot;: 988,
+    &quot;after&quot;: 672,
+    &quot;original_truth&quot;: 988,
+    &quot;revised_truth&quot;: 932,
+    &quot;proposals&quot;: 2,
+    &quot;rejections&quot;: {
+      &quot;nonunique_maximum&quot;: 0,
+      &quot;remaining_at_floor&quot;: 0,
+      &quot;owner_block&quot;: 1
+    },
+    &quot;first&quot;: 0,
+    &quot;device&quot;: 0,
+    &quot;treatments&quot;: [
+      &quot;retain&quot;,
+      &quot;clear&quot;
+    ],
+    &quot;seeds&quot;: {
+      &quot;prefix&quot;: [
+        [
+          4862200359885706185,
+          1023110753385749315,
+          2736320403664395003
+        ],
+        [
+          5241200695438049338,
+          7358009148274838779,
+          1407075676669500463
+        ]
+      ],
+      &quot;recovery&quot;: [
+        [
+          3347234689565640300,
+          7926385093500598411,
+          567848943222847789
+        ],
+        [
+          7951545925196133279,
+          9068172075070223439,
+          4242985494088566540
+        ]
+      ]
+    },
+    &quot;control_seeds&quot;: {
+      &quot;original&quot;: 7202948235205110027,
+      &quot;revised&quot;: 2712785873405090662
+    }
+  }
+]</pre></details><details><summary>Exact permitted prompt and private raw audit: pilot-00/prefix/agent-0/invocation-0</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;prompt&quot;: &quot;{\&quot;agent\&quot;:0,\&quot;current_shard\&quot;:[932,-841,161,698,568,784,698,16,845,-978,685,-334,2,872,906,988,678,-336,-925,821],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:false,\&quot;visible_history\&quot;:[]}&quot;,
+  &quot;request&quot;: {
+    &quot;input_ids&quot;: [
+      1
+    ],
+    &quot;rendered&quot;: &quot;{\&quot;agent\&quot;:0,\&quot;current_shard\&quot;:[932,-841,161,698,568,784,698,16,845,-978,685,-334,2,872,906,988,678,-336,-925,821],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:false,\&quot;visible_history\&quot;:[]}&quot;,
+    &quot;seed&quot;: 4862200359885706185,
+    &quot;settings&quot;: {
+      &quot;mode&quot;: &quot;direct&quot;
+    },
+    &quot;view&quot;: {
+      &quot;agent&quot;: 0,
+      &quot;current_shard&quot;: [
+        932,
+        -841,
+        161,
+        698,
+        568,
+        784,
+        698,
+        16,
+        845,
+        -978,
+        685,
+        -334,
+        2,
+        872,
+        906,
+        988,
+        678,
+        -336,
+        -925,
+        821
+      ],
+      &quot;own_invocation&quot;: 1,
+      &quot;partner_finished&quot;: false,
+      &quot;visible_history&quot;: []
+    }
+  },
+  &quot;outcome&quot;: {
+    &quot;failure&quot;: null,
+    &quot;generated_tokens&quot;: 1,
+    &quot;input_tokens&quot;: 1,
+    &quot;raw_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted proposal: 988\&quot;,\&quot;submit\&quot;:988,\&quot;wait\&quot;:false}&quot;,
+    &quot;ready_seconds&quot;: 0.001,
+    &quot;token_ids&quot;: [
+      1
+    ],
+    &quot;truncated&quot;: false,
+    &quot;visible_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted proposal: 988\&quot;,\&quot;submit\&quot;:988,\&quot;wait\&quot;:false}&quot;
+  },
+  &quot;effect_committed&quot;: 1
+}</pre></details><details><summary>Exact permitted prompt and private raw audit: pilot-00/prefix/agent-1/invocation-0</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;prompt&quot;: &quot;{\&quot;agent\&quot;:1,\&quot;current_shard\&quot;:[613,411,599,491,291,-96,220,261,-323,923,500,102,-976,224,-688,-23,-796,-962,-521,-918],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:true,\&quot;visible_history\&quot;:[{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:0,\&quot;text\&quot;:\&quot;Scripted proposal: 988\&quot;}]}&quot;,
+  &quot;request&quot;: {
+    &quot;input_ids&quot;: [
+      1
+    ],
+    &quot;rendered&quot;: &quot;{\&quot;agent\&quot;:1,\&quot;current_shard\&quot;:[613,411,599,491,291,-96,220,261,-323,923,500,102,-976,224,-688,-23,-796,-962,-521,-918],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:true,\&quot;visible_history\&quot;:[{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:0,\&quot;text\&quot;:\&quot;Scripted proposal: 988\&quot;}]}&quot;,
+    &quot;seed&quot;: 5241200695438049338,
+    &quot;settings&quot;: {
+      &quot;mode&quot;: &quot;direct&quot;
+    },
+    &quot;view&quot;: {
+      &quot;agent&quot;: 1,
+      &quot;current_shard&quot;: [
+        613,
+        411,
+        599,
+        491,
+        291,
+        -96,
+        220,
+        261,
+        -323,
+        923,
+        500,
+        102,
+        -976,
+        224,
+        -688,
+        -23,
+        -796,
+        -962,
+        -521,
+        -918
+      ],
+      &quot;own_invocation&quot;: 1,
+      &quot;partner_finished&quot;: true,
+      &quot;visible_history&quot;: [
+        {
+          &quot;kind&quot;: &quot;received_message&quot;,
+          &quot;sender&quot;: 0,
+          &quot;text&quot;: &quot;Scripted proposal: 988&quot;
+        }
+      ]
+    }
+  },
+  &quot;outcome&quot;: {
+    &quot;failure&quot;: null,
+    &quot;generated_tokens&quot;: 1,
+    &quot;input_tokens&quot;: 1,
+    &quot;raw_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted agreement: 988\&quot;,\&quot;submit\&quot;:988,\&quot;wait\&quot;:false}&quot;,
+    &quot;ready_seconds&quot;: 0.001,
+    &quot;token_ids&quot;: [
+      1
+    ],
+    &quot;truncated&quot;: false,
+    &quot;visible_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted agreement: 988\&quot;,\&quot;submit\&quot;:988,\&quot;wait\&quot;:false}&quot;
+  },
+  &quot;effect_committed&quot;: 1
+}</pre></details><details><summary>Exact permitted prompt and private raw audit: pilot-00/retain/agent-0/invocation-0</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;prompt&quot;: &quot;{\&quot;agent\&quot;:0,\&quot;current_shard\&quot;:[932,-841,161,698,568,784,698,16,845,-978,685,-334,2,872,906,672,678,-336,-925,821],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:false,\&quot;revision_notice\&quot;:{\&quot;new_value\&quot;:672,\&quot;owner\&quot;:0,\&quot;record\&quot;:15},\&quot;visible_history\&quot;:[{\&quot;action\&quot;:{\&quot;message\&quot;:\&quot;Scripted proposal: 988\&quot;,\&quot;submit\&quot;:988,\&quot;wait\&quot;:false},\&quot;kind\&quot;:\&quot;own_action\&quot;},{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:1,\&quot;text\&quot;:\&quot;Scripted agreement: 988\&quot;}]}&quot;,
+  &quot;request&quot;: {
+    &quot;input_ids&quot;: [
+      1
+    ],
+    &quot;rendered&quot;: &quot;{\&quot;agent\&quot;:0,\&quot;current_shard\&quot;:[932,-841,161,698,568,784,698,16,845,-978,685,-334,2,872,906,672,678,-336,-925,821],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:false,\&quot;revision_notice\&quot;:{\&quot;new_value\&quot;:672,\&quot;owner\&quot;:0,\&quot;record\&quot;:15},\&quot;visible_history\&quot;:[{\&quot;action\&quot;:{\&quot;message\&quot;:\&quot;Scripted proposal: 988\&quot;,\&quot;submit\&quot;:988,\&quot;wait\&quot;:false},\&quot;kind\&quot;:\&quot;own_action\&quot;},{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:1,\&quot;text\&quot;:\&quot;Scripted agreement: 988\&quot;}]}&quot;,
+    &quot;seed&quot;: 3347234689565640300,
+    &quot;settings&quot;: {
+      &quot;mode&quot;: &quot;direct&quot;
+    },
+    &quot;view&quot;: {
+      &quot;agent&quot;: 0,
+      &quot;current_shard&quot;: [
+        932,
+        -841,
+        161,
+        698,
+        568,
+        784,
+        698,
+        16,
+        845,
+        -978,
+        685,
+        -334,
+        2,
+        872,
+        906,
+        672,
+        678,
+        -336,
+        -925,
+        821
+      ],
+      &quot;own_invocation&quot;: 1,
+      &quot;partner_finished&quot;: false,
+      &quot;revision_notice&quot;: {
+        &quot;new_value&quot;: 672,
+        &quot;owner&quot;: 0,
+        &quot;record&quot;: 15
+      },
+      &quot;visible_history&quot;: [
+        {
+          &quot;action&quot;: {
+            &quot;message&quot;: &quot;Scripted proposal: 988&quot;,
+            &quot;submit&quot;: 988,
+            &quot;wait&quot;: false
+          },
+          &quot;kind&quot;: &quot;own_action&quot;
+        },
+        {
+          &quot;kind&quot;: &quot;received_message&quot;,
+          &quot;sender&quot;: 1,
+          &quot;text&quot;: &quot;Scripted agreement: 988&quot;
+        }
+      ]
+    }
+  },
+  &quot;outcome&quot;: {
+    &quot;failure&quot;: null,
+    &quot;generated_tokens&quot;: 1,
+    &quot;input_tokens&quot;: 1,
+    &quot;raw_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted proposal: 932\&quot;,\&quot;submit\&quot;:932,\&quot;wait\&quot;:false}&quot;,
+    &quot;ready_seconds&quot;: 0.001,
+    &quot;token_ids&quot;: [
+      1
+    ],
+    &quot;truncated&quot;: false,
+    &quot;visible_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted proposal: 932\&quot;,\&quot;submit\&quot;:932,\&quot;wait\&quot;:false}&quot;
+  },
+  &quot;effect_committed&quot;: 1
+}</pre></details><details><summary>Exact permitted prompt and private raw audit: pilot-00/retain/agent-1/invocation-0</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;prompt&quot;: &quot;{\&quot;agent\&quot;:1,\&quot;current_shard\&quot;:[613,411,599,491,291,-96,220,261,-323,923,500,102,-976,224,-688,-23,-796,-962,-521,-918],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:true,\&quot;revision_notice\&quot;:{\&quot;owner\&quot;:0,\&quot;record\&quot;:15},\&quot;visible_history\&quot;:[{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:0,\&quot;text\&quot;:\&quot;Scripted proposal: 988\&quot;},{\&quot;action\&quot;:{\&quot;message\&quot;:\&quot;Scripted agreement: 988\&quot;,\&quot;submit\&quot;:988,\&quot;wait\&quot;:false},\&quot;kind\&quot;:\&quot;own_action\&quot;},{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:0,\&quot;text\&quot;:\&quot;Scripted proposal: 932\&quot;}]}&quot;,
+  &quot;request&quot;: {
+    &quot;input_ids&quot;: [
+      1
+    ],
+    &quot;rendered&quot;: &quot;{\&quot;agent\&quot;:1,\&quot;current_shard\&quot;:[613,411,599,491,291,-96,220,261,-323,923,500,102,-976,224,-688,-23,-796,-962,-521,-918],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:true,\&quot;revision_notice\&quot;:{\&quot;owner\&quot;:0,\&quot;record\&quot;:15},\&quot;visible_history\&quot;:[{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:0,\&quot;text\&quot;:\&quot;Scripted proposal: 988\&quot;},{\&quot;action\&quot;:{\&quot;message\&quot;:\&quot;Scripted agreement: 988\&quot;,\&quot;submit\&quot;:988,\&quot;wait\&quot;:false},\&quot;kind\&quot;:\&quot;own_action\&quot;},{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:0,\&quot;text\&quot;:\&quot;Scripted proposal: 932\&quot;}]}&quot;,
+    &quot;seed&quot;: 7951545925196133279,
+    &quot;settings&quot;: {
+      &quot;mode&quot;: &quot;direct&quot;
+    },
+    &quot;view&quot;: {
+      &quot;agent&quot;: 1,
+      &quot;current_shard&quot;: [
+        613,
+        411,
+        599,
+        491,
+        291,
+        -96,
+        220,
+        261,
+        -323,
+        923,
+        500,
+        102,
+        -976,
+        224,
+        -688,
+        -23,
+        -796,
+        -962,
+        -521,
+        -918
+      ],
+      &quot;own_invocation&quot;: 1,
+      &quot;partner_finished&quot;: true,
+      &quot;revision_notice&quot;: {
+        &quot;owner&quot;: 0,
+        &quot;record&quot;: 15
+      },
+      &quot;visible_history&quot;: [
+        {
+          &quot;kind&quot;: &quot;received_message&quot;,
+          &quot;sender&quot;: 0,
+          &quot;text&quot;: &quot;Scripted proposal: 988&quot;
+        },
+        {
+          &quot;action&quot;: {
+            &quot;message&quot;: &quot;Scripted agreement: 988&quot;,
+            &quot;submit&quot;: 988,
+            &quot;wait&quot;: false
+          },
+          &quot;kind&quot;: &quot;own_action&quot;
+        },
+        {
+          &quot;kind&quot;: &quot;received_message&quot;,
+          &quot;sender&quot;: 0,
+          &quot;text&quot;: &quot;Scripted proposal: 932&quot;
+        }
+      ]
+    }
+  },
+  &quot;outcome&quot;: {
+    &quot;failure&quot;: null,
+    &quot;generated_tokens&quot;: 1,
+    &quot;input_tokens&quot;: 1,
+    &quot;raw_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted agreement: 932\&quot;,\&quot;submit\&quot;:932,\&quot;wait\&quot;:false}&quot;,
+    &quot;ready_seconds&quot;: 0.001,
+    &quot;token_ids&quot;: [
+      1
+    ],
+    &quot;truncated&quot;: false,
+    &quot;visible_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted agreement: 932\&quot;,\&quot;submit\&quot;:932,\&quot;wait\&quot;:false}&quot;
+  },
+  &quot;effect_committed&quot;: 1
+}</pre></details><details><summary>Exact permitted prompt and private raw audit: pilot-00/clear/agent-0/invocation-0</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;prompt&quot;: &quot;{\&quot;agent\&quot;:0,\&quot;current_shard\&quot;:[932,-841,161,698,568,784,698,16,845,-978,685,-334,2,872,906,672,678,-336,-925,821],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:false,\&quot;revision_notice\&quot;:{\&quot;new_value\&quot;:672,\&quot;owner\&quot;:0,\&quot;record\&quot;:15},\&quot;visible_history\&quot;:[]}&quot;,
+  &quot;request&quot;: {
+    &quot;input_ids&quot;: [
+      1
+    ],
+    &quot;rendered&quot;: &quot;{\&quot;agent\&quot;:0,\&quot;current_shard\&quot;:[932,-841,161,698,568,784,698,16,845,-978,685,-334,2,872,906,672,678,-336,-925,821],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:false,\&quot;revision_notice\&quot;:{\&quot;new_value\&quot;:672,\&quot;owner\&quot;:0,\&quot;record\&quot;:15},\&quot;visible_history\&quot;:[]}&quot;,
+    &quot;seed&quot;: 3347234689565640300,
+    &quot;settings&quot;: {
+      &quot;mode&quot;: &quot;direct&quot;
+    },
+    &quot;view&quot;: {
+      &quot;agent&quot;: 0,
+      &quot;current_shard&quot;: [
+        932,
+        -841,
+        161,
+        698,
+        568,
+        784,
+        698,
+        16,
+        845,
+        -978,
+        685,
+        -334,
+        2,
+        872,
+        906,
+        672,
+        678,
+        -336,
+        -925,
+        821
+      ],
+      &quot;own_invocation&quot;: 1,
+      &quot;partner_finished&quot;: false,
+      &quot;revision_notice&quot;: {
+        &quot;new_value&quot;: 672,
+        &quot;owner&quot;: 0,
+        &quot;record&quot;: 15
+      },
+      &quot;visible_history&quot;: []
+    }
+  },
+  &quot;outcome&quot;: {
+    &quot;failure&quot;: null,
+    &quot;generated_tokens&quot;: 1,
+    &quot;input_tokens&quot;: 1,
+    &quot;raw_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted proposal: 932\&quot;,\&quot;submit\&quot;:932,\&quot;wait\&quot;:false}&quot;,
+    &quot;ready_seconds&quot;: 0.001,
+    &quot;token_ids&quot;: [
+      1
+    ],
+    &quot;truncated&quot;: false,
+    &quot;visible_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted proposal: 932\&quot;,\&quot;submit\&quot;:932,\&quot;wait\&quot;:false}&quot;
+  },
+  &quot;effect_committed&quot;: 1
+}</pre></details><details><summary>Exact permitted prompt and private raw audit: pilot-00/clear/agent-1/invocation-0</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;prompt&quot;: &quot;{\&quot;agent\&quot;:1,\&quot;current_shard\&quot;:[613,411,599,491,291,-96,220,261,-323,923,500,102,-976,224,-688,-23,-796,-962,-521,-918],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:true,\&quot;revision_notice\&quot;:{\&quot;owner\&quot;:0,\&quot;record\&quot;:15},\&quot;visible_history\&quot;:[{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:0,\&quot;text\&quot;:\&quot;Scripted proposal: 932\&quot;}]}&quot;,
+  &quot;request&quot;: {
+    &quot;input_ids&quot;: [
+      1
+    ],
+    &quot;rendered&quot;: &quot;{\&quot;agent\&quot;:1,\&quot;current_shard\&quot;:[613,411,599,491,291,-96,220,261,-323,923,500,102,-976,224,-688,-23,-796,-962,-521,-918],\&quot;own_invocation\&quot;:1,\&quot;partner_finished\&quot;:true,\&quot;revision_notice\&quot;:{\&quot;owner\&quot;:0,\&quot;record\&quot;:15},\&quot;visible_history\&quot;:[{\&quot;kind\&quot;:\&quot;received_message\&quot;,\&quot;sender\&quot;:0,\&quot;text\&quot;:\&quot;Scripted proposal: 932\&quot;}]}&quot;,
+    &quot;seed&quot;: 7951545925196133279,
+    &quot;settings&quot;: {
+      &quot;mode&quot;: &quot;direct&quot;
+    },
+    &quot;view&quot;: {
+      &quot;agent&quot;: 1,
+      &quot;current_shard&quot;: [
+        613,
+        411,
+        599,
+        491,
+        291,
+        -96,
+        220,
+        261,
+        -323,
+        923,
+        500,
+        102,
+        -976,
+        224,
+        -688,
+        -23,
+        -796,
+        -962,
+        -521,
+        -918
+      ],
+      &quot;own_invocation&quot;: 1,
+      &quot;partner_finished&quot;: true,
+      &quot;revision_notice&quot;: {
+        &quot;owner&quot;: 0,
+        &quot;record&quot;: 15
+      },
+      &quot;visible_history&quot;: [
+        {
+          &quot;kind&quot;: &quot;received_message&quot;,
+          &quot;sender&quot;: 0,
+          &quot;text&quot;: &quot;Scripted proposal: 932&quot;
+        }
+      ]
+    }
+  },
+  &quot;outcome&quot;: {
+    &quot;failure&quot;: null,
+    &quot;generated_tokens&quot;: 1,
+    &quot;input_tokens&quot;: 1,
+    &quot;raw_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted agreement: 932\&quot;,\&quot;submit\&quot;:932,\&quot;wait\&quot;:false}&quot;,
+    &quot;ready_seconds&quot;: 0.001,
+    &quot;token_ids&quot;: [
+      1
+    ],
+    &quot;truncated&quot;: false,
+    &quot;visible_text&quot;: &quot;{\&quot;message\&quot;:\&quot;Scripted agreement: 932\&quot;,\&quot;submit\&quot;:932,\&quot;wait\&quot;:false}&quot;
+  },
+  &quot;effect_committed&quot;: 1
+}</pre></details><p><strong><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/exports/latest.zip">Download latest cumulative checkpoint</a></strong><br>587,410 bytes · synthetic-ui-preview · 2026-10-14T16:40:34.437184+00:00</p><details><summary>Checkpoint SHA256 and integrity inventory</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">{
+  &quot;sha256&quot;: &quot;ac1870f7ab098a8fd932ee59d8d2953b7cac443aeff67987f8443861c10e42f1&quot;,
+  &quot;format&quot;: &quot;i01-portable-v1&quot;,
+  &quot;boundary&quot;: &quot;synthetic-ui-preview&quot;,
+  &quot;created_at&quot;: &quot;2026-10-14T16:40:34.437184+00:00&quot;,
+  &quot;attempts&quot;: 6,
+  &quot;files&quot;: {
+    &quot;reports/analysis.json&quot;: {
+      &quot;bytes&quot;: 190929,
+      &quot;sha256&quot;: &quot;ab2856c90e3ef8277b215145dcc523fcc4084977ae8fa679d3cf126e526e8353&quot;
+    },
+    &quot;reports/annotations.csv&quot;: {
+      &quot;bytes&quot;: 2,
+      &quot;sha256&quot;: &quot;7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6&quot;
+    },
+    &quot;reports/attempts.csv&quot;: {
+      &quot;bytes&quot;: 3381,
+      &quot;sha256&quot;: &quot;8305964b023f1187bcf5a3bef715dc6d2416386fbcec6ae40bd079784ce440eb&quot;
+    },
+    &quot;reports/conversations.html&quot;: {
+      &quot;bytes&quot;: 42546,
+      &quot;sha256&quot;: &quot;656bcd9ff4e197af83e9d681e0a106d800dd41120d2a1c32b71c20d1732a0d3c&quot;
+    },
+    &quot;reports/conversations.jsonl&quot;: {
+      &quot;bytes&quot;: 11206,
+      &quot;sha256&quot;: &quot;df9a9c994f7299321cacffae2b04fd95d13a633615da7a54e934e1c4e26a58f4&quot;
+    },
+    &quot;reports/conversations.txt&quot;: {
+      &quot;bytes&quot;: 12840,
+      &quot;sha256&quot;: &quot;03ed8b4a09d3288697e1d6ca2a226a7e229ed1d28f7febd28d049137356e60a1&quot;
+    },
+    &quot;reports/costs.csv&quot;: {
+      &quot;bytes&quot;: 3051,
+      &quot;sha256&quot;: &quot;ee29cbd3daa4d0fe4e83911900125c00ab65ee5b1c2ab6a41df61e1e1a7fae97&quot;
+    },
+    &quot;reports/failure_analysis.csv&quot;: {
+      &quot;bytes&quot;: 2,
+      &quot;sha256&quot;: &quot;7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6&quot;
+    },
+    &quot;reports/figures/failure-labels.png&quot;: {
+      &quot;bytes&quot;: 30317,
+      &quot;sha256&quot;: &quot;a53e402a8221699dce99360c34481606f267956f3c10075690fd0bacb232516f&quot;
+    },
+    &quot;reports/figures/failure-labels.svg&quot;: {
+      &quot;bytes&quot;: 28179,
+      &quot;sha256&quot;: &quot;5b05a18c95c6209ccda52cc386beabeb283c2fb202879b9b17b943a5eab70206&quot;
+    },
+    &quot;reports/figures/paired-outcomes.png&quot;: {
+      &quot;bytes&quot;: 33896,
+      &quot;sha256&quot;: &quot;94784d6cb7a4bb4c88a6b7af6eaa7acce73989a4cc079fea022aef09bc5b65d1&quot;
+    },
+    &quot;reports/figures/paired-outcomes.svg&quot;: {
+      &quot;bytes&quot;: 31806,
+      &quot;sha256&quot;: &quot;603e1bd64bd1c377c884dace697b1d7e1f4f291d477a688546a89ca4e3f15def&quot;
+    },
+    &quot;reports/figures/recovery-calls.png&quot;: {
+      &quot;bytes&quot;: 36185,
+      &quot;sha256&quot;: &quot;da17f97940e9488fa395e3bb0f66077699eb58687897dcb187b1e78cecf2af76&quot;
+    },
+    &quot;reports/figures/recovery-calls.svg&quot;: {
+      &quot;bytes&quot;: 36080,
+      &quot;sha256&quot;: &quot;7043aea36d6cb1f3a8bc034e5d3d210dafacfc0bf599137420fa34793dda94ae&quot;
+    },
+    &quot;reports/figures/recovery-generated_tokens.png&quot;: {
+      &quot;bytes&quot;: 40635,
+      &quot;sha256&quot;: &quot;aea505dc4c52033ac7b55f21cacfc9676e321bd14fdafd7e0b7beb63ba8ba306&quot;
+    },
+    &quot;reports/figures/recovery-generated_tokens.svg&quot;: {
+      &quot;bytes&quot;: 37665,
+      &quot;sha256&quot;: &quot;91171ee9c279441c5774309de95a9816aeda7b6f2cce8cf956ea96192164656b&quot;
+    },
+    &quot;reports/figures/recovery-ready_seconds.png&quot;: {
+      &quot;bytes&quot;: 39887,
+      &quot;sha256&quot;: &quot;b93f446188267309b19ecdcc308a7ce65af435a5e27ca7b4f5dae0dc9e21775d&quot;
+    },
+    &quot;reports/figures/recovery-ready_seconds.svg&quot;: {
+      &quot;bytes&quot;: 36705,
+      &quot;sha256&quot;: &quot;690e255b38be2a6db774de89a425c52dcd69083366c8e564ecd1082000975c60&quot;
+    },
+    &quot;reports/figures/termination-coverage.png&quot;: {
+      &quot;bytes&quot;: 22866,
+      &quot;sha256&quot;: &quot;d34f4d4929c3ba2a55c59997cbb207d859cd87946ad933c76f752bb7b8fee79f&quot;
+    },
+    &quot;reports/figures/termination-coverage.svg&quot;: {
+      &quot;bytes&quot;: 23160,
+      &quot;sha256&quot;: &quot;91e305ad35eea07c7e4af43aecde9b45d1212319f19097135a196bfea4642053&quot;
+    },
+    &quot;reports/overview.html&quot;: {
+      &quot;bytes&quot;: 8691,
+      &quot;sha256&quot;: &quot;d300df192fa3a82761c00bd18dfefbaa26ae490ac1db29fdfea9c23982a34f71&quot;
+    },
+    &quot;reports/overview.md&quot;: {
+      &quot;bytes&quot;: 2649,
+      &quot;sha256&quot;: &quot;747e2a6b230086fca26b819f0e81dd3444957fcbe446624c6ce7867fefe4750d&quot;
+    },
+    &quot;reports/paired-results.csv&quot;: {
+      &quot;bytes&quot;: 29,
+      &quot;sha256&quot;: &quot;41ba2774c5f775097c9c3132d396f9b623159e433ca297dd8b78e20ba59d7c1e&quot;
+    },
+    &quot;reports/paired_costs.csv&quot;: {
+      &quot;bytes&quot;: 985,
+      &quot;sha256&quot;: &quot;fd55f7c8c62f98d617d9b41fabb4dffabe83261293b3943ac0756f8fb0a1e2c1&quot;
+    },
+    &quot;reports/plotting-data.csv&quot;: {
+      &quot;bytes&quot;: 3051,
+      &quot;sha256&quot;: &quot;ee29cbd3daa4d0fe4e83911900125c00ab65ee5b1c2ab6a41df61e1e1a7fae97&quot;
+    },
+    &quot;reports/plotting-outcomes.csv&quot;: {
+      &quot;bytes&quot;: 1596,
+      &quot;sha256&quot;: &quot;0077778d1890e3d6c6333c0959752d9f24ef605b0b8dfc3b1a085d4bbc56456a&quot;
+    },
+    &quot;reports/policy_costs.csv&quot;: {
+      &quot;bytes&quot;: 3389,
+      &quot;sha256&quot;: &quot;f83e5a3c7c76c2090cf62d88208c625c3f26032d3f2e29f44e1d8b4cf42f32df&quot;
+    },
+    &quot;reports/sessions.csv&quot;: {
+      &quot;bytes&quot;: 2,
+      &quot;sha256&quot;: &quot;7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6&quot;
+    },
+    &quot;reports/worlds.csv&quot;: {
+      &quot;bytes&quot;: 1596,
+      &quot;sha256&quot;: &quot;0077778d1890e3d6c6333c0959752d9f24ef605b0b8dfc3b1a085d4bbc56456a&quot;
+    },
+    &quot;run.json&quot;: {
+      &quot;bytes&quot;: 83054,
+      &quot;sha256&quot;: &quot;b0db4e41a4f7f84b077822a098b5f161b4f983d7e962ac08cc0de1831db86ee0&quot;
+    },
+    &quot;source/configs/i01-course.json&quot;: {
+      &quot;bytes&quot;: 1085,
+      &quot;sha256&quot;: &quot;89e91b0e69f8f0851083e5016020b30c1d0b635dc5a00f142f9955bdd60c9a23&quot;
+    },
+    &quot;source/configs/i01-runtime.lock&quot;: {
+      &quot;bytes&quot;: 38059,
+      &quot;sha256&quot;: &quot;5b1d91aa431a39ff725cfe4314706fe7a854af85a6e3ea492dd22d8c68d9bc56&quot;
+    },
+    &quot;source/docs/I01_KAGGLE.md&quot;: {
+      &quot;bytes&quot;: 10526,
+      &quot;sha256&quot;: &quot;bb74db754e7c6e4226d85bce0c00597a4d58e7bd5f9b936a4663f38aea84f60e&quot;
+    },
+    &quot;source/notebooks/i01_course_kaggle.ipynb&quot;: {
+      &quot;bytes&quot;: 31054,
+      &quot;sha256&quot;: &quot;42a0cb6f633edd3e5e7731b8b1670578d634ee7b8122afc1410b029f8014e854&quot;
+    },
+    &quot;source/PROJECT_SPECIFICATION.md&quot;: {
+      &quot;bytes&quot;: 87139,
+      &quot;sha256&quot;: &quot;4d923fd1b31004a5ff7ade2d28be285ae3cea9049643e10032914fe8a8c03cfc&quot;
+    },
+    &quot;source/pyproject.toml&quot;: {
+      &quot;bytes&quot;: 693,
+      &quot;sha256&quot;: &quot;d851f00351b3221aef8c92b5757aecf477f2942b03afbfb6925190220b1494b1&quot;
+    },
+    &quot;source/recovery/__init__.py&quot;: {
+      &quot;bytes&quot;: 81,
+      &quot;sha256&quot;: &quot;b11591ab36164605ffe2de304b0503780e6b2c340b2c466e51b9c132dae0d738&quot;
+    },
+    &quot;source/recovery/__main__.py&quot;: {
+      &quot;bytes&quot;: 17835,
+      &quot;sha256&quot;: &quot;a32e2fa488314eae101a42fb5520951565d7ab5f5c9f36aa4feeac88c529325a&quot;
+    },
+    &quot;source/recovery/accounting.py&quot;: {
+      &quot;bytes&quot;: 44484,
+      &quot;sha256&quot;: &quot;4b910adf52a7583550fc60d8a201671e2a13d125cd4bfe67588acb85df3315d1&quot;
+    },
+    &quot;source/recovery/analysis.py&quot;: {
+      &quot;bytes&quot;: 31519,
+      &quot;sha256&quot;: &quot;3740e341f07dfd3884363cf24935bdbf3b93de49e99b31b2b935928b46aa9e22&quot;
+    },
+    &quot;source/recovery/attempts.py&quot;: {
+      &quot;bytes&quot;: 13265,
+      &quot;sha256&quot;: &quot;bac975625c7da55d5abcd4d2d75ba6ad91bb1cdd5b23028ff90794c84e502eb4&quot;
+    },
+    &quot;source/recovery/costs.py&quot;: {
+      &quot;bytes&quot;: 35346,
+      &quot;sha256&quot;: &quot;6e2f8358177c00313b1f71fb755ec3bbb1b522d38e60ad22fabe8aec939bf82b&quot;
+    },
+    &quot;source/recovery/edits.py&quot;: {
+      &quot;bytes&quot;: 4821,
+      &quot;sha256&quot;: &quot;bc378e9c65bb6abe243416b20b54be8a59eadb15fe2b70c2c4ce46527ab064fc&quot;
+    },
+    &quot;source/recovery/evaluate.py&quot;: {
+      &quot;bytes&quot;: 39314,
+      &quot;sha256&quot;: &quot;2beb6d6f14ad10c7f474208ed66e9cca76b9ebb2880c7201ff351491884e1ec8&quot;
+    },
+    &quot;source/recovery/events.py&quot;: {
+      &quot;bytes&quot;: 5427,
+      &quot;sha256&quot;: &quot;500ad12f8d68ee760e4fa2b2108089119f281b8d98db83113abe3e4a067d6704&quot;
+    },
+    &quot;source/recovery/figures.py&quot;: {
+      &quot;bytes&quot;: 14564,
+      &quot;sha256&quot;: &quot;fab52110727c3dc9b8ed3e1da3a015fb1a437119e560be64cd36499b39c285c9&quot;
+    },
+    &quot;source/recovery/i01/__init__.py&quot;: {
+      &quot;bytes&quot;: 105,
+      &quot;sha256&quot;: &quot;b5fdf1bece3e01a5ab794227e5c278e3b8cf979ff5e27fce0d7ca953151a7e41&quot;
+    },
+    &quot;source/recovery/i01/archive.py&quot;: {
+      &quot;bytes&quot;: 6132,
+      &quot;sha256&quot;: &quot;836a5d1cf5296eccbcb72f2f40e9b2e37d549307ca164a5479b9741623c65697&quot;
+    },
+    &quot;source/recovery/i01/checks.py&quot;: {
+      &quot;bytes&quot;: 9458,
+      &quot;sha256&quot;: &quot;589b54a10950f6dc74c2170f6938a0078c32b8fd420de35ea1e240ec38523294&quot;
+    },
+    &quot;source/recovery/i01/cli.py&quot;: {
+      &quot;bytes&quot;: 10466,
+      &quot;sha256&quot;: &quot;298d0df1b5b5cd128911b79f31496acc933ea00de2e54f7e66de1deea04350d8&quot;
+    },
+    &quot;source/recovery/i01/client.py&quot;: {
+      &quot;bytes&quot;: 4945,
+      &quot;sha256&quot;: &quot;e3855648c80b5dd6f2e087dea1bd20792cd969f4803645246351a3776cf2551d&quot;
+    },
+    &quot;source/recovery/i01/core.py&quot;: {
+      &quot;bytes&quot;: 9729,
+      &quot;sha256&quot;: &quot;ce442f3f5505fc60e0b8791317e3f5db4d4c50cb5e670b0b7052cf6db2c20a88&quot;
+    },
+    &quot;source/recovery/i01/inference.py&quot;: {
+      &quot;bytes&quot;: 6768,
+      &quot;sha256&quot;: &quot;684597af6e80f6cb5a19648742ac1cfbfe38812563e2e4e655e3d31a162c644f&quot;
+    },
+    &quot;source/recovery/i01/process.py&quot;: {
+      &quot;bytes&quot;: 5079,
+      &quot;sha256&quot;: &quot;7f23edabb8e7576819d5101be905fe6aaa0d4c1c0c7f692c5ea8d5ac9614ca06&quot;
+    },
+    &quot;source/recovery/i01/report.py&quot;: {
+      &quot;bytes&quot;: 22764,
+      &quot;sha256&quot;: &quot;78183b301ad4e0ba8be2a82c400793be9ba45e1b77636d7a214a14b2fabdba3e&quot;
+    },
+    &quot;source/recovery/i01/setup.py&quot;: {
+      &quot;bytes&quot;: 9988,
+      &quot;sha256&quot;: &quot;d64c196a4a1f731a997a990c711d3604dbb48bd84e7c1c0f93a8635d0032e84b&quot;
+    },
+    &quot;source/recovery/i01/store.py&quot;: {
+      &quot;bytes&quot;: 9092,
+      &quot;sha256&quot;: &quot;675a71490c52ad81e5f05fd9c615ee6fda5a5fe2066be7326e2f6dc10dcb2869&quot;
+    },
+    &quot;source/recovery/i01/ui.py&quot;: {
+      &quot;bytes&quot;: 35912,
+      &quot;sha256&quot;: &quot;ae10c5b33a76ed72fa16879e2db4da7823c859e37dbd6b7ad6869a100373eec5&quot;
+    },
+    &quot;source/recovery/i01/workflow.py&quot;: {
+      &quot;bytes&quot;: 35053,
+      &quot;sha256&quot;: &quot;0f1045f4aa09436c8dcb2570f68946e6531be94e26b1e26d83952346abf19e33&quot;
+    },
+    &quot;source/recovery/inference.py&quot;: {
+      &quot;bytes&quot;: 24502,
+      &quot;sha256&quot;: &quot;4560676fc2267529859ca71031167924b996e0ba69e6033037483d2c36791807&quot;
+    },
+    &quot;source/recovery/information.py&quot;: {
+      &quot;bytes&quot;: 41391,
+      &quot;sha256&quot;: &quot;9c8bf958955b60e73ac26ac565831cee5e45e8e52f4244e88b43345e46c1df19&quot;
+    },
+    &quot;source/recovery/manifests.py&quot;: {
+      &quot;bytes&quot;: 7211,
+      &quot;sha256&quot;: &quot;f6157e9f945b5f185ad5dde079e5b5e902665b644b9b9ba3a58936cdfa895b82&quot;
+    },
+    &quot;source/recovery/populations.py&quot;: {
+      &quot;bytes&quot;: 15563,
+      &quot;sha256&quot;: &quot;808c4f29a0b7cb90574d040d9f49e402291a6eadd2bacc2141f50cf97fba05c7&quot;
+    },
+    &quot;source/recovery/prompts.py&quot;: {
+      &quot;bytes&quot;: 18364,
+      &quot;sha256&quot;: &quot;a3cefd5d802cef08233a7b404cfd01f328dd3469db7d23857db25aadefd45cdc&quot;
+    },
+    &quot;source/recovery/protocol.py&quot;: {
+      &quot;bytes&quot;: 11509,
+      &quot;sha256&quot;: &quot;e12de998036f40cac1f0d5dbfb5a293785bbf6ce6239f3cc11784c894fd7f3cf&quot;
+    },
+    &quot;source/recovery/replay.py&quot;: {
+      &quot;bytes&quot;: 8239,
+      &quot;sha256&quot;: &quot;36e8be2946aadd71666c697b794d76f3c58b696bedc27a4408e32063bbb55840&quot;
+    },
+    &quot;source/recovery/report.py&quot;: {
+      &quot;bytes&quot;: 45315,
+      &quot;sha256&quot;: &quot;6c37e92c9c338f7901fb0bda7fe6d2ea79fa998af3b33356e4b33c69d4df9fd3&quot;
+    },
+    &quot;source/recovery/rounds.py&quot;: {
+      &quot;bytes&quot;: 22540,
+      &quot;sha256&quot;: &quot;2c59648c4cc8d720d1c510f27e663165ab2654d9044c57e222323664a2f631bf&quot;
+    },
+    &quot;source/recovery/runner.py&quot;: {
+      &quot;bytes&quot;: 16985,
+      &quot;sha256&quot;: &quot;8723cf0c11b7988900275118d0565645f0585647274269a3e343206664d43b8a&quot;
+    },
+    &quot;source/recovery/schedule.py&quot;: {
+      &quot;bytes&quot;: 14584,
+      &quot;sha256&quot;: &quot;396d8322e28ef1031803322f94f501be7fd778f69c0489854f78c228e87354d6&quot;
+    },
+    &quot;source/recovery/state.py&quot;: {
+      &quot;bytes&quot;: 21869,
+      &quot;sha256&quot;: &quot;acf99320366e55c18778b4a4836003dfeb820abd77bc314172c3d538d35d4276&quot;
+    },
+    &quot;source/recovery/storage.py&quot;: {
+      &quot;bytes&quot;: 39649,
+      &quot;sha256&quot;: &quot;e688428c2f07dcba28d928dcfbc163920ac6eeec37d15801d623dca35810a0d3&quot;
+    },
+    &quot;source/recovery/t4_attention.py&quot;: {
+      &quot;bytes&quot;: 5832,
+      &quot;sha256&quot;: &quot;b5f7e9b8e7a7f4fe0193c31628d907f1476812983e3178beb20c297b7d172ee8&quot;
+    },
+    &quot;source/recovery/tasks.py&quot;: {
+      &quot;bytes&quot;: 10706,
+      &quot;sha256&quot;: &quot;59d80c0e47c005af082626253ec86b6f3fc56be0dc57bad0369d1a263ba7e9a4&quot;
+    },
+    &quot;source/recovery/truth.py&quot;: {
+      &quot;bytes&quot;: 4362,
+      &quot;sha256&quot;: &quot;bfc51e6da767258fc3e27a516b7fd44b48bb58f61f8fde73ccbb7ff51e9c8b2c&quot;
+    },
+    &quot;source/recovery/uncertainty.py&quot;: {
+      &quot;bytes&quot;: 41804,
+      &quot;sha256&quot;: &quot;8cfbb1a89110a07536b8937b9248851ed0fbcea963d6950cd290a550e8036dad&quot;
+    },
+    &quot;source/recovery/witness.py&quot;: {
+      &quot;bytes&quot;: 3393,
+      &quot;sha256&quot;: &quot;15e25c69e44da2ac2eccae2032c7ecce4bd33a033d91e4acc76ec1f79d0e523b&quot;
+    },
+    &quot;source/recovery/workers.py&quot;: {
+      &quot;bytes&quot;: 37624,
+      &quot;sha256&quot;: &quot;300c06a6b30de089ef71e7c8dcf74a433d99b62e206a234e208aeefe9eb832a9&quot;
+    },
+    &quot;source/scripts/build_i01_course_notebook.py&quot;: {
+      &quot;bytes&quot;: 17683,
+      &quot;sha256&quot;: &quot;d4cfeaa51e5b6591ce0d1b4ccc0a251faab8acd3740dec723e5b63d612309d42&quot;
+    },
+    &quot;source/scripts/i01_course.py&quot;: {
+      &quot;bytes&quot;: 241,
+      &quot;sha256&quot;: &quot;36e6ecc1771fdca40c4bbb5e3b48aeef2eefb78cedad756651c1265751d1269b&quot;
+    },
+    &quot;worker-0.sqlite&quot;: {
+      &quot;bytes&quot;: 94208,
+      &quot;sha256&quot;: &quot;9640c74ce5da4137aaf6992c5673702431c725f0262e45218d63a5b8c7939e3a&quot;
+    },
+    &quot;worker-1.sqlite&quot;: {
+      &quot;bytes&quot;: 86016,
+      &quot;sha256&quot;: &quot;03f40f0045474b21585cbd7ae64b494e542dfdb1fcd01698e8526809ff60c093&quot;
+    }
+  }
+}</pre></details><p>Save this ZIP outside Kaggle. It advances after later actions. If the link is unsupported, download <code>C:\Users\ENDRIT~1\AppData\Local\Temp\i01-visual-iu_zcnx6\run\exports\latest.zip</code> from Output/Files. Link creation does not verify a download.</p><p><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/overview.html">overview.html</a> · <a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/conversations.html">conversations.html</a> · <a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/conversations.txt">conversations.txt</a> · <a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/worlds.csv">worlds.csv</a></p><details><summary>All reports, tables, raw traces and figures</summary><ul><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/analysis.json">analysis.json</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/annotations.csv">annotations.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/attempts.csv">attempts.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/conversations.html">conversations.html</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/conversations.jsonl">conversations.jsonl</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/conversations.txt">conversations.txt</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/costs.csv">costs.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/failure_analysis.csv">failure_analysis.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/failure-labels.png">figures\failure-labels.png</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/failure-labels.svg">figures\failure-labels.svg</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/paired-outcomes.png">figures\paired-outcomes.png</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/paired-outcomes.svg">figures\paired-outcomes.svg</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/recovery-calls.png">figures\recovery-calls.png</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/recovery-calls.svg">figures\recovery-calls.svg</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/recovery-generated_tokens.png">figures\recovery-generated_tokens.png</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/recovery-generated_tokens.svg">figures\recovery-generated_tokens.svg</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/recovery-ready_seconds.png">figures\recovery-ready_seconds.png</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/recovery-ready_seconds.svg">figures\recovery-ready_seconds.svg</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/termination-coverage.png">figures\termination-coverage.png</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/figures/termination-coverage.svg">figures\termination-coverage.svg</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/overview.html">overview.html</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/overview.md">overview.md</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/paired-results.csv">paired-results.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/paired_costs.csv">paired_costs.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/plotting-data.csv">plotting-data.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/plotting-outcomes.csv">plotting-outcomes.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/policy_costs.csv">policy_costs.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/sessions.csv">sessions.csv</a></li><li><a href="C%3A/Users/ENDRIT~1/AppData/Local/Temp/i01-visual-iu_zcnx6/run/reports/worlds.csv">worlds.csv</a></li></ul></details></html>

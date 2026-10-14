@@ -18,7 +18,7 @@ passed on Windows Python 3.11.9; these are implementation evidence only.
 The staged notebook/release is delivered, with operator-only Kaggle validation
 remaining. No old automatic course execution policy is inherited.
 
-The staged notebook and small online source attachment are now implemented:
+The initial staged notebook and small online source attachment were implemented:
 `notebooks/i01_course_kaggle.ipynb` and `dist/i01-course/` (reproducible builders).
 Notebook/release checks confirm 24 staged code cells, rendering-only Run All,
 35 explicit controls, empty research outputs, complete installed wheel/source
@@ -27,15 +27,20 @@ complete. M6–M7 execution paths are delivered; actual Kaggle validation and al
 research outcomes remain pending. See the WBS delivery checkpoint and runbook
 for precise operation; generated artifacts do not establish model qualification.
 
-14 October 2026 usability follow-up: the user finds the widget forms/buttons
-unnatural and requests ordinary notebook cells. The
+14 October 2026 usability follow-up: the user authorized full implementation
+after finding widget forms/buttons unnatural and selecting ordinary cells. The
 [natural workflow plan](plans/i01-notebook-natural-workflow.md) records the
 requested direct execution sequence, concise results, per-pilot review/download,
-fixed main loop and recovery appendix. Planning is complete; implementation is
-pending. The current notebook/release still uses the controls described above.
-The follow-up plans to replace rendering-only Run All acceptance with bounded
-per-cell execution checks; scientific settings, gates and attempt limits remain
-unchanged. The active checkout is `E:\Github\recovery_blueprint\recovery_blueprint`.
+fixed main loop and recovery appendix. UX-01–UX-04 are implemented: 25 ordinary
+code cells, zero panels, readable results, automatic conversation/download,
+explicit human pilot findings, derived mode/batch identity and stopped-action
+cell errors. Sixteen focused scripted tests pass in 26.115 seconds; cell scopes
+are reviewed without model calls. The regenerated package review records exact
+source/wheel/bootstrap/reconstruction evidence. Rendering-only Run All is
+deliberately replaced: Run All can execute inference and is unsupported for study
+execution. Scientific settings, gates and attempt limits are unchanged. Actual
+Kaggle output/interrupt/download and empirical acceptance remain pending. Active
+checkout: `E:\Github\recovery_blueprint\recovery_blueprint`.
 
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 

@@ -58,7 +58,7 @@ explicit freeze, prepared one/two-world batches, pause, annotations, read-only
 analysis, complete reports/figures, snapshots and shutdown. Two-world batches
 use one serial child per slot, global admission, and shared quiescent boundaries.
 
-## Final integration and notebook checks
+## Initial integration and widget-notebook checks (historical)
 
 The final focused integration suite has six tests (latest run: 19.185 seconds),
 including parallel scripted writers and exact fresh-snapshot reconstruction.
@@ -100,3 +100,50 @@ expanded directory using a display stub; scientific actions remain absent.
 Installed initialization preserves every source-release member inside the run's
 portable source directory. Full synthetic envelope text and native IDs are both
 archived. Final archive/native capacity/model checks remain Kaggle-only.
+
+## Ordinary-cell workflow completion (14 October 2026)
+
+The user authorized the ordinary-cell follow-up after rejecting widget forms and
+extra stage buttons. Operator checkpoint `a8fa948` and notebook checkpoint
+`cbbe200` implement UX-01–UX-04 from the workflow plan. The current notebook has
+25 named execution cells and zero widget panels. Running a stage cell performs
+its finite action; Run All can execute inference and is explicitly unsupported.
+The previous N00–N24/rendering-only receipt above is historical evidence.
+
+Changed behavior: readable tables and concise receipts; automatic pilot/batch
+conversation, outcomes/costs and current checkpoint links; failed controller,
+gate or export results stop the cell after evidence display. Pilot findings stay
+unset until supplied, selected mode/current batch derive from saved state, and
+the existing client interrupt requests pause without implying settlement.
+Complete private/raw audits remain accessible with `audit_limit=None` and the
+HTML/text/JSONL exports. Final/partial reporting works without loading models.
+
+Focused Windows Python 3.11.9 verification: **16 passed, zero failures/errors/
+skips, 26.115 seconds**, recorded in `ordinary-cell-checks.json`. Nine changed UI
+checks plus seven affected integration cases cover conditional thinking,
+derived mode/reload/current batch, actual human findings, escaped conversation
+and errors, ordinary stopped-cell behavior, actual controller/status/snapshot,
+interrupt pause, unknown populations, exact raw reuse and literal siblings,
+parallel quiescence and archive reconstruction. Temporary scripted/fake stores
+and controllers made zero actual model calls.
+
+Notebook schema/compile/empty-output checks and 25 independent cell scopes pass
+against a recording fake operator. The review checks individual pilot scopes,
+unset review defaults, explicit mode/count, freeze notes, archive verification,
+ordered closure and the honest Run All metadata. The final release review checks
+matching checkout/delivery notebook, source/wheel bytes, ZIP and expanded source
+bootstrap/rerun, installed outside-checkout CLI and exact complete-source
+preservation in a temporary run. See `release-review.json` for exact package
+identity and executed acceptance.
+
+Synthetic output is reviewed using a headless local browser; fixture output is
+explicitly labelled as scripted presentation, not model evidence. It shows the
+ordinary pilot matrix, exact messages, audit disclosure and current archive/file
+links. Actual Kaggle ordinary output updates, interrupt responsiveness and browser
+downloads remain unverified.
+
+Specification, scientific configuration/runtime pins, core lifecycle/private
+views, fixed schedules, persistence/admission, model inference adapter, analysis
+formulas and historical research artifacts are unchanged. No GPU/model inference,
+actual qualification, pilot, freeze, main or publication ran. Linux/native/T4
+acceptance and all empirical outcomes remain the operator's later execution.

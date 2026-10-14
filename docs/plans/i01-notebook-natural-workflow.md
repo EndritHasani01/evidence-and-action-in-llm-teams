@@ -1,6 +1,6 @@
 # I-01 notebook: ordinary cells and natural progression
 
-14 October 2026. **Planning complete; implementation pending.**
+14 October 2026. **Implemented; focused checks passed; Kaggle acceptance pending.**
 
 Working checkout: `E:\Github\recovery_blueprint\recovery_blueprint`, branch
 `feat/smaller-natural-experiment`, planning baseline `22220b9`.
@@ -8,14 +8,15 @@ Working checkout: `E:\Github\recovery_blueprint\recovery_blueprint`, branch
 The user requested a usability redesign and explicitly chose ordinary notebook
 cells. Pressing **Run** should perform the cell's named stage. Routine operation
 should require neither widget forms nor an additional button click. This document
-plans that change; the delivered notebook still has its existing controls.
+records that change and its completion below. The delivered notebook now uses
+25 ordinary execution cells and no widget panels.
 
 Scientific behavior remains governed by [specification §12](../../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime).
 The [implementation WBS](i01-course-implementation-wbs.md) and
 [current runbook](../I01_KAGGLE.md) describe the existing delivery. This follow-up
 changes its operator interaction, not the adopted experiment.
 
-## 1. What currently makes operation difficult
+## 1. Initial usability problems (before the redesign)
 
 Inspection of the current generator, notebook and `recovery/i01/ui.py` found:
 
@@ -55,15 +56,15 @@ All normal stages work with `ipywidgets` absent. Standard HTML, text and file
 links may enrich results; no custom frontend is necessary to execute the study.
 The existing retained controller and two resident model processes stay in use.
 
-### Run All policy must change explicitly
+### Run All policy change (implemented)
 
-The current WBS §7 and M5-T02 require Run All to render controls without starting
+The original WBS §7 and M5-T02 required Run All to render controls without starting
 inference. That rule is incompatible with the requested direct execution cells:
 an ordinary cell calling `ui.run("pilot", number=1)` performs the same action
 whether queued by Run Cell or Run All. This design will not claim to distinguish
 them or add arming flags, confirmation prompts or another control layer.
 
-Replace that engineering requirement when implementing this follow-up:
+The implemented engineering requirement is:
 
 - **Run one stage cell at a time.** Its execution is the operator's explicit
   request for the displayed bounded scope.
@@ -318,3 +319,34 @@ Interaction planning used the available UI/UX skill checklist for clear primary
 actions, progressive disclosure, readable feedback and recovery paths. Its local
 search helper is not installed; no generated design-system result is claimed or
 needed for this notebook workflow.
+
+## 10. Completion record
+
+The user authorized full implementation after selecting ordinary notebook cells.
+UX-01–UX-04 are implemented. The current notebook has 25 named code cells, zero
+widget panels, empty execution outputs and direct bounded calls. Models and
+canonical stores remain in the existing controller; no dependency/schema or
+scientific configuration changed. The old panel API remains for source-bound
+historical packages but is unused by the generated notebook.
+
+Milestones: `a8fa948` operator behavior; `cbbe200` ordinary notebook, recovery
+recipes and cell-scope verification. The final documentation/release checkpoint
+and its package identity are recorded in the development receipts.
+
+Executed focused checks: sixteen tests in 26.115 seconds, with zero failures,
+errors or skips, on Windows Python 3.11.9. They cover changed ordinary-cell
+behavior plus the existing affected scripted durability/controller integration.
+Twenty-five cell scopes execute against a recording fake operator, with no model
+calls; notebook schema/compile/empty-output checks pass. Source/wheel/bootstrap/
+read-only reconstruction checks are recorded in the regenerated package review.
+
+Evidence: `notebooks/validation/i01-development/ordinary-cell-checks.json` and
+`release-review.json`; details in the
+[implementation evidence](../validation/i01-implementation.md).
+Current operator instructions are in the [runbook](../I01_KAGGLE.md).
+
+No model/GPU inference, actual qualification, pilot, freeze, main or publication
+ran. Actual Kaggle ordinary output/interrupt/download behavior, native framing,
+Linux installation, T4 residency/headroom/competence and the empirical workflow
+remain operator acceptance. Existing scientific outcomes are neither replaced
+nor inferred by this UI revision.

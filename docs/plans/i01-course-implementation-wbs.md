@@ -366,12 +366,12 @@ flowchart LR
 - **Deliverable/acceptance:** ready-to-upload `.ipynb`, internet/T4×2 instructions, small source attachment or pinned source retrieval, and no hidden “run all research” call. Every cell can be rerun and reports missing prerequisites without executing them.
 - **Risks:** R10, R12. **Effort:** 3–5 h.
 
-#### M5-T02 — Explicit controls and live progress
+#### M5-T02 — Ordinary execution cells and live progress
 
-- **Objective/change:** provide stage-specific buttons/panels, one active action, progress output, and pause/close controls using the existing session, not new scientific logic.
+- **Objective/change:** provide ordinary stage execution cells, one active action, visible progress, and explicit pause/close recipes using the existing session, not new scientific logic.
 - **Existing anchors:** M3-T02 controller, M4-T01 actions, notebook display facilities.
 - **Dependencies:** M5-T01.
-- **Deliverable/acceptance:** rendering cells or Run All does not start inference; a deliberate stage-button action has one bounded scope. Double-click/rerender cannot duplicate work. A finite background dispatch loop keeps the notebook responsive and supports pause; all durable state stays in workers, not widgets.
+- **Deliverable/acceptance:** running one cell requests its named bounded action; Run All can execute inference and is explicitly unsupported. Completed-scope reruns do not resample. The retained controller supports bounded pause after notebook interrupt; all durable state stays in workers, not notebook controls.
 - **Risks:** R07, R08, R12. **Effort:** 4–6 h.
 
 #### M5-T03 — Per-pilot and incremental inspection/download experience
@@ -379,7 +379,7 @@ flowchart LR
 - **Objective/change:** add world/agent transcript selection, outcomes, diagnostics, cost counters, and direct archive/report links after every pilot and main batch.
 - **Existing anchors:** M4-T03, M2-T04, notebook HTML/table display.
 - **Dependencies:** M5-T01–T02.
-- **Deliverable/acceptance:** operator can inspect and download a pilot's complete output without launching another stage; failure paths expose the same controls; all rows remain available beyond display truncation. Next-stage controls require previous report/export readiness, not a claimed successful browser download.
+- **Deliverable/acceptance:** operator can inspect and download a pilot's complete output without launching another stage; failure paths expose the same evidence/links; all rows remain available beyond display truncation. Next-stage calls require previous report/export readiness, not a claimed successful browser download.
 - **Risks:** R09, R12, R13. **Effort:** 2–4 h.
 
 #### M5-T04 — Notebook integration and delivery review
@@ -387,7 +387,7 @@ flowchart LR
 - **Objective/change:** inspect cell ordering, repeatability, fresh/restore modes, source inclusion, credentials, empty outputs, and stage boundaries before upload.
 - **Existing anchors:** notebook JSON checks and source-manifest patterns; M4 release.
 - **Dependencies:** M5-T01–T03.
-- **Deliverable/acceptance:** one consistent script/notebook release; code cells contain orchestration/display only; no model weights or secrets in delivery. The checklist explicitly labels widget rendering, process persistence, and Kaggle download behavior as requiring M6 target verification.
+- **Deliverable/acceptance:** one consistent script/notebook release; code cells contain orchestration/display only; no model weights or secrets in delivery. The checklist explicitly labels ordinary output rendering, interrupt responsiveness, process persistence, and Kaggle download behavior as requiring M6 target verification.
 - **Risks:** R12, R14. **Effort:** 2–3 h.
 
 ### M6 — Validate directly inside Kaggle and qualify
@@ -429,7 +429,7 @@ flowchart LR
 #### M7-T01 — Execute manageable main batches
 
 - **Objective/change:** run the fixed twenty worlds in explicit one/two-world scopes; inspect/export after each scope; resume incomplete IDs exactly.
-- **Existing anchors:** frozen study, M5 batch panels, canonical DBs and archive mechanism.
+- **Existing anchors:** frozen study, M5 ordinary batch cells, canonical DBs and archive mechanism.
 - **Dependencies:** M6-T04.
 - **Deliverable/acceptance:** all intended prefix, retain/clear, and revised-control outcomes recorded or honestly unresolved; no effect-dependent stopping, replacements, extra seeds, or main model changes. Every batch ends with visible remaining budget and a verified archive.
 - **Risks:** R07–R09, R13. **Effort:** 2–4 h active plus model runtime and chosen inspection time.
@@ -450,7 +450,41 @@ flowchart LR
 - **Deliverable/acceptance:** archive integrity and reconstructed outcomes/costs match; complete source/config/runtime/evidence included; external download is operator-confirmed; executed notebook retained; final claim distinguishes complete study from terminal partial result. No publication or repository upload occurs automatically.
 - **Risks:** R08, R09, R14. **Effort:** 2–3 h.
 
-## 7. Proposed notebook cell-by-cell design
+## 7. Ordinary notebook progression
+
+The user replaced the original button-first design on 14 October 2026 and
+authorized its complete implementation. Current delivery has 25 ordinary
+execution cells and zero widget panels. See the
+[workflow and completion record](i01-notebook-natural-workflow.md) and
+[current runbook](../I01_KAGGLE.md) for the named cells and exact commands.
+
+Running a cell performs its named finite action. Run one stage cell at a time:
+**Run All / Save & Run All can execute inference and multiple stages and is not
+a supported study execution method.** A stopped gate displays evidence and
+checkpoint links, then fails the cell. No function launches a later stage.
+
+| Current sequence | Boundary |
+|---|---|
+| Workspace → runtime → open study → self-check → weights → load | Separate meaningful zero-generation cells; actual session facts only |
+| Readiness → direct screen → inspection → optional justified thinking → envelope | Six/twelve/twelve/two first-attempt ceilings; unchanged qualification gates |
+| Pilot 1/review → pilot 2/review → pilot 3/review | Each pilot individually executed; automatic conversation/download; actual human findings |
+| Configuration review → explicit freeze | Measured resources and exact configuration before main; pre-main checkpoint |
+| Prepare → run → inspect/acknowledge fixed main batch | One/two predetermined worlds; saved ID/scope derived; no automatic next batch |
+| Final/partial report → verified archive → explicit session finish | Read-only outcomes/figures, exact restore comparison, off-session save, provider stop instructions |
+
+Eligible retries remain separately charged to the shared 28 contingency and
+500 study ceiling. Default detailed-call display is bounded; complete messages,
+prompts/raw tokens/thinking, tables/figures and integrity inventory remain
+accessible with ordinary inspection commands and downloadable files. Selected
+mode/batch IDs derive from canonical state. Human findings and session/restore
+evidence are never guessed. The support appendix covers pause, exact/partial
+restoration, reconciliation, annotations and read-only reporting.
+
+### Historical initial widget design (superseded)
+
+The following N00–N24 table and rendering-only policy record the initial delivery,
+not current execution instructions. They are retained as historical engineering
+context; current acceptance is the ordinary-cell sequence above.
 
 Each row denotes one code cell with a short adjacent Markdown explanation where useful. Scientific work stays in Python modules. Cells render the current durable state rather than relying on prior execution order or stale globals. “Independent” means rerunnable with explicit prerequisite checks, not that a pilot can run without qualified models.
 
@@ -661,7 +695,7 @@ only the user-provided WBS was untracked. Canonical I-01 evidence will use
 `worker-0.sqlite` and `worker-1.sqlite`, with stage/gate metadata owned by slot 0.
 No new progress store, cross-treatment replay or legacy-database migration.
 
-### Delivery checkpoint
+### Initial delivery checkpoint (historical widget UI)
 
 Milestone commits: `6875aae` adoption; `914036c` native study core;
 `05cc8d6` ledger/archive; `3bb8ccd` inference/runtime; `237c4ac` Python completion;
@@ -698,29 +732,34 @@ native capacity/framing, short-envelope headroom and real model conversations
 remain Kaggle-only acceptance. M0–M5 implementation is complete; M6–M7 empirical
 completion is deliberately not claimed.
 
-## 15. Requested notebook usability follow-up
+## 15. Ordinary-cell usability follow-up
 
 14 October 2026: the user requests planning for natural progression and explicitly
 prefers ordinary notebook cells over widget forms/buttons. The active checkout is
 `E:\Github\recovery_blueprint\recovery_blueprint`, baseline `22220b9`.
-See [the direct-cell workflow plan](i01-notebook-natural-workflow.md).
+The user subsequently authorized full implementation. See
+[the direct-cell workflow and completion record](i01-notebook-natural-workflow.md).
+Operator checkpoint: `a8fa948`; ordinary notebook checkpoint: `cbbe200`.
 
 | Follow-up | Status | Scope |
 |---|---|---|
 | Workflow and interaction plan | Planning complete; user-selected ordinary-cell direction recorded | Setup → separate qualification stages → three individual pilot/review pairs → explicit freeze → prepare/run/review fixed main batches → final report/export; recovery appendix |
-| UX-01–UX-04 implementation | Pending | Existing operator helpers, notebook generator, focused cell-scope verification and complete release regeneration |
+| UX-01–UX-03 implementation | Implemented; focused checks passed | Direct finite actions, readable tables, automatic conversations/downloads, unset pilot findings, derived mode/batch, interruption and recovery recipes; 25 ordinary cells and zero panels |
+| UX-04 integrated delivery | Implemented; final package receipt records verification | Matching notebook/source/wheel/runbook; installed-source and bootstrap/archive verification in release-review.json |
 | Actual Kaggle usability/interrupt/download acceptance | Pending | Operator target-host validation; no model execution occurred during planning |
 
 For this follow-up, §7 and M5-T02's button-first/rendering-only Run All policy is
-scheduled for explicit replacement: running an ordinary cell requests its named
+explicitly replaced: running an ordinary cell requests its named
 bounded action. Run All can execute inference and is not a supported study
 execution method. No automatic later-stage transition, global arming flag or
 confirmation prompt is added to simulate rendering-only behavior. Human pilot
 findings and real session/restore evidence remain required; routine choices are
 derived from canonical saved state.
 
-The existing §14 delivery remains implemented with its original UI and evidence.
-This follow-up has changed no notebook, Python behavior, scientific configuration
-or research result. Preserve specification §12, all 500-attempt/isolation/resume
-guarantees and historical artifacts; implementation checks must be updated before
-describing a regenerated direct-cell package as delivered.
+The original §14 control/rendering evidence is historical. Current focused
+checks are recorded in `ordinary-cell-checks.json` and `release-review.json`
+under `notebooks/validation/i01-development/`. The follow-up changes operator
+presentation, direct execution and notebook packaging only. Specification §12,
+runtime/configuration pins, core lifecycle, fixed schedules, private views,
+500/28 admission, durability and analysis semantics are unchanged. No GPU/model,
+qualification, pilot, freeze or main execution occurred; outcomes remain unknown.
