@@ -13,10 +13,10 @@ handoffs below remain historical and independently scoped.
 Python completion now implements all I-01 scientific, inference, durable stage,
 accounting, reporting, archive and restore responsibilities in `recovery/i01/`.
 The [operator runbook](I01_KAGGLE.md) documents finite APIs and exact recovery.
-Five focused scripted integration checks and the packaged scripted self-check
+Seven focused scripted integration checks and the packaged scripted self-check
 passed on Windows Python 3.11.9; these are implementation evidence only.
-The staged notebook/release is the next deliverable, followed by operator-only
-Kaggle validation. No old automatic course execution policy is inherited.
+The staged notebook/release is delivered, with operator-only Kaggle validation
+remaining. No old automatic course execution policy is inherited.
 
 The staged notebook and small online source attachment are now implemented:
 `notebooks/i01_course_kaggle.ipynb` and `dist/i01-course/` (reproducible builders).

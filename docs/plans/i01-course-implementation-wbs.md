@@ -668,6 +668,11 @@ Milestone commits: `6875aae` adoption; `914036c` native study core;
 `e71f99e` integration/recovery accounting. The notebook/release checkpoint follows
 these Python interfaces and uses the same library, rather than notebook science.
 
+Later checkpoints: `a1a429d` staged notebook; `375e811` real operator dispatch and
+shutdown snapshots; `a476a6e` complete source preservation/bootstrap review;
+`ac93bd3` full synthetic-envelope prompt audit. Final focused integration has
+seven passing cases in 36.048 seconds, with zero model attempts.
+
 Delivered paths: `recovery/i01/`, `scripts/i01_course.py`,
 `scripts/build_i01_course_notebook.py`, `scripts/build_i01_course_release.py`,
 `scripts/verify_i01_course_release.py`, `configs/i01-course.json`,

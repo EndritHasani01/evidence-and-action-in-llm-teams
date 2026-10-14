@@ -92,3 +92,11 @@ was fixed; `Operator.run` now routes through the retained client/controller.
 The seventh focused integration case exercises that actual path through reopen,
 status and snapshot with zero model calls. Snapshot creates one fresh archive,
 and controller close snapshots after recording model termination.
+
+Final seven-case run: **7 passed, zero failures/errors, 36.048 seconds**;
+receipt `notebooks/validation/i01-development/integration-checks.json`.
+The source bootstrap was exercised with the exact ZIP, a repeated cell and an
+expanded directory using a display stub; scientific actions remain absent.
+Installed initialization preserves every source-release member inside the run's
+portable source directory. Full synthetic envelope text and native IDs are both
+archived. Final archive/native capacity/model checks remain Kaggle-only.
