@@ -20,8 +20,10 @@ class ActionStopped(ValueError):
 
 def _display(body, plain):
     try:
+        from IPython import get_ipython
         from IPython.display import display, HTML
-        display(HTML(body))
+        if get_ipython() is None: print(plain, flush=True)
+        else: display(HTML(body))
     except ImportError:
         print(plain, flush=True)
 
@@ -212,6 +214,8 @@ class Operator:
             payload=result.get('result',result) if isinstance(result,dict) else result
             if isinstance(payload,dict) and payload.get('passed') is False and action in ('selfcheck','readiness','screen','envelope'):
                 error=error or f'{action} gate did not pass. Inspect the recorded evidence; no later stage has started.'
+            if action=='selfcheck' and isinstance(payload,dict) and not payload.get('native_tokenizer'):
+                error=error or 'Native tokenizer acceptance is required; the scripted-only receipt does not qualify this host.'
             if error: raise ActionStopped(error)
             return result
         except KeyboardInterrupt:
@@ -243,6 +247,12 @@ class Operator:
                 _table(['Logical slot','Resident','Load receipt'],[(i,m['resident'],'Recorded' if m.get('load_report') else 'Not recorded') for i,m in enumerate(payload['models'])])
             if action=='screen' and 'correct' in payload:
                 print(f"Competence: {payload['correct']}/12 correct; {payload['protocol_errors']} protocol errors. Required: at least 11/12 and zero protocol errors.")
+            if action=='readiness' and payload.get('results'):
+                _table(['Slot','Probe','Raw visible reply','Finite score steps','Fresh cache'],[(r['slot'],r['label'],r['outcome'].get('visible_text'),r['outcome'].get('backend',{}).get('finite_score_steps'),r['outcome'].get('backend',{}).get('cache',{}).get('initial_empty')) for r in payload['results']])
+            if action=='prepare_batch':
+                _table(['Prepared scope','Value'],[('Worlds',', '.join(payload.get('worlds',[])) or 'No remaining worlds'),('First-attempt ceiling',payload.get('first_ceiling')),('Eligible retry allowance',payload.get('eligible_retry_allowance'))])
+                if payload.get('forecast'):
+                    _table(['Resource forecast','Value'],list(payload['forecast'].items()))
             if action=='selfcheck':
                 _table(['Lightweight check','State'],[(name,'Passed') for name in payload.get('checks',[])])
                 print('Native tokenizer: '+('passed' if payload.get('native_tokenizer') else 'not accepted on this host'))
@@ -267,7 +277,10 @@ class Operator:
         return self.client.command('status')
 
     def open_study(self, mode='new', *, deadline=None, allowance_evidence='', selected=None, tail=None, evidence=''):
-        self.set_window(deadline,allowance_evidence)
+        receipt=self.set_window(deadline,allowance_evidence)
+        if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
+            self.show(receipt)
+            raise ActionStopped(receipt.get('error') or receipt['checkpoint']['error'])
         return self.run('initialize',mode=mode,selected=selected,tail=tail,evidence=evidence)
 
     def selected_mode(self):
@@ -365,11 +378,17 @@ class Operator:
         def score(v): return 'Unknown / not executed' if v is None else ('Correct' if v else 'Unsuccessful (recorded)')
         if rows and all(r['group']=='qualification' for r in rows):
             _table(['World','Original control','Revised control'],[(r['id'],score(r.get('control_original_'+mode)),score(r.get('control_revised_'+mode))) for r in rows],mode.title()+' qualification controls')
+        elif rows and all(r['group']=='main' for r in rows):
+            _table(['World','Original team','Retain','Clear','Revised control'],[(r['id'],score(r['prefix']),score(r['retain']),score(r['clear']),score(r.get('control_revised_'+mode))) for r in rows], 'Recorded main outcomes')
         else:
             _table(['World','Original team','Retain','Clear','Original control','Revised control'],[(r['id'],score(r['prefix']),score(r['retain']),score(r['clear']),score(r.get('control_original_'+mode)),score(r.get('control_revised_'+mode))) for r in rows], 'Recorded outcomes')
         s=result['summary']
-        print(f"Main paired coverage: {s['known_pairs']}/20 intended worlds. New physical attempts: {s['attempts']}/500; contingency used: {s['contingency']}/28. Historical 45 remain separate.")
-        _table(['World','Phase','Calls','Generated tokens','Ready-model seconds','Messages'],[(r['world'],r['phase'],r['calls'],r['generated_tokens'],r['ready_seconds'],r['messages']) for r in result['costs'] if (selected is None or r['world'] in selected) and (not phase or r['phase']==phase)], 'Phase effort (unknown is not zero)')
+        print(f"Main paired coverage: {s['known_pairs']}/20 intended worlds. New physical attempts: {s['attempts']}/500; recorded contingency: {s['contingency']}/28. Historical 45 remain separate.")
+        if self.client is not None:
+            status=self.status(); usage=status.get('usage',{})
+            if usage: _table(['Admission resource','Value'],[('Remaining attempt allowance',usage['remaining']),('Contingency including bounded lost spending',usage['contingency']),('Lost spending evidence',usage['lost_spending']),('Remaining session seconds',status['remaining_session_seconds'])])
+        if not rows or not all(r['group']=='qualification' for r in rows):
+            _table(['World','Phase','Calls','Generated tokens','Ready-model seconds','Messages'],[(r['world'],r['phase'],r['calls'],r['generated_tokens'],r['ready_seconds'],r['messages']) for r in result['costs'] if (selected is None or r['world'] in selected) and (not phase or r['phase']==phase)], 'Phase effort (unknown is not zero)')
         for ep in result['episodes']:
             identity,ep_phase=ep['id'].split('/',1)
             if selected is not None and identity not in selected: continue

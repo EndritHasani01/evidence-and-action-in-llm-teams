@@ -107,6 +107,19 @@ class NotebookUI(unittest.TestCase):
         self.assertIn('An admitted call may still be active',output.getvalue())
         self.assertFalse(self.ui.busy.locked())
 
+    def test_client_interrupt_requests_pause_without_claiming_settlement(self):
+        from recovery.i01.client import Client
+        import threading
+        client=Client.__new__(Client)
+        client.lock=threading.RLock(); client.results={}
+        class Running:
+            def poll(self): return None
+        client.process=Running()
+        calls=[]; client.command=lambda op:calls.append(op)
+        with patch('recovery.i01.client.time.sleep',side_effect=KeyboardInterrupt):
+            with self.assertRaises(KeyboardInterrupt): client.wait('saved-action')
+        self.assertEqual(calls,['pause'])
+
     def test_conversation_and_receipts_escape_raw_text(self):
         from recovery.i01.workflow import initialize
         from recovery.i01.core import initial_episode, apply_outcome, canonical

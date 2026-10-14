@@ -1,4 +1,4 @@
-"""Reproducible thin N00–N24 notebook; rendering never starts research calls."""
+"""Reproducible ordinary-cell notebook; each research cell has one finite scope."""
 
 import json
 from pathlib import Path
@@ -58,58 +58,167 @@ ui.bootstrap_status()
 
 def notebook():
     cells=[]
-    def markdown(text): cells.append(dict(cell_type="markdown",id=f"i01-text-{len(cells):02d}",metadata={},source=text.splitlines(True)))
-    def code(text,cell_id): cells.append(dict(cell_type="code",id=cell_id,metadata={"i01_stage":cell_id},execution_count=None,outputs=[],source=text.splitlines(True)))
-    markdown('''# N00 · I-01 distributed-team recovery study
+    def markdown(text):
+        cells.append(dict(cell_type="markdown",id=f"i01-text-{len(cells):02d}",metadata={},source=text.splitlines(keepends=True)))
+    def stage(identity,title,description,body,action=None,generation=False):
+        markdown(f"## {title}\n\n{description}\n")
+        cells.append(dict(cell_type="code",id=identity,metadata=dict(i01=dict(action=action,generation=generation)),
+                          execution_count=None,outputs=[],source=body.splitlines(keepends=True)))
 
-**Prepared implementation; Kaggle acceptance and research execution pending.**
-This is a controlled recovery extension of SILO-BENCH I-01: two agents, twenty
-integers each, a withdrawn unique winner, and paired retain/clear continuations
-over twenty independent worlds. Maximum **500 new physical attempts**, including
-all diagnostics, failures and eligible retries; prior historical attempts stay separate.
+    markdown("""# I-01: recovery after a changed winning value
 
-`shared prefix → factual revision → isolated retain / clear → revised control`
+Two agents collaborate on a maximum. After one value changes, compare retaining
+their conversation with clearing it. This is a controlled recovery extension of
+SILO-BENCH I-01: six qualification worlds, three pilots, twenty main worlds.
 
-Use **Internet On**, **T4 ×2**, and a private source input. Run All renders
-controls only. Each button/explicit command requests one bounded stage; passing
-a gate starts no later stage. No agent sees evaluator truth or the other private
-shard. Submissions are final within a phase; only the revision reopens both agents.
-Keep the latest checkpoint downloaded off session. See `START_HERE.md` for recovery.
-''')
+**Run one stage cell at a time. Pressing Run performs the named stage.**
+No widget forms or extra action buttons. **Do not use Run All / Save & Run All:**
+those commands can execute inference and multiple stages. Each research cell
+requests only its displayed bounded scope; successful work starts no later stage.
+
+Attach the matching **private source dataset**, select **GPU T4 ×2** and enable
+**Internet**. Actual host/runtime compatibility is checked before installation.
+Model qualification and research outcomes remain unverified until executed.
+
+Setup → qualification → pilot 1/review → pilot 2/review → pilot 3/review →
+freeze → prepare/run/review main batches → report → portable archive.
+
+The whole study has a **500-new-physical-attempt ceiling**. Diagnostics, failures
+and eligible retries count. Historical 45 are separate. First-attempt ceilings
+exclude eligible retries, which consume shared 28 contingency and study allowance.
+
+Models stay resident during inspection and between stages. Interrupt requests
+pause; an admitted call must settle within its bound. Recovery recipes are below.
+""")
+    configuration="""# Supply facts from the CURRENT Kaggle session; no duration or quota is guessed.
+START_MODE = "new"  # "reopen" for intact files; "restore" for a selected archive.
+SESSION_DEADLINE_UTC = None  # Actual future ISO time: YYYY-MM-DDTHH:MM:SS+00:00.
+SESSION_ALLOWANCE_EVIDENCE = ""  # Describe the actual allowance shown by Kaggle.
+
+# Only for restoration: uncomment and supply exact checkpoint/tail evidence.
+# RESTORE_CHECKPOINT = "/kaggle/input/EXACT-DOWNLOADED-CHECKPOINT"
+# RESTORE_TAIL = "latest"  # "unknown" if the latest safe boundary is uncertain.
+# RESTORE_EVIDENCE = "Actual evidence about the saved boundary and prior session."
+
+"""
     stages=[
-      ("N01", "Workspace, exact source and actual host", "This cell performs only small source/UI initialization and read-only inventory. If several source inputs are attached, set `SOURCE_BUNDLE` to one exact path. Scratch/cache and writable evidence are separate.", BOOTSTRAP),
-      ("N02", "Online setup", "Click once to install the pinned isolated Python environment and pinned metadata/tokenizer. Logs are in `/kaggle/working/i01-setup/`. No weights or model calls. An incompatible host stops before inference.", "ui.panel('setup', 'Online setup', ceiling=0)\n"),
-      ("N03", "Initialize, restore, or reopen; current session allowance", "Choose the mode explicitly. Restore accepts one exact ZIP or expanded bundle in a fresh run directory. `tail='latest'` needs evidence that the snapshot is current and the old session stopped; `unknown` blocks generation. Set the actual UTC deadline/allowance seen in Kaggle before loading models. New worlds and schedules are saved before any generation.", "ui.panel('initialize', 'Initialize / restore / reopen', ceiling=0, mode='new', selected='', tail='latest', evidence='')\nui.panel('window', 'Set actual session allowance', ceiling=0, deadline='', evidence='')\n"),
-      ("N04", "Lightweight self-check", "Run packaged mathematical, view/finality, admission, persistence, snapshot/restore and native-tokenizer checks. Uses temporary scripted stores and **zero model attempts**. A passing native receipt is required before weight staging.", "ui.panel('selfcheck', 'Lightweight self-check', ceiling=0)\n"),
-      ("N05", "Pinned online weights", "Download or reuse exactly the pinned 9B revision. Native Git/LFS file inventory, hashes, partial-cache reuse and measured space are checked; no fallback model or weight upload bundle.", "ui.panel('weights', 'Pinned weights', ceiling=0)\n"),
-      ("N06", "Load two resident replicas", "Load/attach one replica per actual T4 with no hidden warmup. Inspect device/process identity, load time and VRAM. The retained controller uses the isolated interpreter; models stay resident when this cell returns.", "ui.panel('load', 'Load two replicas', ceiling=0)\nui.panel('status', 'Resident status', ceiling=0)\n"),
-      ("N07", "Six fresh-state readiness calls", "Fixed A/B/A checks on each GPU. All six calls count. Empty fresh cache and finite-score instrumentation govern readiness; repeated-output equality is supporting evidence.", "ui.panel('readiness', 'Run six readiness checks', ceiling=6)\n"),
-      ("N08", "Direct competence screen", "Twelve complete-input controls: original/revised pairs over six separate worlds. Require ≥11/12 correct and no malformed/truncated actions. This is not a main-world filter.", "ui.panel('screen', 'Direct screen', ceiling=12, mode='direct')\n"),
-      ("N09", "Qualification inspection and download", "Inspect every request/reply and the cumulative checkpoint. Direct failure does not automatically enable thinking. Diagnose malformed/framing/provider failures first; thinking is conditional on a documented competence limitation.", "ui.inspect_panel(default_world='qualification-00')\n"),
-      ("N10", "Conditional thinking screen", "This action refuses if direct passed, a protocol defect exists, or no competence justification is supplied. It is never automatic. Thinking tokens/time count and remain separate audit material.", "ui.panel('screen', 'Conditional thinking screen', ceiling=12, mode='thinking', reason='')\n"),
-      ("N11", "Select mode and measure full envelope", "Select a passing declared mode. Two diagnostics use 8,192 input tokens plus the full 512/4,096 output reserve and require ≥1.5 GiB observed free headroom on each GPU. Output forcing belongs only here. In a new/restored/reloaded session set `reload=True`; the two probes consume contingency.", "ui.panel('envelope', 'Selected-mode envelope', ceiling=2, mode='direct', reload=False)\nui.inspect_panel()\n"),
-      ("N12", "Pilot 1 only", "Execute exactly pilot 1: shared original team, isolated siblings and both full-information controls. Stop at its boundary; no next pilot starts. Maximum twenty first attempts plus separately counted eligible retries.", "ui.panel('pilot', 'Execute pilot 1', ceiling=20, number=1)\n"),
-      ("N13", "Pilot 1 · inspect, download, review", "Review the complete original/recovery/control conversations, outcomes, costs and errors. Download the cumulative checkpoint off session. Record original communication usefulness and operational usability, with trace references; recovery wrong answers alone do not fail the gate. The review does not claim browser-download success.", "ui.inspect_panel(default_world='pilot-00')\nui.panel('review', 'Record pilot 1 review', ceiling=0, scope='pilot-1', notes='', useful_communication=False, usable=False)\n"),
-      ("N14", "Pilot 2 only", "Requires pilot 1's completed inspection/export review. Executes only the second fixed pilot, including both controls.", "ui.panel('pilot', 'Execute pilot 2', ceiling=20, number=2)\n"),
-      ("N15", "Pilot 2 · inspect, download, review", "Inspect every agent turn and download the complete cumulative archive, including failures. Record the second pilot's review before proceeding.", "ui.inspect_panel(default_world='pilot-01')\nui.panel('review', 'Record pilot 2 review', ceiling=0, scope='pilot-2', notes='', useful_communication=False, usable=False)\n"),
-      ("N16", "Pilot 3 only", "Requires pilot 2's completed inspection/export review. Covers the third fixed structural pilot without selecting by outcomes.", "ui.panel('pilot', 'Execute pilot 3', ceiling=20, number=3)\n"),
-      ("N17", "Pilot 3 · inspect, download, review", "Review original teamwork and six total pilot controls. Assess conversation usability and resource costs; do not select for treatment significance or direction.", "ui.inspect_panel(default_world='pilot-02')\nui.panel('review', 'Record pilot 3 review', ceiling=0, scope='pilot-3', notes='', useful_communication=False, usable=False)\n"),
-      ("N18", "Pilot gate, forecast and explicit freeze", "Status includes the measured conservative forecast, actual remaining allowance and gate evidence. Freeze binds mode/settings/runtime, inputs/orders/seeds, prompts, deadlines/endpoints and the review rubric. It makes zero main calls; download the pre-main checkpoint.", "ui.panel('status', 'Gate and resource status', ceiling=0)\nui.panel('freeze', 'Explicit freeze', ceiling=0, notes='')\n"),
-      ("N19", "Prepare the next fixed main batch", "Prepare one/two next predetermined incomplete IDs; a pending scope resumes exactly. The preview shows planned first attempts (≤19/38), eligible contingency, remaining study allowance and deadline margin. Prior batch review/export is required.", "ui.panel('prepare_batch', 'Prepare next fixed batch', ceiling=0, count=2)\n"),
-      ("N20", "Execute the prepared batch once", "This action uses the saved N19 scope only. One serial model child per T4; two-world scopes can dispatch concurrently with one global admission owner. Pause stops new dispatch and settles bounded in-flight work. Completed raw outcomes never regenerate.", "ui.panel('main', 'Execute prepared batch', ceiling=38)\nui.panel('pause', 'Request pause', ceiling=0)\n"),
-      ("N21", "Main batch · inspect, download, review", "Inspect all world/phase/agent traces and cumulative paired results with intended denominators. Download the archive and record the displayed batch ID's review before preparing another scope. Repeat N19–N21 deliberately.", "ui.inspect_panel()\nui.panel('status', 'Show current batch ID', ceiling=0)\nui.panel('review', 'Record main batch review', ceiling=0, scope='', notes='')\n"),
-      ("N22", "Session controls and exact pending-scope resume", "Pause → wait for quiescence → checkpoint/download → close models/controller → stop Kaggle UI. For restored sessions, load then explicitly run two reload probes before pending-scope resume. Process exit does not prove provider release. See the runbook for unresolved attempt and lost-tail reconciliation commands.", "ui.panel('status', 'Session status', ceiling=0)\nui.panel('pause', 'Request safe pause', ceiling=0)\nui.panel('snapshot', 'Checkpoint / export', ceiling=0)\nui.panel('close_models', 'Close resident models', ceiling=0)\nui.panel('envelope', 'Budgeted reload validation', ceiling=2, mode='direct', reload=True)\nui.panel('main', 'Resume saved pending scope', ceiling=38)\nui.panel('shutdown', 'Close controller', ceiling=0)\n"),
-      ("N23", "Read-only final or partial analysis", "Reconstruct intended coverage, exact paired success, correct-prefix stratum, exploratory intervals and missingness bounds, ready-model seconds, token/call costs and observable failures. Reporting makes no inference call and works without loaded models. All plots export SVG/PNG with plotting data. Add human rubric annotations through the explicit command below; ambiguous mechanisms stay ambiguous.", "ui.panel('report', 'Reconstruct reports and figures', ceiling=0)\nui.inspect_panel()\nprint(\"Annotation: ui.annotate('unique-review-id', 'ambiguous', ['exact/call/id'], 'Trace-based notes')\")\n"),
-      ("N24", "Final reproducibility archive and session end", "Create the final/partial archive and inspect its integrity inventory and complete source/evidence/report contents. Use `ui.verify_checkpoint()` to restore into a fresh temporary directory and compare outcomes/costs/traces with archived analysis; it makes zero model calls. Save/download the **executed notebook** separately through Kaggle (without Save & Run All). Download the archive off session; close models/controller, then stop Kaggle via its UI. Partial coverage stays partial.", "ui.panel('snapshot', 'Final portable archive', ceiling=0)\nui.links()\nprint('Fresh-directory reconstruction: ui.verify_checkpoint()')\nui.panel('close_models', 'Final close models', ceiling=0)\nui.panel('shutdown', 'Final close controller', ceiling=0)\n")
+      ("workspace","1. Configure and inspect the workspace","Edit actual session facts here. A unique verified source ZIP/expanded directory is selected automatically; set SOURCE_BUNDLE only when ambiguous. Inventory only; no installation or generation.",configuration+BOOTSTRAP,None,False),
+      ("setup","2. Install the pinned runtime","Install/reuse the isolated pinned environment and fetch metadata/tokenizer. Live progress and /kaggle/working/i01-setup/ logs. No model loading or generation.",'ui.run("setup");\n',"setup",False),
+      ("open-study","3. Open the study","Create fixed inputs, reopen intact files or explicitly restore into a fresh writable directory. Record this session's actual allowance/deadline. Missing facts stop here; conflicting studies are never overwritten.",
+       'ui.open_study(START_MODE, deadline=SESSION_DEADLINE_UTC,\n    allowance_evidence=SESSION_ALLOWANCE_EVIDENCE,\n    selected=globals().get("RESTORE_CHECKPOINT"),\n    tail=globals().get("RESTORE_TAIL"), evidence=globals().get("RESTORE_EVIDENCE", ""));\n',"initialize",False),
+      ("selfcheck","4. Check the implementation","Lightweight mathematics/private-view/lifecycle/durability/accounting/archive/restore and native-tokenizer checks. Temporary scripted records, zero model attempts.",'ui.run("selfcheck");\n',"selfcheck",False),
+      ("weights","5. Download verified weights","Retrieve/reuse the pinned Qwen3.5-9B files; verify native identities and actual available space. Progress appears below. No inference.",'ui.run("weights");\n',"weights",False),
+      ("load","6. Load both T4 workers","Load/attach the two resident replicas and show device/load receipts. No hidden warmup. Inspection does not unload them.",'ui.run("load");\n',"load",False),
+      ("readiness","7. Check fresh-state readiness","Exactly six short A/B/A diagnostics across both workers: ≤6 first attempts plus eligible contingency. A failed gate stops the cell with saved evidence.",'ui.run("readiness");\n',"readiness",True),
+      ("direct-screen","8. Check direct-mode competence","Twelve original/revised controls, ≤12 first attempts plus eligible contingency. Require ≥11/12 correct and zero malformed/truncated actions. Failure stops here; inspect it below.",'ui.run("screen", mode="direct");\n',"screen",True),
+      ("qualification","9. Inspect qualification","Read-only control outcomes and complete saved evidence. If direct passed, proceed to headroom. A protocol defect blocks research; only a documented competence limitation enables the optional thinking screen.",'ui.inspect(worlds=[f"qualification-{i:02d}" for i in range(6)]);\n',None,False),
+      ("thinking-screen","Optional: thinking qualification","Skip if direct passed; running this cell then makes zero calls. Otherwise supply your evidence-based competence reason only after direct failure without protocol errors. ≤12 first attempts; no automatic fallback or extra model candidate.",
+       'THINKING_COMPETENCE_REASON = None\nui.thinking_screen(THINKING_COMPETENCE_REASON);\n',"screen",True),
+      ("envelope","10. Check selected-mode headroom","The passing recorded mode is derived automatically. Two full-input/full-output probes, ≤2 first attempts. Require ≥1.5 GiB measured free headroom on each T4. Output forcing applies only to diagnostics. Restored/reloaded sessions use the separately charged reload recipe.",'ui.envelope();\n',"envelope",True)
     ]
-    for stage,title,description,body in stages:
-        markdown(f"## {stage} · {title}\n\n{description}\n")
-        code(body,stage.lower())
+    for args in stages: stage(*args)
+    for n in (1,2,3):
+        stage(f"pilot-{n}",f"{10+n}. Run pilot {n}",
+              f"Run **pilot {n} only**, including original team, literal retain/clear siblings and original/revised controls. ≤20 first attempts plus eligible contingency. Conversation, outcomes, costs and cumulative checkpoint appear automatically. Inspect/download before review; recovery errors alone do not fail the gate.",
+              f'ui.run("pilot", number={n});\n',"pilot",True)
+        stage(f"review-pilot-{n}",f"Review pilot {n}",
+              "Replace the None findings with actual True/False conclusions and write trace-based notes. Useful original communication is a human finding, not inferred from correct answers. Records only this review; no next pilot/freeze. Unreviewed never means approved.",
+              f'ui.review_pilot({n},\n    useful_communication=None,\n    usable=None,\n    notes="");\n',"review")
+    for args in [
+      ("pre-freeze","14. Review the main configuration","Read qualification, three pilot reviews, exact configuration and measured attempt/time forecast. This cell neither freezes nor generates.",'ui.preview_freeze();\n',None,False),
+      ("freeze","15. Freeze for main","Write actual review notes, then run to freeze accepted configuration. Gates require correct original teams/controls, valid protocol, documented communication/usability and adequate resources. Download the pre-main checkpoint. No main calls.",'FREEZE_NOTES = ""\nui.run("freeze", notes=FREEZE_NOTES);\n',"freeze",False),
+      ("prepare-batch","16. Prepare the next main batch","Prepare the next fixed two worlds, or return the existing incomplete scope. Change count to 1 explicitly for a one-world batch. Show IDs, remaining work, ≤19/38 first-attempt ceiling, eligible retry allowance and forecast. No generation. Repeat sections 16–18 only by choice.",'ui.run("prepare_batch", count=2);\n',"prepare_batch",False),
+      ("main-batch","17. Run the prepared main batch","Execute/resume only the saved scope: ≤19/38 first attempts plus eligible contingency. No next-batch preparation/execution. A completed saved batch displays results with zero calls. Interrupt requests pause; wait for settlement before export/closure.",'ui.run_batch();\n',"main",True),
+      ("review-batch","18. Inspect and acknowledge the batch","Inspect the previous output and complete conversation files; download the checkpoint, then run this acknowledgement. Saved batch ID is derived automatically; extra notes are optional. No claim of verified understanding/download. Return to section 16 or continue to reporting when all intended work is recorded.",'ui.review_batch(notes="");\n',"review",False),
+      ("report","19. Build the final or partial report","Read-only canonical reconstruction: twenty intended worlds, exact paired outcomes, unknown bounds, correct-prefix descriptive stratum, costs, failures, figures and limitations. No inference/reload. Download HTML/text/JSONL, CSV/plotting data and SVG/PNG.",'ui.final_report();\n',"report",False),
+      ("archive","20. Save and verify the final archive","Quiescent snapshot and exact fresh-directory analysis comparison, zero model calls. Save ZIP outside Kaggle. Save/download the executed notebook separately **without Save & Run All**. Links do not prove backup.",'ui.run("snapshot");\nui.verify_checkpoint();\n',"snapshot",False),
+      ("close","Finish the session","Run after saving the checkpoint and executed notebook. Close models/controller, then stop Kaggle through its UI. Process exit does not establish provider deallocation; partial outcomes remain partial.",'ui.run("close_models");\nui.run("shutdown");\n',"shutdown",False)
+    ]: stage(*args)
+    markdown("""## Recovery and support
+
+Copy the needed ordinary commands into a cell. These recipes do not execute
+merely by opening this appendix. Use the action matching saved state; never reset
+a study to work around a blocked gate.
+
+### Status, pause and a safe checkpoint
+
+    ui.run("status");
+    ui.run("pause");  # Request only; an admitted call may still be active.
+    # Wait for settlement / confirmed bounded termination, then:
+    ui.run("snapshot");
+
+Interrupting a generation cell already requests pause. Do not infer process death
+from a stale PID or claim interrupt immediately produced a safe checkpoint.
+
+### Reopen or restore
+
+For intact files after kernel restart, rerun workspace/runtime setup as needed,
+set START_MODE = "reopen" and fresh actual session deadline/evidence, then Open
+the study. The ownership lock refuses a second live controller.
+
+For another session, attach the **matching source release** and exact downloaded
+checkpoint. Set START_MODE = "restore"; uncomment the restore values in the
+configuration cell and record genuine latest-boundary or unknown-tail evidence.
+Restore into a fresh writable directory. ZIP and expanded roots both work.
+No archive is chosen by timestamp; a missing ZIP never silently creates a study.
+
+After reopening/restoring: self-check, reuse/download weights, then load workers.
+New session/replacement workers need **two contingency-charged probes**:
+
+    ui.envelope(reload=True);
+    ui.run_batch();  # Resume only a saved interrupted main scope.
+
+Do not redo already accepted readiness/qualification just to restore the study.
+Completed calls reuse durable raw replies without generation. Load/reload evidence
+remains recorded; diagnostics, retries and warmups never disappear from accounting.
+
+### Reconcile missing outcomes or termination evidence
+
+Only after observed prior process/session exit, supply exact identifiers/evidence:
+
+    ui.client.command("reconcile", slot=0, attempt=EXACT_ATTEMPT_ID,
+        evidence={"termination_confirmed": True, "reason": "Actual observed exit"});
+    ui.client.command("confirm_timeout_termination", slot=0, call="EXACT_CALL_ID",
+        evidence={"termination_confirmed": True, "reason": "Actual observed exit"});
+
+Admitted calls without durable output stay spent/unknown. Only one identical
+pre-persistence infrastructure retry is eligible after confirmed termination.
+Recorded timeouts, wrong, malformed or truncated replies never retry.
+
+If saved bytes predate lost work, report partial recovery. Provide a defensible
+spending bound and affected worlds; unbounded unknown spending blocks generation
+while allowing reports:
+
+    ui.client.command("lost_spending",
+        gap={"resolved": True, "upper": ACTUAL_UPPER_BOUND, "evidence": "Actual evidence"},
+        affected_worlds=["main-XX"]);
+    # For unbounded loss: resolved=False, upper=None. Never assume zero.
+
+### Complete inspection, annotation and read-only reporting
+
+    ui.inspect(world="pilot-00", phase="retain", agent=0, audit_limit=None);
+    ui.links(all_files=True);
+    ui.annotate("unique-review-id", "ambiguous", ["exact/call/id"], "Trace-based notes");
+
+Filtering changes only this view. Private submissions, truth and thinking are
+audit material, never partner input. Thinking is not a faithful explanation.
+No LLM judge is used.
+
+With an initialized controller use ui.final_report(). With only intact files,
+the same method reconstructs reports read-only without creating workers/CUDA.
+Outside the notebook, use its exact saved source:
+
+    python scripts/i01_course.py --source SOURCE --run EXTRACTED status
+    python scripts/i01_course.py --source SOURCE --run EXTRACTED report --output REPORT_DIR
+
+A previous checkpoint uses its exact saved source release for inference.
+Reports remain readable; a UI update cannot replace its scientific evidence.
+""")
     return dict(nbformat=4,nbformat_minor=5,cells=cells,
                 metadata=dict(kernelspec=dict(display_name="Python 3",language="python",name="python3"),
-                              language_info=dict(name="python"),
-                              kaggle=dict(accelerator="gpu",isInternetEnabled=True),
-                              i01=dict(regime="i01-course-v1",research_execution="explicit controls only",kaggle_verified=False)))
+                              language_info=dict(name="python"),kaggle=dict(accelerator="gpu",isInternetEnabled=True),
+                              i01=dict(regime="i01-course-v1",research_execution="ordinary cells; one explicit bounded stage",
+                                       run_all_can_execute_inference=True,kaggle_verified=False)))
 
 
 def build(path):
