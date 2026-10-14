@@ -468,114 +468,6 @@ Do not add live delayed resets, revision-time/direction sweeps, completion-reope
 
 The intended contribution is a **controlled account of when previously acquired evidence, retained outputs, historical change information, and peer interaction help or hinder recovery**. Useful findings include a compact practical policy, limits of correction broadcasting, harmful or beneficial effects on collaborators, costly loss of correct work, or well-bounded evidence that simpler recovery suffices. Inconclusive intervals and capability failures must remain visible. A completed, reproducible negative result is preferable to a stronger claim unsupported by the available observations.
 
-## 12. Adopted I-01 course regime
-
-Adopted 14 October 2026 by the user's explicit approval of the reviewed
-[I-01 WBS](docs/plans/i01-course-implementation-wbs.md). This is a separately
-identified controlled recovery extension of native SILO-BENCH I-01. Sections
-1–11 and their historical artifacts retain their own meaning; their schedules,
-Run All policy, fallback models, gates and hour ceilings do not govern I-01.
-Implementation approval authorizes no inference, qualification, pilot or main run.
-
-The question is the practical effect of retaining versus clearing a short
-distributed conversation after withdrawing its previously winning value. Use
-two agents with twenty independent uniform integers each in −1000…1000. An
-eligible world has a unique global maximum at record r and remaining maximum
-M2 > −1000. Replace r uniformly in [−1000, M2−1]. Reject mathematical
-ineligibility only, at most 1,000 proposals per saved world. Save actual inputs,
-edit, rejection count, independent seeds, orders and placement before inference.
-Six qualification, three pilot and twenty main worlds are disjoint. Never
-select or replace a world using model outcomes. Each main world has one realized
-prefix, retain and clear siblings, and one revised full-information control.
-Each pilot also has original and revised controls. Qualification evaluates both
-inputs of each of six worlds. Controls use one scalar action with no messaging.
-
-Current private shards are authoritative. Retain keeps each agent's own
-previously visible messages and explicit submissions literally; clear erases
-those. No private reasoning is retained. Both agents receive the changed
-owner/record identity; only the owner sees its new value/current shard. Before
-values, truth, partner private shards/submissions, future edits, treatment labels
-and eligibility rules stay outside prompts. Messages are ordinary bounded text,
-with no host certification. Submission values are private unless messaged.
-
-An action is one JSON object with exactly `message` (string or null), `submit`
-(strict integer or null), and `wait` (boolean). Waiting excludes other actions;
-an empty non-wait action is invalid. Submission is final within a phase.
-Send-and-submit delivers the explicit message then finishes the sender. Later
-messages remain archived without invalidation. The revision alone reopens both
-agents. At most three invocations per agent/six per phase, with no transferred
-turns. Waiting wakes on a delivered message. Stop on both submissions, exhausted
-opportunities or inability of unfinished agents to progress, irrespective of
-correctness. Invalid/truncated replies deliver nothing and consume their turn;
-at most 32 native tokens of nonsemantic feedback may appear on a later legal
-turn. Known terminal timeouts consume attempt and turn and never inherit an
-answer. Unresolved calls stop admission until reconciled.
-
-Five main worlds occupy each changed-owner/recovery-first-speaker combination.
-Prefix first speaker equals recovery first speaker. Match sibling per-agent
-invocation seeds and recovery order; balance physical treatment order and keep
-sibling episodes on one logical GPU slot. Share only the prefix; never replay
-continuation answers across treatments. Exact resume reuses recorded raw output.
-
-Use pinned Qwen3.5-9B revision c202236235762e1c871ad0ccb60c8ee5ba337b9a,
-text-only NF4 double quantization, FP16 and the reviewed T4 attention runtime.
-Direct first: temperature 0.7/top-p 0.8/top-k 20, repetition penalty 1,
-presence penalty 0, maximum 512 output tokens. Thinking is conditional only on
-a documented direct competence limitation without protocol defects:
-1.0/0.95/20, maximum 4,096 total output tokens and 512 visible final tokens.
-Both have 8,192 input tokens (resident bounds 8,704/12,288). Retain all generated
-tokens/latency and separate thinking in the audit. Never carry thinking forward.
-Use fresh call-owned KV/recurrent state and finite-score checks. Provisional
-load/direct/thinking deadlines are 600/180/900 seconds with bounded cleanup;
-freeze observed adequate selected bounds before main. No extra model candidate.
-
-Hard admission is 500 new physical attempts: at most 380 main, 60 pilot,
-24 qualification, eight hardware/state and 28 contingency. Direct-only planned
-first attempts are 460, conditional-thinking maximum 472. Unused capacity adds
-no worlds. Keep the prior 45 attempts separate. All warmups/diagnostics, failures
-and retries count; loads/downloads do not. One identical infrastructure retry is
-permitted only without a durable outcome and with confirmed prior termination.
-Wrong/malformed/truncated answers and recorded timeouts never retry. Persist
-admission before dispatch, raw outcome before effects, and atomically checkpoint
-effects. A single controller admits across two explicitly named WAL/FULL worker
-databases. No unbounded lost-session spending is assumed zero.
-
-Actual-host prerequisites are source/dependency/restore/self-check acceptance,
-two distinct T4s, six short state checks, ≥11/12 correct full-information
-controls with zero malformed/truncated actions, and two selected-mode full
-envelopes with ≥1.5 GiB measured free headroom on each device. Force output
-reserve only in envelope diagnostics. Three separately executed pilots require
-correct original teams, six correct controls, useful original communication,
-valid protocol, inspectable exports and an adequate measured attempt/time
-forecast. Recovery errors or effect direction alone do not fail a gate.
-Freeze configuration, inputs, schedule, prompts, runtime, bounds, endpoints and
-rubric explicitly before main. Main scopes are fixed one/two-world actions;
-success never automatically authorizes a next stage. Preserve session deadline
-margin for calls, termination and export; actual Kaggle allowance is operator
-evidence, not an invented quota. Reports and inspection keep resident weights.
-
-Team success means both exact revised submissions within bounds. Recorded
-terminal failures score zero; unexecuted/unresolved episodes are unknown.
-Include all twenty intended worlds and a separate correct-prefix descriptive
-stratum. Show paired counts and clear-minus-retain contrast, unknown bounds and
-10,000 seeded 95% exploratory world-bootstrap draws within the four fixed
-schedule strata, preserving siblings; qualify degeneracy and small sample.
-Principal effort is post-revision ready-model inference seconds. Report calls,
-tokens/messages and accuracy jointly, loading/setup/observed allocation/unknown
-costs separately. Charge the prefix once physically and to both hypothetical
-end-to-end policies logically. Freeze the trace rubric listed in
-`configs/i01-course.json`; human annotations need trace references and ambiguous
-mechanisms stay ambiguous. No LLM judge or arbitrary accuracy/cost score.
-
-Deliver full prompt/output/token/conversation evidence, tables, SVG/PNG figures,
-partial/final reports, exact source/runtime/input identities and portable
-quiescent SQLite backups with safe ZIP/extracted-directory restoration. Missing
-bytes or unbounded lost spending block continuation, not read-only reporting.
-Final executed notebook and off-session downloads are operator responsibilities.
-No native-benchmark score, correction-specific, pure-anchoring, broad
-generalization or multi-agent-superiority claim is licensed. Publication remains
-separately authorized.
-
 ## 11. Adopted ABS/IIS course regime
 
 ### 11.1 Scope and precedence
@@ -800,3 +692,111 @@ regime with fixed two-family/eight-world scopes and conditional continuation
 repeatability. Keep uncertainty, inactive treatments, failures and unfavorable
 results visible. Do not pool course/development/thesis outcomes, claim a universal
 best policy or replace outstanding thesis admission and execution obligations.
+
+## 12. Adopted I-01 course regime
+
+Adopted 14 October 2026 by the user's explicit approval of the reviewed
+[I-01 WBS](docs/plans/i01-course-implementation-wbs.md). This is a separately
+identified controlled recovery extension of native SILO-BENCH I-01. Sections
+1–11 and their historical artifacts retain their own meaning; their schedules,
+Run All policy, fallback models, gates and hour ceilings do not govern I-01.
+Implementation approval authorizes no inference, qualification, pilot or main run.
+
+The question is the practical effect of retaining versus clearing a short
+distributed conversation after withdrawing its previously winning value. Use
+two agents with twenty independent uniform integers each in −1000…1000. An
+eligible world has a unique global maximum at record r and remaining maximum
+M2 > −1000. Replace r uniformly in [−1000, M2−1]. Reject mathematical
+ineligibility only, at most 1,000 proposals per saved world. Save actual inputs,
+edit, rejection count, independent seeds, orders and placement before inference.
+Six qualification, three pilot and twenty main worlds are disjoint. Never
+select or replace a world using model outcomes. Each main world has one realized
+prefix, retain and clear siblings, and one revised full-information control.
+Each pilot also has original and revised controls. Qualification evaluates both
+inputs of each of six worlds. Controls use one scalar action with no messaging.
+
+Current private shards are authoritative. Retain keeps each agent's own
+previously visible messages and explicit submissions literally; clear erases
+those. No private reasoning is retained. Both agents receive the changed
+owner/record identity; only the owner sees its new value/current shard. Before
+values, truth, partner private shards/submissions, future edits, treatment labels
+and eligibility rules stay outside prompts. Messages are ordinary bounded text,
+with no host certification. Submission values are private unless messaged.
+
+An action is one JSON object with exactly `message` (string or null), `submit`
+(strict integer or null), and `wait` (boolean). Waiting excludes other actions;
+an empty non-wait action is invalid. Submission is final within a phase.
+Send-and-submit delivers the explicit message then finishes the sender. Later
+messages remain archived without invalidation. The revision alone reopens both
+agents. At most three invocations per agent/six per phase, with no transferred
+turns. Waiting wakes on a delivered message. Stop on both submissions, exhausted
+opportunities or inability of unfinished agents to progress, irrespective of
+correctness. Invalid/truncated replies deliver nothing and consume their turn;
+at most 32 native tokens of nonsemantic feedback may appear on a later legal
+turn. Known terminal timeouts consume attempt and turn and never inherit an
+answer. Unresolved calls stop admission until reconciled.
+
+Five main worlds occupy each changed-owner/recovery-first-speaker combination.
+Prefix first speaker equals recovery first speaker. Match sibling per-agent
+invocation seeds and recovery order; balance physical treatment order and keep
+sibling episodes on one logical GPU slot. Share only the prefix; never replay
+continuation answers across treatments. Exact resume reuses recorded raw output.
+
+Use pinned Qwen3.5-9B revision c202236235762e1c871ad0ccb60c8ee5ba337b9a,
+text-only NF4 double quantization, FP16 and the reviewed T4 attention runtime.
+Direct first: temperature 0.7/top-p 0.8/top-k 20, repetition penalty 1,
+presence penalty 0, maximum 512 output tokens. Thinking is conditional only on
+a documented direct competence limitation without protocol defects:
+1.0/0.95/20, maximum 4,096 total output tokens and 512 visible final tokens.
+Both have 8,192 input tokens (resident bounds 8,704/12,288). Retain all generated
+tokens/latency and separate thinking in the audit. Never carry thinking forward.
+Use fresh call-owned KV/recurrent state and finite-score checks. Provisional
+load/direct/thinking deadlines are 600/180/900 seconds with bounded cleanup;
+freeze observed adequate selected bounds before main. No extra model candidate.
+
+Hard admission is 500 new physical attempts: at most 380 main, 60 pilot,
+24 qualification, eight hardware/state and 28 contingency. Direct-only planned
+first attempts are 460, conditional-thinking maximum 472. Unused capacity adds
+no worlds. Keep the prior 45 attempts separate. All warmups/diagnostics, failures
+and retries count; loads/downloads do not. One identical infrastructure retry is
+permitted only without a durable outcome and with confirmed prior termination.
+Wrong/malformed/truncated answers and recorded timeouts never retry. Persist
+admission before dispatch, raw outcome before effects, and atomically checkpoint
+effects. A single controller admits across two explicitly named WAL/FULL worker
+databases. No unbounded lost-session spending is assumed zero.
+
+Actual-host prerequisites are source/dependency/restore/self-check acceptance,
+two distinct T4s, six short state checks, ≥11/12 correct full-information
+controls with zero malformed/truncated actions, and two selected-mode full
+envelopes with ≥1.5 GiB measured free headroom on each device. Force output
+reserve only in envelope diagnostics. Three separately executed pilots require
+correct original teams, six correct controls, useful original communication,
+valid protocol, inspectable exports and an adequate measured attempt/time
+forecast. Recovery errors or effect direction alone do not fail a gate.
+Freeze configuration, inputs, schedule, prompts, runtime, bounds, endpoints and
+rubric explicitly before main. Main scopes are fixed one/two-world actions;
+success never automatically authorizes a next stage. Preserve session deadline
+margin for calls, termination and export; actual Kaggle allowance is operator
+evidence, not an invented quota. Reports and inspection keep resident weights.
+
+Team success means both exact revised submissions within bounds. Recorded
+terminal failures score zero; unexecuted/unresolved episodes are unknown.
+Include all twenty intended worlds and a separate correct-prefix descriptive
+stratum. Show paired counts and clear-minus-retain contrast, unknown bounds and
+10,000 seeded 95% exploratory world-bootstrap draws within the four fixed
+schedule strata, preserving siblings; qualify degeneracy and small sample.
+Principal effort is post-revision ready-model inference seconds. Report calls,
+tokens/messages and accuracy jointly, loading/setup/observed allocation/unknown
+costs separately. Charge the prefix once physically and to both hypothetical
+end-to-end policies logically. Freeze the trace rubric listed in
+`configs/i01-course.json`; human annotations need trace references and ambiguous
+mechanisms stay ambiguous. No LLM judge or arbitrary accuracy/cost score.
+
+Deliver full prompt/output/token/conversation evidence, tables, SVG/PNG figures,
+partial/final reports, exact source/runtime/input identities and portable
+quiescent SQLite backups with safe ZIP/extracted-directory restoration. Missing
+bytes or unbounded lost spending block continuation, not read-only reporting.
+Final executed notebook and off-session downloads are operator responsibilities.
+No native-benchmark score, correction-specific, pure-anchoring, broad
+generalization or multi-agent-superiority claim is licensed. Publication remains
+separately authorized.

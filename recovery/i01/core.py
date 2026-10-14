@@ -48,9 +48,19 @@ def eligible(shards):
 def make_world(master, group, index, owner, first):
     identity = f"{group}-{index:02d}"
     rng = random.Random(seed_for(master, identity, "world"))
+    rejections=dict(nonunique_maximum=0,remaining_at_floor=0,owner_block=0)
     for proposal in range(1, 1001):
         shards = [[rng.randint(-1000, 1000) for _ in range(20)] for _ in range(2)]
-        if not eligible(shards) or oracle(shards) not in shards[owner]:
+        values=[v for shard in shards for v in shard]
+        winner=oracle(shards)
+        if values.count(winner)!=1:
+            rejections["nonunique_maximum"]+=1
+            continue
+        if max(v for v in values if v!=winner)<=-1000:
+            rejections["remaining_at_floor"]+=1
+            continue
+        if winner not in shards[owner]:
+            rejections["owner_block"]+=1
             continue
         row = shards[owner].index(oracle(shards))
         remaining = [v for a, s in enumerate(shards) for j, v in enumerate(s) if (a, j) != (owner, row)]
@@ -61,6 +71,7 @@ def make_world(master, group, index, owner, first):
         world = dict(id=identity, group=group, index=index, original=shards, revised=revised,
                      owner=owner, row=row, before=shards[owner][row], after=replacement,
                      original_truth=oracle(shards), revised_truth=oracle(revised), proposals=proposal,
+                     rejections=rejections,
                      first=first, device=index % 2, treatments=["retain", "clear"] if index % 2 == 0 else ["clear", "retain"])
         world["seeds"] = {phase: [[seed_for(master, identity, phase, a, k) for k in range(3)]
                                   for a in range(2)] for phase in ("prefix", "recovery")}

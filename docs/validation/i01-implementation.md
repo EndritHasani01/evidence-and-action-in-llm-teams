@@ -57,3 +57,28 @@ mode screens, selected/reload envelopes, individual pilots, human reviews,
 explicit freeze, prepared one/two-world batches, pause, annotations, read-only
 analysis, complete reports/figures, snapshots and shutdown. Two-world batches
 use one serial child per slot, global admission, and shared quiescent boundaries.
+
+## Final integration and notebook checks
+
+The final focused integration suite has six tests (latest run: 19.185 seconds),
+including parallel scripted writers and exact fresh-snapshot reconstruction.
+The packaged 499/500 check now races two admissions and permits exactly one.
+Snapshots stop registration as well as generation/effects across both writers;
+their reopened analysis matches live outcomes, costs, traces and gates exactly.
+Terminal timeouts preserve observed dispatch time separately from unknown
+ready-model time. Load/reload/close records are idempotent, and failed loads
+require no fictitious generation. Missing-session spending requires a bound and
+affected world IDs; lost prefixes cannot be silently regenerated.
+
+N00–N24 exist in `notebooks/i01_course_kaggle.ipynb`. All 24 code cells compile,
+have empty outputs, and pass notebook schema/order checks. Executing the 23
+post-bootstrap cells against a rendering-only stub produces 35 control panels
+and starts zero actions. The paired-outcome PNG was inspected visually; its
+20 unknown main worlds are labelled as unexecuted, not failures. Local Markdown
+links and `git diff --check` pass. Sections 1–11 of the scientific specification
+compare exactly to baseline `0b0a44a` after newline normalization.
+
+Actual Kaggle widgets/download links, native tokenizer bounds/framing, Linux
+installation and T4 process residency/cleanup remain target-host checks. The
+prepared GPU readiness/envelope/competence/pilot/freeze/main paths have not been
+executed on a pretrained model. All intended I-01 main outcomes remain unknown.

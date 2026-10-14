@@ -7,7 +7,7 @@
   ],
   "native_tokenizer": false,
   "tokenizer": null,
-  "executed_at": "2026-10-14T12:22:28.863447+00:00",
+  "executed_at": "2026-10-14T12:58:52.901698+00:00",
   "model_attempts": 0,
   "environment": "scripted temporary DBs; no model loaded"
 }

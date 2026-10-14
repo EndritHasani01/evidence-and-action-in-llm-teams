@@ -58,6 +58,7 @@ def analysis(run):
         attempts.append(dict(row, episode=calls[row["call_id"]]["episode"], seed=req["seed"],
                              settings=req["settings"], input_tokens=outcome.get("input_tokens", len(req.get("input_ids", []))),
                              generated_tokens=outcome.get("generated_tokens"), ready_seconds=outcome.get("ready_seconds"),
+                             dispatch_seconds=outcome.get("dispatch_seconds"),observed_seconds=outcome.get("observed_seconds",outcome.get("dispatch_seconds",outcome.get("ready_seconds"))),
                              termination=outcome.get("termination"), device=outcome.get("backend", {}).get("device"),
                              pid=outcome.get("backend", {}).get("pid")))
     world_rows, cost_rows = [], []
@@ -73,7 +74,7 @@ def analysis(run):
                      input_tokens=sum(v["input_tokens"] for v in a),
                      generated_tokens=None if any(v["generated_tokens"] is None for v in a) else sum(v["generated_tokens"] for v in a),
                      ready_seconds=None if any(v["ready_seconds"] is None for v in a) else sum(v["ready_seconds"] for v in a),
-                     observed_seconds=sum(v["ready_seconds"] or 0 for v in a),
+                     observed_seconds=sum(v["observed_seconds"] or 0 for v in a),
                      messages=sum(ev.get("action", {}).get("message") is not None for ev in (e or {}).get("events", []) if ev.get("action")))
             if e is None:
                 c.update(ready_seconds=None, generated_tokens=None)
@@ -127,10 +128,12 @@ def analysis(run):
                 generated_tokens=recovery["generated_tokens"] if recovery["complete"] else None,
                 paired_category=("unknown" if w["retain"] is None or w["clear"] is None else "both" if w["retain"] and w["clear"] else "retain_only" if w["retain"] else "clear_only" if w["clear"] else "neither")))
     summary["physical_ready_seconds_observed"]=sum(a["ready_seconds"] or 0 for a in attempts)
+    summary["physical_dispatch_seconds_observed"]=sum(a["observed_seconds"] or 0 for a in attempts)
     summary["attempts_unknown_ready_seconds"]=sum(a["ready_seconds"] is None for a in attempts)
     summary["generated_tokens_observed"]=sum(a["generated_tokens"] or 0 for a in attempts)
     summary["attempts_unknown_generated_tokens"]=sum(a["generated_tokens"] is None for a in attempts)
     summary["model_load_seconds_observed"]=sum(json.loads(s["evidence"]).get("load",{}).get("load_seconds",0) for s in tables["sessions"])
+    summary["failed_model_load_seconds_observed"]=sum(json.loads(s["evidence"]).get("load_seconds") or 0 for s in tables["sessions"] if json.loads(s["evidence"]).get("load_failure"))
     summary["provider_assignment_release"]= "unknown unless supplied separately; observation and process exit do not establish allocation boundaries"
     paired_costs=[]
     for w in main:
@@ -183,6 +186,7 @@ def figures(result, out):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    from matplotlib.ticker import MaxNLocator
     out = Path(out)
     out.mkdir(exist_ok=True)
     main = [w for w in result["worlds"] if w["group"] == "main"]
@@ -190,18 +194,26 @@ def figures(result, out):
     plots = []
     fig, ax = plt.subplots(figsize=(7, 3.6), layout="constrained")
     cats = ["both", "retain_only", "clear_only", "neither", "unknown"]
-    ax.bar(cats, [result["summary"]["paired_counts"].get(c,0) for c in cats], color=["#297c71", "#a26635", "#596dce", "#b84b50", "#999999"])
+    ax.bar(["Both correct","Retain only","Clear only","Neither","Unknown"], [result["summary"]["paired_counts"].get(c,0) for c in cats], color=["#297c71", "#a26635", "#596dce", "#b84b50", "#999999"])
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     ax.set(ylabel="Worlds (intended n=20)", title="Paired exact recovery success")
     plots.append(("paired-outcomes", fig))
     for metric in ("ready_seconds", "calls", "generated_tokens"):
         fig, ax = plt.subplots(figsize=(9,4), layout="constrained")
         for phase, color in (("retain", "#a26635"), ("clear", "#596dce")):
+            labeled=False
             for i, w in enumerate(main):
                 c = costs[(w["id"],phase)]
                 value = c[metric] if c["complete"] else None
                 if value is not None:
-                    ax.scatter(i+1, value, c=color, marker="o" if w[phase] == 1 else "x", label=phase if i == 0 else None)
+                    ax.scatter(i+1, value, c=color, marker="o" if w[phase] == 1 else "x", label=phase if not labeled else None)
+                    labeled=True
+        for i,w in enumerate(main):
+            r,c=costs[(w["id"],"retain")],costs[(w["id"],"clear")]
+            if r["complete"] and c["complete"] and r[metric] is not None and c[metric] is not None:
+                ax.plot([i+1,i+1],[r[metric],c[metric]],color="#c5c5c5",linewidth=1,zorder=0)
         ax.set(xlabel="Fixed main world index", ylabel=metric.replace("_", " "), title="Recovery cost; circles success, crosses unsuccessful; unknown omitted")
+        ax.set_xlim(.5,20.5); ax.set_xticks(range(1,21)); ax.tick_params(axis="x",labelsize=9)
         handles, labels = ax.get_legend_handles_labels()
         if handles:
             ax.legend()
@@ -211,6 +223,11 @@ def figures(result, out):
     ax.barh(list(reasons), list(reasons.values()), color="#566d80")
     ax.set(xlabel="Episodes", title="Procedural termination / coverage")
     plots.append(("termination-coverage", fig))
+    fig,ax=plt.subplots(figsize=(8,3.6),layout="constrained")
+    failures=Counter(r["label"] for r in result["failure_analysis"]) or {"no recorded failure labels":0}
+    ax.barh(list(failures),list(failures.values()),color="#aa5f59")
+    ax.set(xlabel="Episodes with observable label (labels can overlap)",title="Observable failure audit; no inferred internal mechanism")
+    plots.append(("failure-labels",fig))
     for name, fig in plots:
         for ext in ("svg", "png"):
             fig.savefig(out/f"{name}.{ext}", dpi=180)
@@ -225,6 +242,7 @@ def write_report(run, out, *, plot=True):
     for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions"):
         csv_file(out/(name+".csv"), result[name])
     csv_file(out/"plotting-data.csv", result["costs"])
+    csv_file(out/"plotting-outcomes.csv", result["worlds"])
     (out/"paired-results.csv").write_text("category,worlds\n" + "".join(f"{k},{v}\n" for k,v in result["summary"]["paired_counts"].items()), encoding="utf-8")
     traces = result["traces"]
     (out/"conversations.jsonl").write_text("".join(canonical(dict(record_type="episode_checkpoint",**e))+"\n" for e in result["episodes"])+"".join(canonical(dict(record_type="call",**t))+"\n" for t in traces), encoding="utf-8")
@@ -260,7 +278,17 @@ def write_report(run, out, *, plot=True):
                  "Save the executed notebook separately and download the latest portable archive off session.\n\n"
                  "```json\n"+json.dumps(s,indent=2)+"\n```\n")
     (out/"overview.md").write_text(narrative,encoding="utf-8")
-    (out/"overview.html").write_text('<!doctype html><meta charset="utf-8"><title>I-01 report</title><h1>I-01 report</h1><a href="conversations.html">All conversations</a><pre style="white-space:pre-wrap">'+escape(narrative)+'</pre>',encoding="utf-8")
+    html=['<!doctype html><meta charset="utf-8"><title>I-01 research report</title><style>body{font:16px system-ui;line-height:1.5;max-width:1200px;margin:2rem auto;padding:0 1rem;color:#243345}header{border-bottom:3px solid #297c71;padding-bottom:1rem}.cards{display:flex;gap:1rem;flex-wrap:wrap}.card{background:#edf3f5;padding:1rem;border-radius:8px;min-width:180px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:.5rem;border-bottom:1px solid #dae1e5;text-align:left}pre{white-space:pre-wrap;overflow-wrap:anywhere}img{max-width:100%}</style>',
+          f'<header><h1>I-01 distributed-team recovery</h1><p>Controlled recovery extension of SILO-BENCH I-01 · {escape(s["status"])} evidence</p><a href="conversations.html">Browse every prompt, action and raw audit outcome</a></header>',
+          f'<div class="cards"><div class="card">Known pairs<br><b>{s["known_pairs"]}/20</b></div><div class="card">Physical attempts<br><b>{s["attempts"]}/500</b></div><div class="card">Correct-prefix stratum<br><b>{s["correct_prefix_denominator"]}</b></div><div class="card">Clear minus retain<br><b>{s["clear_minus_retain"]}</b></div></div>',
+          '<h2>All intended worlds</h2><p>Unknown is distinct from a recorded unsuccessful outcome. Controls never select the population.</p><table><tr><th>World</th><th>Group</th><th>Old truth</th><th>New truth</th><th>Prefix</th><th>Retain</th><th>Clear</th></tr>']
+    for w in result["worlds"]:
+        html.append('<tr>'+''.join('<td>'+escape(str(w[k]) if w[k] is not None else 'unknown')+'</td>' for k in ("id","group","original_truth","revised_truth","prefix","retain","clear"))+'</tr>')
+    html.append('</table><h2>Paired results and costs</h2><p><a href="paired-results.csv">Paired outcomes</a> · <a href="paired_costs.csv">Paired costs</a> · <a href="attempts.csv">Attempt ledger</a> · <a href="failure_analysis.csv">Observable failure audit</a> · <a href="analysis.json">Complete reconstruction</a></p>')
+    if plot:
+        html.extend(f'<h3>{name}</h3><img src="figures/{name}.svg" alt="{name}">' for name in ("paired-outcomes","recovery-ready_seconds","recovery-calls","recovery-generated_tokens","failure-labels","termination-coverage"))
+    html.append('<h2>Interpretation, gates and limitations</h2><pre>'+escape(narrative)+'</pre>')
+    (out/"overview.html").write_text('\n'.join(html),encoding="utf-8")
     if plot:
         figures(result, out/"figures")
     return dict(directory=str(out), summary=s, files=[p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file()])

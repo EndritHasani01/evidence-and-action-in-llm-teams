@@ -149,6 +149,10 @@ class Session:
         runtime_inventory(self.run/"source")
         if any(r["status"]=="admitted" for s in self.stores for r in s.rows("attempts")):
             raise ValueError("reconcile prior admitted attempts and confirm old process exit before loading replacements")
+        for s in self.stores:
+            for c in s.rows("calls"):
+                if c["outcome"] and json.loads(c["outcome"]).get("termination_pending") and not s.meta("timeout_termination/"+c["id"],{}).get("termination_confirmed"):
+                    raise ValueError("prior timeout termination must be confirmed before replacement loading")
         if self.remaining_time() is None or self.remaining_time() < 600 + self.config["export_reserve_seconds"]:
             raise ValueError("set current observed session deadline before load")
         from .inference import ModelFactory
@@ -161,16 +165,32 @@ class Session:
         replacing = self.meta.meta("loaded_session") is not None and any(w is None or getattr(w,"process",None) is None for w in self.workers)
         try:
             for slot in range(2):
+                if self.remaining_time()<self.config["load_timeout_seconds"]+2*self.config["termination_seconds"]+self.config["export_reserve_seconds"]:
+                    raise ValueError("insufficient session time for next bounded load and export")
                 if self.workers[slot] is None:
                     self.workers[slot] = Resident(ModelFactory(self.config,str(slot),str(snapshot)),self.config["termination_seconds"])
+                prior_process=self.workers[slot].process
+                already_resident=prior_process is not None and prior_process.is_alive()
                 reports.append(self.workers[slot].load(self.config["load_timeout_seconds"]))
-                evidence = dict(slot=slot, host=host, load=reports[-1], session=self.session_id)
+                actual=reports[-1]["cuda_device_uuid"].lower().removeprefix("gpu-")
+                expected=host["gpus"][slot]["uuid"].lower().removeprefix("gpu-")
+                if actual!=expected:
+                    raise ValueError("resident replica UUID differs from selected physical T4 slot")
+                if not already_resident:
+                    evidence = dict(slot=slot, host=host, load=reports[-1], session=self.session_id,
+                                    controller_pid=os.getpid(),window=self.meta.meta("window"))
+                    n=sum(json.loads(r["evidence"]).get("session")==self.session_id for r in self.stores[slot].rows("sessions"))
+                    with self.stores[slot].transaction():
+                        self.stores[slot].db.execute("INSERT INTO sessions VALUES (?,?)",(f"{self.session_id}/load-{n}",canonical(evidence)))
+        except BaseException as error:
+            w=self.workers[slot]
+            if w is not None:
+                value=dict(session=self.session_id,slot=slot,host=host,load_failure=str(error),
+                           load_seconds=getattr(w,"load_seconds",None),termination=getattr(w,"last_stop",None))
+                n=len(self.stores[slot].rows("sessions"))
                 with self.stores[slot].transaction():
-                    self.stores[slot].db.execute("INSERT OR REPLACE INTO sessions VALUES (?,?)",(self.session_id,canonical(evidence)))
-        except BaseException:
-            for w in self.workers:
-                if w is not None:
-                    w.close()
+                    self.stores[slot].db.execute("INSERT INTO sessions VALUES (?,?)",(f"{self.session_id}/load-failure-{n}",canonical(value)))
+            self.close_models()
             raise
         self.meta.put_meta("loaded_session", self.session_id)
         if replacing and self.meta.meta("envelope"):
@@ -188,31 +208,6 @@ class Session:
     def call(self, slot, identity, episode, request, stage, *, contingency=False):
         from .process import InfrastructureLost
         store = self.stores[slot]
-        store.register(identity,episode,request)
-        row = store.call(identity)
-        if row["outcome"] is not None:
-            return json.loads(row["outcome"])
-        if self.pause.is_set():
-            raise Paused("pause requested before new admission")
-        if self.meta.meta("model_defect"):
-            raise ValueError("recorded model/runtime defect requires diagnosis before any generation")
-        worker = self.workers[slot]
-        if worker is None:
-            raise ValueError("resident worker required")
-        if hasattr(worker,"process") and (worker.process is None or not worker.process.is_alive() or worker.unconfirmed):
-            raise ValueError("explicit resident reload required before any further admission")
-        if any(r["status"]=="admitted" and r["call_id"] not in self.active_calls for s in self.stores for r in s.rows("attempts")):
-            raise ValueError("unresolved prior attempt blocks dispatch until confirmed reconciliation")
-        for s in self.stores:
-            for c in s.rows("calls"):
-                if c["outcome"] and json.loads(c["outcome"]).get("termination_pending") and not s.meta("timeout_termination/"+c["id"],{}).get("termination_confirmed"):
-                    raise ValueError("preceding timeout termination remains unconfirmed")
-        mode = request["settings"]["mode"]
-        timeout = self.config[mode+"_timeout_seconds"]
-        if self.remaining_time() is None or self.remaining_time() <= timeout+2*self.config["termination_seconds"]+self.config["export_reserve_seconds"]:
-            raise ValueError("insufficient session time for bounded call, termination and export")
-        if self.meta.meta("blocked_worlds") and episode.split("/")[0] in self.meta.meta("blocked_worlds"):
-            raise ValueError("lost evidence in this world; automatic regeneration prohibited")
         with self.quiescence:
             while self.snapshot_requested:
                 self.quiescence.wait()
@@ -220,24 +215,48 @@ class Session:
             self.meta.put_meta("active_generation", True)
         returned = False
         try:
-            while True:
-                attempt = self.admission.admit(store,identity,stage,contingency=contingency)
-                self.emit("admitted", call=identity, slot=slot, attempt=attempt, usage=self.admission.usage())
-                try:
-                    outcome = worker.obtain(request,timeout)
-                except InfrastructureLost as error:
-                    self.admission.reconcile(store,attempt,dict(error.evidence,reason="confirmed infrastructure interruption"))
-                    # A retry requires a separately explicit load command; never hide a reload.
-                    raise ValueError("interrupted attempt retained; explicitly reload then resume exact scope") from error
-                store.raw(identity,attempt,outcome)
-                if outcome.get("termination_pending"):
-                    evidence = worker.close()
-                    store.put_meta("timeout_termination/"+identity,evidence)
-                if outcome.get("failure") == "provider_defect" or outcome.get("framing_error"):
-                    self.meta.put_meta("model_defect", dict(call=identity,outcome=outcome))
-                self.emit("raw_persisted",call=identity,outcome=outcome)
-                returned = True
-                return outcome
+            store.register(identity,episode,request)
+            row = store.call(identity)
+            if row["outcome"] is not None:
+                returned=True
+                return json.loads(row["outcome"])
+            if self.pause.is_set():
+                raise Paused("pause requested before new admission")
+            if self.meta.meta("model_defect"):
+                raise ValueError("recorded model/runtime defect requires diagnosis before any generation")
+            worker = self.workers[slot]
+            if worker is None:
+                raise ValueError("resident worker required")
+            if hasattr(worker,"process") and (worker.process is None or not worker.process.is_alive() or worker.unconfirmed):
+                raise ValueError("explicit resident reload required before any further admission")
+            if any(r["status"]=="admitted" and r["call_id"] not in self.active_calls for s in self.stores for r in s.rows("attempts")):
+                raise ValueError("unresolved prior attempt blocks dispatch until confirmed reconciliation")
+            for s in self.stores:
+                for c in s.rows("calls"):
+                    if c["outcome"] and json.loads(c["outcome"]).get("termination_pending") and not s.meta("timeout_termination/"+c["id"],{}).get("termination_confirmed"):
+                        raise ValueError("preceding timeout termination remains unconfirmed")
+            mode = request["settings"]["mode"]
+            timeout = self.config[mode+"_timeout_seconds"]
+            if self.remaining_time() is None or self.remaining_time() <= timeout+2*self.config["termination_seconds"]+self.config["export_reserve_seconds"]:
+                raise ValueError("insufficient session time for bounded call, termination and export")
+            if self.meta.meta("blocked_worlds") and episode.split("/")[0] in self.meta.meta("blocked_worlds"):
+                raise ValueError("lost evidence in this world; automatic regeneration prohibited")
+            attempt = self.admission.admit(store,identity,stage,contingency=contingency)
+            self.emit("admitted", call=identity, slot=slot, attempt=attempt, usage=self.admission.usage())
+            try:
+                outcome = worker.obtain(request,timeout)
+            except InfrastructureLost as error:
+                self.admission.reconcile(store,attempt,dict(error.evidence,reason="confirmed infrastructure interruption"))
+                raise ValueError("interrupted attempt retained; explicitly reload then resume exact scope") from error
+            store.raw(identity,attempt,outcome)
+            if outcome.get("termination_pending"):
+                evidence = worker.close()
+                store.put_meta("timeout_termination/"+identity,evidence)
+            if outcome.get("failure") == "provider_defect" or outcome.get("framing_error"):
+                self.meta.put_meta("model_defect", dict(call=identity,outcome=outcome))
+            self.emit("raw_persisted",call=identity,outcome=outcome)
+            returned = True
+            return outcome
         finally:
             if not returned:
                 self.settled(identity)
@@ -255,7 +274,10 @@ class Session:
         prefix = store.state(world["id"]+"/prefix")
         if phase != "prefix" and (not prefix or not prefix["terminal"]):
             raise ValueError("terminal shared prefix required before sibling starts")
-        state = store.state(identity) or store.start(identity,initial_episode(world,phase,prefix))
+        with self.quiescence:
+            while self.snapshot_requested:
+                self.quiescence.wait()
+            state = store.state(identity) or store.start(identity,initial_episode(world,phase,prefix))
         while next_agent(state) is not None:
             agent = next_agent(state)
             invocation = state["turns"][agent]
@@ -561,11 +583,11 @@ class Session:
                 if w is not None:
                     row=w.close()
                     evidence.append(row)
-                    prior=self.stores[slot].db.execute("SELECT evidence FROM sessions WHERE id=?",(self.session_id,)).fetchone()
+                    prior=self.stores[slot].db.execute("SELECT id,evidence FROM sessions WHERE id LIKE ? ORDER BY rowid DESC LIMIT 1",(self.session_id+"/load-%",)).fetchone()
                     if prior:
-                        value=json.loads(prior[0]); value["process_close"]=row
+                        value=json.loads(prior["evidence"]); value["process_close"]=row
                         with self.stores[slot].transaction():
-                            self.stores[slot].db.execute("UPDATE sessions SET evidence=? WHERE id=?",(canonical(value),self.session_id))
+                            self.stores[slot].db.execute("UPDATE sessions SET evidence=? WHERE id=?",(canonical(value),prior["id"]))
             return evidence
         finally:
             self.action_lock.release()

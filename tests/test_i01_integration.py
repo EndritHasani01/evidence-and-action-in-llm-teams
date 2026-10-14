@@ -99,6 +99,28 @@ class Integration(unittest.TestCase):
             self.assertEqual(result["checkpoint"]["integrity"],"passed")
         finally:
             client.close()
+    def test_parallel_writers_quiesce_for_snapshot(self):
+        from concurrent.futures import ThreadPoolExecutor
+        import threading
+        import time
+        actions=[dict(message=None,submit=999,wait=False)]*2
+        s,w=self.open(actions)
+        s.workers[1]=Scripted(actions)
+        ready=threading.Barrier(2)
+        for worker in s.workers:
+            original=worker.obtain
+            def slow(req,timeout,original=original):
+                ready.wait(timeout=5); time.sleep(.05)
+                return original(req,timeout)
+            worker.obtain=slow
+        worlds=s.manifest["worlds"][6:8]
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            states=list(pool.map(lambda world:s.episode(world,"prefix","direct"),worlds))
+        self.assertTrue(all(e["terminal"]=="both_submitted" for e in states))
+        self.assertFalse(s.active_calls)
+        receipt=s.checkpoint("scripted-parallel")
+        self.assertEqual(receipt["attempts"],4)
+        self.assertEqual(receipt["integrity"],"passed")
 
 
 if __name__=="__main__": unittest.main()

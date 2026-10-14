@@ -39,8 +39,17 @@ def invoke(args, log, timeout=1800, *, env=None):
     print("Setup: "+log.stem,flush=True)
     with log.open("w",encoding="utf-8") as stream:
         p=subprocess.Popen([str(x) for x in args],stdout=stream,stderr=subprocess.STDOUT,env=env)
+        started=monotonic()
         try:
-            code=p.wait(timeout=timeout)
+            while True:
+                remaining=timeout-(monotonic()-started)
+                if remaining<=0: raise subprocess.TimeoutExpired(args,timeout)
+                try:
+                    code=p.wait(timeout=min(15,remaining)); break
+                except subprocess.TimeoutExpired:
+                    stream.flush()
+                    lines=log.read_text(encoding="utf-8",errors="replace").splitlines()
+                    print(f"{log.stem}: {monotonic()-started:.0f}s elapsed; "+(lines[-1][-300:] if lines else "in progress"),flush=True)
         except BaseException:
             p.terminate()
             try:
@@ -64,7 +73,12 @@ def install(source, scratch, working):
     if host["paths"]["scratch"]["free"] < 12*2**30 or host["paths"]["working"]["free"] < 2*2**30:
         raise ValueError("insufficient measured setup/output storage")
     venv=scratch/"i01-venv"; python=venv/"bin/python"
-    identity=dict(runtime_lock=digest(source/"configs/i01-runtime.lock"))
+    from .workflow import source_files
+    wheels=list(source.glob("*.whl"))
+    if len(wheels)!=1:
+        raise ValueError("exactly one verified source wheel required")
+    identity=dict(runtime_lock=digest(source/"configs/i01-runtime.lock"),
+                  source_identity=source_files(source),wheel_sha256=digest(wheels[0]))
     receipt_path=receipts/"environment.json"
     if receipt_path.exists():
         saved=json.loads(receipt_path.read_text())
@@ -74,15 +88,14 @@ def install(source, scratch, working):
     if venv.exists():
         raise ValueError("incomplete prior setup: inspect logs; choose fresh scratch explicitly")
     started=monotonic()
+    (scratch/"tmp").mkdir(exist_ok=True)
     invoke([sys.executable,"-m","venv",venv],receipts/"venv.log",120)
     env=dict(os.environ,PIP_DEFAULT_TIMEOUT="60",HF_HUB_DOWNLOAD_TIMEOUT="60",HF_HUB_ETAG_TIMEOUT="30",
-             HF_HUB_CACHE=str(scratch/"hf-cache"),PYTHONUNBUFFERED="1")
-    invoke([python,"-m","pip","--isolated","install","--only-binary=:all:","--require-hashes",
+             HF_HUB_CACHE=str(scratch/"hf-cache"),PYTHONUNBUFFERED="1",TMPDIR=str(scratch/"tmp"),
+             TMP=str(scratch/"tmp"),TEMP=str(scratch/"tmp"))
+    invoke([python,"-m","pip","--isolated","--cache-dir",scratch/"pip-cache","install","--only-binary=:all:","--require-hashes",
             "--retries","2","--index-url","https://pypi.org/simple","--extra-index-url","https://download.pytorch.org/whl/cu128",
             "--report",receipts/"dependency-install.json","-r",source/"configs/i01-runtime.lock"],receipts/"dependencies.log",3600,env=env)
-    wheels=list(source.glob("*.whl"))
-    if len(wheels)!=1:
-        raise ValueError("exactly one verified source wheel required")
     invoke([python,"-m","pip","--isolated","install","--no-deps","--no-index",wheels[0]],receipts/"project.log",120,env=env)
     invoke([python,"-m","pip","check"],receipts/"pip-check.log",60,env=env)
     probe=receipts/"installed.json"

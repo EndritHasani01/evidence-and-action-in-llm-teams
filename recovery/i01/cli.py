@@ -63,13 +63,26 @@ def serve(run, source):
                     # confirm old controller/model exit before this command.
                     session.admission.reconcile(session.stores[req["slot"]],req["attempt"],req["evidence"])
                     value=dict(reconciled=True)
+                elif op=="confirm_timeout_termination":
+                    if busy: raise ValueError("pause before termination reconciliation")
+                    store=session.stores[req["slot"]]
+                    row=store.call(req["call"])
+                    evidence=req["evidence"]
+                    if not row or not row["outcome"] or json.loads(row["outcome"]).get("failure")!="timeout" or not evidence.get("termination_confirmed") or not evidence.get("reason"):
+                        raise ValueError("recorded timeout and explicit confirmed-exit evidence required")
+                    store.put_meta("timeout_termination/"+req["call"],evidence)
+                    value=dict(termination_confirmed=True,retry_allowed=False)
                 elif op=="lost_spending":
                     if busy: raise ValueError("pause before evidence-gap reconciliation")
                     gap=req["gap"]
                     if gap.get("resolved") and (type(gap.get("upper")) is not int or not 0<=gap["upper"]<=28 or not gap.get("evidence")):
                         raise ValueError("bounded missing attempts and evidence required; unknown is not zero")
+                    affected=req.get("affected_worlds",[])
+                    world_ids={w["id"] for w in session.manifest["worlds"]}
+                    if gap.get("upper",0) and (not affected or any(w not in world_ids for w in affected)):
+                        raise ValueError("nonzero lost spending needs exact affected world IDs; lost prefixes cannot regenerate")
                     session.meta.put_meta("lost_spending",gap)
-                    session.meta.put_meta("blocked_worlds",req.get("affected_worlds",[]))
+                    session.meta.put_meta("blocked_worlds",affected)
                     value=gap
                 elif op=="annotate":
                     if busy: raise ValueError("pause before annotations")

@@ -80,9 +80,10 @@ class Operator:
             raise ValueError("reopen requires files intact; no implicit new study")
         if self.client is not None and self.client.process.poll() is None:
             return self.client.command("status")
-        if (self.working/"i01-setup").exists():
-            shutil.copytree(self.working/"i01-setup",self.run/"receipts/setup",dirs_exist_ok=True)
         self.client=Client(self.environment["interpreter"],self.source,self.run,self.scratch/"hf-cache",self.emit)
+        self.receipt_session=self.client.command("status")["session"]
+        if (self.working/"i01-setup").exists():
+            shutil.copytree(self.working/"i01-setup",self.run/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
         if mode=="restore":
             self.client.command("lost_spending",gap=dict(resolved=tail=="latest",upper=0 if tail=="latest" else None,evidence=evidence))
         # Deadlines belong to this controller session; never reuse an old one.
@@ -104,7 +105,7 @@ class Operator:
             if not self.client.command("status")["gates"].get("selfcheck"):
                 raise ValueError("native self-check prerequisite missing")
             self.weights=self._transport("weights")
-            shutil.copytree(self.working/"i01-setup",self.run/"receipts/setup",dirs_exist_ok=True)
+            shutil.copytree(self.working/"i01-setup",self.run/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
             return self.weights
         if action=="window": return self.set_window(**args)
         if self.client is None:
@@ -121,6 +122,22 @@ class Operator:
             self.client.close(); self.client=None
             return dict(processes_closed=True,provider_release="Stop Kaggle through its UI; process exit alone does not prove deallocation.")
         return self.client.action(action,**args)
+
+    def verify_checkpoint(self):
+        from .archive import verify
+        from .report import analysis
+        import tempfile
+        selected=self.run/"exports/latest.zip"
+        with tempfile.TemporaryDirectory(prefix="i01-reopen-",dir=self.working) as name:
+            restored=Path(name)/"snapshot"
+            receipt=extract_selected(selected,restored)
+            rebuilt=analysis(restored)
+            archived=json.loads((restored/"reports/analysis.json").read_text())
+            if canonical(rebuilt)!=canonical(archived):
+                raise ValueError("read-only reconstruction differs from archived reports")
+        result=dict(integrity="passed",attempts=receipt["attempts"],boundary=receipt["boundary"],
+                    reconstruction="exact outcomes/costs/traces/gates match archived analysis",model_attempts=0)
+        self.show(result); return result
 
     # Explicit notebook commands are the fallback when widgets are unavailable.
     def run(self, action, **args):
@@ -144,18 +161,23 @@ class Operator:
     def links(self):
         from IPython.display import display, HTML, FileLink
         zip_path=self.run/"exports/latest.zip"
+        def link(path):
+            try: target=path.relative_to(Path.cwd())
+            except ValueError: target=path
+            display(FileLink(str(target)))
         if zip_path.exists():
             import zipfile
             with zipfile.ZipFile(zip_path) as z:
                 integrity=json.loads(z.read("integrity.json"))
             display(HTML(f'<p><b>Download the latest checkpoint off session.</b> {zip_path.stat().st_size:,} bytes · boundary {escape(integrity["boundary"])} · {escape(integrity["created_at"])} · SHA256 {digest(zip_path)}. A link does not prove a browser download succeeded.</p>'))
-            display(FileLink(str(zip_path)))
+            link(zip_path)
+            display(HTML('<p>If the frontend does not open this link, use Kaggle’s Output/Files pane to download this exact path. Save it outside the session.</p>'))
             display(HTML('<details><summary>Archive contents / integrity inventory</summary><pre>'+escape(json.dumps(integrity,indent=2))+'</pre></details>'))
         for relative in ("overview.html","overview.md","conversations.html","conversations.txt","conversations.jsonl","worlds.csv","paired-results.csv","costs.csv","attempts.csv","analysis.json"):
             p=self.run/"reports"/relative
-            if p.exists(): display(FileLink(str(p)))
+            if p.exists(): link(p)
         for p in sorted((self.run/"reports/figures").glob("*")):
-            if p.is_file(): display(FileLink(str(p)))
+            if p.is_file(): link(p)
 
     def inspect(self, world=None, phase=None, agent=None):
         from .report import analysis
@@ -188,10 +210,23 @@ class Operator:
         except ImportError:
             print("Widgets unavailable. Use the explicit finite command printed above."); return
         fields={}
+        if action=="review" and defaults.get("scope")=="" and self.client:
+            batch=self.client.command("status")["gates"].get("batch",{})
+            defaults["scope"]=batch.get("id","")
+        labels=dict(mode="Mode",selected="Restore path",tail="Snapshot tail",evidence="Evidence",
+                    deadline="UTC deadline",notes="Review notes",reason="Competence reason",scope="Review scope",
+                    useful_communication="Useful original communication",usable="Pilot usable",reload="Reload probes")
         for key,value in defaults.items():
-            if type(value) is bool: fields[key]=widgets.Checkbox(value=value,description=key)
+            if key=="mode" and action=="initialize": fields[key]=widgets.Dropdown(options=["new","restore","reopen"],value=value,description=key)
+            elif key=="mode" and action in ("screen","envelope"): fields[key]=widgets.Dropdown(options=["direct","thinking"],value=value,description=key)
+            elif key=="tail": fields[key]=widgets.Dropdown(options=["latest","unknown"],value=value,description=key)
+            elif type(value) is bool: fields[key]=widgets.Checkbox(value=value,description=key)
             elif type(value) is int: fields[key]=widgets.IntText(value=value,description=key)
             else: fields[key]=widgets.Text(value="" if value is None else str(value),description=key,layout=widgets.Layout(width="95%"))
+            if key in ("notes","reason","evidence"):
+                fields[key]=widgets.Textarea(value="" if value is None else str(value),description=key,layout=widgets.Layout(width="95%"))
+            fields[key].description=labels.get(key,key)
+            fields[key].style.description_width="initial"
         button=widgets.Button(description=title,button_style="primary",layout=widgets.Layout(width="auto"))
         output=widgets.Output(); self.outputs.append(output)
         def clicked(_):

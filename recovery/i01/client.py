@@ -74,6 +74,7 @@ class Client:
 
     def wait(self, identity, timeout=None):
         started=time.monotonic()
+        last_progress=started
         try:
             while True:
                 with self.lock: result=self.results.get(identity)
@@ -83,6 +84,11 @@ class Client:
                     raise ValueError("controller exited; admitted attempts remain spent/unknown until reconciled")
                 if timeout is not None and time.monotonic()-started>timeout:
                     raise ValueError("client wait ended; action may still be running, request pause/status")
+                if time.monotonic()-last_progress>=15:
+                    lines=self.log_path.read_text(encoding="utf-8",errors="replace").splitlines()
+                    self.callback(dict(kind="worker_progress",elapsed_seconds=round(time.monotonic()-started),
+                                       text=lines[-1][-500:] if lines else "bounded action still active"))
+                    last_progress=time.monotonic()
                 time.sleep(.15)
         except KeyboardInterrupt:
             self.command("pause")

@@ -137,6 +137,14 @@ truncated or wrong responses never retry. A raw-persisted call without effects
 reapplies effects without generation. If a timeout termination acknowledgement
 is absent, new dispatch is refused. Do not infer process death from a stale PID.
 
+A known timeout is never retryable. If its termination acknowledgement was lost,
+record later observed exit without changing the outcome:
+
+```python
+ui.client.command("confirm_timeout_termination", slot=0, call="EXACT_CALL_ID",
+    evidence={"termination_confirmed": True, "reason": "Observed prior session/process exit"})
+```
+
 If the latest archive predates lost work, it is **partial recovery**. Bound
 missing spending with real evidence; mark affected worlds and never silently
 regenerate their lost prefixes. If no bound is defensible, reporting remains

@@ -75,6 +75,10 @@ def export(run, stores, *, boundary, reports=True):
                 reopened += db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
         if reopened != attempts:
             raise ValueError("snapshot attempt reconciliation differs")
+        if reports:
+            from .report import analysis
+            if canonical(analysis(bundle)) != canonical(analysis(run)):
+                raise ValueError("fresh-snapshot outcomes/costs/trace reconstruction differs")
         target = out/"latest.zip"
         partial = out/"latest.zip.partial"
         with zipfile.ZipFile(partial, "w", zipfile.ZIP_DEFLATED) as archive:

@@ -95,9 +95,16 @@ def check_storage(config, manifest):
                 with store.transaction():
                     store.db.execute("INSERT INTO attempts(call_id,number,stage,contingency,admitted_at,status) VALUES (?,1,'main',0,?,'completed')",(cid,utc()))
             assert budget.usage()["attempts"]==499
-            stores[1].register("last",episode,req)
-            last=budget.admit(stores[1],"last","hardware")
-            stores[1].raw("last",last,outcome)
+            from concurrent.futures import ThreadPoolExecutor
+            for i in range(2): stores[i].register(f"last-{i}",episode,req)
+            def final_admission(i):
+                try: return i,budget.admit(stores[i],f"last-{i}","hardware")
+                except ValueError: return i,None
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                admitted=list(pool.map(final_admission,range(2)))
+            assert sum(a is not None for _,a in admitted)==1
+            for i,a in admitted:
+                if a is not None: stores[i].raw(f"last-{i}",a,outcome)
             stores[1].register("over",episode,req)
             try:
                 budget.admit(stores[1],"over","hardware")

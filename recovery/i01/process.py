@@ -47,6 +47,7 @@ class Resident:
         self.unconfirmed = False
         self.load_report = None
         self.load_seconds = None
+        self.last_stop = None
 
     def exchange(self, timeout, request=None, *, loading=False):
         queue = Queue()
@@ -69,6 +70,7 @@ class Resident:
         if self.process is not None and self.process.is_alive():
             return self.load_report
         ctx = mp.get_context("spawn")
+        self.last_stop=None
         self.pipe, remote = ctx.Pipe()
         self.process = ctx.Process(target=child, args=(self.factory, remote))
         started = monotonic()
@@ -88,21 +90,21 @@ class Resident:
         started = monotonic()
         kind, payload = self.exchange(timeout, request)
         if kind == "outcome":
-            return payload
+            return dict(payload,dispatch_seconds=monotonic()-started)
         if kind == "timeout":
             # Caller persists timeout before termination acknowledgement.
-            return dict(failure="timeout", reason=payload["reason"], ready_seconds=monotonic()-started,
+            return dict(failure="timeout", reason=payload["reason"], ready_seconds=None,observed_seconds=monotonic()-started,
                         termination_pending=True, generated_tokens=None, input_tokens=len(request["input_ids"]))
         termination = self.close()
         if kind == "interrupted":
             raise InfrastructureLost(dict(payload, **termination, observed_seconds=monotonic()-started))
-        return dict(failure="provider_defect", **payload, **termination, ready_seconds=monotonic()-started,
+        return dict(failure="provider_defect", **payload, **termination, ready_seconds=None,observed_seconds=monotonic()-started,
                     generated_tokens=None, input_tokens=len(request["input_ids"]))
 
     def close(self):
         p = self.process
         if p is None:
-            return dict(termination_confirmed=not self.unconfirmed, stopped_at=utc())
+            return self.last_stop or dict(termination_confirmed=not self.unconfirmed,never_loaded=True)
         if p.is_alive():
             p.terminate()
             p.join(self.termination)
@@ -116,6 +118,7 @@ class Resident:
         self.pipe.close()
         p.close()
         self.pipe = self.process = None
+        self.last_stop=evidence
         return evidence
 
 
