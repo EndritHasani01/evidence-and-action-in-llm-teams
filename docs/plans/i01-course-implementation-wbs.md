@@ -648,7 +648,7 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | Tasks | Status | Evidence / next dependency |
 |---|---|---|
 | M0-T01–T02 | Adopted | Specification §12; configs/i01-course.json; this handoff |
-| M1-T01–T04 | In progress | Native mathematics, permitted actions, lifecycle, fixed seeds/orders |
+| M1-T01–T04 | Implemented; native checks passed | recovery/i01/core.py; validation/i01-implementation.md; native tokenizer pending |
 | M2-T01–T04 | Pending | Episode-aware durable admission and portable snapshots |
 | M3-T01–T04 | Pending | Resident adapter, setup and embedded checks |
 | M4-T01–T04 | Pending | Complete Python workflow/report/release |
