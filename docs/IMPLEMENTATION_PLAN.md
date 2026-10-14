@@ -115,6 +115,14 @@ Source/model/runtime pins and scientific semantics remain preserved; no GPU
 inference or experiment occurred. Actual target-host/model acceptance remains
 pending. The supplied course-1 evidence and matching old packet are unchanged.
 
+Final repaired upload source: `8f5bcdb661a177ebf7e0ca320889612ba448c64b`.
+Its 614,560-byte source ZIP has SHA256
+`2510f0f0dca4b5289c6e40a83f96c6ba9508e7221086b1fe764384e67f6deeef`.
+The regenerated `release-review.json` passes all 26 scopes and isolated installed
+entry/source checks with zero model attempts. Six input files, two root logs and
+both historical source archives retain their original hashes; 214 local document
+links resolve. The following receipt-only commit preserves this delivery identity.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.

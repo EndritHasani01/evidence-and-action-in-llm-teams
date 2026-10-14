@@ -1,6 +1,6 @@
 {
   "passed": true,
-  "code_cells": 25,
+  "code_cells": 26,
   "widget_panels": 0,
   "independent_cell_scopes": {
     "setup": [
@@ -37,15 +37,17 @@
         "kwargs": {}
       }
     ],
-    "load": [
+    "session-window": [
       {
-        "method": "set_session_window",
-        "args": [
-          null,
-          ""
-        ],
-        "kwargs": {}
-      },
+        "method": "configure_session",
+        "args": [],
+        "kwargs": {
+          "remaining_minutes": null,
+          "evidence": ""
+        }
+      }
+    ],
+    "load": [
       {
         "method": "load_models",
         "args": [],
@@ -222,14 +224,29 @@
   },
   "run_all_can_execute_inference": true,
   "model_attempts": 0,
-  "source_members": 63,
-  "source_zip_bytes": 593940,
-  "source_zip_sha256": "ada4a9e9eed09c9325bc120ff70e5bed51979aa2c91dc165189152f1b4f63edc",
+  "source_head": "8f5bcdb661a177ebf7e0ca320889612ba448c64b",
+  "source_members": 67,
+  "source_zip_bytes": 614560,
+  "source_zip_sha256": "2510f0f0dca4b5289c6e40a83f96c6ba9508e7221086b1fe764384e67f6deeef",
   "installed_wheel_source_matches": true,
   "installed_outside_checkout_cli": true,
+  "installed_venv_isolated_entry": true,
   "zip_expanded_source_bootstrap_and_rerun": true,
   "complete_source_preserved_in_checkpoints": true,
   "notebook_execution_outputs_empty": true,
   "kaggle_host_verified": false,
-  "qualification_pilot_main_executed": false
+  "qualification_pilot_main_executed": false,
+  "repair_milestones": [
+    "0a69b22",
+    "f2c4051",
+    "9027362",
+    "8f5bcdb"
+  ],
+  "preservation_checks": {
+    "original_course_1_files_unchanged": 6,
+    "root_logs_unchanged": 2,
+    "historical_source_archives_unchanged": 2,
+    "scientific_authority_and_pins_unchanged": true,
+    "document_links_valid": 214
+  }
 }

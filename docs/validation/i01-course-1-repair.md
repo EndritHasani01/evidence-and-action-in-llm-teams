@@ -51,5 +51,13 @@ twenty main outcomes remain unknown. No GPU inference, actual qualification,
 pilot, freeze or main execution occurred during repair.
 
 Milestones: canonical recovery/reporting `0a69b22`; runtime/operator repair
-`f2c4051`; the final notebook/package source and verification receipts record
-the subsequent delivery checkpoint.
+`f2c4051`; notebook/package handoff `9027362`; final notebook guidance and verified
+source identity `8f5bcdb661a177ebf7e0ca320889612ba448c64b`. The latter is the
+delivered packet source, preserved while final receipts are committed separately.
+Its 614,560-byte source ZIP has SHA256
+`2510f0f0dca4b5289c6e40a83f96c6ba9508e7221086b1fe764384e67f6deeef`.
+Final release review passes all 26 scopes and isolated installed entry. Hash
+checks preserve all six supplied files, both root logs and both old source ZIPs;
+the specification, course configuration and runtime lock have no repair diff.
+All 214 local links in the affected authority/handoff/runbook/audit documents
+resolve. No target-host validation is inferred from these checks.

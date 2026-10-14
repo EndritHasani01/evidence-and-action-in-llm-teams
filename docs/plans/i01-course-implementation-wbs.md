@@ -826,3 +826,11 @@ release receipt records the final delivery identity. No source/runtime/model
 scientific pin changed; no GPU/model inference or experiment ran. All six
 course-1 files and its old source packet remain preserved. Linux/native T4
 model and empirical acceptance remain operator work, with unknown outcomes.
+
+Final repaired source checkpoint: `8f5bcdb661a177ebf7e0ca320889612ba448c64b`.
+The matching 614,560-byte `dist/i01-course/i01-source.zip` has SHA256
+`2510f0f0dca4b5289c6e40a83f96c6ba9508e7221086b1fe764384e67f6deeef`.
+Final release review passes all 26 cells, exact wheel/source identity and isolated
+installed CLI entry outside the checkout. Original six course-1 files, two logs,
+two old source packets and scientific authority/configuration pins are unchanged;
+214 document links resolve. Receipt recording does not regenerate this packet.
