@@ -39,6 +39,7 @@ def prepare(view, seed, config, mode, tokenizer, *, control=False, envelope=Fals
         if not padding or len(ids) > 8192:
             raise ValueError("invalid envelope framing")
         ids = (padding * (8192 - len(ids)))[:8192-len(ids)] + ids
+        rendered = tokenizer.decode(ids,skip_special_tokens=False,clean_up_tokenization_spaces=False)
     if len(ids) > 8192:
         raise ValueError("full permitted input exceeds 8192; never truncate")
     return dict(view=view, messages=msgs, rendered=rendered, input_ids=ids,
