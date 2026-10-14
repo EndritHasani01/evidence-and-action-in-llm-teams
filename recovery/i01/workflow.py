@@ -1,6 +1,6 @@
 """Finite operator stages. No successful stage automatically starts another."""
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
 import json
 import os
@@ -9,6 +9,8 @@ import shutil
 import threading
 from time import monotonic
 import uuid
+import tempfile
+import traceback
 
 from .archive import atomic_json, digest, export, extract_selected, inventory
 from .core import (apply_outcome, canonical, initial_episode, manifests, messages,
@@ -24,6 +26,22 @@ def source_files(root):
 
 
 def initialize(run, source, config):
+    run=Path(run)
+    if (run/'run.json').exists():
+        manifest=_initialize(run,source,config)
+        for slot in range(2): Store.validate(run/f'worker-{slot}.sqlite',{'manifest':manifest})
+        return manifest
+    if run.exists() and any(run.iterdir()): raise ValueError('fresh run directory required')
+    run.parent.mkdir(parents=True,exist_ok=True)
+    with tempfile.TemporaryDirectory(prefix='i01-initialize-',dir=run.parent) as name:
+        staging=Path(name)/'study'
+        manifest=_initialize(staging,source,config)
+        if run.exists(): run.rmdir()  # Only the previously checked empty destination.
+        staging.replace(run)
+    return manifest
+
+
+def _initialize(run, source, config):
     run, source = Path(run), Path(source)
     if config != json.loads((source/"configs/i01-course.json").read_text()):
         raise ValueError("configuration differs from adopted release")
@@ -64,7 +82,7 @@ def initialize(run, source, config):
     atomic_json(run/"run.json", manifest)
     binding = {"manifest":manifest}
     for slot in range(2):
-        Store(run/f"worker-{slot}.sqlite",binding).close()
+        Store(run/f"worker-{slot}.sqlite",binding,create=True).close()
     return manifest
 
 
@@ -94,9 +112,17 @@ class Session:
         self.manifest = json.loads((self.run/"run.json").read_text())
         if source is not None and self.manifest["source_identity"] != source_files(source):
             raise ValueError("source differs; reporting remains available read-only")
-        self.ownership = Ownership(self.run/"controller.lock")
         self.config = self.manifest["config"]
-        self.stores = [Store(self.run/f"worker-{slot}.sqlite", {"manifest":self.manifest}) for slot in range(2)]
+        binding={'manifest':self.manifest}
+        for slot in range(2): Store.validate(self.run/f'worker-{slot}.sqlite',binding)
+        self.ownership = Ownership(self.run/"controller.lock")
+        self.stores=[]
+        try:
+            for slot in range(2): self.stores.append(Store(self.run/f'worker-{slot}.sqlite',binding))
+        except BaseException:
+            for store in self.stores: store.close()
+            self.ownership.close()
+            raise
         self.admission = Admission(self.stores)
         self.workers = providers or [None, None]
         self.prepare_request = prepare_request
@@ -141,8 +167,9 @@ class Session:
     def status(self):
         from .report import analysis
         s = analysis(self.run)["summary"]
-        return dict(s, usage=self.admission.usage(), session=self.session_id, remaining_session_seconds=self.remaining_time(),
-                    models=[dict(resident=w is not None and getattr(w,"process",None) is not None,
+        return dict(s, study_id=self.manifest['study_id'],run_dir=str(self.run),usage=self.admission.usage(), session=self.session_id, remaining_session_seconds=self.remaining_time(),
+                    models=[dict(resident=w is not None and getattr(w,"process",None) is not None and w.process.is_alive() and not getattr(w,'unconfirmed',False),
+                                 termination_unconfirmed=getattr(w,'unconfirmed',False),
                                  load_report=getattr(w,"load_report",None)) for w in self.workers],
                     observed_idle_allocation_note="Observed session time is separate from provider assignment/release; those may be unknown.")
 
@@ -193,7 +220,9 @@ class Session:
                                     controller_pid=os.getpid(),window=self.meta.meta("window"))
                     n=sum(json.loads(r["evidence"]).get("session")==self.session_id for r in self.stores[slot].rows("sessions"))
                     with self.stores[slot].transaction():
-                        self.stores[slot].db.execute("INSERT INTO sessions VALUES (?,?)",(f"{self.session_id}/load-{n}",canonical(evidence)))
+                        load_id=f"{self.session_id}/load-{n}"
+                        self.stores[slot].db.execute("INSERT INTO sessions VALUES (?,?)",(load_id,canonical(evidence)))
+                        self.stores[slot].db.execute("INSERT OR REPLACE INTO meta VALUES (?,?)",('resident_load',canonical(load_id)))
         except BaseException as error:
             w=self.workers[slot]
             if w is not None:
@@ -310,8 +339,7 @@ class Session:
                       terminal=state["terminal"])
             if self.meta.meta("model_defect"):
                 raise ValueError("provider/cache/framing defect; dispatch stopped after persisting evidence")
-            if monotonic()-self.last_checkpoint >= self.config["checkpoint_seconds"]:
-                self.checkpoint("periodic-call-boundary")
+            self.periodic_checkpoint()
             if self.pause.is_set() and not state["terminal"]:
                 raise Paused("paused at committed call boundary")
         return state
@@ -333,6 +361,7 @@ class Session:
             self.settled(identity)
         if self.meta.meta("model_defect"):
             raise ValueError("control provider/framing defect recorded")
+        self.periodic_checkpoint()
         return result
 
     def readiness(self):
@@ -346,11 +375,14 @@ class Session:
                     outcome = self.call(slot,identity,identity,request,"hardware")
                 finally:
                     self.settled(identity)
+                self.periodic_checkpoint()
                 results.append(dict(slot=slot,label=label,outcome=outcome))
         passed = all(not r["outcome"].get("failure") and r["outcome"].get("backend",{}).get("finite_score_steps",0)>0 and
                      r["outcome"].get("backend",{}).get("cache",{}).get("initial_empty") and
                      r["outcome"].get("backend",{}).get("cache",{}).get("same_call_cache") for r in results)
-        receipt = dict(passed=passed,results=results, ABA_equal=[results[s*3]["outcome"].get("token_ids")==results[s*3+2]["outcome"].get("token_ids") for s in range(2)])
+        equal=[results[s*3]['outcome'].get('token_ids')==results[s*3+2]['outcome'].get('token_ids') for s in range(2)]
+        receipt = dict(passed=passed,results=results, ABA_equal=equal,needs_review=not all(equal),
+                       equality_policy='Diagnostic: unexpected differences require explicit state-isolation review before qualification; no extra samples or decoding changes.')
         self.meta.put_meta("readiness",receipt)
         if not passed:
             raise ValueError("readiness cache/finite-output gate failed")
@@ -359,6 +391,8 @@ class Session:
     def screen(self, mode, reason=""):
         if not self.meta.meta("readiness",{}).get("passed"):
             raise ValueError("passing readiness required")
+        if self.meta.meta('readiness',{}).get('needs_review') and not self.meta.meta('review/readiness'):
+            raise ValueError('A/B/A differs: inspect saved cache/token evidence and record_state_review(notes) before qualification')
         if mode == "thinking":
             direct = self.meta.meta("screen/direct")
             if not direct or direct["passed"] or direct["protocol_errors"] or not reason.strip():
@@ -378,20 +412,22 @@ class Session:
         prior=self.meta.meta("envelope",{})
         if prior and (prior.get("session")!=self.session_id or self.meta.meta("reload_required")) and not reload:
             raise ValueError("new/reloaded session requires explicit two contingency-charged reload probes")
+        loads=self.load_references()
         results = []
         for slot in range(2):
-            identity = f"hardware/envelope-{mode}-{slot}" + ("/reload-"+self.session_id if reload else "")
+            identity = f"hardware/envelope-{mode}-{slot}" + ("/reload-"+'+'.join(loads) if reload else "")
             req = self.request(dict(complete_input=[0,1]),seed_for(self.config["master_seed"],identity),mode,control=True,envelope=True)
             try:
                 outcome = self.call(slot,identity,identity,req,"hardware",contingency=reload)
             finally:
                 self.settled(identity)
+            self.periodic_checkpoint()
             results.append(outcome)
         passed = all(not o.get("failure") and o.get("backend",{}).get("finite_score_steps",0)>0 and
                      o.get("backend",{}).get("cache",{}).get("initial_empty") and o.get("backend",{}).get("cache",{}).get("same_call_cache") and
                      o.get("generated_tokens")== (512 if mode=="direct" else 4096) and
                      o.get("backend",{}).get("observed_peak_free_lower_bytes",0)>=self.config["headroom_bytes"] for o in results)
-        receipt = dict(passed=passed,mode=mode,session=self.session_id,reload=reload,results=results)
+        receipt = dict(passed=passed,mode=mode,session=self.session_id,loads=loads,reload=reload,results=results)
         self.meta.put_meta("envelope",receipt)
         if passed:
             self.meta.put_meta("selected_mode",mode)
@@ -402,7 +438,14 @@ class Session:
         receipt = self.meta.meta("envelope",{})
         if not receipt.get("passed") or receipt.get("session") != self.session_id or self.meta.meta("reload_required"):
             raise ValueError("selected envelope required in current session; restored sessions need two budgeted reload probes")
+        if receipt.get('loads')!=self.load_references():
+            raise ValueError('Current replica loads require fresh contingency-charged envelope probes')
         return self.meta.meta("selected_mode")
+
+    def load_references(self):
+        refs=[s.meta('resident_load') for s in self.stores]
+        if not all(refs): raise ValueError('Both successful replica load records are required')
+        return refs
 
     def world(self, w, mode):
         self.episode(w,"prefix",mode)
@@ -426,6 +469,8 @@ class Session:
     def review(self, scope, notes, *, useful_communication=None, usable=None):
         if not notes.strip() or not (self.run/"exports/latest.zip").is_file():
             raise ValueError("inspect/export checkpoint and review notes required")
+        if scope=='readiness' and (not self.meta.meta('readiness',{}).get('passed') or self.meta.meta('model_defect')):
+            raise ValueError('State review cannot bypass a cache, finite-score or provider defect')
         if scope.startswith("pilot-"):
             number = int(scope.split("-")[-1])
             w = next(w for w in self.manifest["worlds"] if w["group"]=="pilot" and w["index"]==number-1)
@@ -512,7 +557,9 @@ class Session:
                    (any(w[p] is None for p in ("prefix","retain","clear")) or w.get("control_revised_"+mode) is None)]
         ids = pending[:count]
         if not ids:
-            return dict(complete=True,worlds=[],id="main-complete")
+            value=dict(complete=True,worlds=[],id='main-complete')
+            self.meta.put_meta('batch',value)
+            return value
         # A two-world action uses opposite logical slots; fixed parity guarantees it.
         value = dict(id="batch/"+"+".join(ids),worlds=ids,complete=False,first_ceiling=19*len(ids),
                      eligible_retry_allowance=self.config["contingency_limit"]-self.admission.usage()["contingency"],
@@ -530,7 +577,7 @@ class Session:
         with ThreadPoolExecutor(max_workers=len(batch["worlds"])) as pool:
             futures=[pool.submit(self.world,next(w for w in self.manifest["worlds"] if w["id"]==identity),mode) for identity in batch["worlds"]]
             failures=[]
-            for future in futures:
+            for future in as_completed(futures):
                 try: future.result()
                 except Exception as error:
                     self.pause.set(); failures.append(error)
@@ -539,6 +586,10 @@ class Session:
         batch["complete"] = True
         self.meta.put_meta("batch",batch)
         return batch
+
+    def periodic_checkpoint(self):
+        if monotonic()-self.last_checkpoint>=self.config['checkpoint_seconds']:
+            self.checkpoint('periodic-settled-call-boundary')
 
     def checkpoint(self,boundary):
         with self.checkpoint_lock:
@@ -575,6 +626,7 @@ class Session:
                 result = methods[action](**args)
             except (Exception,KeyboardInterrupt) as exc:
                 error = f"{type(exc).__name__}: {exc}"
+                atomic_json(self.run/'receipts'/'stage-error.json',dict(action=action,args=args,at=utc(),error=error,traceback=traceback.format_exc()))
                 self.emit("action_stopped",action=action,error=error)
             finally:
                 self.meta.put_meta("action",dict(name=action,args=args,status="stopped" if error else "complete",error=error,at=utc()))

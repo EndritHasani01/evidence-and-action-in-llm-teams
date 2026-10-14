@@ -81,6 +81,16 @@ their correctness. Audit evidence is `validation/course-1-audit-probes.json`.
 All supplied run files remain unchanged; no GPU/model execution occurred in
 this audit. Model gates, pilots, freeze and twenty main outcomes remain unknown.
 
+Course-1 repair checkpoint C2: canonical stores now refuse missing/incomplete
+DBs, fresh initialization publishes complete stores atomically, replica envelope
+evidence binds both successful load records, either main-slot failure requests
+pause promptly, and periodic exports follow settled controls/diagnostics.
+Original-control audit truth and empty conversation output are corrected.
+Seven focused scripted counterexamples pass; runtime isolation, operator flow
+and complete-package integration are the next repair checkpoint. A/B/A remains
+a diagnostic with explicit review of unexpected differences before qualification;
+no extra samples or scientific decoding changes are introduced.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.

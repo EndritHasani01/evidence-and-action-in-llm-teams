@@ -20,9 +20,9 @@ def utc():
     return datetime.now(timezone.utc).isoformat()
 
 
-def connection(path, readonly=False):
-    db = sqlite3.connect(Path(path).resolve().as_uri() + "?mode=ro" if readonly else str(path),
-                         uri=readonly, check_same_thread=False, timeout=30)
+def connection(path, readonly=False, *, create=False):
+    db = sqlite3.connect(Path(path).resolve().as_uri() + ("?mode=rwc" if create else "?mode=ro" if readonly else "?mode=rw"),
+                         uri=True, check_same_thread=False, timeout=30)
     db.row_factory = sqlite3.Row
     if readonly:
         db.execute("PRAGMA query_only=ON")
@@ -34,11 +34,28 @@ def connection(path, readonly=False):
 
 
 class Store:
-    def __init__(self, path, binding, *, readonly=False):
+    @staticmethod
+    def validate(path, binding):
+        if not Path(path).is_file():
+            raise ValueError(f"Missing canonical database: {path}; restore a verified complete checkpoint")
+        with closing(connection(path,True)) as db:
+            tables={r[0] for r in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+            if not {'meta','episodes','calls','attempts','sessions','annotations'} <= tables:
+                raise ValueError(f"Incomplete canonical schema: {path}; no tables were recreated")
+            if db.execute('PRAGMA quick_check').fetchone()[0]!='ok':
+                raise ValueError(f"Corrupt canonical database: {path}")
+            metadata={r['key']:json.loads(r['value']) for r in db.execute("SELECT * FROM meta WHERE key IN ('schema','binding')")}
+            if metadata.get('schema')!=SCHEMA or metadata.get('binding')!=binding:
+                raise ValueError("source/config/input/schema mismatch; read-only inspection only")
+
+    def __init__(self, path, binding, *, readonly=False, create=False):
         self.path, self.readonly = Path(path), readonly
         self.lock = threading.RLock()
-        self.db = connection(path, readonly)
-        if not readonly:
+        if create and (readonly or self.path.exists()):
+            raise ValueError('Schema creation requires a fresh database path')
+        if not create: self.validate(path,binding)
+        self.db = connection(path, readonly,create=create)
+        if create:
             self.db.executescript('''
             CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
             CREATE TABLE IF NOT EXISTS episodes(id TEXT PRIMARY KEY, state TEXT NOT NULL);

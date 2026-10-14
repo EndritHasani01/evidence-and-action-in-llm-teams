@@ -63,7 +63,7 @@ def check_storage(config, manifest):
     with tempfile.TemporaryDirectory(prefix="i01-check-") as temp:
         run=Path(temp)/"run"; run.mkdir()
         atomic_json(run/"run.json",manifest)
-        stores=[Store(run/f"worker-{i}.sqlite",{"manifest":manifest}) for i in range(2)]
+        stores=[Store(run/f"worker-{i}.sqlite",{"manifest":manifest},create=True) for i in range(2)]
         try:
             budget=Admission(stores)
             store=stores[0]; episode="scripted/prefix"

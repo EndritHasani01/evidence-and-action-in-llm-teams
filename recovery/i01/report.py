@@ -156,7 +156,11 @@ def analysis(run):
         world=world_by_id.get(ep["id"].split("/")[0])
         if not world or not state.get("terminal"): continue
         phase=ep["id"].split("/")[-1]
-        truth=world["original_truth"] if phase=="prefix" else world["revised_truth"]
+        if phase=='prefix' or phase in ('control-original-direct','control-original-thinking'):
+            truth=world['original_truth']
+        elif phase in ('retain','clear','control-revised-direct','control-revised-thinking'):
+            truth=world['revised_truth']
+        else: raise ValueError('Unknown saved episode type: '+ep['id'])
         labels=[]
         if state.get("terminal") in ("waiting_deadlock","horizon_exhausted"): labels.append(state["terminal"])
         if any(v is not None and v!=truth for v in state.get("submissions",[])): labels.append("wrong_submission")
@@ -248,7 +252,8 @@ def write_report(run, out, *, plot=True):
     (out/"conversations.jsonl").write_text("".join(canonical(dict(record_type="episode_checkpoint",**e))+"\n" for e in result["episodes"])+"".join(canonical(dict(record_type="call",**t))+"\n" for t in traces), encoding="utf-8")
     body = ['<!doctype html><meta charset="utf-8"><title>I-01 conversations</title><style>body{font:16px system-ui;max-width:1100px;margin:2rem auto}pre{white-space:pre-wrap;overflow-wrap:anywhere}.audit{background:#fff3db;padding:1rem}details{border-bottom:1px solid #ccc;padding:1rem}</style>',
             '<h1>Complete I-01 trace audit</h1><p>Private submissions, truth and thinking are evaluator audit material. They never enter partner views. Every registered request/outcome is listed.</p>']
-    text = []
+    text = [f"I-01 saved conversation audit\nStudy: {result['manifest']['study_id']}\nRecorded calls: {len(traces)}\nKnown main pairs: {result['summary']['known_pairs']}/20\n"+
+            ('No model calls or conversations are recorded; unexecuted outcomes remain unknown.' if not traces else 'Private evaluator audit follows; no hidden reasoning enters peer histories.')]
     for ep in result["episodes"]:
         state=json.loads(ep["state"])
         phase_text=f"PHASE CHECKPOINT {ep['id']}\n{json.dumps(state,indent=2)}"
