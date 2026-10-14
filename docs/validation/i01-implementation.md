@@ -226,3 +226,12 @@ pilot/freeze/main execution and frontend/download acceptance remain pending.
 Evidence: controller-startup-checks.json and the regenerated release-review.json
 under notebooks/validation/i01-development/. The complete package retains
 25 ordinary code cells and an unchanged scientific runtime lock.
+
+Final package review passes for source checkpoint `659c056`: 63 source members,
+593,940-byte ZIP, SHA256
+ada4a9e9eed09c9325bc120ff70e5bed51979aa2c91dc165189152f1b4f63edc.
+The exact older 4db263ea25c8 source attachment was additionally extracted into
+a temporary directory; the documented environment-recovery cell reopened its
+already initialized study successfully, restored parent environment and made
+zero model calls. The matching old attachment is preserved locally. Supplied
+venv/controller logs are preserved without staging them as implementation files.

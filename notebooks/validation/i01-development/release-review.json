@@ -17,8 +17,6 @@
           "new"
         ],
         "kwargs": {
-          "deadline": null,
-          "allowance_evidence": "",
           "selected": null,
           "tail": null,
           "evidence": ""
@@ -40,6 +38,14 @@
       }
     ],
     "load": [
+      {
+        "method": "set_session_window",
+        "args": [
+          null,
+          ""
+        ],
+        "kwargs": {}
+      },
       {
         "method": "load_models",
         "args": [],
@@ -216,9 +222,9 @@
   },
   "run_all_can_execute_inference": true,
   "model_attempts": 0,
-  "source_members": 62,
-  "source_zip_bytes": 587695,
-  "source_zip_sha256": "729eaea18599b58ad49b0f0632345d8502934c97bfce918bfdb4ee47a6a501e4",
+  "source_members": 63,
+  "source_zip_bytes": 593940,
+  "source_zip_sha256": "ada4a9e9eed09c9325bc120ff70e5bed51979aa2c91dc165189152f1b4f63edc",
   "installed_wheel_source_matches": true,
   "installed_outside_checkout_cli": true,
   "zip_expanded_source_bootstrap_and_rerun": true,

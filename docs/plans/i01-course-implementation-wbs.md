@@ -786,3 +786,11 @@ change and no model calls. See controller-startup-checks.json. Rebuilt package
 verification is recorded in release-review.json. Existing bound studies retain
 their matching source; the runbook supplies a temporary spawn-environment
 recovery cell. Kaggle controller/model/experiment acceptance remains pending.
+
+Delivery checkpoint: `659c056`. Complete source ZIP is 593,940 bytes, SHA256
+ada4a9e9eed09c9325bc120ff70e5bed51979aa2c91dc165189152f1b4f63edc.
+Package review passes: all 25 ordinary scopes, schema/empty outputs, exact
+installed wheel/source, ZIP/expanded bootstrap, preserved full checkpoint source
+and read-only reconstruction. The recovery cell also passes against the saved
+4db263ea25c8 release, reopening existing files with zero model attempts. That
+release remains available in dist/i01-course-4db263ea25c8 for matching restores.

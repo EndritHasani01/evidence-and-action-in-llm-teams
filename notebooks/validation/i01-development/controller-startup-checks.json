@@ -15,6 +15,22 @@
   "model_attempts": 0,
   "scientific_runtime_pins_changed": false,
   "kaggle_controller_verified": false,
+  "legacy_4db263ea25c8_same_source_environment_recovery": {
+    "passed": true,
+    "actual_saved_source_release_used": true,
+    "existing_study_reopened": true,
+    "parent_environment_restored": true,
+    "model_attempts": 0
+  },
+  "delivery": {
+    "source_head": "659c056",
+    "source_zip_bytes": 593940,
+    "source_zip_sha256": "ada4a9e9eed09c9325bc120ff70e5bed51979aa2c91dc165189152f1b4f63edc",
+    "complete_package_review_passed": true,
+    "ordinary_code_cells": 25,
+    "source_members": 63,
+    "prior_release_preserved": "dist/i01-course-4db263ea25c8"
+  },
   "reported_kaggle_setup": {
     "source": "4db263ea25c8",
     "seconds": 177.78004193399994,
