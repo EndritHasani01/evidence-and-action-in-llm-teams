@@ -794,3 +794,22 @@ installed wheel/source, ZIP/expanded bootstrap, preserved full checkpoint source
 and read-only reconstruction. The recovery cell also passes against the saved
 4db263ea25c8 release, reopening existing files with zero model attempts. That
 release remains available in dist/i01-course-4db263ea25c8 for matching restores.
+
+Course-1 audit checkpoint (14 October 2026): supplied executed notebook/source
+`659c056…` confirms target-host setup, retained controller, native self-check
+and verified weight retrieval. The load cell rejects `None`/empty session facts
+before model work. The supplied self-check archive has valid CRC, all 112
+inventory entries verified and exact fresh read-only reconstruction; both DBs
+contain zero calls/attempts and twenty main worlds remain unknown. Target GPU
+loading/model gates and empirical execution remain unverified.
+
+The [complete current/future fix proposal](../proposals/i01-course-1-complete-fix-proposal.md)
+and [seven focused scripted audit cases](../validation/course-1-audit-probes.json)
+identify pending implementation repairs: a missing canonical DB can be recreated,
+same-controller replacements can reuse old envelope probes, original controls
+can receive false failure labels, parallel failure pause is delayed, residency/
+saved inspection can misreport or fail, and readiness equality needs an explicit
+policy interpretation. Startup-hook warnings and archive-freshness/ordinary-cell
+flow gaps remain. Earlier implementation passes are historical evidence, not
+acceptance of these newly found cases. Production code and all supplied run files
+were preserved; this follow-up is an audit/proposal, not completed fixes.

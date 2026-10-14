@@ -66,6 +66,21 @@ admission and checkpoint reconstruction. See controller-startup-checks.json
 and the runbook's same-source recovery cell. Target-host controller acceptance
 and every model/experiment stage remain pending.
 
+Course-1 executed-evidence follow-up: the preserved
+`notebooks/run/course-1/` notebook demonstrates successful pinned setup,
+controller attachment, native self-check and weight retrieval, followed by
+refusal of unset session facts before model loading. Its self-check archive
+passes CRC, all 112 inventory entries and exact read-only reconstruction;
+both canonical DBs contain zero calls/attempts. The startup-hook warning remains.
+The [complete fix proposal](proposals/i01-course-1-complete-fix-proposal.md)
+records seven focused scripted reproductions, including missing-DB recreation,
+stale same-controller reload probes, false original-control failure labels,
+delayed cross-slot pause and unavailable saved inspection after controller exit.
+These newly identified repairs are pending; earlier checks do not establish
+their correctness. Audit evidence is `validation/course-1-audit-probes.json`.
+All supplied run files remain unchanged; no GPU/model execution occurred in
+this audit. Model gates, pilots, freeze and twenty main outcomes remain unknown.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.

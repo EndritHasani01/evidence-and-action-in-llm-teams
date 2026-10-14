@@ -1,0 +1,94 @@
+{
+  "proposal_only": true,
+  "environment": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "model_attempts": 0,
+  "scope": "Temporary scripted fixtures; saved course-1 artifacts and production code unchanged",
+  "findings": {
+    "same_controller_second_reload": {
+      "gate_passed": true,
+      "new_scripted_provider_calls": 0,
+      "fixture_attempt_rows": 4,
+      "expected_new_probes": 2
+    },
+    "correct_original_control": {
+      "control_correct": 1,
+      "original_truth": 950,
+      "revised_truth": 921,
+      "incorrect_failure_labels": [
+        "wrong_submission"
+      ]
+    },
+    "aba_mismatch": {
+      "passed": true,
+      "ABA_equal": [
+        false,
+        false
+      ],
+      "fixture_attempt_rows": 6
+    },
+    "missing_canonical_database": {
+      "prior_fixture_attempt_rows": 1,
+      "reopen_rejected": false,
+      "file_silently_created": true,
+      "remaining_attempt_rows": 0
+    },
+    "parallel_failure_observation": {
+      "second_world_failure_happened": true,
+      "pause_before_first_world_finished": false,
+      "eventual_error": [
+        "scripted second-world failure"
+      ]
+    },
+    "dead_worker_status": {
+      "actual_alive": false,
+      "reported_resident": true
+    },
+    "inspection_after_controller_exit": {
+      "inspection_succeeded": false,
+      "error": "controller exited; explicit reopen required",
+      "canonical_read_only_analysis_available": true
+    }
+  },
+  "saved_run_checks": {
+    "archive_crc_passed": true,
+    "archive_members": 113,
+    "integrity_members_verified": 112,
+    "canonical_analysis_matches_saved": true,
+    "executed_cells_match_shipped_source_after_normalization": true,
+    "archive_boundary": "action/selfcheck",
+    "archive_created_at": "2026-10-14T18:07:30.126927+00:00",
+    "source_head": "659c056abfd195a067aa82c99a933aead9a948f5",
+    "saved_weights_receipt": false,
+    "canonical_calls": 0,
+    "canonical_attempts": 0,
+    "canonical_episodes": 0,
+    "known_main_pairs": 0,
+    "intended_main_worlds": 20
+  },
+  "input_files": {
+    "conversations.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "I-01 conversations.mhtml": {
+      "bytes": 19827,
+      "sha256": "0633143fa1a4de7ede709a21e7cc5682ffa5e2294feea137b7820c479de534a1"
+    },
+    "I-01 research report.mhtml": {
+      "bytes": 239418,
+      "sha256": "b47bbb1c6e24b51d3eaf1579f5b5fa6019aacdb3dc7b640b3c3851cf680b3a70"
+    },
+    "latest.zip": {
+      "bytes": 1238884,
+      "sha256": "b5d2df95fcb1238dfac849af0795a691a36307937691914bf36a6bde92b3f68c"
+    },
+    "notebook-exec.ipynb": {
+      "bytes": 165548,
+      "sha256": "16232f3e3b7ef3de74acee982083a448b7771f8ea0ba5f714e2e095c1710c7c6"
+    },
+    "worlds.csv": {
+      "bytes": 1518,
+      "sha256": "f40fe16397941fdc0c1ec99e9b921ff08b06498ac2877ebf1e62996482b1dd9c"
+    }
+  }
+}
