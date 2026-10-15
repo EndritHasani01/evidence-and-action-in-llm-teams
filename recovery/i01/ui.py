@@ -290,8 +290,10 @@ class Operator:
         try:
             result=self.run_action(action,**args)
             self.show(result)
-            if action in ('pilot','main') and (self.run_dir/'run.json').exists():
-                worlds=[f"pilot-{args['number']-1:02d}"] if action=='pilot' else self.status()['gates'].get('batch',{}).get('worlds',[])
+            if action in ('pilot','main','automatic_main') and (self.run_dir/'run.json').exists():
+                worlds=([f"pilot-{args['number']-1:02d}"] if action=='pilot' else
+                        result.get('result',{}).get('worlds',[]) if action=='automatic_main' and result.get('result') else
+                        self.status()['gates'].get('batch',{}).get('worlds',[]))
                 self.inspect(worlds=worlds, downloads=False)
             error=result.get('error') if isinstance(result,dict) else None
             if isinstance(result,dict) and result.get('checkpoint',{}).get('error'):

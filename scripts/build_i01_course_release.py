@@ -11,6 +11,7 @@ import zipfile
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from recovery.i01.archive import atomic_json, digest, inventory
+from recovery.i01.policy import AUTOMATIC_POLICY
 
 
 def build(root, out):
@@ -33,8 +34,9 @@ def build(root, out):
         relative += [Path('docs/validation/i01-course-1-repair.md')]
         relative += [Path('tests/test_i01_course3_repairs.py'),Path('docs/validation/i01-course-3-repair.md')]
         relative += [Path('tests/test_i01_fresh_run.py'),Path('docs/validation/i01-fresh-run.md')]
+        relative += [Path('tests/test_i01_run_all.py'),Path('docs/validation/i01-course-4-run-all.md')]
         relative += [Path('notebooks/validation/i01-development')/(name+'.json') for name in
-                     ('course3-core-checks','course3-final-checks','course3-format-checks','fresh-run-checks')]
+                     ('course3-core-checks','course3-final-checks','course3-format-checks','fresh-run-checks','run-all-checks')]
         # Builder can make a Python-only release before notebook completion.
         for name in ('i01_course_kaggle.ipynb','i01_course_research.ipynb'):
             if (root/'notebooks'/name).exists():relative.append(Path('notebooks')/name)
@@ -51,6 +53,7 @@ def build(root, out):
         head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip()
         dirty=subprocess.check_output(["git","status","--porcelain"],cwd=root,text=True).splitlines()
         manifest=dict(format="i01-online-source-v1",git_head=head,working_tree=dirty,
+                      execution_policy=AUTOMATIC_POLICY,run_all_scope='whole-study',
                       files=inventory(source),model_weights_included=False,dependencies_included=False)
         atomic_json(source/"source-release.json",manifest)
         target=out/"i01-source.zip"; partial=out/"i01-source.zip.partial"
@@ -72,11 +75,13 @@ def build(root, out):
                     notebook=str(out/"i01_course_kaggle.ipynb"),source_head=head,files=list(manifest["files"]),
                     research_notebook=str(out/'i01_course_research.ipynb'),
                     kaggle_input_directory=str(attachment),continuation_inputs=[],
-                    attempt_scope='independent-study',run_all_supported=True,preparation_first_attempt_ceiling=20,
+                    attempt_scope='independent-study',run_all_supported=True,run_all_scope='whole-study',
+                    first_attempt_ceiling=460,hard_attempt_limit=500,contingency_limit=28,
+                    execution_policy=AUTOMATIC_POLICY,human_review='retrospective_pending',
                     implemented=True,kaggle_verified=False,model_attempts=0))
         return target
 
 
 if __name__=="__main__":
-    p=argparse.ArgumentParser(); p.add_argument("--output",type=Path,default=Path("dist/i01-course-fresh"))
+    p=argparse.ArgumentParser(); p.add_argument("--output",type=Path,default=Path("dist/i01-course-run-all"))
     args=p.parse_args(); print(build(Path(__file__).resolve().parents[1],args.output))

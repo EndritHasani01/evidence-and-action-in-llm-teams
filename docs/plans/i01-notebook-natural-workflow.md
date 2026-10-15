@@ -1,5 +1,13 @@
 # I-01 notebook: ordinary cells and natural progression
 
+Latest whole-study follow-up (15 October): 33 ordinary cells now cover the entire
+experiment with Run All. The user approved objective pilot checks and retrospective
+human review. Both notebook filenames are identical; configuration is locked
+before inference and main resource admission is automatic. All ten fixed batches,
+reports, verified export and closure are included. Earlier counts and manual
+approval/preparation-only statements below are historical. See the current
+[runbook](../I01_KAGGLE.md) and [evidence](../validation/i01-course-4-run-all.md).
+
 15 October latest follow-up: the user now requests a fresh independent Run All
 preparation without previous checkpoints. The default notebook has fourteen
 ordinary cells from session facts to verified report/archive. The complete

@@ -26,12 +26,16 @@ class Study(Operator):
     def inspect_thinking(self): return self.inspect_qualification('thinking')
     def qualify_thinking(self, reason=None): return self.thinking_screen(reason)
     def check_headroom(self, *, reload=False): return self.envelope(reload=reload)
+    def plan_execution(self):return self.run('plan_execution')
+    def check_pilot(self, number):return self.run('check_pilot',number=number)
+    def admit_main(self):return self.run('admit_main')
     def run_pilot(self, number): return self.run('pilot',number=number)
     def record_pilot_review(self, number, **findings): return self.review_pilot(number,**findings)
     def review_configuration(self): return self.preview_freeze()
     def freeze_configuration(self, notes): return self.run('freeze',notes=notes)
     def prepare_main_batch(self, count=2): return self.run('prepare_batch',count=count)
-    def run_main_batch(self): return self.run_batch()
+    def run_main_batch(self, number=None):
+        return self.run_batch() if number is None else self.run('automatic_main',number=number)
     def record_batch_review(self, notes=''): return self.review_batch(notes)
     def build_report(self): return self.final_report()
     def save_checkpoint(self, *, verify=False):

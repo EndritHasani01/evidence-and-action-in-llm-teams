@@ -14,7 +14,7 @@ import sqlite3
 
 from .core import canonical, success
 from .store import connection, Store, validate_call_slots, usage
-from .policy import qualification
+from .policy import qualification, AUTOMATIC_POLICY
 
 
 def read_run(run):
@@ -194,7 +194,16 @@ def analysis(run):
                                      basis="Observable record; internal explanation remains ambiguous"))
     screens=qualification(manifest,tables,meta)
     summary['qualification']={mode:{k:v for k,v in q.items() if k!='controls'} for mode,q in screens.items()}
+    plan=meta.get('execution_plan',{})
+    summary.update(execution_policy=plan.get('policy','individual-stages'),
+                   human_review_status='retrospective_pending' if plan.get('policy')==AUTOMATIC_POLICY else 'see_recorded_reviews')
+    pilot_checks=[dict(pilot=n,world=f'pilot-{n-1:02d}',passed=meta.get(f'automatic/pilot-{n}',{}).get('passed'),
+                       checks=meta.get(f'automatic/pilot-{n}',{}).get('checks'),
+                       original_messages=meta.get(f'automatic/pilot-{n}',{}).get('original_messages'),
+                       useful_communication=meta.get(f'review/pilot-{n}',{}).get('useful_communication'),
+                       human_review=meta.get(f'automatic/pilot-{n}',{}).get('human_review','not_recorded')) for n in (1,2,3)]
     return dict(summary=summary, worlds=world_rows, costs=cost_rows, policy_costs=policy_costs, attempts=attempts,
+                pilot_checks=pilot_checks,
                 qualification=screens,qualification_controls=[r for mode in screens.values() for r in mode['controls']],
                 prior_spending=meta.get('prior_spending',[]),
                 paired_costs=paired_costs,failure_analysis=failure_rows,
@@ -283,7 +292,7 @@ def write_report(run, out, *, plot=True):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     (out/"analysis.json").write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf-8")
-    for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions", "qualification_controls", "prior_spending"):
+    for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions", "qualification_controls", "prior_spending", "pilot_checks"):
         csv_file(out/(name+".csv"), result[name])
     csv_file(out/"plotting-data.csv", result["costs"])
     csv_file(out/"plotting-outcomes.csv", result["worlds"])
@@ -315,6 +324,9 @@ def write_report(run, out, *, plot=True):
         qualification_text+=f"| {mode} | {q['committed']}/12 | {q['correct']} | {q['wrong_scalar']} | {q['protocol_errors']} | {q['unexecuted']} | {q['passed']} | {q['ready_seconds_observed']:.3f} | {q['generated_tokens_observed']} | {(q['historical_gate'] or {}).get('passed', 'not recorded')} |\n"
     qualification_text+='\nSee qualification_controls.csv and conversations.html for every planned control, exact answer/truth, validity, effort and call reference. Unresolved attempts and raw-but-uncommitted calls are pending, not unexecuted.\n\n'
     narrative = (f"# I-01 course recovery report — {s['status']}\n\n"
+                 f"Execution policy: {s['execution_policy']}. Human communication/mechanism review: {s['human_review_status']}. "
+                 "Automatic pilot checks establish protocol/evidence/resource eligibility, not useful communication or human approval. "
+                 "See pilot_checks.csv and the complete conversations.\n\n"
                  f"Intended main population: 20 independent worlds; known paired outcomes: {s['known_pairs']}/20. "
                  f"Budget scope: {s['attempt_scope']}. Current-study physical attempts: {s['attempts']}; prior-study charges: {s['prior_attempts']}; campaign total: {s['campaign_attempts']}/500. "
                  f"Shared contingency used: {s['contingency']}/28; historical 45 recorded separately.\n\n"+qualification_text+

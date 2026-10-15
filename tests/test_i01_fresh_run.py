@@ -22,13 +22,13 @@ CONFIG=json.loads((ROOT/'configs/i01-course.json').read_text())
 
 
 class FreshRun(unittest.TestCase):
-    def test_notebooks_separate_run_all_preparation_from_human_research_gates(self):
+    def test_both_notebook_names_deliver_the_complete_run_all(self):
         with redirect_stdout(io.StringIO()):
             fresh=verify_notebook(notebook())
             research=verify_research_notebook(research_notebook())
-        self.assertEqual(fresh['code_cells'],14)
-        self.assertEqual(research['code_cells'],26)
-        self.assertEqual(fresh['first_attempt_ceiling'],20)
+        self.assertEqual(fresh['code_cells'],33)
+        self.assertEqual(research['code_cells'],33)
+        self.assertEqual(fresh['first_attempt_ceiling'],460)
 
     def test_fresh_twenty_attempt_preparation_replay_and_checkpoint(self):
         with tempfile.TemporaryDirectory(prefix='i01-fresh-') as name:

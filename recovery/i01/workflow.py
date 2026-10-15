@@ -16,7 +16,7 @@ from .archive import atomic_json, digest, export, extract_selected, inventory
 from .core import (apply_outcome, canonical, initial_episode, manifests, messages,
                    next_agent, permitted_view, seed_for, validate_action)
 from .store import Admission, Store, utc
-from .policy import PROTOCOL_POLICY, CAMPAIGN_STUDIES, outcome_action
+from .policy import PROTOCOL_POLICY, AUTOMATIC_POLICY, CAMPAIGN_STUDIES, outcome_action
 
 
 def source_files(root):
@@ -521,10 +521,85 @@ class Session:
         if type(number) is not int or number not in (1,2,3):
             raise ValueError("one pilot number 1..3 required")
         if number>1:
-            self.require("review/pilot-"+str(number-1))
+            if self.meta.meta('execution_plan',{}).get('policy')==AUTOMATIC_POLICY:
+                self.automatic_plan()
+                if not self.meta.meta('automatic/pilot-'+str(number-1),{}).get('passed'):
+                    raise ValueError('Previous automatic pilot check must pass first')
+            else:self.require("review/pilot-"+str(number-1))
         w = next(w for w in self.manifest["worlds"] if w["group"]=="pilot" and w["index"]==number-1)
         self.world(w,mode)
         return dict(pilot=number,world=w["id"])
+
+    def plan_execution(self):
+        """Precommit the approved whole-study procedure before any model call."""
+        if self.meta.meta('execution_plan'):
+            return self.automatic_plan()
+        if (self.meta.meta('attempt_scope')!='independent-study' or
+            self.meta.meta('qualification_policy')!=PROTOCOL_POLICY or
+            self.admission.usage()['attempts'] or self.meta.meta('freeze')):
+            raise ValueError('Run All plan requires a new independent direct study before its first model call')
+        value=dict(policy=AUTOMATIC_POLICY,at=utc(),mode='direct',manifest=self.manifest,
+                   settings=self.request(dict(complete_input=[0]),0,'direct',control=True)['settings'],
+                   pilot_admission='complete durable phases/controls, original submissions, valid protocol; accuracy diagnostic',
+                   main_admission='three objective pilot passes and adequate measured resources; no settings tuning',
+                   main_batches=10,worlds_per_batch=2,human_review='retrospective_pending',
+                   useful_communication=None,human_understanding_verified=False,external_download_verified=False)
+        self.meta.bind('execution_plan',value)
+        return value
+
+    def automatic_plan(self):
+        plan=self.meta.meta('execution_plan',{})
+        if (plan.get('policy')!=AUTOMATIC_POLICY or plan.get('manifest')!=self.manifest or
+            plan.get('mode')!='direct' or plan.get('settings')!=self.request(dict(complete_input=[0]),0,'direct',control=True)['settings']):
+            raise ValueError('Exact precommitted Run All plan/settings required; no automatic configuration change')
+        return plan
+
+    def scope_evidence(self, world, *, pilot=False):
+        """Objective durable completion; answer quality is never a gate."""
+        store=self.stores[world['device']]
+        required=[world['id']+'/'+p for p in ('prefix','retain','clear')]
+        required += [f"{world['id']}/control-{p}-direct" for p in (('original','revised') if pilot else ('revised',))]
+        states=[store.state(key) for key in required]
+        rows=[r for r in store.rows('calls') if r['episode'] in required]
+        protocol_errors=0
+        for row in rows:
+            if row['outcome']:
+                _,error=outcome_action(json.loads(row['outcome']),control='/control-' in row['episode'])
+                protocol_errors+=bool(error)
+        prefix=states[0] or {}
+        checks=dict(terminal_evidence=all(s and s.get('terminal') for s in states),
+                    committed_calls=bool(rows) and all(r['outcome'] and r['effect_committed'] for r in rows),
+                    every_episode_has_calls=all(any(r['episode']==key for r in rows) for key in required))
+        if pilot:
+            checks.update(original_team_completed=len(prefix.get('submissions',[]))==2 and all(v is not None for v in prefix['submissions']),
+                          valid_protocol=protocol_errors==0 and not any((s or {}).get('error') or any(e.get('error') for e in (s or {}).get('events',[])) for s in states))
+        return dict(world=world['id'],passed=all(checks.values()),checks=checks,recorded_calls=len(rows),
+                    protocol_errors=protocol_errors,
+                    original_messages=sum(e.get('action',{}).get('message') is not None for e in prefix.get('events',[]) if e.get('action')),
+                    useful_communication=None,human_review='retrospective_pending')
+
+    def check_pilot(self, number):
+        self.automatic_plan()
+        self.qualified()
+        if type(number) is not int or number not in (1,2,3):raise ValueError('Pilot number 1..3 required')
+        if number>1 and not self.meta.meta('automatic/pilot-'+str(number-1),{}).get('passed'):
+            raise ValueError('Previous automatic pilot check must pass first')
+        world=next(w for w in self.manifest['worlds'] if w['id']==f'pilot-{number-1:02d}')
+        value=self.scope_evidence(world,pilot=True)
+        budget=self.admission.usage()
+        value['checks'].update(reconciled_spending=budget['remaining'] is not None and budget['in_flight']==0,
+                               runtime_integrity=not bool(self.meta.meta('model_defect')),
+                               inspectable_checkpoint=(self.run/'exports/latest.zip').is_file())
+        value.update(passed=all(value['checks'].values()),policy=AUTOMATIC_POLICY,pilot=number)
+        previous=self.meta.meta('automatic/pilot-'+str(number))
+        if previous!=value:self.meta.put_meta('automatic/pilot-'+str(number),value)
+        if not value['passed']:
+            raise ValueError('Automatic pilot check failed: '+', '.join(k for k,v in value['checks'].items() if not v))
+        return value
+
+    def admit_main(self):
+        self.automatic_plan()
+        return self.freeze('Automatic main resource admission under the precommitted Run All plan; human communication review remains pending.')
 
     def review(self, scope, notes, *, useful_communication=None, usable=None):
         if not notes.strip() or not (self.run/"exports/latest.zip").is_file():
@@ -573,7 +648,16 @@ class Session:
         mode = self.qualified()
         from .report import analysis
         result = analysis(self.run)
+        automatic=self.meta.meta('execution_plan',{}).get('policy')==AUTOMATIC_POLICY
+        if automatic:self.automatic_plan()
         for number in (1,2,3):
+            if automatic:
+                if not self.meta.meta('automatic/pilot-'+str(number),{}).get('passed'):
+                    raise ValueError('Three passing objective pilot checks required for automatic main admission')
+                # Reconstruct actual evidence too; metadata is not a substitute.
+                if not self.scope_evidence(next(w for w in self.manifest['worlds'] if w['id']==f'pilot-{number-1:02d}'),pilot=True)['passed']:
+                    raise ValueError('Automatic pilot evidence no longer satisfies the precommitted checks')
+                continue
             r = next(w for w in result["worlds"] if w["id"]==f"pilot-{number-1:02d}")
             review = self.meta.meta("review/pilot-"+str(number),{})
             protocol_policy = self.meta.meta('qualification_policy')==PROTOCOL_POLICY
@@ -595,6 +679,8 @@ class Session:
         if old:
             return old
         value = dict(mode=mode,at=utc(),notes=notes,forecast=forecast,manifest=self.manifest,
+                     execution_policy=AUTOMATIC_POLICY if automatic else 'individual-stages',
+                     human_review='retrospective_pending' if automatic else 'operator-recorded-findings',
                      qualification_policy=self.meta.meta('qualification_policy'),prior_spending=self.meta.meta('prior_spending',[]),
                      implementation_transition=self.meta.meta('implementation_transition'),
                      settings=self.request(dict(complete_input=[0]),0,mode,control=True)["settings"],
@@ -611,7 +697,8 @@ class Session:
         current = self.meta.meta("batch")
         if current and not current.get("complete"):
             return current
-        if current and not self.meta.meta("review/"+current["id"]):
+        automatic=self.meta.meta('execution_plan',{}).get('policy')==AUTOMATIC_POLICY
+        if current and not self.meta.meta(('automatic/' if automatic else 'review/')+current["id"]):
             raise ValueError("inspect/export previous main batch before preparing another")
         from .report import analysis
         result = analysis(self.run)
@@ -628,6 +715,33 @@ class Session:
                      eligible_retry_allowance=self.config["contingency_limit"]-self.admission.usage()["contingency"],
                      forecast=self.forecast(),prepared_at=utc())
         self.meta.put_meta("batch",value)
+        return value
+
+    def automatic_main(self, number):
+        self.automatic_plan()
+        self.require('freeze')
+        if type(number) is not int or number not in range(1,11):raise ValueError('Fixed main batch number 1..10 required')
+        worlds=[w for w in self.manifest['worlds'] if w['group']=='main'][2*(number-1):2*number]
+        identities=[w['id'] for w in worlds]
+        key='automatic/batch/'+'+'.join(identities)
+        if self.meta.meta(key):
+            if not all(self.scope_evidence(w)['passed'] for w in worlds):
+                raise ValueError('Recorded batch acknowledgement disagrees with durable evidence')
+            return self.meta.meta(key)
+        if number>1:
+            prior=[w['id'] for w in self.manifest['worlds'] if w['group']=='main'][2*(number-2):2*(number-1)]
+            if not self.meta.meta('automatic/batch/'+'+'.join(prior),{}).get('passed'):
+                raise ValueError('Previous fixed main batch must complete before this numbered scope')
+        batch=self.prepare_batch(count=2)
+        if batch['worlds']!=identities:
+            raise ValueError('Prepared main scope differs from this fixed batch number; resume its actual numbered cell')
+        self.main()
+        evidence=[self.scope_evidence(w) for w in worlds]
+        if not all(e['passed'] for e in evidence) or self.admission.usage()['in_flight']:
+            raise ValueError('Complete committed evidence required before automatic next-batch admission')
+        value=dict(passed=True,complete=True,number=number,id=batch['id'],worlds=identities,
+                   policy=AUTOMATIC_POLICY,human_review='retrospective_pending',evidence=evidence)
+        self.meta.put_meta(key,value)
         return value
 
     def main(self):
@@ -678,6 +792,8 @@ class Session:
             result, error = None, None
             try:
                 methods = {"readiness":self.readiness,"screen":self.screen,"envelope":self.envelope,
+                           "plan_execution":self.plan_execution,"check_pilot":self.check_pilot,
+                           "admit_main":self.admit_main,"automatic_main":self.automatic_main,
                            "pilot":self.pilot,"freeze":self.freeze,"prepare_batch":self.prepare_batch,
                            "main":self.main,"review":self.review,"selfcheck":self.selfcheck,"load":self.load,
                            "window":self.window,"snapshot":lambda boundary='operator-snapshot':dict(boundary_requested=boundary)}

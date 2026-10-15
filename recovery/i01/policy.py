@@ -4,6 +4,7 @@ import json
 from .core import validate_action
 
 PROTOCOL_POLICY = "i01-direct-protocol-2026-10-15"
+AUTOMATIC_POLICY = "i01-whole-study-run-all-2026-10-15"
 LEGACY_POLICY = "i01-competence-11-of-12"
 COURSE_2_STUDY = 'c2973855-84fa-411d-9f6c-a08f8acc79d6'
 COURSE_3_STUDY = 'de1b347e-2cb7-41e5-a8b9-2789abda2da3'

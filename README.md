@@ -1,11 +1,15 @@
 # Recovery in distributed LLM teams
 
-The current I-01 course preparation is a separate, explicitly adopted study:
+The current I-01 course experiment is a separate, explicitly adopted study:
 see the [I-01 Kaggle runbook](docs/I01_KAGGLE.md) and
 [implementation WBS](docs/plans/i01-course-implementation-wbs.md).
-Its finite-stage notebook uses explicit operator controls, twenty paired worlds
-and a hard 500-attempt ceiling. It does not inherit the historical Run All flow
-below. GPU/model qualification and empirical outcomes remain pending.
+Its 33 ordinary cells support a fresh whole-experiment Run All: preparation,
+three objectively checked pilots, ten fixed batches covering twenty paired
+worlds, reports and verified export. The hard ceiling is 500 attempts; human
+conversation review is retrospective. Source-only upload is under
+`dist/i01-course-run-all/`. Course-4 verifies the earlier preparation runtime;
+new pilot/main behavior remains Kaggle-unverified. Historical flows below remain
+independently scoped.
 
 The complete course Kaggle interface is in the [Kaggle runbook](docs/KAGGLE_COURSE.md).
 The Run All delivery contains `course_kaggle.ipynb`, `course-kaggle-dataset.zip`

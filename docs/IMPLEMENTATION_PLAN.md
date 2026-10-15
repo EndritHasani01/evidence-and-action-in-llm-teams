@@ -2,6 +2,25 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
+Current whole-study request supersedes the preparation-only handoff below. The
+user approved objective pilot checks and retrospective human review and requested
+one end-to-end Run All. Specification §12 records that procedural amendment.
+The 33-cell notebook locks the unchanged plan before inference, checks three
+pilots, admits main automatically on measured resources, executes all ten fixed
+batches, reports, verifies export and closes workers. Both notebook filenames
+contain the same complete flow. No actual model inference runs during this work.
+
+Course-4 executes all previous fourteen preparation cells successfully: twenty
+attempts, direct twelve valid/ten correct, both 8,192/512 headroom probes passing,
+and no pilots/main. The scope boundary, rather than a qualification error, ended
+that notebook. Exact saved analysis reconstruction passed; source and original
+artifacts remain preserved. The session's `lorem` allowance note is not provider
+evidence. The new default transparently estimates 700 fresh-session minutes
+against the user's approximate twelve-hour maximum; reduce for elapsed time.
+Source-only delivery will be `dist/i01-course-run-all/kaggle-input/`. See
+[course-4 and Run All evidence](validation/i01-course-4-run-all.md) and the
+[current runbook](I01_KAGGLE.md). Earlier releases remain historical, unchanged.
+
 Latest steering: the user explicitly requests a fresh beginning with Run All and
 no course-3 continuation or imported old results. Specification §12 records the
 independent-study exception: zero initial attempts, own 500 ceiling and unchanged

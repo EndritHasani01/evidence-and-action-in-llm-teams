@@ -14,77 +14,24 @@ from recovery.i01.archive import atomic_json,digest
 from recovery.i01.runtime import command as runtime_command
 
 
-def verify_research_notebook(notebook):
-    """Execute ordinary stage cells only against a recording, zero-model stub."""
-    expected={
-        'workspace':[], 'setup':['install_runtime'], 'open-study':['open'],
-        'selfcheck':['check_implementation'], 'weights':['download_weights'], 'session-window':['configure_session'], 'load':['load_models'],
-        'readiness':['check_readiness'], 'direct-screen':['qualify_direct'],
-        'qualification':['inspect_qualification'], 'thinking-history':['inspect_thinking'],
-        'envelope':['check_headroom'], 'pilot-1':['run_pilot'], 'review-pilot-1':['record_pilot_review'],
-        'pilot-2':['run_pilot'], 'review-pilot-2':['record_pilot_review'], 'pilot-3':['run_pilot'],
-        'review-pilot-3':['record_pilot_review'], 'pre-freeze':['review_configuration'],
-        'freeze':['freeze_configuration'], 'prepare-batch':['prepare_main_batch'],
-        'main-batch':['run_main_batch'], 'review-batch':['record_batch_review'],
-        'report':['build_report'], 'archive':['save_checkpoint'], 'close':['finish_session']}
-    cells=[c for c in notebook['cells'] if c['cell_type']=='code']
-    assert [c['id'] for c in cells]==list(expected),'ordinary stage order differs'
-    assert all(c['execution_count'] is None and not c['outputs'] for c in cells)
-    assert notebook['metadata']['i01']['run_all_can_execute_inference'] is True
-    assert 'Do not use Run All' in ''.join(notebook['cells'][0]['source'])
-    class Stub:
-        def __init__(self): self.calls=[]
-        def __getattr__(self,name):
-            assert name in {n for names in expected.values() for n in names}
-            def record(*args,**kwargs):
-                self.calls.append(dict(method=name,args=list(args),kwargs=kwargs))
-                return {}
-            return record
-    stub=Stub()
-    namespace=dict(study=stub,START_MODE='new',SESSION_DEADLINE_UTC=None,SESSION_ALLOWANCE_EVIDENCE='')
-    receipts={}
-    for cell in cells:
-        source=''.join(cell['source']); compile(source,cell['id'],'exec')
-        tree=ast.parse(source)
-        assert 'ui.' not in source
-        assert not any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr in ('panel','inspect_panel','generate','start','run_all','run','run_action','action') for n in ast.walk(tree))
-        if cell['id']=='workspace': continue  # Real extraction is checked below.
-        stub.calls=[]
-        exec(compile(source,cell['id'],'exec'),namespace)
-        assert [c['method'] for c in stub.calls]==expected[cell['id']],cell['id']
-        receipts[cell['id']]=stub.calls
-    for number in (1,2,3):
-        assert receipts[f'pilot-{number}'][0]['args']==[number]
-        review=receipts[f'review-pilot-{number}'][0]
-        assert review['args']==[number]
-        assert review['kwargs']==dict(useful_communication=None,usable=None,notes='')
-    assert receipts['direct-screen'][0]['kwargs']=={}
-    assert 'deadline' not in receipts['open-study'][0]['kwargs']
-    assert receipts['session-window'][0]['kwargs']==dict(remaining_minutes=None,evidence='')
-    assert receipts['prepare-batch'][0]['kwargs']==dict(count=2)
-    assert receipts['thinking-history'][0]['args']==[]
-    assert next(c for c in cells if c['id']=='thinking-history')['metadata']['i01']['generation'] is False
-    assert receipts['open-study'][0]['kwargs']['prior_checkpoints'] is None
-    assert receipts['open-study'][0]['kwargs']['independent'] is True
-    assert receipts['freeze'][0]['args']==['']
-    assert receipts['archive'][0]['kwargs']==dict(verify=True)
-    return dict(code_cells=len(cells),widget_panels=0,independent_cell_scopes=receipts,
-                run_all_can_execute_inference=True,model_attempts=0)
-
-
 def verify_notebook(notebook):
-    """Run every preparation stage sequentially with a zero-model recorder."""
+    """Execute all ordinary cells with a recorder; never load a real model."""
     expected=dict(configuration=[],workspace=[],**{'session-window':['configure_session'],
         'setup':['install_runtime'],'open-study':['start_new'],'selfcheck':['check_implementation'],
-        'weights':['download_weights'],'load':['load_models'],'readiness':['check_readiness'],
-        'direct-screen':['qualify_direct'],'qualification':['inspect_qualification'],
-        'envelope':['check_headroom'],'report':['build_report'],'archive':['save_checkpoint']})
+        'weights':['download_weights'],'load':['load_models'],'plan':['plan_execution'],
+        'readiness':['check_readiness'],'direct-screen':['qualify_direct'],
+        'qualification':['inspect_qualification'],'envelope':['check_headroom']})
+    for n in (1,2,3):
+        expected[f'pilot-{n}']=['run_pilot'];expected[f'check-pilot-{n}']=['check_pilot']
+    expected['admit-main']=['admit_main']
+    for n in range(1,11):expected[f'main-{n:02d}']=['run_main_batch']
+    expected.update(report=['build_report'],archive=['save_checkpoint'],close=['finish_session'])
     cells=[c for c in notebook['cells'] if c['cell_type']=='code']
     assert [c['id'] for c in cells]==list(expected)
     assert all(c['execution_count'] is None and not c['outputs'] for c in cells)
-    assert notebook['metadata']['i01']['run_all_supported'] is True
-    assert notebook['metadata']['i01']['first_attempt_ceiling']==20
-    assert 'Run All' in ''.join(notebook['cells'][0]['source'])
+    meta=notebook['metadata']['i01']
+    assert meta['run_all_supported'] and meta['run_all_scope']=='whole-study'
+    assert meta['first_attempt_ceiling']==460 and meta['hard_attempt_limit']==500 and meta['contingency_limit']==28
     class Stub:
         def __init__(self):self.calls=[]
         def __getattr__(self,name):
@@ -97,18 +44,28 @@ def verify_notebook(notebook):
         source=''.join(cell['source']);tree=ast.parse(source)
         assert 'ui.' not in source
         assert not any(isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr in
-                       ('panel','inspect_panel','generate','run_all','run','run_action','action','qualify_thinking','run_pilot','freeze_configuration','run_main_batch') for n in ast.walk(tree))
+                       ('panel','inspect_panel','generate','run_all','run','run_action','action',
+                        'qualify_thinking','record_pilot_review','record_batch_review','freeze_configuration') for n in ast.walk(tree))
         assert not any(isinstance(n,(ast.For,ast.While)) for n in ast.walk(tree)) or cell['id']=='workspace'
-        if cell['id']=='workspace':continue  # Actual ZIP/expanded extraction checked separately.
+        if cell['id']=='workspace':continue
         stub.calls=[];exec(compile(source,cell['id'],'exec'),namespace)
         assert [c['method'] for c in stub.calls]==expected[cell['id']],cell['id']
         receipts[cell['id']]=stub.calls
-    assert receipts['session-window'][0]['kwargs']==dict(remaining_minutes=None,evidence='')
-    assert receipts['open-study'][0]['args']==[] and receipts['open-study'][0]['kwargs']=={}
-    assert receipts['qualification'][0]['kwargs']==dict(mode='direct')
+    assert receipts['session-window'][0]['kwargs']['remaining_minutes']==700
+    assert 'not independently verified' in receipts['session-window'][0]['kwargs']['evidence']
+    assert receipts['plan'][0]['kwargs']=={} and receipts['admit-main'][0]['kwargs']=={}
+    for n in (1,2,3):
+        assert receipts[f'pilot-{n}'][0]['args']==[n]
+        assert receipts[f'check-pilot-{n}'][0]['args']==[n]
+    for n in range(1,11):assert receipts[f'main-{n:02d}'][0]['args']==[n]
     assert receipts['archive'][0]['kwargs']==dict(verify=True)
     return dict(code_cells=len(cells),widget_panels=0,independent_cell_scopes=receipts,
-                run_all_supported=True,first_attempt_ceiling=20,run_all_can_execute_inference=True,model_attempts=0)
+                run_all_supported=True,run_all_scope='whole-study',first_attempt_ceiling=460,
+                run_all_can_execute_inference=True,model_attempts=0)
+
+
+def verify_research_notebook(notebook):
+    return verify_notebook(notebook)
 
 
 def verify(root,delivery):
@@ -123,6 +80,7 @@ def verify(root,delivery):
     research_receipt=verify_research_notebook(research)
     assert (root/'notebooks/i01_course_kaggle.ipynb').read_bytes()==(delivery/'i01_course_kaggle.ipynb').read_bytes()
     assert (root/'notebooks/i01_course_research.ipynb').read_bytes()==(delivery/'i01_course_research.ipynb').read_bytes()
+    assert (delivery/'i01_course_research.ipynb').read_bytes()==(delivery/'i01_course_kaggle.ipynb').read_bytes()
     assert sorted(p.name for p in (delivery/'kaggle-input').iterdir())==['i01-source.zip']
     installed_continuation=False
     with tempfile.TemporaryDirectory(prefix="i01-installed-review-") as name:
@@ -165,7 +123,7 @@ def verify(root,delivery):
         exec(compile(expanded,"n01-expanded","exec"),bootstrap_namespace)
         old_explicit=bootstrap.replace('SOURCE_BUNDLE = None',f'SOURCE_BUNDLE = {old_source.as_posix()!r}')
         try:exec(compile(old_explicit,'refuse-old-source','exec'),dict(bootstrap_namespace))
-        except RuntimeError as error:assert 'requires the repaired' in str(error)
+        except RuntimeError as error:assert 'requires the whole-study' in str(error)
         else:raise AssertionError('The repaired notebook accepted an explicit legacy source packet')
         wheels=list(source.glob("*.whl")); assert len(wheels)==1
         venv=temp/'venv'
@@ -214,10 +172,10 @@ def verify(root,delivery):
                  zip_expanded_source_bootstrap_and_rerun=True,complete_source_preserved_in_checkpoints=True,
                  notebook_execution_outputs_empty=True,
                  kaggle_host_verified=False,qualification_pilot_main_executed=False)
-    atomic_json(root/"notebooks/validation/i01-development/fresh-release-review.json",receipt)
+    atomic_json(root/"notebooks/validation/i01-development/run-all-release-review.json",receipt)
     return receipt
 
 
 if __name__=="__main__":
     root=Path(__file__).resolve().parents[1]
-    print(json.dumps(verify(root,root/"dist/i01-course-fresh"),indent=2))
+    print(json.dumps(verify(root,root/"dist/i01-course-run-all"),indent=2))

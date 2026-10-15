@@ -6,7 +6,19 @@ Prepared 14 October 2026 against repository `0b0a44a3cf3a0306559a716e5df45b3dbe0
 
 This is the implementation reference for the I-01 course study explicitly adopted by the user on 14 October 2026. [Specification §12](../../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime) is authoritative. Approval covers implementation and focused lightweight checks only; actual Kaggle readiness, qualification, pilots, freeze and main remain operator stages. The existing roadmap points here instead of duplicating the task list.
 
-Latest amendment (15 October): the user requests a fresh independent run with
+Latest whole-study amendment (15 October): the user explicitly approves objective
+pilot checks and retrospective human review, and requests the complete experiment
+with Run All. The notebook now has 33 ordinary finite cells, including all three
+pilots and all ten fixed main batches. Configuration is precommitted before any
+model call; measured resource admission occurs automatically after pilots. No
+fake human review, accuracy gate, sample selection, fallback or extra condition.
+Automatic checkpoints remain enabled. A conservative 700-minute fresh-session
+estimate is labelled against the user's approximately twelve-hour limit, with
+actual provider quota/termination unverified. This supersedes preparation-only
+Run All and manual pilot/freeze/batch acknowledgements for the new study. See
+[course-4 evidence and Run All implementation](../validation/i01-course-4-run-all.md).
+
+Preceding amendment (15 October): the user requests a fresh independent run with
 Run All and no old result/checkpoint import. Specification §12 explicitly grants
 this study its own unchanged 500-attempt allocation. Fourteen ordinary cells now
 support Run All through preparation/report/export (up to 20 first attempts);
@@ -696,7 +708,7 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | M2-T01–T04 | Implemented; fresh-run/accounting checks pass | Explicit independent study starts empty; idempotent new/reopen/restore retains its own 500/28 accounting; older campaign continuation and gap/slot safeguards preserved |
 | M3-T01–T04 | Original T4 inference evidence retained; runtime fixes implemented | Normal output failures consume turns; real defects stop; load-pair probes bind before dispatch; actual repaired full-envelope acceptance remains pending |
 | M4-T01–T04 | Implemented; saved-fixture and transactional-read checks pass | Both partial mode summaries, control error/call references, prior-spending CSV, qualification figures and unknown logical-cost semantics |
-| M5-T01–T04 | Fresh Run All delivered; installed package review passed | 14 ordinary preparation scopes and separate complete 26-cell research notebook; source-only attachment; no old checkpoints, widget forms or string action calls in delivered cells |
+| M5-T01–T04 | Whole-study Run All implemented; focused review in progress | 33 ordinary scopes, both filenames identical; source-only attachment; automatic pilot/main resource gates and all ten main batches |
 | M6-T01–T04 | Saved direct scalar protocol eligible under adopted amendment; later gates unexecuted | Preserve 10/12 mathematical diagnostic and old failed gate; thinking 4 correct/1 invalid/7 unknown; current full envelopes, pilots and freeze remain pending |
 | M7-T01–T03 | Paths delivered; no empirical main execution | Twenty main pairs unknown; final notebook report/archive/close cells unexecuted; supplied error-boundary archive verifies |
 

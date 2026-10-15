@@ -58,3 +58,27 @@ and restore primitives remain in use. No new progress store or framework.
 Implementation/check/package evidence is recorded as completed below. Course-4
 validates the preceding preparation runtime only; the new Run All pilot/main
 workflow still requires actual operator execution on Kaggle.
+
+## Focused implementation checks
+
+Five new procedure regressions passed in 111.252 seconds on Windows Python
+3.11.9, using scripted workers and suppressing repeated plot rendering. The
+whole-study case exercises the actual Study/controller action interfaces with
+real canonical SQLite stores, reports, checkpoints and exact restore. It reaches
+twenty main pairs at 184 physical scripted calls, all wrong mathematics, with
+zero prior charges and no fabricated human reviews. Replaying completed pilots
+and numbered batches spends zero calls. Final report/archive reconstruction is
+exact, all three objective checks pass, and human review remains pending.
+
+Other cases verify zero-message pilots are not rejected for a fake communication
+judgment; incomplete original teams and malformed pilot protocol block; changed
+precommitted settings and insufficient measured time block; out-of-order batches
+cannot skip; invalid main actions remain measured failures and allow subsequent
+fixed scopes. Fourteen existing fresh-start/notebook-interface regressions pass
+in 7.840 seconds. Both identical notebooks validate as empty-output nbformat 4.5,
+with 33 finite code cells, no UI dispatch/forms or manual approval placeholders.
+
+The [focused receipt](../../notebooks/validation/i01-development/run-all-checks.json)
+records these executed checks and their scripted-only boundary. Inference modules,
+runtime/model pins, math/views/prompts, input/seed/schedule/turn settings, exact
+scoring/uncertainty and thesis specification sections 1–11 remain unchanged.
