@@ -812,6 +812,59 @@ waiver is permitted. Pilot reviews, explicit freeze and bounded main execution
 remain individually operated in the complete research workflow. All model,
 runtime, task, population, scoring and uncertainty settings remain unchanged.
 
+Whole-experiment Run All amendment (15 October 2026): the user explicitly
+approved replacing the blocking pilot-review procedure with predefined objective
+checks and retrospective human review, then requested the complete end-to-end
+notebook. This supersedes the preparation-only Run All boundary and manual
+pilot/freeze/batch acknowledgements for the new independent study. It changes
+the admission procedure, not the model, task, conditions, scoring or population.
+No new inference is authorized during implementation; the operator's later
+Run All explicitly requests the fixed qualification, three pilots and all
+twenty main worlds through these gates.
+
+Before the first model call, bind a Run All execution plan to the existing
+immutable input/configuration/source manifest, direct decoding/settings, prompt
+implementation, limits, evaluation and rubric. Do not choose settings using
+pilot answers. All three pilots run in order. Automatic pilot admission requires
+terminal prefix/retain/clear episodes and both controls, both original-team
+submissions (irrespective of correctness), legal protocol for every attempted
+pilot action/control, committed durable effects, reconciled attempts, valid
+current-load qualification/headroom, and an inspectable checkpoint. All three
+must pass before main admission. A wrong scalar, wrong team answer, recovery
+failure, effect direction or message-quality judgment never selects admission.
+Message counts and full conversations are diagnostic. Useful task-relevant
+communication, usability and mechanisms remain unreviewed until genuine later
+human inspection; never synthesize human approval or an LLM judge.
+
+After the pilots, automatically record main admission only when the unchanged
+plan matches the active settings and the measured attempt/time/deadline forecast
+is adequate. This admission record does not refreeze or tune the precommitted
+configuration. Execute all ten fixed two-world batches in order without operator
+acknowledgements. Each batch must have complete durable terminal evidence before
+advancing; invalid/wrong recorded main outcomes remain measured failures and do
+not select worlds or stop the main run. Real provider/cache/numerical, protocol
+qualification/pilot, unresolved spending, source, storage and resource failures
+still stop dispatch and retain a truthful partial report/checkpoint. No automatic
+fallback, resampling of recorded outcomes, replacement world or sample expansion.
+
+Keep ordinary independently executable stage cells, progress and complete trace
+inspection. A rerun of a numbered completed pilot/batch never advances another
+scope or spends again. Export after each pilot, each main batch and settled
+error; final reports/figures and verified portable export conclude the run.
+Existing resident replicas stay loaded between stages; close them after final
+export. Automatic local checkpoints remain enabled even when restore controls
+are not used. Do not promise survival of a provider hard shutdown or external
+download verification. Retrospective review remains visibly pending in exports.
+
+The user reports an approximately twelve-hour Kaggle session maximum. A fresh
+session may use a clearly labelled conservative 700-minute planning window,
+leaving twenty minutes against that approximate maximum, starting before setup.
+This is an operator-reported estimate, not verified provider allowance/assignment
+evidence. Reduce it to actual remaining time if already elapsed, and check the
+account's GPU allowance. Never extend the fixed deadline on cell rerun. Provider
+shutdown can occur earlier; existing call/termination/export margins and durable
+accounting remain mandatory. No completion-time guarantee is licensed.
+
 Actual-host prerequisites are source/dependency/restore/self-check acceptance,
 two distinct T4s, six short state checks, twelve completed direct full-information
 controls with zero malformed/truncated/illegal final actions, and two direct full
