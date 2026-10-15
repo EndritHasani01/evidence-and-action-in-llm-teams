@@ -3,18 +3,18 @@
 The current delivery is one complete 33-cell notebook. Both
 **i01_course_kaggle.ipynb** and **i01_course_research.ipynb** contain identical
 end-to-end content. The earlier preparation-only and manual-approval notebooks
-remain in their historical release directories. No course-2/3/4 result is imported.
+remain in their historical release directories. No course-2/3/4/5 result is imported.
 
 ## First execution
 
-1. Upload **dist/i01-course-run-all/i01_course_kaggle.ipynb** to a fresh Kaggle
+1. Upload **dist/i01-course-recovery-run-all/i01_course_kaggle.ipynb** to a fresh Kaggle
    notebook. The research filename works identically; you need only one.
-2. Create one private dataset from **dist/i01-course-run-all/kaggle-input/**,
+2. Create one private dataset from **dist/i01-course-recovery-run-all/kaggle-input/**,
    containing only **i01-source.zip**, and attach it. Select **GPU T4 x2** and
    enable Internet. Remove old active source datasets; restart the kernel when
    replacing an already imported source release. Only a matching whole-study
    source packet is accepted, including ZIP or Kaggle-expanded roots.
-3. Check the first cell. It defaults to `/kaggle/working/i01-run-all-study` and
+3. Check the first cell. It defaults to `/kaggle/working/i01-recovery-study` and
    a **700-minute fresh-session planning window**, leaving twenty minutes against
    your approximately twelve-hour maximum. The evidence note explicitly says
    provider allowance/deadline is unverified. Reduce the minutes to actual time
@@ -26,7 +26,7 @@ remain in their historical release directories. No course-2/3/4 result is import
    measured main admission, all ten fixed two-world main batches, full reporting,
    verified checkpoint export and worker/controller shutdown. No forms, review
    placeholders, freeze-note fields, batch acknowledgements or further Run clicks.
-5. Download **/kaggle/working/i01-run-all-study/exports/latest.zip**, reports and
+5. Download **/kaggle/working/i01-recovery-study/exports/latest.zip**, reports and
    the executed notebook using the displayed links. Save the existing output;
    do not schedule another inference run solely to save it. Stop Kaggle through
    its UI to release the allocation. Process closure cannot prove deallocation
@@ -42,9 +42,9 @@ committed, protocol-valid controls. Readiness/headroom and strict isolation gate
 remain. Thinking is not selected and there is no model fallback.
 
 Each pilot requires terminal prefix/retain/clear and both controls, both original
-team submissions, valid protocol on every attempted pilot call, committed durable
+team submissions, legal original-prefix actions and legal original/revised controls, committed durable
 results, reconciled spending and inspectable checkpoint evidence. Incorrect
-submissions pass the completion check. Message counts and entire conversations
+submissions pass the completion check. Recovery malformed, truncated, framing, illegal action and noncompletion outcomes are measured failures and do not veto admission. Unknown termination or real backend faults still block. The new policy is `i01-recovery-admission-run-all-2026-10-15`; historical strict plans keep their meaning. Message counts and entire conversations
 are diagnostics. Useful communication, human understanding and mechanisms remain
 **retrospective review pending**; software never invents human approval.
 
@@ -53,8 +53,7 @@ attempt/time forecast must fit the unchanged settings and configured deadline.
 The notebook then runs all twenty predetermined main worlds in ten numbered
 batches, one world per logical slot. Wrong/malformed/truncated recorded main
 replies remain measured outcomes; real runtime, unresolved evidence, storage,
-source or resource failures stop. A failed guard keeps a truthful partial report
-and the latest valid archive. No success/effect-dependent selection or replacement.
+source or resource failures stop. A failed guard attempts a settled partial report/export, then bounded closure of both workers with actual acknowledgements. Cleanup failure remains explicit; the latest valid archive is preserved. A successful error snapshot does not clear a blocked scientific gate. No success/effect-dependent selection or replacement.
 
 Every numbered cell requests its own finite scope. Repeating a completed pilot
 or batch makes zero new model calls and cannot advance the next scope. Rerunning
@@ -72,7 +71,7 @@ eligible retries, restores and reload probes remain spent. Previous studies are
 preserved historical evidence, never silently imported or pooled.
 
 Progress shows call/world/phase/slot, physical spending, action outcomes and
-checkpoints. Models remain resident through inspection and research stages.
+checkpoints. `validation_details.csv` and `protocol_compliance.csv` separate syntax, schema and legal-action compliance by phase; invalid raw calls appear first in inspection. The original clock timestamp/minutes/estimate basis survives setup. Forecasts are labelled main-only, not a whole-session guarantee. Models remain resident through inspection and research stages.
 Each pilot shows its complete conversation and cumulative archive; every main
 batch displays its exact worlds, results and cumulative archive. Every settled
 error also attempts export. Checkpoints require no clicks and are not disabled

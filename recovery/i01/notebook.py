@@ -14,8 +14,8 @@ class Study(Operator):
     def install_runtime(self): return self.run('setup')
     def open(self, mode='new', **session_facts): return self.open_study(mode,**session_facts)
     def set_session_window(self, deadline, evidence): return self.run('window',deadline=deadline,evidence=evidence)
-    def configure_session(self, *, remaining_minutes=None, deadline=None, evidence='', refresh=False):
-        return self.run('window',deadline=deadline,evidence=evidence,remaining_minutes=remaining_minutes,refresh=refresh)
+    def configure_session(self, *, remaining_minutes=None, deadline=None, evidence='', refresh=False, basis='operator_observed'):
+        return self.run('window',deadline=deadline,evidence=evidence,remaining_minutes=remaining_minutes,refresh=refresh,basis=basis)
     def record_state_review(self, notes):return self.run('review',scope='readiness',notes=notes)
     def check_implementation(self): return self.run('selfcheck')
     def download_weights(self): return self.run('weights')
@@ -40,7 +40,11 @@ class Study(Operator):
     def build_report(self): return self.final_report()
     def save_checkpoint(self, *, verify=False):
         result=self.run('snapshot')
-        if verify: self.verify_checkpoint()
+        if verify:
+            try:self.verify_checkpoint()
+            except Exception as error:
+                self.operation_error('verify_checkpoint',error)
+                raise
         return result
     def show_status(self): return self.run('status')
     def pause(self): return self.run('pause')

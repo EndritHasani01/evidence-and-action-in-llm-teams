@@ -61,6 +61,14 @@ def serve(run, source):
                 elif op=="close_models":
                     value=session.close_models()
                     session.checkpoint("close-models")
+                elif op=='failure_cleanup':
+                    if busy:
+                        session.pause.set()
+                        raise ValueError('Pause requested; wait for action settlement before cleanup')
+                    from .policy import RECOVERY_POLICY
+                    if session.meta.meta('execution_plan',{}).get('policy')!=RECOVERY_POLICY:
+                        raise ValueError('Unattended cleanup requires the recovery Run All plan')
+                    value=session.failure_cleanup(req['action'],req['error'])
                 elif op=="reconcile":
                     if busy: raise ValueError("pause before reconciliation")
                     # A stale PID alone is not termination evidence. Operator must

@@ -16,7 +16,8 @@ from .archive import atomic_json, digest, export, extract_selected, inventory
 from .core import (apply_outcome, canonical, initial_episode, manifests, messages,
                    next_agent, permitted_view, seed_for, validate_action)
 from .store import Admission, Store, utc
-from .policy import PROTOCOL_POLICY, AUTOMATIC_POLICY, CAMPAIGN_STUDIES, outcome_action
+from .policy import (PROTOCOL_POLICY, RECOVERY_POLICY, AUTOMATIC_POLICIES,
+                     CAMPAIGN_STUDIES, outcome_action, validation_detail, runtime_safe, admission_blocks)
 
 
 def source_files(root):
@@ -176,13 +177,13 @@ class Session:
         if not self.meta.meta(key):
             raise ValueError("prerequisite missing: " + key)
 
-    def window(self, deadline, evidence, observed_minutes=None):
+    def window(self, deadline, evidence, observed_minutes=None, observation=None):
         value = datetime.fromisoformat(deadline)
         if value.tzinfo is None or value <= datetime.now(timezone.utc) or not evidence.strip():
             raise ValueError("actual future session deadline and operator allowance evidence required")
         previous=self.meta.meta("window",{})
         observed_start=previous.get("observed_start") if previous.get("session")==self.session_id else utc()
-        observation = previous.get('observation') if previous.get('session')==self.session_id and previous.get('deadline')==deadline else dict(at=utc(),remaining_minutes=observed_minutes)
+        observation = previous.get('observation') if previous.get('session')==self.session_id and previous.get('deadline')==deadline else (observation or dict(at=utc(),remaining_minutes=observed_minutes,basis='operator_observed' if observed_minutes is not None else 'absolute_deadline'))
         self.meta.put_meta("window", dict(deadline=deadline, evidence=evidence, observed_start=observed_start, session=self.session_id, observation=observation))
         return self.meta.meta("window")
 
@@ -521,7 +522,7 @@ class Session:
         if type(number) is not int or number not in (1,2,3):
             raise ValueError("one pilot number 1..3 required")
         if number>1:
-            if self.meta.meta('execution_plan',{}).get('policy')==AUTOMATIC_POLICY:
+            if self.meta.meta('execution_plan',{}).get('policy') in AUTOMATIC_POLICIES:
                 self.automatic_plan()
                 if not self.meta.meta('automatic/pilot-'+str(number-1),{}).get('passed'):
                     raise ValueError('Previous automatic pilot check must pass first')
@@ -538,9 +539,9 @@ class Session:
             self.meta.meta('qualification_policy')!=PROTOCOL_POLICY or
             self.admission.usage()['attempts'] or self.meta.meta('freeze')):
             raise ValueError('Run All plan requires a new independent direct study before its first model call')
-        value=dict(policy=AUTOMATIC_POLICY,at=utc(),mode='direct',manifest=self.manifest,
+        value=dict(policy=RECOVERY_POLICY,at=utc(),mode='direct',manifest=self.manifest,
                    settings=self.request(dict(complete_input=[0]),0,'direct',control=True)['settings'],
-                   pilot_admission='complete durable phases/controls, original submissions, valid protocol; accuracy diagnostic',
+                   pilot_admission='complete durable phases; legal prefix/original submissions and controls; recovery errors and all accuracy diagnostic',
                    main_admission='three objective pilot passes and adequate measured resources; no settings tuning',
                    main_batches=10,worlds_per_batch=2,human_review='retrospective_pending',
                    useful_communication=None,human_understanding_verified=False,external_download_verified=False)
@@ -549,7 +550,7 @@ class Session:
 
     def automatic_plan(self):
         plan=self.meta.meta('execution_plan',{})
-        if (plan.get('policy')!=AUTOMATIC_POLICY or plan.get('manifest')!=self.manifest or
+        if (plan.get('policy') not in AUTOMATIC_POLICIES or plan.get('manifest')!=self.manifest or
             plan.get('mode')!='direct' or plan.get('settings')!=self.request(dict(complete_input=[0]),0,'direct',control=True)['settings']):
             raise ValueError('Exact precommitted Run All plan/settings required; no automatic configuration change')
         return plan
@@ -562,19 +563,33 @@ class Session:
         states=[store.state(key) for key in required]
         rows=[r for r in store.rows('calls') if r['episode'] in required]
         protocol_errors=0
+        diagnostics=[]
+        policy=self.meta.meta('execution_plan',{}).get('policy')
         for row in rows:
             if row['outcome']:
-                _,error=outcome_action(json.loads(row['outcome']),control='/control-' in row['episode'])
-                protocol_errors+=bool(error)
+                outcome=json.loads(row['outcome'])
+                detail=validation_detail(outcome,control='/control-' in row['episode'])
+                safe=runtime_safe(outcome,store.meta('timeout_termination/'+row['id']))
+                phase=row['episode'].split('/')[1]
+                diagnostics.append(dict(call=row['id'],phase=phase,**detail,runtime_safe=safe,
+                    admission_blocking=admission_blocks(policy,world['group'],phase,detail,safe=safe)))
+                protocol_errors+=bool(detail['error'])
         prefix=states[0] or {}
         checks=dict(terminal_evidence=all(s and s.get('terminal') for s in states),
                     committed_calls=bool(rows) and all(r['outcome'] and r['effect_committed'] for r in rows),
                     every_episode_has_calls=all(any(r['episode']==key for r in rows) for key in required))
         if pilot:
             checks.update(original_team_completed=len(prefix.get('submissions',[]))==2 and all(v is not None for v in prefix['submissions']),
-                          valid_protocol=protocol_errors==0 and not any((s or {}).get('error') or any(e.get('error') for e in (s or {}).get('events',[])) for s in states))
+                          valid_protocol=not any(d['admission_blocking'] for d in diagnostics))
+            if policy!=RECOVERY_POLICY:
+                checks['valid_protocol'] &= not any((s or {}).get('error') or any(e.get('error') for e in (s or {}).get('events',[])) for s in states)
+            else:
+                baseline=[state for key,state in zip(required,states) if key.split('/')[1] not in ('retain','clear')]
+                checks['valid_protocol'] &= not any((s or {}).get('error') or any(e.get('error') for e in (s or {}).get('events',[])) for s in baseline)
+        checks['runtime_integrity']=all(d['runtime_safe'] for d in diagnostics) and not bool(self.meta.meta('model_defect'))
         return dict(world=world['id'],passed=all(checks.values()),checks=checks,recorded_calls=len(rows),
-                    protocol_errors=protocol_errors,
+                    protocol_errors=protocol_errors,validation=diagnostics,
+                    recovery_protocol_errors=sum(bool(d['error']) for d in diagnostics if d['phase'] in ('retain','clear')),
                     original_messages=sum(e.get('action',{}).get('message') is not None for e in prefix.get('events',[]) if e.get('action')),
                     useful_communication=None,human_review='retrospective_pending')
 
@@ -588,9 +603,9 @@ class Session:
         value=self.scope_evidence(world,pilot=True)
         budget=self.admission.usage()
         value['checks'].update(reconciled_spending=budget['remaining'] is not None and budget['in_flight']==0,
-                               runtime_integrity=not bool(self.meta.meta('model_defect')),
+                               runtime_integrity=value['checks']['runtime_integrity'] and not bool(self.meta.meta('model_defect')),
                                inspectable_checkpoint=(self.run/'exports/latest.zip').is_file())
-        value.update(passed=all(value['checks'].values()),policy=AUTOMATIC_POLICY,pilot=number)
+        value.update(passed=all(value['checks'].values()),policy=self.automatic_plan()['policy'],pilot=number)
         previous=self.meta.meta('automatic/pilot-'+str(number))
         if previous!=value:self.meta.put_meta('automatic/pilot-'+str(number),value)
         if not value['passed']:
@@ -638,6 +653,10 @@ class Session:
         remaining += sum(r.get("control_revised_"+mode) is None for r in result["worlds"] if r["group"]=="main")
         usage = self.admission.usage()
         return dict(worst_remaining_first_attempts=remaining,remaining_attempt_allowance=usage["remaining"],
+                    forecast_scope='main_only; not a whole-session completion guarantee',
+                    remaining_pilots=sum(not self.meta.meta('automatic/pilot-'+str(n),{}).get('passed') for n in (1,2,3)),
+                    session_observation=self.meta.meta('window',{}).get('observation'),
+                    measured_checkpoint_seconds=self.meta.meta('checkpoint_timing',{}).get('max_seconds'),
                     observed_max_ready_seconds=max(observed) if observed else None,
                     conservative_wall_seconds=(remaining*(max(observed)*1.25+5)+self.config["export_reserve_seconds"] if observed else None),
                     timeout_worst_case_seconds=remaining*self.config[mode+"_timeout_seconds"]+self.config["export_reserve_seconds"],
@@ -648,7 +667,8 @@ class Session:
         mode = self.qualified()
         from .report import analysis
         result = analysis(self.run)
-        automatic=self.meta.meta('execution_plan',{}).get('policy')==AUTOMATIC_POLICY
+        policy=self.meta.meta('execution_plan',{}).get('policy')
+        automatic=policy in AUTOMATIC_POLICIES
         if automatic:self.automatic_plan()
         for number in (1,2,3):
             if automatic:
@@ -665,9 +685,9 @@ class Session:
                 not review.get("useful_communication") or not review.get("usable")):
                 raise ValueError("three complete original teams/controls and documented communication/usability reviews required")
         pilot_calls = [t for t in result["traces"] if t["episode"].startswith("pilot-")]
-        if any(any(json.loads(t["outcome"]).get(k) for k in ('truncated','failure','framing_error')) for t in pilot_calls if t["outcome"]):
+        if policy!=RECOVERY_POLICY and any(any(json.loads(t["outcome"]).get(k) for k in ('truncated','failure','framing_error')) for t in pilot_calls if t["outcome"]):
             raise ValueError("pilot truncation/provider defects not accepted")
-        if any(ev.get("error") for s in self.stores for ep in s.rows("episodes") if ep["id"].startswith("pilot-") for ev in json.loads(ep["state"]).get("events",[])):
+        if policy!=RECOVERY_POLICY and any(ev.get("error") for s in self.stores for ep in s.rows("episodes") if ep["id"].startswith("pilot-") for ev in json.loads(ep["state"]).get("events",[])):
             raise ValueError("pilot malformed actions not accepted")
         forecast = self.forecast()
         if (not notes.strip() or forecast["remaining_attempt_allowance"] is None or
@@ -679,7 +699,7 @@ class Session:
         if old:
             return old
         value = dict(mode=mode,at=utc(),notes=notes,forecast=forecast,manifest=self.manifest,
-                     execution_policy=AUTOMATIC_POLICY if automatic else 'individual-stages',
+                     execution_policy=policy if automatic else 'individual-stages',
                      human_review='retrospective_pending' if automatic else 'operator-recorded-findings',
                      qualification_policy=self.meta.meta('qualification_policy'),prior_spending=self.meta.meta('prior_spending',[]),
                      implementation_transition=self.meta.meta('implementation_transition'),
@@ -697,7 +717,7 @@ class Session:
         current = self.meta.meta("batch")
         if current and not current.get("complete"):
             return current
-        automatic=self.meta.meta('execution_plan',{}).get('policy')==AUTOMATIC_POLICY
+        automatic=self.meta.meta('execution_plan',{}).get('policy') in AUTOMATIC_POLICIES
         if current and not self.meta.meta(('automatic/' if automatic else 'review/')+current["id"]):
             raise ValueError("inspect/export previous main batch before preparing another")
         from .report import analysis
@@ -740,7 +760,7 @@ class Session:
         if not all(e['passed'] for e in evidence) or self.admission.usage()['in_flight']:
             raise ValueError('Complete committed evidence required before automatic next-batch admission')
         value=dict(passed=True,complete=True,number=number,id=batch['id'],worlds=identities,
-                   policy=AUTOMATIC_POLICY,human_review='retrospective_pending',evidence=evidence)
+                   policy=self.automatic_plan()['policy'],human_review='retrospective_pending',evidence=evidence)
         self.meta.put_meta(key,value)
         return value
 
@@ -775,7 +795,14 @@ class Session:
                 while self.active_calls:
                     self.quiescence.wait()
             try:
+                if getattr(self,'checkpoint_timing',None):
+                    self.meta.put_meta('checkpoint_timing',self.checkpoint_timing)
+                started=monotonic()
                 receipt = export(self.run,self.stores,boundary=boundary)
+                elapsed=monotonic()-started
+                previous=getattr(self,'checkpoint_timing',{})
+                self.checkpoint_timing=dict(max_seconds=max(elapsed,previous.get('max_seconds',0)),last_seconds=elapsed,
+                                            successful_exports=previous.get('successful_exports',0)+1)
                 self.last_checkpoint=monotonic()
                 self.emit("checkpoint",**receipt)
                 return receipt
@@ -803,6 +830,16 @@ class Session:
                 if action not in methods:
                     raise ValueError("unknown finite action")
                 result = methods[action](**args)
+                if self.meta.meta('execution_plan',{}).get('policy')==RECOVERY_POLICY:
+                    if action in ('selfcheck','readiness','screen','envelope') and isinstance(result,dict) and result.get('passed') is False:
+                        raise ValueError(action+' prerequisite failed; inspect saved evidence')
+                    if action=='readiness' and result.get('needs_review') and not self.meta.meta('review/readiness'):
+                        raise ValueError('A/B/A differs; explicit state review required, no automatic waiver')
+                error_path=self.run/'receipts'/'stage-error.json'
+                if error_path.exists():
+                    previous=json.loads(error_path.read_text(encoding='utf-8'))
+                    if previous.get('action')==action:
+                        atomic_json(error_path,dict(previous,resolved=True,resolved_at=utc()))
             except (Exception,KeyboardInterrupt) as exc:
                 error = f"{type(exc).__name__}: {exc}"
                 atomic_json(self.run/'receipts'/'stage-error.json',dict(action=action,args=args,at=utc(),error=error,traceback=traceback.format_exc()))
@@ -813,8 +850,60 @@ class Session:
                     checkpoint=self.checkpoint(args.get('boundary','action/snapshot') if action=='snapshot' else 'action/'+action)
                 except Exception as exc:
                     checkpoint=dict(error=f"{type(exc).__name__}: {exc}",last_valid_preserved=True)
-                self.emit("action_finished",action=action,error=error,result=result,checkpoint=checkpoint)
+                if self.meta.meta('execution_plan',{}).get('policy')==RECOVERY_POLICY and (error or checkpoint.get('error')):
+                    if not error:
+                        error='Checkpoint failed: '+checkpoint['error']
+                        self.meta.put_meta('action',dict(name=action,args=args,status='stopped',error=error,at=utc()))
+                        atomic_json(self.run/'receipts'/'stage-error.json',dict(action=action,args=args,at=utc(),error=error))
+                    try:
+                        cleanup=self.failure_cleanup(action,error or checkpoint['error'],checkpoint=checkpoint)
+                        checkpoint=cleanup.get('checkpoint',checkpoint)
+                    except Exception as exc:
+                        # Return the original action failure even when storage or
+                        # settlement evidence prevents recording final cleanup.
+                        self.pause.set()
+                        self.emit('failure_cleanup',error='Cleanup unconfirmed: '+str(exc))
+                    error=error or 'Checkpoint failed; unattended execution stopped'
+                from .report import analysis
+                try:gate=analysis(self.run)['summary']
+                except Exception as exc:
+                    gate=dict(scientific_gate_status='blocked',blocking_reasons=['Evidence reconstruction unavailable: '+str(exc)])
+                self.emit("action_finished",action=action,error=error,result=result,checkpoint=checkpoint,
+                          scientific_gate_status=gate['scientific_gate_status'],blocking_reasons=gate['blocking_reasons'])
             return dict(result=result,error=error,checkpoint=checkpoint)
+
+    def failure_cleanup(self, action, error, *, checkpoint=None):
+        """Settled error export precedes bounded close. No inference or retry."""
+        with self.action_lock:
+            self.pause.set()
+            value=dict(action=action,error=str(error),at=utc(),provider_release='unknown')
+            if self.active_calls:
+                raise ValueError('Pause requested; active calls must settle before failure cleanup')
+            stage_path=self.run/'receipts'/'stage-error.json'
+            try:
+                previous=json.loads(stage_path.read_text(encoding='utf-8')) if stage_path.exists() else {}
+                if previous.get('action')!=action or previous.get('resolved'):
+                    atomic_json(stage_path,dict(action=action,error=str(error),at=utc()))
+            except Exception as exc:value['stage_receipt_error']=str(exc)
+            if checkpoint is None:
+                try:checkpoint=self.checkpoint('failure/'+action)
+                except Exception as exc:checkpoint=dict(error=str(exc),last_valid_preserved=True)
+            value['pre_close_checkpoint']=checkpoint
+            try:
+                value['workers']=self.close_models()
+                value['termination_confirmed']=all(row.get('termination_confirmed') is True for row in value['workers'])
+            except Exception as exc:
+                rows=getattr(exc,'evidence',[])
+                value.update(termination_confirmed=bool(rows) and all(r.get('termination_confirmed') is True for r in rows),
+                             cleanup_error=f'{type(exc).__name__}: {exc}',workers=rows)
+            try:
+                self.meta.put_meta('failure_cleanup',value)
+                atomic_json(self.run/'receipts'/'failure-cleanup.json',value)
+            except Exception as exc:value['cleanup_receipt_error']=str(exc)
+            try:value['checkpoint']=self.checkpoint('failure-cleanup/'+action)
+            except Exception as exc:value['checkpoint']=dict(error=str(exc),last_valid_preserved=True)
+            self.emit('failure_cleanup',text='Worker closure confirmed: '+str(value['termination_confirmed'])+'; provider release unknown')
+            return value
 
     def close_models(self):
         if not self.action_lock.acquire(blocking=False):
@@ -822,15 +911,25 @@ class Session:
             raise ValueError("pause requested; wait for call-boundary acknowledgement before close")
         try:
             evidence=[]
+            errors=[]
             for slot,w in enumerate(self.workers):
                 if w is not None:
-                    row=w.close()
+                    try:row=w.close()
+                    except Exception as exc:
+                        row=dict(termination_confirmed=False,error=f'{type(exc).__name__}: {exc}')
+                        errors.append(f'slot {slot}: {exc}')
                     evidence.append(row)
-                    prior=self.stores[slot].db.execute("SELECT id,evidence FROM sessions WHERE id LIKE ? ORDER BY rowid DESC LIMIT 1",(self.session_id+"/load-%",)).fetchone()
-                    if prior:
-                        value=json.loads(prior["evidence"]); value["process_close"]=row
-                        with self.stores[slot].transaction():
-                            self.stores[slot].db.execute("UPDATE sessions SET evidence=? WHERE id=?",(canonical(value),prior["id"]))
+                    try:
+                        prior=self.stores[slot].db.execute("SELECT id,evidence FROM sessions WHERE id LIKE ? ORDER BY rowid DESC LIMIT 1",(self.session_id+"/load-%",)).fetchone()
+                        if prior:
+                            value=json.loads(prior["evidence"]); value["process_close"]=row
+                            with self.stores[slot].transaction():
+                                self.stores[slot].db.execute("UPDATE sessions SET evidence=? WHERE id=?",(canonical(value),prior["id"]))
+                    except Exception as exc:
+                        row['receipt_error']=str(exc);errors.append(f'slot {slot} closure receipt: {exc}')
+            if errors:
+                error=ValueError('; '.join(errors));error.evidence=evidence
+                raise error
             return evidence
         finally:
             self.action_lock.release()

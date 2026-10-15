@@ -61,6 +61,7 @@ class Operator:
         self.client=None; self.environment=None; self.metadata=None; self.weights=None
         self.busy=threading.Lock(); self.outputs=[]
         self.deadline=None; self.allowance_evidence=None
+        self.window_observation=None
         self.setup_dir=setup_directory(self.source,self.working)
         self.host=host_inventory(self.scratch,self.working)
         for name in ("environment","metadata","weights"):
@@ -82,6 +83,8 @@ class Operator:
             line=f"Working · {event.get('elapsed_seconds')}s · {event.get('text')}"
         elif kind=="action_finished":
             line=f"{event['action']}: {event.get('error') or 'complete'} · checkpoint {event.get('checkpoint',{}).get('path','unavailable')}"
+            if event.get('scientific_gate_status')=='blocked':
+                line+=' · Scientific gate BLOCKED: '+'; '.join(event.get('blocking_reasons',[]))
         elif kind=="action_stopped":
             line=f"Stopped {event['action']}: {event['error']}"
         elif kind=='controller_exit':
@@ -171,14 +174,16 @@ class Operator:
             self.client.command('restore_tail',tail=tail,evidence=evidence,boundary=restored['created_at'])
         # Deadlines belong to this controller session; never reuse an old one.
         if self.deadline and self.allowance_evidence:
-            receipt=self.client.action("window",deadline=self.deadline,evidence=self.allowance_evidence)
+            receipt=self.client.action("window",deadline=self.deadline,evidence=self.allowance_evidence,observation=self.window_observation)
             if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
                 self.show(receipt)
                 raise ActionStopped(receipt.get('error') or receipt['checkpoint']['error'])
         self.external_checkpoint('study-open')
         return self.client.command("status")
 
-    def set_window(self, deadline=None, evidence='', *, remaining_minutes=None, refresh=False):
+    def set_window(self, deadline=None, evidence='', *, remaining_minutes=None, refresh=False, basis='operator_observed'):
+        if basis not in ('operator_observed','planning_estimate','absolute_deadline'):
+            raise ActionStopped('Session basis must identify an observation, planning estimate or absolute deadline.')
         if type(refresh) is not bool:raise ActionStopped('refresh must be an explicit True/False choice based on a fresh observation.')
         if remaining_minutes is not None and deadline is not None:
             raise ActionStopped('Supply remaining_minutes or an absolute deadline, not both.')
@@ -199,10 +204,12 @@ class Operator:
         except ValueError as error:raise ActionStopped('Deadline must be a future ISO time with a UTC offset.') from error
         if value.tzinfo is None or value<=datetime.now(timezone.utc):
             raise ActionStopped('Session deadline must be an actual future time with a UTC offset.')
+        if deadline!=self.deadline or self.window_observation is None:
+            self.window_observation=dict(at=utc(),remaining_minutes=remaining_minutes,basis=basis if remaining_minutes is not None else 'absolute_deadline')
         self.deadline,self.allowance_evidence=deadline,evidence
         if self.client:
-            return self.client.action("window",deadline=deadline,evidence=evidence,observed_minutes=remaining_minutes)
-        return dict(deadline=deadline,evidence=evidence,apply_after_initialization=True)
+            return self.client.action("window",deadline=deadline,evidence=evidence,observation=self.window_observation)
+        return dict(deadline=deadline,evidence=evidence,observation=self.window_observation,apply_after_initialization=True)
 
     def external_checkpoint(self,boundary):
         if self.client is None:return None
@@ -224,6 +231,10 @@ class Operator:
         if receipt['checkpoint']=='pending':
             try:self.external_checkpoint('operator-error-'+action)
             except (ValueError,OSError) as exc:print('Failure checkpoint unavailable: '+str(exc))
+            from .policy import RECOVERY_POLICY
+            if status['gates'].get('execution_plan',{}).get('policy')==RECOVERY_POLICY and not status['gates'].get('failure_cleanup'):
+                try:self.client.command('failure_cleanup',timeout=120,action=action,error=str(error))
+                except (ValueError,OSError) as exc:print('Cleanup unconfirmed: '+str(exc)+'; stop Kaggle after saving available evidence.')
 
     def stop_before_action(self, action, message):
         """Public convenience preconditions use the existing operational receipt."""
@@ -502,6 +513,8 @@ class Operator:
             raise ValueError("initialize or restore first")
         if audit_limit is not None and (type(audit_limit) is not int or audit_limit<0): raise ValueError('audit_limit must be nonnegative or None for all calls.')
         result=analysis(self.run_dir)
+        summary=result['summary']
+        print('Scientific gate: '+summary['scientific_gate_status']+'; '+('; '.join(summary['blocking_reasons']) or 'no recorded blocking failure'))
         selected={world} if world else (set(worlds) if worlds is not None else None)
         rows=[r for r in result['worlds'] if selected is None or r['id'] in selected]
         gates=result['summary']['gates']
@@ -543,8 +556,11 @@ class Operator:
             _details('Private evaluator audit: submissions, retained history and phase boundary',state)
         _details('Private evaluator audit: source edits and exact truth',[(w) for w in json.loads((self.run_dir/'run.json').read_text())['worlds'] if selected is None or w['id'] in selected])
         shown=0; matched=0
-        failed={r['call'] for r in result['qualification_controls'] if r['correct']==0}
-        for t in sorted(result["traces"],key=lambda t:t['id'] not in failed):
+        errors=[r for r in result['validation_details'] if r['recorded'] and not r['legal_action'] and (selected is None or r['world'] in selected)]
+        _table(['Exact failed call','Phase','Reason','Admission blocking'],[(r['call'],r['phase'],r['reason'],r['admission_blocking']) for r in errors], 'Strict validation; raw actions remain unchanged')
+        failed={r['call'] for r in errors}
+        wrong={r['call'] for r in result['qualification_controls'] if r['correct']==0}
+        for t in sorted(result["traces"],key=lambda t:(t['id'] not in failed,t['id'] not in wrong)):
             req=json.loads(t["request"])
             if selected is not None and t['episode'].split('/')[0] not in selected: continue
             if qualification_mode and req['settings']['mode']!=qualification_mode:continue
@@ -553,7 +569,7 @@ class Operator:
             matched+=1
             if audit_limit is not None and shown>=audit_limit: continue
             o=json.loads(t["outcome"]) if t["outcome"] else None
-            _details('Exact permitted prompt and private raw audit: '+t['id'],dict(prompt=req.get('rendered',''),request=req,outcome=o,effect_committed=t['effect_committed']))
+            _details('Exact permitted prompt and private raw audit: '+t['id'],dict(prompt=req.get('rendered',''),request=req,outcome=o,effect_committed=t['effect_committed'],validation=next((r for r in result['validation_details'] if r['call']==t['id']),None)))
             shown+=1
         if matched>shown: print(f'Showing {shown}/{matched} detailed call audits. Complete prompts/replies/tokens remain in conversations.html/.txt/.jsonl. Use study.inspect(..., audit_limit=None) to display all calls.')
         if downloads: self.links()

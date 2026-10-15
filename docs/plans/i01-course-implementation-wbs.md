@@ -6,6 +6,24 @@ Prepared 14 October 2026 against repository `0b0a44a3cf3a0306559a716e5df45b3dbe0
 
 This is the implementation reference for the I-01 course study explicitly adopted by the user on 14 October 2026. [Specification §12](../../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime) is authoritative. Approval covers implementation and focused lightweight checks only; actual Kaggle readiness, qualification, pilots, freeze and main remain operator stages. The existing roadmap points here instead of duplicating the task list.
 
+Latest course-5 follow-up: implement the approved recovery-specific admission
+repair and a fresh complete Run All. Specification §12 adopts
+`i01-recovery-admission-run-all-2026-10-15` at `56a8fc8`. All WBS deliverables stay
+included: three pilots, all twenty main worlds, ordinary stage cells, resident
+models, durable execution, automatic checkpoints, full reports/figures, portable
+exports and explicit exact-source restore. Prefix/control protocol admission
+remains strict; recovery action mistakes remain outcomes. Historical strict
+decisions are preserved. Both admission checks use the same evidence; diagnostics,
+failure cleanup and clock provenance are repaired. New source-only packet:
+`dist/i01-course-recovery-run-all/`. See [implementation evidence](../validation/i01-course-5-repair.md).
+Focused/scripted checks and installed review are separate from actual Kaggle
+qualification/pilot/main validation. Prompt/protocol/model redesign and course-5
+migration are deferred; the user explicitly selects a new independent beginning.
+M0–M7 software deliverables remain implemented. The course-5 amendment now passes
+thirty distinct focused checks, including full scripted twenty-world execution
+with recovery errors and exact export/restore; actual target-host acceptance of
+the amended full workflow remains unverified. No GPU execution occurred here.
+
 Latest whole-study amendment (15 October): the user explicitly approves objective
 pilot checks and retrospective human review, and requests the complete experiment
 with Run All. The notebook now has 33 ordinary finite cells, including all three

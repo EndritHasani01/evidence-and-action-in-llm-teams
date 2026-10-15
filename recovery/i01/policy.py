@@ -5,6 +5,8 @@ from .core import validate_action
 
 PROTOCOL_POLICY = "i01-direct-protocol-2026-10-15"
 AUTOMATIC_POLICY = "i01-whole-study-run-all-2026-10-15"
+RECOVERY_POLICY = "i01-recovery-admission-run-all-2026-10-15"
+AUTOMATIC_POLICIES = (AUTOMATIC_POLICY, RECOVERY_POLICY)
 LEGACY_POLICY = "i01-competence-11-of-12"
 COURSE_2_STUDY = 'c2973855-84fa-411d-9f6c-a08f8acc79d6'
 COURSE_3_STUDY = 'de1b347e-2cb7-41e5-a8b9-2789abda2da3'
@@ -18,6 +20,55 @@ def outcome_action(outcome, *, control=False):
     if outcome.get('framing_error'):
         return None,error or 'malformed_action'
     return action,error
+
+
+def validation_detail(outcome, *, control=False):
+    """Read-only explanation; the strict core validator alone decides effects."""
+    action,error=outcome_action(outcome,control=control)
+    duplicate=[]
+    def pairs(items):
+        value={}
+        for key,item in items:
+            if key in value: duplicate.append(key)
+            value[key]=item
+        return value
+    syntax,schema,reason=False,False,None
+    try:
+        value=json.loads(outcome.get('visible_text',''),object_pairs_hook=pairs)
+        syntax=True
+        if duplicate:reason='duplicate_json_keys'
+        elif type(value) is not dict or set(value)!={'message','submit','wait'}:reason='required_action_keys'
+        elif (value['message'] is not None and (type(value['message']) is not str or not value['message'].strip()) or
+              value['submit'] is not None and type(value['submit']) is not int or type(value['wait']) is not bool):
+            reason='action_field_types'
+        else:
+            schema=True
+            if value['wait'] and (value['message'] is not None or value['submit'] is not None):reason='wait_requires_null_message_and_submit'
+            elif not value['wait'] and value['message'] is None and value['submit'] is None:reason='empty_nonwaiting_action'
+            elif control and (value['message'] is not None or value['submit'] is None or value['wait']):reason='control_requires_integer_submission_only'
+    except (ValueError,TypeError,RecursionError):reason='invalid_json'
+    if outcome.get('failure'):reason='provider_'+str(outcome['failure'])
+    elif outcome.get('truncated'):reason='truncated_action'
+    elif outcome.get('framing_error'):reason='output_framing_error'
+    return dict(json_valid=syntax,schema_valid=schema,legal_action=action is not None and error is None,
+                error=error,reason=reason)
+
+
+def runtime_safe(outcome, termination=None):
+    """Ordinary output errors are outcomes; unknown death/backend faults block."""
+    termination=termination or {}
+    if outcome.get('termination_pending') and not termination.get('termination_confirmed'):
+        return False
+    failure=outcome.get('failure')
+    return not failure or failure=='timeout' and bool(termination.get('termination_confirmed') or outcome.get('termination_confirmed'))
+
+
+def admission_blocks(policy, group, phase, detail, *, safe=True):
+    if not safe:return True
+    if group=='qualification':return not detail['legal_action']
+    if group=='pilot':
+        return not detail['legal_action'] and (policy!=RECOVERY_POLICY or phase not in ('retain','clear'))
+    return False
 
 
 def qualification(manifest, tables, metadata):

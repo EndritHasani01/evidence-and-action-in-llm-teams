@@ -12,7 +12,7 @@ from unittest.mock import patch
 from recovery.i01.archive import extract_selected
 from recovery.i01.core import canonical
 from recovery.i01.notebook import Study
-from recovery.i01.policy import AUTOMATIC_POLICY
+from recovery.i01.policy import RECOVERY_POLICY
 from recovery.i01.report import analysis, write_report
 from recovery.i01.workflow import initialize, Session
 from tests.test_i01_course3_repairs import Scripted, prepare
@@ -41,6 +41,15 @@ class RunAll(unittest.TestCase):
 
     def test_whole_study_through_actual_facade_reports_archive_and_free_replay(self):
         s=self.s
+        # Course-5's exact legal-JSON/illegal-wait pattern in every recovery.
+        for worker in self.workers:
+            def reply(req):
+                invalid='revision_notice' in req['view']
+                action=dict(message='I will wait for the partner submission.' if invalid else None,
+                            submit=None if invalid else -1000,wait=invalid)
+                return dict(failure=None,visible_text=canonical(action),truncated=False,
+                            generated_tokens=1,ready_seconds=.001,input_tokens=1)
+            worker.reply=reply
         class Client:
             process=SimpleNamespace(poll=lambda:None)
             def command(self,name,**args):
@@ -68,13 +77,17 @@ class RunAll(unittest.TestCase):
         self.assertEqual(result['summary']['known_pairs'],20)
         self.assertEqual(result['summary']['paired_counts'],{'neither':20})
         self.assertEqual(result['summary']['qualification']['direct']['correct'],0)
-        self.assertEqual(result['summary']['attempts'],184)
+        self.assertEqual(result['summary']['attempts'],368)
         self.assertEqual(result['summary']['prior_attempts'],0)
         self.assertEqual(result['summary']['human_review_status'],'retrospective_pending')
         self.assertEqual(s.meta.meta('execution_plan'),plan)
         self.assertFalse(any(k.startswith('review/') for k in result['summary']['gates']))
         self.assertTrue(all(r['passed'] and r['useful_communication'] is None for r in result['pilot_checks']))
         self.assertTrue((self.run/'reports/pilot_checks.csv').is_file())
+        errors=[r for r in result['validation_details'] if r['error']]
+        self.assertEqual(len(errors),276)
+        self.assertTrue(all(r['reason']=='wait_requires_null_message_and_submit' and not r['admission_blocking'] for r in errors))
+        self.assertEqual(result['summary']['scientific_gate_status'],'complete')
         restored=Path(self.temp.name)/'restored'
         extract_selected(self.run/'exports/latest.zip',restored)
         self.assertEqual(analysis(restored),result)
@@ -126,7 +139,7 @@ class RunAll(unittest.TestCase):
         self.s.remaining_time=lambda:forecast['conservative_wall_seconds']-1
         with self.assertRaisesRegex(ValueError,'adequate attempt/time'):self.s.admit_main()
         self.assertIsNone(self.s.meta.meta('freeze'))
-        self.assertEqual(self.s.meta.meta('execution_plan')['policy'],AUTOMATIC_POLICY)
+        self.assertEqual(self.s.meta.meta('execution_plan')['policy'],RECOVERY_POLICY)
 
 
 if __name__=='__main__':unittest.main()

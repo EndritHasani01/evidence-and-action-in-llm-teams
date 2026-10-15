@@ -14,7 +14,8 @@ import sqlite3
 
 from .core import canonical, success
 from .store import connection, Store, validate_call_slots, usage
-from .policy import qualification, AUTOMATIC_POLICY
+from .policy import (qualification, AUTOMATIC_POLICIES, validation_detail,
+                     runtime_safe, admission_blocks)
 
 
 def read_run(run):
@@ -31,6 +32,8 @@ def read_run(run):
                 tables[name] += [dict(r, slot=slot) for r in db.execute("SELECT * FROM " + name)]
             if slot == 0:
                 metadata = {r["key"]:json.loads(r["value"]) for r in db.execute("SELECT * FROM meta")}
+            else:
+                metadata.update({r['key']:json.loads(r['value']) for r in db.execute("SELECT * FROM meta WHERE key LIKE 'timeout_termination/%'")})
         finally:
             db.close()
     validate_call_slots(manifest, tables['calls'])
@@ -196,14 +199,47 @@ def analysis(run):
     summary['qualification']={mode:{k:v for k,v in q.items() if k!='controls'} for mode,q in screens.items()}
     plan=meta.get('execution_plan',{})
     summary.update(execution_policy=plan.get('policy','individual-stages'),
-                   human_review_status='retrospective_pending' if plan.get('policy')==AUTOMATIC_POLICY else 'see_recorded_reviews')
+                   human_review_status='retrospective_pending' if plan.get('policy') in AUTOMATIC_POLICIES else 'see_recorded_reviews')
+    validation=[]
+    world_map={w['id']:w for w in manifest['worlds']}
+    for call in tables['calls']:
+        world=world_map.get(call['episode'].split('/')[0])
+        if world is None:continue  # Forced hardware probes are not scientific JSON trials.
+        req=json.loads(call['request'])
+        outcome=json.loads(call['outcome']) if call['outcome'] else None
+        phase=call['episode'].split('/')[1]
+        detail=validation_detail(outcome,control='/control-' in call['episode']) if outcome else dict(json_valid=None,schema_valid=None,legal_action=None,error=None,reason=None)
+        safe=runtime_safe(outcome,meta.get('timeout_termination/'+call['id'])) if outcome else None
+        validation.append(dict(call=call['id'],world=world['id'],group=world['group'],phase=phase,
+            agent=req['view'].get('agent'),recorded=outcome is not None,committed=bool(call['effect_committed']),
+            policy=plan.get('policy','individual-stages'),**detail,runtime_safe=safe,
+            admission_blocking=admission_blocks(plan.get('policy'),world['group'],phase,detail,safe=safe) if outcome else None))
+    compliance=[]
+    for group,phase in sorted({(r['group'],r['phase']) for r in validation}):
+        rows=[r for r in validation if r['group']==group and r['phase']==phase]
+        recorded=[r for r in rows if r['recorded']]
+        compliance.append(dict(group=group,phase=phase,registered_calls=len(rows),recorded_calls=len(recorded),
+            unknown_calls=len(rows)-len(recorded),committed_calls=sum(r['committed'] for r in rows),
+            json_valid=sum(r['json_valid'] for r in recorded),schema_valid=sum(r['schema_valid'] for r in recorded),
+            legal_actions=sum(r['legal_action'] for r in recorded),admission_blocking=sum(r['admission_blocking'] for r in recorded)))
+    blocked=[key for key,value in meta.items() if key.startswith('automatic/pilot-') and value.get('passed') is False]
+    stage_path=Path(run)/'receipts/stage-error.json'
+    stage=json.loads(stage_path.read_text(encoding='utf-8')) if stage_path.is_file() else {}
+    if stage and not stage.get('resolved'):blocked.append(stage['action']+': '+stage['error'])
+    if meta.get('model_defect'):blocked.append('model/runtime defect')
+    if budget['remaining'] is None or budget['in_flight']:blocked.append('unresolved spending')
+    summary.update(scientific_gate_status='blocked' if blocked else 'complete' if complete else 'pending',
+                   blocking_reasons=blocked,session_window=meta.get('window'),failure_cleanup=meta.get('failure_cleanup'))
     pilot_checks=[dict(pilot=n,world=f'pilot-{n-1:02d}',passed=meta.get(f'automatic/pilot-{n}',{}).get('passed'),
                        checks=meta.get(f'automatic/pilot-{n}',{}).get('checks'),
+                       policy=meta.get(f'automatic/pilot-{n}',{}).get('policy'),
+                       protocol_errors=meta.get(f'automatic/pilot-{n}',{}).get('protocol_errors'),
+                       recovery_protocol_errors=meta.get(f'automatic/pilot-{n}',{}).get('recovery_protocol_errors'),
                        original_messages=meta.get(f'automatic/pilot-{n}',{}).get('original_messages'),
                        useful_communication=meta.get(f'review/pilot-{n}',{}).get('useful_communication'),
                        human_review=meta.get(f'automatic/pilot-{n}',{}).get('human_review','not_recorded')) for n in (1,2,3)]
     return dict(summary=summary, worlds=world_rows, costs=cost_rows, policy_costs=policy_costs, attempts=attempts,
-                pilot_checks=pilot_checks,
+                pilot_checks=pilot_checks,validation_details=validation,protocol_compliance=compliance,
                 qualification=screens,qualification_controls=[r for mode in screens.values() for r in mode['controls']],
                 prior_spending=meta.get('prior_spending',[]),
                 paired_costs=paired_costs,failure_analysis=failure_rows,
@@ -292,7 +328,7 @@ def write_report(run, out, *, plot=True):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     (out/"analysis.json").write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf-8")
-    for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions", "qualification_controls", "prior_spending", "pilot_checks"):
+    for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions", "qualification_controls", "prior_spending", "pilot_checks", "validation_details", "protocol_compliance"):
         csv_file(out/(name+".csv"), result[name])
     csv_file(out/"plotting-data.csv", result["costs"])
     csv_file(out/"plotting-outcomes.csv", result["worlds"])
@@ -318,6 +354,13 @@ def write_report(run, out, *, plot=True):
     (out/"conversations.html").write_text("\n".join(body),encoding="utf-8")
     (out/"conversations.txt").write_text("\n\n".join(text),encoding="utf-8")
     s = result["summary"]
+    diagnostics_html=['<h2>Admission and protocol diagnostics</h2><p>Scientific gate: <b>'+escape(s['scientific_gate_status'])+'</b>. '+escape('; '.join(s['blocking_reasons']))+'</p>',
+        '<p>A successful snapshot preserves evidence; it does not clear a blocked gate. Policy: '+escape(s['execution_policy'])+'. Human review: '+escape(s['human_review_status'])+'.</p>',
+        '<p><a href="validation_details.csv">Every scientific action</a> · <a href="protocol_compliance.csv">Phase denominators</a> · <a href="pilot_checks.csv">Pilot admission checks</a></p>',
+        '<table><tr><th>Call</th><th>Reason</th><th>Admission blocking</th></tr>']
+    for row in validation_errors(result):
+        diagnostics_html.append('<tr>'+''.join('<td>'+escape(str(row[key]))+'</td>' for key in ('call','reason','admission_blocking'))+'</tr>')
+    diagnostics_html.append('</table>')
     qualification_text='## Qualification and protocol admission\n\nMathematical accuracy is reported separately from protocol eligibility. Historical decisions retain their original rule. Thinking completion is not inferred from a missing aggregate.\n\n'
     qualification_text+='| Mode | Committed / planned | Correct | Wrong scalar | Invalid | Unexecuted | Current eligible | Ready seconds | Tokens | Historical passed |\n|---|---:|---:|---:|---:|---:|---|---:|---:|---|\n'
     for mode,q in result['qualification'].items():
@@ -360,7 +403,7 @@ def write_report(run, out, *, plot=True):
             label='<a href="conversations.html#'+escape(quote(r['call'],safe='/'),quote=True)+'">'+label+'</a>'
         qualification_html.append('<tr><td>'+label+'</td>'+''.join('<td>'+escape(str(r[k]) if r[k] is not None else 'unknown')+'</td>' for k in ('truth','submission','committed','valid','correct','error','generated_tokens','ready_seconds'))+'</tr>')
     qualification_html.append('</table><p><a href="qualification_controls.csv">Download qualification controls</a></p>')
-    html.insert(-1, '\n'.join(qualification_html))
+    html.insert(-1, '\n'.join(diagnostics_html+qualification_html))
     for w in result["worlds"]:
         html.append('<tr>'+''.join('<td>'+escape(str(w[k]) if w[k] is not None else 'unknown')+'</td>' for k in ("id","group","original_truth","revised_truth","prefix","retain","clear"))+'</tr>')
     html.append('</table><h2>Paired results and costs</h2><p><a href="paired-results.csv">Paired outcomes</a> · <a href="paired_costs.csv">Paired costs</a> · <a href="attempts.csv">Local attempt ledger</a> · <a href="prior_spending.csv">Prior-study spending/proof</a> · <a href="failure_analysis.csv">Observable failure audit</a> · <a href="analysis.json">Complete reconstruction</a></p>')
@@ -371,3 +414,7 @@ def write_report(run, out, *, plot=True):
     if plot:
         figures(result, out/"figures")
     return dict(directory=str(out), summary=s, files=[p.relative_to(out).as_posix() for p in out.rglob("*") if p.is_file()])
+
+
+def validation_errors(result):
+    return [row for row in result['validation_details'] if row['recorded'] and not row['legal_action']]

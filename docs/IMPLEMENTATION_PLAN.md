@@ -2,6 +2,30 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
+Latest course-5 repair: the user approves the proposed phase-sensitive admission
+and chooses a fresh complete Run All, with no previous-result/checkpoint import.
+Adoption is `56a8fc8`; [specification §12](../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime)
+binds new plans to `i01-recovery-admission-run-all-2026-10-15`. Strict original
+prefix/control admission remains; ordinary recovery action errors are measured
+failures. Pilot and main admission share reconstructed evidence. Historical
+strict plans and course-5's failed gate retain their meaning. No prompt, model,
+action, scoring or accounting changes, and no new course-5 migration.
+
+The implementation includes exact validation diagnostics/phase denominators,
+failure-first raw inspection, persistent blocked status, safe unattended export/
+worker cleanup and original session-clock provenance. Both notebook names are
+identical complete 33-cell workflows using `/kaggle/working/i01-recovery-study`.
+The new source-only packet is `dist/i01-course-recovery-run-all/kaggle-input/`;
+previous release directories remain historical. Focused check and installed-
+package evidence is in [course-5 repair](validation/i01-course-5-repair.md).
+Actual GPU stages and whole-run Kaggle feasibility remain operator validation.
+Thirty distinct focused checks pass across the three linked receipts, including
+a 368-call scripted complete study with 276 invalid recovery actions, zero-call
+replay, exact portable reconstruction, historical strict rejection, genuine fault
+guards, fixed clock evidence and export/receipt/closure failure handling. The
+saved course-5 ZIP is analyzed read-only; its historical failed gate is preserved.
+The earlier strict Run All handoff below is preserved for its historical packet.
+
 Current whole-study request supersedes the preparation-only handoff below. The
 user approved objective pilot checks and retrospective human review and requested
 one end-to-end Run All. Specification §12 records that procedural amendment.
