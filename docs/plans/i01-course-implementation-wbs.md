@@ -906,3 +906,20 @@ and [runbook](../I01_KAGGLE.md). All supplied runs, inference pins, old analysis
 proposal documents and the verbatim evaluation remain intact. This is implemented
 and CPU/scripted-verified software, not new Kaggle qualification, pilot or main
 execution. All twenty main pairs remain unknown.
+
+
+Final course-3 repair delivery: operator/source checkpoint `0f60058`; source ZIP
+665,937 bytes, SHA256
+`b0ef474a1bd21ac3d84820846e16b3e2fd483b9a66e8734b7dfe3752e21f6a81`.
+[Release review](../../notebooks/validation/i01-development/release-review.json)
+passes installed wheel/source, actual zero-model course-3 continuation,
+standard-library report export, ZIP/expanded selection and all 26 ordinary scopes.
+Eleven final format/source checks plus the reused 499/500 backup/restore check
+pass after the 46-check extended integration run. All eight SVG/PNG pairs render;
+qualification/effort/failure plots were visually reviewed. The
+[delivery receipt](../../notebooks/validation/i01-development/course3-delivery-review.json)
+records preserved input/semantic hashes and source identity. Upload the three
+files in dist/i01-course/kaggle-input/ as one private dataset, plus the matching
+notebook; follow the current runbook. No later build is required for this
+receipt-only checkpoint. Native current-envelope/pilot/main and off-session
+frontend acceptance remain operator work, with twenty unknown main pairs.

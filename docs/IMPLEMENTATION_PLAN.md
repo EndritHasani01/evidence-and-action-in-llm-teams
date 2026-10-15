@@ -41,6 +41,17 @@ Earlier statements below are historical and are superseded only to the extent
 established by the linked evidence. Supplied runs and the verbatim evaluation
 remain unchanged; the original 8f5bcdb delivery is preserved locally.
 
+Final operator/source checkpoint: `0f60058`. Source ZIP is 665,937 bytes, SHA256
+`b0ef474a1bd21ac3d84820846e16b3e2fd483b9a66e8734b7dfe3752e21f6a81`.
+Release review passes 26 ordinary scopes, 74 inventoried source entries, complete
+wheel/source identity, actual installed course-3 continuation and CPU-only
+reporting without Matplotlib. The 46-check extended run and eleven format/source
+checks pass; the latter also reuses the 499/500 backup/restore check. Eight figure
+pairs are generated, with qualification/effort/failure figures visually reviewed.
+Final [delivery evidence](../notebooks/validation/i01-development/course3-delivery-review.json)
+records hashes, protected semantics, 220 resolved local links and the three-file
+private Kaggle input folder. Receipt-only updates do not regenerate this packet.
+
 The user explicitly adopted the reviewed I-01 scientific regime in specification
 §12. Its single task/status reference is the
 [I-01 implementation WBS](plans/i01-course-implementation-wbs.md#14-living-implementation-handoff).

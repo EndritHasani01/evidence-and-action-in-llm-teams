@@ -96,6 +96,17 @@ historical gates. report --no-plots exports tables/traces/HTML using only the
 standard library, without importing Matplotlib or any model stack. The default
 report still includes all scientific figures.
 
+## Verified upload delivery
+
+Source checkpoint `0f60058` ships a 665,937-byte source ZIP, SHA256
+`b0ef474a1bd21ac3d84820846e16b3e2fd483b9a66e8734b7dfe3752e21f6a81`.
+The release review passes actual installed-wheel course-3 continuation and
+CPU-only report export, complete source/wheel identity and all 26 ordinary cell
+scopes. The [final delivery receipt](../../notebooks/validation/i01-development/course3-delivery-review.json)
+records preserved artifact hashes, unchanged inference/world pins, 220 resolved
+local links and visual figure review. Generated source, notebook and three-file
+Kaggle input folder agree. These receipt-only notes do not regenerate the packet.
+
 ## Remaining Kaggle-only acceptance
 
 The [runbook](../I01_KAGGLE.md) gives exact first-continuation and recovery steps.
