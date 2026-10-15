@@ -812,6 +812,38 @@ waiver is permitted. Pilot reviews, explicit freeze and bounded main execution
 remain individually operated in the complete research workflow. All model,
 runtime, task, population, scoring and uncertainty settings remain unchanged.
 
+Recorded-outcome amendment (15 October 2026, course-6 follow-up): the user
+approved full implementation of the course-6 proposal's recommended policy and
+explicitly selected another fresh complete Run All. New independent studies
+precommit `i01-recorded-outcomes-run-all-2026-10-15` before any model call. This
+supersedes the pilot prefix/completion/control admission requirements below only
+for that new policy. Preserve historical stricter plans and failed decisions.
+The fresh study starts empty with its own unchanged 500-attempt hard allocation,
+28-attempt contingency ceiling and fixed three-pilot/twenty-main-world schedule;
+no earlier outcomes or checkpoint spending are imported or erased.
+
+The fixed twelve direct qualification controls must still be legal and committed;
+mathematical accuracy remains diagnostic. After qualification, all ordinary
+sampled pilot behavior is measured: original-prefix, retain/clear and later
+pilot-control wrong/invalid/malformed/truncated/framing replies and terminal
+noncompletion do not veto admission. Original submissions, protocol compliance
+and communication remain diagnostics. Every scheduled phase/control must still
+have terminal durable evidence with committed raw outcomes/effects. Unknown or
+unexecuted evidence is never converted into a recorded failure. Confirmed
+timeouts may be failed outcomes, but current-load health and confirmed termination
+are required before further dispatch. Genuine provider/cache/numerical defects,
+source/privacy/storage faults, unresolved spending/death, inadequate headroom or
+measured resources still stop. Pilot checks and main admission use the same rule.
+
+Strict action validation, turn consumption, delivery, source views, prompts and
+feedback, model/runtime, decoding, inputs, seeds, limits, scoring and uncertainty
+remain unchanged. Invalid messages are never delivered or repaired. Prompt/
+feedback clarification and new models/action spaces remain deferred. Keep all
+twenty intended main worlds and correct-prefix descriptive analysis; disclose
+floor effects, ordinary failures and retrospective human review. Preserve the
+existing clock, checkpoints, replay, restore and truthful failure cleanup.
+Implementation authorizes no new GPU inference or actual research execution here.
+
 Recovery-admission amendment (15 October 2026, course-5 follow-up): the user
 approved implementation of the course-5 repair proposal and explicitly chose
 a fresh beginning with complete Run All. New independent studies precommit
