@@ -100,7 +100,13 @@ Separately rebuilt a read-only temporary report from the supplied course-6 ZIP:
 all eight PNG/SVG pairs render, empty-main notices and precise failure references
 are present, and the recovery-time preview was visually inspected. No original
 operator file or report was overwritten. Installed source/wheel/notebook review
-is recorded after building the source checkpoint's packet.
+passes in [the release review](../../notebooks/validation/i01-development/outcomes-run-all-release-review.json):
+both identical 33-cell notebooks and finite scopes, zero widget panels, all 98
+source inventory members, installed wheel matching, source ZIP/expanded/rerun
+selection and old-source refusal, isolated CLI/venv entry outside the checkout,
+fresh independent 0/500 initialization, complete source preservation and read-only
+reporting without Matplotlib. Existing historical continuation compatibility was
+checked without selecting it for this fresh study.
 
 No GPU inference, actual model qualification, pilot or main execution is run
 during this implementation. Historical course-6 observations support the earlier
@@ -111,6 +117,27 @@ headroom, all pilots/main outcomes, timing, frontend download and later-session
 restoration remain operator validation. A complete package can still stop on
 genuine prerequisites. A full run with many failed teams can be scientifically
 uninformative; admission never claims the model's collaboration improved.
+
+## Final milestone and artifact identity
+
+| Milestone | Status |
+|---|---|
+| Adoption | `a31be4d`, fresh recorded-outcome policy authorized |
+| Python/notebook/integration | `65462e1e5fc687e1107d80a152e7d6c638ed93b7`, implemented |
+| Focused checks | 37 distinct passing checks after the documented targeted correction |
+| Installed package | Passed; both notebook aliases, wheel/source and isolated entry |
+| Preservation | Passed; all supplied course-3/4/5/6 artifacts and checked historical releases unchanged |
+| Actual new-policy Kaggle experiment | Unrun here; target-host validation remains |
+
+The ready packet is `dist/i01-course-outcomes-run-all/`. Source ZIP is **790,170
+bytes**, SHA256
+`3ebc8a3b0c5cc354ac711677b65fb4c18e5bc4dabd2ce8e410ac10844e87f92a`.
+The [delivery/preservation audit](../../notebooks/validation/i01-development/outcomes-delivery-review.json)
+records protected hashes and scope. Only policy/workflow/report/UI/CLI modules
+differ from the supplied course-6 scientific source identity; all other hashes,
+including core, inference, process/runtime, config and dependency pins, match.
+Thesis specification sections 1–11 are unchanged. Final receipt-only updates do
+not rebuild or alter the verified source checkpoint's packet.
 
 ## First Kaggle execution
 

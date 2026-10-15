@@ -24,6 +24,10 @@ including a complete 460-call scripted twenty-world study with 440 invalid
 scientific outcomes, exact replay/restore and safe closure. Eight figure pairs
 render from saved evidence. M0–M7 software paths are implemented; the amended
 native Kaggle qualification/pilot/main stages remain operator validation.
+Current source checkpoint `65462e1` passes installed source/wheel/notebook review
+and the protected-artifact audit. Source ZIP is 790,170 bytes, SHA256
+`3ebc8a3b0c5cc354ac711677b65fb4c18e5bc4dabd2ce8e410ac10844e87f92a`.
+See [delivery audit](../../notebooks/validation/i01-development/outcomes-delivery-review.json).
 
 Latest course-5 follow-up: implement the approved recovery-specific admission
 repair and a fresh complete Run All. Specification §12 adopts
@@ -749,9 +753,9 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | M2-T01–T04 | Implemented; fresh-run/accounting checks pass | Explicit independent study starts empty; idempotent new/reopen/restore retains its own 500/28 accounting; older campaign continuation and gap/slot safeguards preserved |
 | M3-T01–T04 | Original T4 inference evidence retained; runtime fixes implemented | Normal output failures consume turns; real defects stop; load-pair probes bind before dispatch; actual repaired full-envelope acceptance remains pending |
 | M4-T01–T04 | Implemented; saved-fixture and transactional-read checks pass | Both partial mode summaries, control error/call references, prior-spending CSV, qualification figures and unknown logical-cost semantics |
-| M5-T01?T04 | Fresh recovery-admission Run All delivered; installed review passed | Identical 33-cell notebooks, source-only matching wheel/ZIP, three pilots, all ten main batches, diagnostics/cleanup/clock fixes; 30 distinct focused checks and scripted full coverage |
-| M6-T01?T04 | Historical course-5 preparation/pilot-1 evidence analyzed; new fresh host gates unrun | Twelve direct controls legal/ten correct, both envelopes passed; original strict pilot gate failed on two recovery actions. New phase-sensitive policy implemented, not Kaggle-verified |
-| M7-T01?T03 | Complete implementation and portable delivery; actual main unrun | All twenty main pairs unknown empirically; scripted twenty-world execution, zero-call replay, reports/export/restore/closure pass; current Kaggle final-report/download/restore acceptance remains |
+| M5-T01?T04 | Fresh recorded-outcome Run All and installed review delivered | Identical 33-cell aliases, source/wheel matching, three pilots/all ten main batches, diagnostics/cleanup/clock/forecast; 37 focused checks and full 460-call scripted study |
+| M6-T01?T04 | Historical course-6 native preparation/two pilots analyzed; new-policy stages unrun | Twelve scalar controls legal/ten correct, both envelopes passed; pilot 1 admitted, pilot 2 blocked by historical prefix legality. Broader post-qualification outcome policy implemented, not Kaggle-verified |
+| M7-T01?T03 | Complete software/package and portable delivery; actual main unrun | Twenty main pairs unknown empirically; scripted twenty-world run with 440 invalid outcomes, zero-call replay, reports/export/restore/closure pass; actual downloads/resume/timing remain |
 
 Baseline: branch `feat/smaller-natural-experiment`, HEAD `0b0a44a`;
 only the user-provided WBS was untracked. Canonical I-01 evidence will use

@@ -23,6 +23,14 @@ exact export/restore and closure. A first-export forecast lookup was corrected
 and its case plus the time guard retested. Eight saved-data figure pairs render
 with the new empty-main notice. Source-only installed delivery review follows
 the implementation checkpoint; empirical amended Kaggle stages remain unrun.
+Final current implementation/source checkpoint is
+`65462e1e5fc687e1107d80a152e7d6c638ed93b7`. The
+[installed review](../notebooks/validation/i01-development/outcomes-run-all-release-review.json)
+and [preservation audit](../notebooks/validation/i01-development/outcomes-delivery-review.json)
+pass. Source ZIP: 790,170 bytes, SHA256
+`3ebc8a3b0c5cc354ac711677b65fb4c18e5bc4dabd2ce8e410ac10844e87f92a`.
+All checked earlier inputs/releases and unrelated source hashes are preserved.
+The final receipts/handoff commit leaves this verified source packet unchanged.
 
 Latest course-6 evidence review is documentation only:
 [complete analysis](validation/i01-course-6-results-analysis.md) and
