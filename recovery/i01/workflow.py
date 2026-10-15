@@ -16,7 +16,7 @@ from .archive import atomic_json, digest, export, extract_selected, inventory
 from .core import (apply_outcome, canonical, initial_episode, manifests, messages,
                    next_agent, permitted_view, seed_for, validate_action)
 from .store import Admission, Store, utc
-from .policy import PROTOCOL_POLICY
+from .policy import PROTOCOL_POLICY, CAMPAIGN_STUDIES, outcome_action
 
 
 def source_files(root):
@@ -63,7 +63,9 @@ def _initialize(run, source, config):
     binding = {"manifest":manifest}
     for slot in range(2):
         store = Store(run/f"worker-{slot}.sqlite",binding,create=True)
-        if slot==0: store.bind('qualification_policy', PROTOCOL_POLICY)
+        if slot==0:
+            store.bind('qualification_policy', PROTOCOL_POLICY)
+            store.bind('required_preparation_studies',list(CAMPAIGN_STUDIES))
         store.close()
     return manifest
 
@@ -201,6 +203,9 @@ class Session:
 
     def load(self, snapshot, host):
         self.require("selfcheck")
+        budget=self.admission.usage()
+        if budget['remaining'] is None or budget['remaining']<=0 or budget['contingency']>self.config['contingency_limit']:
+            raise ValueError('Reconcile campaign/restore spending before loading; no model has been loaded')
         from .setup import runtime_inventory
         runtime_inventory(self.source)
         if any(r["status"]=="admitted" for s in self.stores for r in s.rows("attempts")):
@@ -272,6 +277,8 @@ class Session:
             self.meta.put_meta("active_generation", True)
         returned = False
         try:
+            from .store import validate_call_slots
+            validate_call_slots(self.manifest,[dict(id=identity,slot=slot)])
             store.register(identity,episode,request)
             row = store.call(identity)
             if row["outcome"] is not None:
@@ -346,9 +353,7 @@ class Session:
             request = self.request(view,seed,mode)
             try:
                 outcome = self.call(slot,call_id,identity,request,world["group"])
-                action,error = validate_action(outcome.get("visible_text",""),truncated=outcome.get("truncated",False))
-                if outcome.get("failure") or outcome.get("framing_error"):
-                    action,error = None,outcome.get("failure") or outcome["framing_error"]
+                action,error = outcome_action(outcome)
                 state = apply_outcome(state,agent,action,error,call_id)
                 store.effects(call_id,identity,state)
             finally:
@@ -356,7 +361,7 @@ class Session:
             self.emit("effect_committed",world=world["id"],phase=phase,agent=agent,action=action,error=error,
                       terminal=state["terminal"])
             if self.meta.meta("model_defect"):
-                raise ValueError("provider/cache/framing defect; dispatch stopped after persisting evidence")
+                raise ValueError("provider/cache/numerical defect; dispatch stopped after persisting evidence")
             self.periodic_checkpoint()
             if self.pause.is_set() and not state["terminal"]:
                 raise Paused("paused at committed call boundary")
@@ -368,17 +373,17 @@ class Session:
                                world["control_seeds"][input_phase],mode,control=True)
         try:
             outcome = self.call(world["device"],identity,identity,request,stage or world["group"])
-            act,error = validate_action(outcome.get("visible_text",""),truncated=outcome.get("truncated",False),control=True)
+            act,error = outcome_action(outcome,control=True)
             result = dict(terminal="control_completed", submissions=[act["submit"]] if act else [],
                           correct=int(not error and not outcome.get("failure") and not outcome.get("framing_error") and act["submit"]==world[input_phase+"_truth"]),
-                          error=error or outcome.get("failure") or outcome.get("framing_error"))
+                          error=error)
             store = self.stores[world["device"]]
             store.start(identity,dict(terminal=None))
             store.effects(identity,identity,result)
         finally:
             self.settled(identity)
         if self.meta.meta("model_defect"):
-            raise ValueError("control provider/framing defect recorded")
+            raise ValueError("control provider/runtime defect recorded")
         self.periodic_checkpoint()
         return result
 

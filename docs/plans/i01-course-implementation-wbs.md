@@ -683,11 +683,11 @@ qualification, pilot, freeze or main execution occurs during implementation.
 |---|---|---|
 | M0-T01–T02 | Adopted | Specification §12; configs/i01-course.json; this handoff |
 | M1-T01–T04 | Implemented; target native checks passed | core.py and course-2 native self-check; fixed manifest reproduces |
-| M2-T01–T04 | Implemented; accounting/restore repairs open | Course-3 23 durable attempts reconstruct exactly; course-2 adds 18 separate executions; reconcile budget scope/repeated stages and fix prior-gap/slot defects |
-| M3-T01–T04 | Both T4 loads and both modes observed; repairs open | Six state checks pass; thinking 4 valid finals/1 capped output; load-pair and global classification defects remain; full envelopes unexecuted |
-| M4-T01–T04 | Implemented; report/live-read fixes proposed | Exact partial reconstruction; partial-screen counts, missing control error/call references, live reads and display findings documented |
-| M5-T01–T04 | Delivered; twelve ordinary cells executed in course-3 | Matching 8f5bcdb source/wheel; 26 ordinary cells; later headroom refusal appears only in notebook, after the saved archive boundary |
-| M6-T01–T04 | Preparation/readiness passed; no mode accepted under current rule | Direct 10/12, zero protocol errors; thinking 5/12 attempted, 4 correct/1 invalid/7 unknown; envelopes, pilots and freeze unexecuted |
+| M2-T01–T04 | Implemented; focused recovery/accounting checks pass | Preserve 23 local calls plus 18 verified prior preparation charges; slot tags, campaign cap, gap merge and explicit pre-main source/format continuation |
+| M3-T01–T04 | Original T4 inference evidence retained; runtime fixes implemented | Normal output failures consume turns; real defects stop; load-pair probes bind before dispatch; actual repaired full-envelope acceptance remains pending |
+| M4-T01–T04 | Implemented; saved-fixture and transactional-read checks pass | Both partial mode summaries, control error/call references, prior-spending CSV, qualification figures and unknown logical-cost semantics |
+| M5-T01–T04 | Delivered; 26 ordinary scopes reviewed | Default reviewed course-3 continuation, read-only thinking history, no widgets, compact loads, explicit restore/evidence and current source/wheel packaging |
+| M6-T01–T04 | Saved direct scalar protocol eligible under adopted amendment; later gates unexecuted | Preserve 10/12 mathematical diagnostic and old failed gate; thinking 4 correct/1 invalid/7 unknown; current full envelopes, pilots and freeze remain pending |
 | M7-T01–T03 | Paths delivered; no empirical main execution | Twenty main pairs unknown; final notebook report/archive/close cells unexecuted; supplied error-boundary archive verifies |
 
 Baseline: branch `feat/smaller-natural-experiment`, HEAD `0b0a44a`;
@@ -889,9 +889,20 @@ leaving ten. With at most 442 further ordinary envelope/pilot/main attempts the
 known total is 483. Seven unexecuted thinking slots add no reserve or worlds.
 Preserve prior charges and earlier gap uncertainty on every restore.
 
-Repair implementation is in progress: qualification is derived from canonical
-calls/states, historical passes are not overwritten, and a narrowly verified
-pre-main source/policy continuation publishes only into a fresh destination.
-The notebook remains ordinary named cells. No inference or empirical acceptance
-is authorized or performed during this work. Focused regression/package evidence
-and milestone commit references will be recorded here at completion.
+Policy checkpoint: `ea0c8a0`; core recovery/reporting checkpoint: `552f577`.
+Qualification is derived from canonical calls/states without overwriting original
+gate decisions. The source/policy continuation publishes into a fresh destination,
+preserves original evidence, charges verified prior preparation and blocks old
+runtime writes through an explicit persistence-format tag. New study IDs cannot
+reset the known campaign budget. Ordinary named cells now default to continuation
+and thinking-history inspection requests zero generations. The packaged input
+folder contains current source plus the two distinctly named original checkpoints.
+
+Forty initial affected checks and the extended 46-check integration/ordinary-cell
+run passed; final format/package receipts record subsequent focused acceptance.
+See [repair evidence](../validation/i01-course-3-repair.md),
+[final focused receipt](../../notebooks/validation/i01-development/course3-final-checks.json)
+and [runbook](../I01_KAGGLE.md). All supplied runs, inference pins, old analysis/
+proposal documents and the verbatim evaluation remain intact. This is implemented
+and CPU/scripted-verified software, not new Kaggle qualification, pilot or main
+execution. All twenty main pairs remain unknown.

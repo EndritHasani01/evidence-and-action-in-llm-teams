@@ -2,36 +2,44 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
-Latest course-3 audit: the supplied notebook/checkpoint again verify pinned
-Linux preparation, both T4 loads and six state diagnostics. Direct repeats
-10/12 correct with zero protocol errors. Conditional thinking records four
-correct finals and one 4,096-token noncompletion, with seven controls unexecuted.
-It consumes 1,022.044 ready-model seconds versus 11.215 for the same five direct
-inputs (91.13 times); the two direct-error cases were not reached in thinking.
-The normal capped output incorrectly sets global `model_defect`, confirming the
-earlier scripted classification defect on the target host. Partial-screen and
-failure-report gaps are also observed; no selected envelope, pilot or main ran.
-See the [complete analysis](validation/i01-course-3-results-analysis.md),
-[solution proposal](proposals/i01-course-3-direct-mode-solution.md) and
-[read-only audit receipt](validation/course-3-audit.json). Exact reconstruction,
-source/wheel identity and all input hashes pass; this audit ran no inference.
+The user has now authorized full repair of the reviewed course-3 solution.
+Specification section 12 explicitly adopts direct-only protocol qualification,
+consistent pilot mathematical-outcome treatment and campaign reserve accounting.
+Original direct 10/12 failed competence decisions and partial thinking evidence
+remain intact; current eligibility is derived from all twelve saved valid direct
+controls. No model inference or empirical study stage runs during repair.
 
-Course-3 is a fresh study with 23 physical attempts, not a resume of course-2's
-18. The supplied studies therefore contain 41 executions; settle campaign budget
-scope and repeated-stage charges before continuation. Twenty main pairs remain
-unknown. Direct/protocol-first qualification is recommended as an explicit
-scientific amendment, consistently covering pilot accuracy rules; it is not
-adopted or implemented. Preserve §12's current decisions and failed outcomes.
-The prior [course-2 proposal](proposals/i01-course-2-fix-proposal.md) still covers
-unfixed envelope/load binding, lost-spending restore, logical worker identity,
-truncation classification and live-read defects. A supported source-compatible
-transition is required for the existing run. Original evidence, the verbatim
-protocol-first evaluation and production/scientific files remain unchanged.
-Earlier target-host-pending statements below are historical and are superseded
-only to the extent established by these runs.
-Course-3 analysis/audit checkpoint: `6eae0a1`. Both archive reconstructions,
-numeric consistency, four original artifact hashes, the untouched evaluation
-hash, audit-script syntax and 222 local document links pass.
+Implementation checkpoints: `ea0c8a0` policy/adoption and `552f577` canonical,
+continuation, reserve, envelope and partial-report fixes. Forty initial affected
+checks passed, followed by the extended 46-check ordinary-cell/integration run.
+The final source/format/package receipts under
+`notebooks/validation/i01-development/` identify their exact scope and limits.
+See [complete repair evidence](validation/i01-course-3-repair.md),
+[operator instructions](I01_KAGGLE.md), the preserved
+[results analysis](validation/i01-course-3-results-analysis.md) and
+[reviewed proposal](proposals/i01-course-3-direct-mode-solution.md).
+
+The explicit pre-main continuation preserves course-3's study ID, manifest,
+original source and all 23 calls/attempts/effects. Current spending includes the
+verified eighteen-call course-2 reserve charge: 41 campaign attempts, eighteen
+of 28 reserve used, 459 arithmetic remaining before other exposure. Ten reserve
+attempts remain; seven unexecuted thinking slots add no reserve or worlds. A new
+study cannot silently reset known campaign spending. Earlier gap charges and
+world blocks survive latest/unknown/bounded-tail restoration. Original source,
+new active source, failed gates and the narrow normal-cap adjudication remain
+portable; old runtime writes are blocked by an explicit persistence-version tag.
+
+Python and the 26 ordinary notebook cells implement the full direct workflow:
+zero-call reuse/inspection, current-load full envelopes, each pilot/review/export,
+freeze, fixed main batches and final report/archive/restore. Reports include both
+mode scopes, trace-linked control failures, prior-study spending and qualification
+figures; unknown main results/costs remain unknown. Runtime/model, world/view,
+seed/schedule, prompt/decoding, turn-limit, scoring and uncertainty semantics are
+preserved outside the explicit admission amendment. New-release Kaggle envelope,
+collaboration, interruption/download and all twenty main pairs remain unverified.
+Earlier statements below are historical and are superseded only to the extent
+established by the linked evidence. Supplied runs and the verbatim evaluation
+remain unchanged; the original 8f5bcdb delivery is preserved locally.
 
 The user explicitly adopted the reviewed I-01 scientific regime in specification
 §12. Its single task/status reference is the

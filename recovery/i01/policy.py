@@ -5,6 +5,18 @@ from .core import validate_action
 
 PROTOCOL_POLICY = "i01-direct-protocol-2026-10-15"
 LEGACY_POLICY = "i01-competence-11-of-12"
+COURSE_2_STUDY = 'c2973855-84fa-411d-9f6c-a08f8acc79d6'
+COURSE_3_STUDY = 'de1b347e-2cb7-41e5-a8b9-2789abda2da3'
+CAMPAIGN_STUDIES = (COURSE_2_STUDY, COURSE_3_STUDY)
+
+
+def outcome_action(outcome, *, control=False):
+    action,error=validate_action(outcome.get('visible_text',''),truncated=outcome.get('truncated',False),control=control)
+    if outcome.get('failure'):
+        return None,'provider_failure'
+    if outcome.get('framing_error'):
+        return None,error or 'malformed_action'
+    return action,error
 
 
 def qualification(manifest, tables, metadata):
@@ -23,9 +35,7 @@ def qualification(manifest, tables, metadata):
                 outcome = json.loads(call['outcome']) if call and call['outcome'] else None
                 attempts = [a for a in tables['attempts'] if a['call_id'] == identity]
                 committed = bool(call and call['effect_committed'] and states.get(identity, {}).get('terminal'))
-                action, error = (None, None) if outcome is None else validate_action(
-                    outcome.get('visible_text', ''), truncated=outcome.get('truncated', False), control=True)
-                error = error or (outcome or {}).get('failure') or (outcome or {}).get('framing_error')
+                action, error = (None, None) if outcome is None else outcome_action(outcome,control=True)
                 valid = None if outcome is None else bool(action and not error)
                 truth = world[phase+'_truth']
                 rows.append(dict(call=identity, world=world['id'], phase=phase, mode=mode,
@@ -33,7 +43,8 @@ def qualification(manifest, tables, metadata):
                     attempts=len(attempts), unresolved=sum(a['status']=='admitted' for a in attempts),
                     recorded=outcome is not None, committed=committed, valid=valid,
                     correct=int(bool(valid) and action['submit']==truth) if committed else None,
-                    error=error, termination=(outcome or {}).get('termination'),
+                    error=error, framing_error=(outcome or {}).get('framing_error'),provider_failure=(outcome or {}).get('failure'),
+                    termination=(outcome or {}).get('termination'),
                     generated_tokens=(outcome or {}).get('generated_tokens'),
                     ready_seconds=(outcome or {}).get('ready_seconds')))
         complete = sum(r['committed'] for r in rows)

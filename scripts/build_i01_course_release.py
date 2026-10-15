@@ -28,6 +28,9 @@ def build(root, out):
         relative += [Path('tests/test_i01_notebook_ui.py'),Path('docs/plans/i01-notebook-natural-workflow.md')]
         relative += [Path('tests/test_i01_setup.py'),Path('tests/test_i01_client_startup.py'),Path('tests/test_i01_repairs.py'),Path('tests/test_i01_runtime.py')]
         relative += [Path('docs/validation/i01-course-1-repair.md')]
+        relative += [Path('tests/test_i01_course3_repairs.py'),Path('docs/validation/i01-course-3-repair.md')]
+        relative += [Path('notebooks/validation/i01-development')/(name+'.json') for name in
+                     ('course3-core-checks','course3-final-checks','course3-format-checks')]
         # Builder can make a Python-only release before notebook completion.
         if (root/"notebooks/i01_course_kaggle.ipynb").exists():
             relative.append(Path("notebooks/i01_course_kaggle.ipynb"))
@@ -39,7 +42,7 @@ def build(root, out):
         wheels=list(source.glob("*.whl"))
         if len(wheels)!=1: raise ValueError("one complete wheel required")
         with zipfile.ZipFile(wheels[0]) as z:
-            if "recovery/i01/workflow.py" not in z.namelist() or "recovery/i01/ui.py" not in z.namelist():
+            if any('recovery/i01/'+name+'.py' not in z.namelist() for name in ('workflow','ui','policy','continuation')):
                 raise ValueError("wheel is missing I-01 package")
         head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip()
         dirty=subprocess.check_output(["git","status","--porcelain"],cwd=root,text=True).splitlines()
@@ -58,8 +61,17 @@ def build(root, out):
         notebook=root/"notebooks/i01_course_kaggle.ipynb"
         if notebook.exists(): shutil.copy2(notebook,out/notebook.name)
         shutil.copy2(root/"docs/I01_KAGGLE.md",out/"START_HERE.md")
+        attachment=out/'kaggle-input';attachment.mkdir(exist_ok=True)
+        shutil.copy2(target,attachment/'i01-source.zip')
+        continuation_inputs=[]
+        for course in ('course-2','course-3'):
+            original=root/'notebooks/run'/course/'latest.zip'
+            if original.is_file():
+                copied=attachment/(course+'-latest.zip');shutil.copy2(original,copied)
+                continuation_inputs.append(dict(file=copied.name,sha256=digest(copied),bytes=copied.stat().st_size))
         atomic_json(out/"delivery.json",dict(source_zip=str(target),bytes=target.stat().st_size,sha256=digest(target),
                     notebook=str(out/"i01_course_kaggle.ipynb"),source_head=head,files=list(manifest["files"]),
+                    kaggle_input_directory=str(attachment),continuation_inputs=continuation_inputs,
                     implemented=True,kaggle_verified=False,model_attempts=0))
         return target
 

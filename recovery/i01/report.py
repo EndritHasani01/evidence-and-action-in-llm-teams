@@ -23,7 +23,7 @@ def read_run(run):
     tables = {name: [] for name in ("episodes", "calls", "attempts", "sessions", "annotations")}
     metadata = {}
     for slot in range(2):
-        Store.validate(run/f'worker-{slot}.sqlite', {'manifest':manifest})
+        Store.validate(run/f'worker-{slot}.sqlite', {'manifest':manifest},allow_legacy=True)
         db = connection(run/f"worker-{slot}.sqlite", True)
         try:
             db.execute('BEGIN')
@@ -120,6 +120,7 @@ def analysis(run):
                    terminal_reasons=dict(failures), lost_spending=gap)
     budget = usage(tables['attempts'], meta)
     summary.update(campaign_attempts=budget['campaign_attempts'], prior_attempts=budget['prior_attempts'],
+                   missing_prior_studies=budget['missing_prior_studies'],
                    contingency=budget['contingency'], local_contingency=budget['local_contingency'],
                    remaining_attempt_allowance=budget['remaining'], prior_spending=meta.get('prior_spending', []))
     policy_costs=[]
@@ -144,6 +145,7 @@ def analysis(run):
     summary["generated_tokens_observed"]=sum(a["generated_tokens"] or 0 for a in attempts)
     summary['campaign_ready_seconds_observed']=summary['physical_ready_seconds_observed']+sum(p.get('ready_seconds_observed',0) for p in meta.get('prior_spending',[]))
     summary['campaign_generated_tokens_observed']=summary['generated_tokens_observed']+sum(p.get('generated_tokens_observed',0) for p in meta.get('prior_spending',[]))
+    summary['campaign_attempts_unknown_ready_seconds']=sum(a['ready_seconds'] is None for a in attempts)+sum(p.get('attempts_unknown_ready_seconds',0) for p in meta.get('prior_spending',[]))
     summary["attempts_unknown_generated_tokens"]=sum(a["generated_tokens"] is None for a in attempts)
     summary["model_load_seconds_observed"]=sum(json.loads(s["evidence"]).get("load",{}).get("load_seconds",0) for s in tables["sessions"])
     summary["failed_model_load_seconds_observed"]=sum(json.loads(s["evidence"]).get("load_seconds") or 0 for s in tables["sessions"] if json.loads(s["evidence"]).get("load_failure"))
@@ -190,8 +192,10 @@ def analysis(run):
             failure_rows.append(dict(episode=ep["id"],label=label,calls=refs,
                                      basis="Observable record; internal explanation remains ambiguous"))
     screens=qualification(manifest,tables,meta)
+    summary['qualification']={mode:{k:v for k,v in q.items() if k!='controls'} for mode,q in screens.items()}
     return dict(summary=summary, worlds=world_rows, costs=cost_rows, policy_costs=policy_costs, attempts=attempts,
                 qualification=screens,qualification_controls=[r for mode in screens.values() for r in mode['controls']],
+                prior_spending=meta.get('prior_spending',[]),
                 paired_costs=paired_costs,failure_analysis=failure_rows,
                 episodes=tables["episodes"],traces=tables["calls"], annotations=tables["annotations"], sessions=tables["sessions"], manifest=manifest)
 
@@ -215,6 +219,22 @@ def figures(result, out):
     main = [w for w in result["worlds"] if w["group"] == "main"]
     costs = {(r["world"], r["phase"]):r for r in result["costs"]}
     plots = []
+    fig, ax = plt.subplots(figsize=(8,3.8),layout='constrained')
+    modes=list(result['qualification']);bottom=[0,0]
+    for label,key,color in (('Correct final','correct','#297c71'),('Wrong scalar','wrong_scalar','#a26635'),('Invalid output','protocol_errors','#b84b50'),('Pending / unexecuted',None,'#999999')):
+        values=[q[key] if key else 12-q['correct']-q['wrong_scalar']-q['protocol_errors'] for q in result['qualification'].values()]
+        ax.bar(modes,values,bottom=bottom,label=label,color=color)
+        bottom=[a+b for a,b in zip(bottom,values)]
+    ax.set(ylabel='Fixed planned controls per mode',title='Qualification coverage and exact outputs; not a main result',ylim=(0,15))
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True));ax.legend(fontsize=8,ncol=2,loc='upper center')
+    plots.append(('qualification-outcomes',fig))
+    fig,axes=plt.subplots(1,2,figsize=(9,3.8),layout='constrained')
+    labels=[f"{mode}\n{q['recorded']}/12 raw outcomes" for mode,q in result['qualification'].items()]
+    for axis,key,label in zip(axes,('ready_seconds_observed','generated_tokens_observed'),('Ready-model seconds','Generated tokens')):
+        axis.bar(labels,[q[key] for q in result['qualification'].values()],color=['#297c71','#596dce'])
+        axis.set(ylabel=label)
+    fig.suptitle('Observed qualification effort; mode scopes may differ, invalid outputs included',fontsize=10)
+    plots.append(('qualification-effort',fig))
     fig, ax = plt.subplots(figsize=(7, 3.6), layout="constrained")
     cats = ["both", "retain_only", "clear_only", "neither", "unknown"]
     ax.bar(["Both correct","Retain only","Clear only","Neither","Unknown"], [result["summary"]["paired_counts"].get(c,0) for c in cats], color=["#297c71", "#a26635", "#596dce", "#b84b50", "#999999"])
@@ -262,7 +282,7 @@ def write_report(run, out, *, plot=True):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     (out/"analysis.json").write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf-8")
-    for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions", "qualification_controls"):
+    for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions", "qualification_controls", "prior_spending"):
         csv_file(out/(name+".csv"), result[name])
     csv_file(out/"plotting-data.csv", result["costs"])
     csv_file(out/"plotting-outcomes.csv", result["worlds"])
@@ -297,6 +317,7 @@ def write_report(run, out, *, plot=True):
                  f"Intended main population: 20 independent worlds; known paired outcomes: {s['known_pairs']}/20. "
                  f"Current-study physical attempts: {s['attempts']}; prior-study charges: {s['prior_attempts']}; campaign total: {s['campaign_attempts']}/500. "
                  f"Shared contingency used: {s['contingency']}/28; historical 45 recorded separately.\n\n"+qualification_text+
+                 f"Known prior studies still requiring reconciliation: {s['missing_prior_studies']}. Remaining allowance: {s['remaining_attempt_allowance']} (unknown blocks admission).\n\n"+
                  f"Clear-minus-retain mean: {s['clear_minus_retain']}; unknown bounds: {s['missingness_bounds']}. "
                  f"Correct-prefix descriptive denominator: {s['correct_prefix_denominator']}; unknown prefixes: {s['unknown_prefixes']}.\n\n"
                  "This is a controlled recovery extension of SILO-BENCH I-01. Clearing removes remote information in prior messages. "
@@ -315,7 +336,11 @@ def write_report(run, out, *, plot=True):
     # Qualification leads the report while main is unknown; complete traces stay
     # in the existing escaped conversation audit, rather than another data store.
     from urllib.parse import quote
-    qualification_html=['<h2>Qualification: every planned control</h2><p>Accuracy is a diagnostic; current eligibility and historical gate decisions are distinct. See the summary below for pending/unexecuted counts.</p><table><tr><th>Call / trace</th><th>Truth</th><th>Submission</th><th>Committed</th><th>Valid</th><th>Correct</th><th>Error</th><th>Tokens</th><th>Seconds</th></tr>']
+    qualification_html=['<h2>Qualification and partial progress</h2><p>Mathematical accuracy is a diagnostic. Current eligibility and original gate decisions remain distinct; physical completion alone does not establish valid output.</p><table><tr><th>Mode</th><th>Committed / planned</th><th>Correct</th><th>Wrong scalar</th><th>Invalid</th><th>Unexecuted</th><th>Current eligible</th><th>Historical passed</th></tr>']
+    for mode,q in result['qualification'].items():
+        values=(mode,str(q['committed'])+'/12',q['correct'],q['wrong_scalar'],q['protocol_errors'],q['unexecuted'],q['passed'],(q['historical_gate'] or {}).get('passed','not recorded'))
+        qualification_html.append('<tr>'+''.join('<td>'+escape(str(v))+'</td>' for v in values)+'</tr>')
+    qualification_html.append('</table><h3>Every planned control</h3><table><tr><th>Call / trace</th><th>Truth</th><th>Submission</th><th>Committed</th><th>Valid</th><th>Correct</th><th>Error</th><th>Tokens</th><th>Seconds</th></tr>')
     for r in result['qualification_controls']:
         label=escape(r['call'])
         if r['recorded']:
@@ -325,9 +350,9 @@ def write_report(run, out, *, plot=True):
     html.insert(-1, '\n'.join(qualification_html))
     for w in result["worlds"]:
         html.append('<tr>'+''.join('<td>'+escape(str(w[k]) if w[k] is not None else 'unknown')+'</td>' for k in ("id","group","original_truth","revised_truth","prefix","retain","clear"))+'</tr>')
-    html.append('</table><h2>Paired results and costs</h2><p><a href="paired-results.csv">Paired outcomes</a> · <a href="paired_costs.csv">Paired costs</a> · <a href="attempts.csv">Attempt ledger</a> · <a href="failure_analysis.csv">Observable failure audit</a> · <a href="analysis.json">Complete reconstruction</a></p>')
+    html.append('</table><h2>Paired results and costs</h2><p><a href="paired-results.csv">Paired outcomes</a> · <a href="paired_costs.csv">Paired costs</a> · <a href="attempts.csv">Local attempt ledger</a> · <a href="prior_spending.csv">Prior-study spending/proof</a> · <a href="failure_analysis.csv">Observable failure audit</a> · <a href="analysis.json">Complete reconstruction</a></p>')
     if plot:
-        html.extend(f'<h3>{name}</h3><img src="figures/{name}.svg" alt="{name}">' for name in ("paired-outcomes","recovery-ready_seconds","recovery-calls","recovery-generated_tokens","failure-labels","termination-coverage"))
+        html.extend(f'<h3>{name}</h3><img src="figures/{name}.svg" alt="{name}">' for name in ('qualification-outcomes','qualification-effort',"paired-outcomes","recovery-ready_seconds","recovery-calls","recovery-generated_tokens","failure-labels","termination-coverage"))
     html.append('<h2>Interpretation, gates and limitations</h2><pre>'+escape(narrative)+'</pre>')
     (out/"overview.html").write_text('\n'.join(html),encoding="utf-8")
     if plot:

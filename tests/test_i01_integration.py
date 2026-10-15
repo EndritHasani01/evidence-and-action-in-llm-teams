@@ -34,6 +34,11 @@ class Integration(unittest.TestCase):
         self.run=Path(self.temp.name)/"run"
         root=Path(__file__).parents[1]
         initialize(self.run,root,json.loads((root/"configs/i01-course.json").read_text()))
+        from recovery.i01.store import Store
+        manifest=json.loads((self.run/'run.json').read_text())
+        store=Store(self.run/'worker-0.sqlite',{'manifest':manifest})
+        store.put_meta('required_preparation_studies',[])  # Isolated scripted fixture.
+        store.close()
         self.session=None
     def tearDown(self):
         if self.session: self.session.close()

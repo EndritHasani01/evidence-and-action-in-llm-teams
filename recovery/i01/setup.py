@@ -256,7 +256,8 @@ def download(source, scratch, working, *, weights=False):
                 raise
             print(f"Transport retry {attempt+1}/2; reuse partial pinned files",flush=True)
     verified={}
-    for f in files:
+    for number,f in enumerate(files,1):
+        print(f'Verifying pinned native bytes {number}/{len(files)}: {f.rfilename} ({f.size or 0:,} bytes)',flush=True)
         path=snapshot/f.rfilename
         if path.stat().st_size!=f.size:
             raise ValueError("native file byte size differs: "+f.rfilename)

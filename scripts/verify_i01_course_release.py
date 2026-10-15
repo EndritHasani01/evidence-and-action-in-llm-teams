@@ -20,7 +20,7 @@ def verify_notebook(notebook):
         'workspace':[], 'setup':['install_runtime'], 'open-study':['open'],
         'selfcheck':['check_implementation'], 'weights':['download_weights'], 'session-window':['configure_session'], 'load':['load_models'],
         'readiness':['check_readiness'], 'direct-screen':['qualify_direct'],
-        'qualification':['inspect_qualification'], 'thinking-screen':['qualify_thinking'],
+        'qualification':['inspect_qualification'], 'thinking-history':['inspect_thinking'],
         'envelope':['check_headroom'], 'pilot-1':['run_pilot'], 'review-pilot-1':['record_pilot_review'],
         'pilot-2':['run_pilot'], 'review-pilot-2':['record_pilot_review'], 'pilot-3':['run_pilot'],
         'review-pilot-3':['record_pilot_review'], 'pre-freeze':['review_configuration'],
@@ -62,7 +62,9 @@ def verify_notebook(notebook):
     assert 'deadline' not in receipts['open-study'][0]['kwargs']
     assert receipts['session-window'][0]['kwargs']==dict(remaining_minutes=None,evidence='')
     assert receipts['prepare-batch'][0]['kwargs']==dict(count=2)
-    assert receipts['thinking-screen'][0]['args']==[None]
+    assert receipts['thinking-history'][0]['args']==[]
+    assert next(c for c in cells if c['id']=='thinking-history')['metadata']['i01']['generation'] is False
+    assert receipts['open-study'][0]['kwargs']['prior_checkpoints'] is None
     assert receipts['freeze'][0]['args']==['']
     assert receipts['archive'][0]['kwargs']==dict(verify=True)
     return dict(code_cells=len(cells),widget_panels=0,independent_cell_scopes=receipts,
@@ -77,6 +79,7 @@ def verify(root,delivery):
     nbformat.validate(nbformat.from_dict(notebook))
     notebook_receipt=verify_notebook(notebook)
     assert (root/'notebooks/i01_course_kaggle.ipynb').read_bytes()==(delivery/'i01_course_kaggle.ipynb').read_bytes()
+    installed_continuation=False
     with tempfile.TemporaryDirectory(prefix="i01-installed-review-") as name:
         temp=Path(name); source=temp/"source"
         with zipfile.ZipFile(delivery/"i01-source.zip") as z:
@@ -91,6 +94,11 @@ def verify(root,delivery):
         inputs=temp/"input"; inputs.mkdir()
         working=temp/"working"; working.mkdir()
         shutil.copy2(delivery/"i01-source.zip",inputs/"i01-source.zip")
+        # An expanded old checkpoint also has source-release.json. Its source
+        # must be ignored by this repaired notebook's automatic source picker.
+        old_source=inputs/'expanded-old-checkpoint/source';old_source.mkdir(parents=True)
+        (old_source/'source-release.json').write_text(json.dumps(dict(format='i01-online-source-v1',files={'recovery/i01/workflow.py':{}})))
+        shutil.copytree(source,inputs/'expanded-repaired-source')
         class BootstrapStub:
             def __init__(self,source,**kwargs):self.source=Path(source);self.run_dir=Path(kwargs['run'])
             def bootstrap_status(self): pass
@@ -110,6 +118,10 @@ def verify(root,delivery):
         exec(compile(bootstrap,"n01-rerun","exec"),bootstrap_namespace)
         expanded=bootstrap.replace("SOURCE_BUNDLE = None",f"SOURCE_BUNDLE = {source.as_posix()!r}")
         exec(compile(expanded,"n01-expanded","exec"),bootstrap_namespace)
+        old_explicit=bootstrap.replace('SOURCE_BUNDLE = None',f'SOURCE_BUNDLE = {old_source.as_posix()!r}')
+        try:exec(compile(old_explicit,'refuse-old-source','exec'),dict(bootstrap_namespace))
+        except RuntimeError as error:assert 'requires the repaired' in str(error)
+        else:raise AssertionError('The repaired notebook accepted an explicit legacy source packet')
         wheels=list(source.glob("*.whl")); assert len(wheels)==1
         venv=temp/'venv'
         subprocess.run([sys.executable,'-I','-S','-m','venv','--without-pip',str(venv)],check=True,timeout=60)
@@ -125,6 +137,22 @@ def verify(root,delivery):
         subprocess.run(command+["--run",str(run),"init"],cwd=temp,env=env,check=True,stdout=subprocess.DEVNULL,timeout=30)
         status=json.loads(subprocess.check_output(command+["--run",str(run),"status"],cwd=temp,env=env,text=True,timeout=30))
         assert status["attempts"]==0 and status["known_pairs"]==0 and status["missingness_bounds"]==[-1,1]
+        assert status['remaining_attempt_allowance'] is None and len(status['missing_prior_studies'])==2
+        older=root/'notebooks/run/course-2/latest.zip';selected=root/'notebooks/run/course-3/latest.zip'
+        if older.is_file() and selected.is_file():
+            continued=temp/'continued'
+            receipt=json.loads(subprocess.check_output(command+['--run',str(continued),'continue-checkpoint',str(selected),'--prior',str(older),'--tail','latest','--evidence','Zero-model package verification fixture; no additional exposure'],cwd=temp,env=env,text=True,timeout=45))
+            assert receipt['preserved_attempts']==23 and receipt['campaign_attempts']==41
+            status=json.loads(subprocess.check_output(command+['--run',str(continued),'status'],cwd=temp,env=env,text=True,timeout=30))
+            assert status['attempts']==23 and status['campaign_attempts']==41 and status['contingency']==18
+            assert status['qualification']['direct']['passed'] and status['qualification']['direct']['correct']==10
+            assert status['qualification']['thinking']['recorded']==5 and status['qualification']['thinking']['unexecuted']==7
+            offline=temp/'offline-report'
+            subprocess.run(command+['--run',str(continued),'report','--output',str(offline),'--no-plots'],cwd=temp,env=env,check=True,stdout=subprocess.DEVNULL,timeout=30)
+            assert (offline/'qualification_controls.csv').is_file() and (offline/'prior_spending.csv').is_file()
+            assert '41/500' in (offline/'overview.md').read_text(encoding='utf-8')
+            assert len(json.loads((offline/'analysis.json').read_text())['attempts'])==23
+            installed_continuation=True
         for rel,wanted in manifest["files"].items():
             assert digest(run/"source"/rel)==wanted["sha256"],rel
         assert not any(".safetensors" in p or ".env" in p or "/site-packages/" in p for p in manifest["files"])
@@ -132,6 +160,8 @@ def verify(root,delivery):
                  source_zip_bytes=(delivery/"i01-source.zip").stat().st_size,source_zip_sha256=digest(delivery/"i01-source.zip"),
                  installed_wheel_source_matches=True,installed_outside_checkout_cli=True,
                  installed_venv_isolated_entry=True,
+                 installed_actual_course3_continuation=installed_continuation,
+                 installed_cpu_only_report_without_matplotlib=installed_continuation,
                  zip_expanded_source_bootstrap_and_rerun=True,complete_source_preserved_in_checkpoints=True,
                  notebook_execution_outputs_empty=True,
                  kaggle_host_verified=False,qualification_pilot_main_executed=False)

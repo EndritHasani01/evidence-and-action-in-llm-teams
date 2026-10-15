@@ -16,7 +16,7 @@ from recovery.i01.continuation import continue_checkpoint, record_prior_preparat
 from recovery.i01.core import canonical
 from recovery.i01.policy import PROTOCOL_POLICY
 from recovery.i01.report import analysis, write_report
-from recovery.i01.store import connection, restore_tail
+from recovery.i01.store import connection, restore_tail, resolve_restore_tail
 from recovery.i01.workflow import initialize, Session
 
 ROOT=Path(__file__).parents[1]
@@ -49,6 +49,7 @@ class Course3Repairs(unittest.TestCase):
         initialize(self.run,ROOT,json.loads((ROOT/'configs/i01-course.json').read_text()))
         self.workers=[Scripted(),Scripted()]
         self.s=Session(self.run,ROOT,providers=self.workers,prepare_request=prepare)
+        self.s.meta.put_meta('required_preparation_studies',[])  # Isolated scripted fixture, not a new research campaign.
         self.s.window((datetime.now(timezone.utc)+timedelta(hours=2)).isoformat(),'Scripted allowance only')
     def tearDown(self):
         self.s.close();self.temp.cleanup()
@@ -72,6 +73,24 @@ class Course3Repairs(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'protocol qualification'):s.envelope()
         self.assertEqual(s.admission.usage()['attempts'],before)
 
+    def test_public_headroom_refusal_is_archived_without_any_generation(self):
+        from recovery.i01.notebook import Study
+        from recovery.i01.ui import ActionStopped
+        s=self.s
+        class Client:
+            process=SimpleNamespace(poll=lambda:None)
+            def command(self,name):return s.status()
+            def action(self,name,**args):return s.run_action(name,**args)
+        with patch('recovery.i01.ui.host_inventory',return_value={}):
+            ui=Study(ROOT,Path(self.temp.name)/'scratch',Path(self.temp.name)/'working',self.run)
+        ui.client=Client();ui.show=lambda r:None;ui.links=lambda:None
+        with self.assertRaisesRegex(ActionStopped,'protocol qualification'):ui.check_headroom()
+        self.assertEqual(sum(w.calls for w in self.workers),0)
+        restored=Path(self.temp.name)/'refusal'
+        extract_selected(self.run/'exports/latest.zip',restored)
+        self.assertIn('protocol qualification',(restored/'receipts/operator-errors.jsonl').read_text())
+        self.assertEqual(analysis(restored)['summary']['attempts'],0)
+
     def test_ordinary_truncation_consumes_turns_without_global_defect_or_retry(self):
         outcome=dict(failure=None,visible_text='',raw_text='unfinished private output',truncated=True,
                      termination='length',framing_error='thinking_framing_defect',generated_tokens=4096,
@@ -82,14 +101,16 @@ class Course3Repairs(unittest.TestCase):
         self.assertEqual(state['turns'],[3,3]);self.assertEqual(state['submissions'],[None,None])
         self.assertEqual(state['history'][0][-1]['kind'],'feedback')
         self.assertFalse(self.s.meta.meta('model_defect'))
+        self.assertTrue(all(e['error']=='truncated_action' for e in state['events']))
         self.assertEqual(sum(w.calls for w in self.workers),6)
         self.s.episode(world,'prefix','thinking')
         self.assertEqual(sum(w.calls for w in self.workers),6)
 
     def test_real_provider_defect_remains_blocking_and_cannot_be_adjudicated(self):
         world=self.s.manifest['worlds'][0]
-        self.workers[world['device']].reply=lambda req:dict(failure='provider_defect',reason='nonfinite model scores',visible_text='',ready_seconds=None,generated_tokens=None,input_tokens=1)
+        self.workers[world['device']].reply=lambda req:dict(failure='provider_defect',reason='nonfinite model scores',visible_text=canonical(dict(message=None,submit=world['original_truth'],wait=False)),ready_seconds=None,generated_tokens=None,input_tokens=1)
         with self.assertRaisesRegex(ValueError,'defect'):self.s.control(world,'original','direct',stage='direct')
+        self.assertEqual(self.s.stores[world['device']].state(world['id']+'/control-original-direct')['submissions'],[])
         self.assertTrue(self.s.meta.meta('model_defect'))
         with self.assertRaisesRegex(ValueError,'cannot be cleared'):_adjudicate_length_flag(self.s.stores)
         with self.assertRaisesRegex(ValueError,'runtime defect'):self.s.control(world,'revised','direct',stage='direct')
@@ -157,6 +178,17 @@ class Course3Repairs(unittest.TestCase):
         self.assertEqual(s.admission.usage()['campaign_attempts'],28)
         self.assertEqual(s.admission.usage()['contingency'],28)
 
+    def test_new_study_has_no_fresh_allowance_until_known_history_reconciles(self):
+        run=Path(self.temp.name)/'another-study'
+        initialize(run,ROOT,json.loads((ROOT/'configs/i01-course.json').read_text()))
+        other=Session(run,ROOT)
+        try:
+            self.assertEqual(len(other.admission.usage()['missing_prior_studies']),2)
+            self.assertIsNone(other.admission.usage()['remaining'])
+            other.stores[0].register('new','fixture',prepare({},1,'direct'))
+            with self.assertRaisesRegex(ValueError,'cannot reset the campaign'):other.admission.admit(other.stores[0],'new','direct')
+        finally:other.close()
+
     def test_latest_tail_preserves_prior_gap_and_unknown_blocks(self):
         self.s.meta.put_meta('lost_spending',dict(upper=3,resolved=True,evidence='Earlier known upper bound'))
         self.s.meta.put_meta('blocked_worlds',['main-00'])
@@ -165,8 +197,30 @@ class Course3Repairs(unittest.TestCase):
         self.assertEqual(self.s.meta.meta('blocked_worlds'),['main-00'])
         restore_tail(self.s.meta,'unknown','Additional tail unknown',boundary='fixture-2')
         self.assertIsNone(self.s.admission.usage()['remaining'])
+        self.assertEqual(self.s.admission.usage()['contingency'],3)
         restore_tail(self.s.meta,'latest','Latest boundary now known',boundary='fixture-3')
         self.assertIsNone(self.s.admission.usage()['remaining'])
+
+    def test_bounding_new_tail_keeps_older_gap_and_cannot_apply_twice(self):
+        self.s.meta.put_meta('lost_spending',dict(upper=3,resolved=True,evidence='Earlier gap'))
+        self.s.meta.put_meta('blocked_worlds',['main-00'])
+        restore_tail(self.s.meta,'unknown','Additional tail unknown',boundary='fixture')
+        restore_tail(self.s.meta,'latest','A newer zero-tail boundary cannot resolve the old gap',boundary='fixture-newer')
+        self.assertEqual(resolve_restore_tail(self.s.meta,2,'Fixture: at most two additional calls',['main-01'])['upper'],5)
+        self.assertEqual(self.s.admission.usage()['remaining'],495)
+        self.assertEqual(self.s.meta.meta('blocked_worlds'),['main-00','main-01'])
+        with self.assertRaises(ValueError):resolve_restore_tail(self.s.meta,2,'Same boundary',[])
+        restore_tail(self.s.meta,'latest','Latest newer boundary',boundary='next-fixture')
+        self.assertEqual(self.s.admission.usage()['remaining'],495)
+
+    def test_unknown_spending_blocks_load_and_wrong_slot_blocks_admission(self):
+        self.s.meta.put_meta('selfcheck',{'passed':True})
+        restore_tail(self.s.meta,'unknown','Unknown fixture tail',boundary='fixture')
+        with self.assertRaisesRegex(ValueError,'before loading'):self.s.load('/not-used',{})
+        world=next(w for w in self.s.manifest['worlds'] if w['device']==1)
+        with self.assertRaisesRegex(ValueError,'Misplaced logical'):
+            self.s.call(0,world['id']+'/test',world['id']+'/prefix',prepare({},1,'direct'),'direct')
+        self.assertEqual(self.s.admission.usage()['attempts'],0)
 
     def test_both_restore_interfaces_preserve_saved_gap(self):
         self.s.meta.put_meta('lost_spending',dict(upper=3,resolved=True,evidence='Earlier gap'))
@@ -211,6 +265,21 @@ class Course3Repairs(unittest.TestCase):
 
 @unittest.skipUnless(C2.is_file() and C3.is_file(),'Saved course-2/course-3 operator fixtures are not bundled in the source release')
 class SavedCourse3(unittest.TestCase):
+    def test_checkpoint_picker_collapses_identical_zip_and_expanded_boundaries(self):
+        from recovery.i01.continuation import choose_checkpoint, COURSE_3_STUDY
+        with tempfile.TemporaryDirectory(prefix='i01-input-pick-') as name:
+            root=Path(name);shutil.copy2(C3,root/'course3.zip');extract_selected(C3,root/'expanded')
+            self.assertEqual(choose_checkpoint(COURSE_3_STUDY,root),root/'course3.zip')
+            manifest=json.loads((root/'expanded/integrity.json').read_text());manifest['created_at']='distinct boundary'
+            (root/'expanded/integrity.json').write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError,'2 candidates'):choose_checkpoint(COURSE_3_STUDY,root)
+
+    def test_new_code_cannot_masquerade_as_the_old_source_packet(self):
+        with tempfile.TemporaryDirectory(prefix='i01-source-refusal-') as name:
+            run=Path(name)/'old';extract_selected(C3,run)
+            with self.assertRaisesRegex(ValueError,'schema mismatch|Imported implementation differs'):Session(run,run/'source')
+            self.assertFalse(analysis(run)['qualification']['direct']['passed'])
+
     def test_actual_checkpoint_transition_preserves_calls_budget_and_failed_history(self):
         before={p:digest(p) for p in (C2,C3)}
         with tempfile.TemporaryDirectory(prefix='i01-saved-transition-') as name:
@@ -233,6 +302,12 @@ class SavedCourse3(unittest.TestCase):
             try:
                 self.assertEqual((s.admission.usage()['attempts'],s.admission.usage()['campaign_attempts'],s.admission.usage()['contingency'],s.admission.usage()['remaining']),(23,41,18,459))
                 self.assertFalse(s.meta.meta('model_defect'));self.assertTrue(s.meta.meta('model_defect_adjudication'))
+                import subprocess,sys
+                old_source=run/'source'
+                code='import sys;sys.path.insert(0,sys.argv[1]);from recovery.i01.workflow import Session;Session(sys.argv[2],sys.argv[1])'
+                old=subprocess.run([sys.executable,'-I','-S','-c',code,str(old_source),str(run)],capture_output=True,text=True,timeout=20)
+                self.assertNotEqual(old.returncode,0)
+                self.assertIn('schema mismatch',old.stderr)
                 self.assertTrue(s.screen('direct')['passed'])
                 self.assertEqual(sum(w.calls for w in s.workers),0)
                 record_prior_preparation(run,s.stores,[C2,C2])

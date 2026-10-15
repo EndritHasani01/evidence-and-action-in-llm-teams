@@ -9,7 +9,7 @@ import threading
 
 from .archive import atomic_json, digest, extract_selected
 from .core import canonical
-from .store import restore_tail
+from .store import restore_tail, resolve_restore_tail, charged_gap
 
 
 def serve(run, source):
@@ -85,12 +85,23 @@ def serve(run, source):
                     world_ids={w["id"] for w in session.manifest["worlds"]}
                     if gap.get("upper",0) and (not affected or any(w not in world_ids for w in affected)):
                         raise ValueError("nonzero lost spending needs exact affected world IDs; lost prefixes cannot regenerate")
+                    old=session.meta.meta('lost_spending',{})
+                    minimum=charged_gap(old)
+                    if gap.get('resolved') and (gap['upper']<minimum or old.get('additional_tail')=='unknown'):
+                        raise ValueError('Do not erase the saved gap; use resolve_restore_tail for an additional unknown tail')
                     session.meta.put_meta("lost_spending",gap)
-                    session.meta.put_meta("blocked_worlds",affected)
+                    session.meta.put_meta("blocked_worlds",sorted(set(session.meta.meta('blocked_worlds',[]))|set(affected)))
                     value=gap
                 elif op=='restore_tail':
                     if busy: raise ValueError('Pause before tail reconciliation')
                     value=restore_tail(session.meta,req['tail'],req['evidence'],boundary=req['boundary'])
+                elif op=='resolve_restore_tail':
+                    if busy:raise ValueError('Pause before tail reconciliation')
+                    affected=req.get('affected_worlds',[])
+                    worlds={w['id'] for w in session.manifest['worlds']}
+                    if any(w not in worlds for w in affected) or req['upper'] and not affected:
+                        raise ValueError('Additional lost attempts require exact affected-world IDs')
+                    value=resolve_restore_tail(session.meta,req['upper'],req['evidence'],affected)
                 elif op=="annotate":
                     if busy: raise ValueError("pause before annotations")
                     ann=req["annotation"]
@@ -147,7 +158,9 @@ def parser():
     inventory=sub.add_parser("runtime-inventory"); inventory.add_argument("--output",type=Path,required=True)
     for name in ("status","report"):
         item=sub.add_parser(name)
-        if name=="report": item.add_argument("--output",type=Path)
+        if name=="report":
+            item.add_argument("--output",type=Path)
+            item.add_argument('--no-plots',action='store_true',help='Export read-only tables/traces/HTML without importing Matplotlib')
     for name in ("metadata","weights"):
         item=sub.add_parser(name); item.add_argument("--scratch",type=Path,required=True); item.add_argument("--working",type=Path,required=True)
     stage=sub.add_parser("action"); stage.add_argument("action"); stage.add_argument("--args",default="{}"); stage.add_argument("--deadline",required=True); stage.add_argument("--allowance-evidence",required=True); stage.add_argument("--authorize",required=True)
@@ -190,7 +203,7 @@ def main(argv=None):
         result=run_checks(args.metadata,config)
     elif args.command in ("status","report"):
         from .report import analysis, write_report
-        result=analysis(args.run)["summary"] if args.command=="status" else write_report(args.run,args.output or args.run/"reports")
+        result=analysis(args.run)["summary"] if args.command=="status" else write_report(args.run,args.output or args.run/"reports",plot=not args.no_plots)
     elif args.command=="serve":
         serve(args.run,args.source); return
     else:

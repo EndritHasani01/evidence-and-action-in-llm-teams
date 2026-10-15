@@ -76,7 +76,7 @@ class NotebookUI(unittest.TestCase):
     def test_pilot_review_has_no_assumed_human_findings(self):
         with self.assertRaises(ValueError): self.ui.review_pilot(1)
         with self.assertRaises(ValueError): self.ui.review_pilot(1,useful_communication=1,usable=True,notes='actual review')
-        self.assertFalse(self.client.calls)
+        self.assertFalse([c for c in self.client.calls if c[0]!='status'])
         self.ui.review_pilot(1,useful_communication=False,usable=True,notes='No useful public message in the original team')
         self.assertEqual(self.client.calls[-1][1]['useful_communication'],False)
         self.assertEqual(self.client.calls[-1][1]['scope'],'pilot-1')

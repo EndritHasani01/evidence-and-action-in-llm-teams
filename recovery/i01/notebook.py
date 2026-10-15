@@ -45,3 +45,5 @@ class Study(Operator):
         return self.client.command('confirm_timeout_termination',slot=slot,call=call,evidence=evidence)
     def record_lost_spending(self, gap, affected_worlds=None):
         return self.client.command('lost_spending',gap=gap,affected_worlds=affected_worlds or [])
+    def resolve_restore_tail(self, upper, evidence, affected_worlds=None):
+        return self.client.command('resolve_restore_tail',upper=upper,evidence=evidence,affected_worlds=affected_worlds or [])

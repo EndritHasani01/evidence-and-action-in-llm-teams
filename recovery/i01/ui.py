@@ -220,6 +220,16 @@ class Operator:
             try:self.external_checkpoint('operator-error-'+action)
             except (ValueError,OSError) as exc:print('Failure checkpoint unavailable: '+str(exc))
 
+    def stop_before_action(self, action, message):
+        """Public convenience preconditions use the existing operational receipt."""
+        try:
+            raise ActionStopped(message)
+        except ActionStopped as error:
+            try:self.operation_error(action,error)
+            except Exception as failure:print('Could not save the operational receipt: '+str(failure))
+            if (self.run_dir/'exports/latest.zip').is_file():self.links()
+            raise
+
     def run_action(self, action, **args):
         if action=='status':return self.status()
         if action=="setup": return self.setup()
@@ -352,10 +362,13 @@ class Operator:
             if payload.get('results') is not None: compact['raw_result_count']=len(payload['results'])
             if 'gates' in compact: compact['gates']=list(compact['gates'])
             _details('Receipt summary; complete evidence is in the reports and checkpoint',compact)
-        elif isinstance(payload,list):
+        elif isinstance(payload,list) and action=='load':
             _table(['Logical slot','CUDA UUID','Load seconds','Total device GiB'],[(i,r.get('cuda_device_uuid'),r.get('load_seconds'),round(r['total_device_bytes']/2**30,2) if r.get('total_device_bytes') is not None else None) for i,r in enumerate(payload) if isinstance(r,dict)],'Resident load evidence')
+            _table(['Logical slot','Model / revision','Attention','Recurrent fast path'],[(i,str(r.get('model'))+' / '+str(r.get('revision')),r.get('attention'),r.get('recurrent_fast_path')) for i,r in enumerate(payload)],'Pinned implementation')
             print('Pinned text-only NF4/FP16 replicas accepted by the reviewed loader. The loading-only generation profile is not the per-call I-01 profile: direct uses 512 output tokens, temperature 0.7/top-p 0.8/top-k 20.')
             print('Known upstream documentation/deprecation messages and optional recurrent-kernel fallback are retained in controller-stderr.log. Full load/tensor inventories remain in sessions.csv and the checkpoint; no runtime upgrade is applied.')
+        elif isinstance(payload,list):
+            _details('Process/control receipts',payload)
         checkpoint=result.get('checkpoint',{}) if isinstance(result,dict) else {}
         if checkpoint: print('Checkpoint: '+str(checkpoint.get('error') or checkpoint.get('integrity','not recorded')))
 
@@ -375,7 +388,7 @@ class Operator:
 
     def open_study(self, mode='new', *, deadline=None, allowance_evidence='', selected=None, tail=None, evidence='', prior_checkpoints=None):
         if deadline is not None or allowance_evidence:
-            receipt=self.set_window(deadline,allowance_evidence)
+            receipt=self.run('window',deadline=deadline,evidence=allowance_evidence)
             if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
                 self.show(receipt)
                 raise ActionStopped(receipt.get('error') or receipt['checkpoint']['error'])
@@ -393,7 +406,7 @@ class Operator:
         if mode: return mode
         for mode in ('direct','thinking'):
             if status.get('qualification',{}).get(mode,{}).get('passed'): return mode
-        raise ActionStopped('No complete passing protocol qualification. Inspect the saved controls before headroom or pilots.')
+        self.stop_before_action('envelope','No complete passing protocol qualification. Inspect the saved controls before headroom or pilots.')
 
     def thinking_screen(self, reason=None):
         from .policy import PROTOCOL_POLICY
@@ -405,7 +418,7 @@ class Operator:
             print('Direct mode passed. Thinking qualification is skipped; zero new attempts.')
             return dict(skipped=True)
         if not direct or direct.get('protocol_errors') or not isinstance(reason,str) or not reason.strip():
-            raise ActionStopped('Thinking requires a recorded direct competence limitation without protocol errors and your explicit justification.')
+            self.stop_before_action('screen','Thinking requires a recorded direct competence limitation without protocol errors and your explicit justification.')
         return self.run('screen',mode='thinking',reason=reason)
 
     def envelope(self, *, reload=False):
@@ -413,14 +426,14 @@ class Operator:
         return self.run('envelope',reload=reload)
 
     def review_pilot(self, number, *, useful_communication=None, usable=None, notes=''):
-        if type(number) is not int or number not in (1,2,3): raise ActionStopped('Pilot number must be 1, 2 or 3.')
+        if type(number) is not int or number not in (1,2,3): self.stop_before_action('review','Pilot number must be 1, 2 or 3.')
         if type(useful_communication) is not bool or type(usable) is not bool or not notes.strip():
-            raise ActionStopped('Inspect this pilot, then supply actual communication/usability findings (True or False) and review notes. Unreviewed is not approved.')
+            self.stop_before_action('review','Inspect this pilot, then supply actual communication/usability findings (True or False) and review notes. Unreviewed is not approved.')
         return self.run('review',scope=f'pilot-{number}',notes=notes,useful_communication=useful_communication,usable=usable)
 
     def run_batch(self):
         batch=self.status()['gates'].get('batch')
-        if not batch: raise ActionStopped('Run Prepare the next main batch first.')
+        if not batch: self.stop_before_action('main','Run Prepare the next main batch first.')
         if batch.get('complete'):
             print('The saved batch is complete; zero new calls. Inspect/acknowledge it before preparing another.')
             self.inspect(worlds=batch.get('worlds',[]))
@@ -429,7 +442,7 @@ class Operator:
 
     def review_batch(self, notes=''):
         batch=self.status()['gates'].get('batch')
-        if not batch or not batch.get('complete'): raise ActionStopped('Run or resume the saved batch before acknowledging it.')
+        if not batch or not batch.get('complete'): self.stop_before_action('review','Run or resume the saved batch before acknowledging it.')
         if batch['id']=='main-complete':
             print('All main scopes are recorded. Next: build the final report.')
             return batch

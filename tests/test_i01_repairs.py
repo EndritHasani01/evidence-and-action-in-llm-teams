@@ -32,6 +32,10 @@ class Repairs(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory(prefix='i01-repair-');self.run=Path(self.temp.name)/'run'
         self.manifest=initialize(self.run,ROOT,json.loads((ROOT/'configs/i01-course.json').read_text()))
+        from recovery.i01.store import Store
+        store=Store(self.run/'worker-0.sqlite',{'manifest':self.manifest})
+        store.put_meta('required_preparation_studies',[])  # Isolated scripted fixture.
+        store.close()
         self.session=None
     def tearDown(self):
         if self.session:self.session.close()

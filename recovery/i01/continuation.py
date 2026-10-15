@@ -13,14 +13,12 @@ import zipfile
 
 from .archive import digest, extract_selected, verify
 from .core import canonical, manifests
-from .policy import PROTOCOL_POLICY
-from .store import Store, connection, restore_tail, utc
+from .policy import PROTOCOL_POLICY, COURSE_2_STUDY, COURSE_3_STUDY, CAMPAIGN_STUDIES
+from .store import Store, connection, restore_tail, utc, SCHEMA, LEGACY_SCHEMA
 
 LEGACY_SOURCE_SHA256 = '1aa0866281d866941ae49bda5436a50e2001d66689c2d39026209bfc142002e2'
-COURSE_3_STUDY = 'de1b347e-2cb7-41e5-a8b9-2789abda2da3'
-COURSE_2_STUDY = 'c2973855-84fa-411d-9f6c-a08f8acc79d6'
 CHANGED_MODULES = {'recovery/i01/'+name+'.py' for name in
-                   ('workflow','store','report','ui','notebook','cli','policy','continuation')}
+                   ('workflow','store','report','ui','notebook','cli','setup','policy','continuation')}
 
 
 def metadata(run):
@@ -50,26 +48,33 @@ def validate_active_source(run, source, manifest):
             raise ValueError('Preserved active continuation source differs')
     if source_files(source) != wanted:
         raise ValueError('source differs; use the exact packet or explicit reviewed pre-main continuation; reporting remains read-only')
+    actual=Path(__file__).parents[2]
+    for relative,expected in wanted.items():
+        if relative.startswith('recovery/') and (not (actual/relative).is_file() or digest(actual/relative)!=expected):
+            raise ValueError('Imported implementation differs from the accepted source packet: '+relative)
 
 
 def choose_checkpoint(study_id, root='/kaggle/input'):
     """Select by the declared study ID, never by filename or latest timestamp."""
     root = Path(root)
-    candidates = []
+    candidates = {}
     for path in root.rglob('*.zip'):
         try:
             with zipfile.ZipFile(path) as archive:
                 if 'run.json' in archive.namelist() and json.loads(archive.read('run.json'))['study_id']==study_id:
-                    candidates.append(path)
+                    candidates.setdefault(hashlib.sha256(archive.read('integrity.json')).hexdigest(),path)
         except (OSError, ValueError, KeyError, zipfile.BadZipFile):
             continue
     for path in root.rglob('integrity.json'):
         manifest=path.parent/'run.json'
-        if manifest.is_file() and json.loads(manifest.read_text())['study_id']==study_id:
-            candidates.append(path.parent)
+        try:
+            if manifest.is_file() and json.loads(manifest.read_text())['study_id']==study_id:
+                candidates.setdefault(digest(path),path.parent)
+        except (OSError,ValueError,KeyError):
+            continue
     if len(candidates)!=1:
         raise ValueError(f'Set the exact checkpoint for study {study_id}; found {len(candidates)} candidates. Attach its downloaded ZIP or expanded root; no timestamp selection.')
-    return candidates[0]
+    return next(iter(candidates.values()))
 
 
 def _pre_main(result):
@@ -120,6 +125,7 @@ def record_prior_preparation(run, stores, checkpoints):
                 stages={stage:sum(a['stage']==stage for a in result['attempts']) for stage in ('hardware','direct','thinking')},
                 ready_seconds_observed=result['summary']['physical_ready_seconds_observed'],
                 generated_tokens_observed=result['summary']['generated_tokens_observed'],
+                attempts_unknown_ready_seconds=result['summary']['attempts_unknown_ready_seconds'],
                 inventory_sha256=digest(old/'integrity.json'), evidence_path=relative,
                 basis='Known repeated I-01 preparation charged to the shared reserve under the 15 October amendment; not a retry or historical-45 spending')
             components.append(component)
@@ -211,10 +217,14 @@ def continue_checkpoint(selected, target, source, *, prior_checkpoints=(), tail=
             manifest['worlds']!=manifests(manifest['config'])['worlds'] or before['summary']['gates'].get('envelope')):
             raise ValueError('Unchanged fixed inputs/configuration and no prior envelope are required')
         capture_source(source,staging/'source/continuation')
-        stores=[Store(staging/f'worker-{slot}.sqlite',{'manifest':manifest}) for slot in range(2)]
+        stores=[Store(staging/f'worker-{slot}.sqlite',{'manifest':manifest},allow_legacy=True) for slot in range(2)]
         try:
-            for slot,store in enumerate(stores):store.bind('logical_slot',slot)
+            for slot,store in enumerate(stores):
+                if store.meta('schema')!=LEGACY_SCHEMA:raise ValueError('Expected the reviewed original persistence format')
+                store.bind('logical_slot',slot)
+                store.put_meta('schema',SCHEMA)  # Old runtime must refuse this repaired continuation.
             stores[0].bind('qualification_policy',PROTOCOL_POLICY)
+            stores[0].bind('required_preparation_studies',list(CAMPAIGN_STUDIES))
             adjudication=_adjudicate_length_flag(stores)
             priors=record_prior_preparation(staging,stores,prior_checkpoints)
             # The known course-3 run cannot silently forget the audited course-2
@@ -222,6 +232,7 @@ def continue_checkpoint(selected, target, source, *, prior_checkpoints=(), tail=
             if manifest['study_id']==COURSE_3_STUDY and COURSE_2_STUDY not in {p['study_id'] for p in priors}:
                 raise ValueError('Course-3 continuation requires the supplied course-2 checkpoint for its 18 known prior executions')
             transition=dict(at=utc(),policy=PROTOCOL_POLICY,source_path='source/continuation',
+                from_schema=LEGACY_SCHEMA,to_schema=SCHEMA,
                 from_identity=old,to_identity=current,original_boundary=receipt['boundary'],
                 original_inventory_sha256=digest(staging/'integrity.json'),
                 basis='User authorized full repair of the reviewed course-3 direct-mode solution; data-informed pre-main protocol/pilot admission amendment')
