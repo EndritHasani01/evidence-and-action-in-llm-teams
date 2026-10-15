@@ -2,6 +2,20 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
+Latest course-6 evidence review is documentation only:
+[complete analysis](validation/i01-course-6-results-analysis.md) and
+[repair/improvement proposal](proposals/i01-course-6-fix-and-improvement-proposal.md).
+The supplied b92cdbf run completes 43 attempts: eight hardware, twelve direct
+qualification and 23 calls across two pilots. Pilot 1 passes the recovery-only
+amendment. Pilot 2 completes but fails the still-strict original-prefix rule on
+one legal-JSON/illegal message-plus-wait action; its other recovery error is
+diagnostic. Main remains 0/20 and pilot 3 is unknown. Source/wheel identities,
+exact report reconstruction, all 29 regenerated worlds and 19 team-call replays
+match. Both worker terminations and preserved clock-estimate provenance are now
+observed on Kaggle; provider release is unknown. The new proposal evaluates a
+broader post-qualification outcome policy and separate prompt clarifications;
+neither is adopted or implemented. Current specification/code remain unchanged.
+
 Latest course-5 repair: the user approves the proposed phase-sensitive admission
 and chooses a fresh complete Run All, with no previous-result/checkpoint import.
 Adoption is `56a8fc8`; [specification §12](../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime)
