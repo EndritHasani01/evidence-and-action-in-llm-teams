@@ -17,6 +17,17 @@ No actual model/native GPU stage is executed here. The completed continuation
 packet is preserved byte-for-byte at `dist/i01-course-0f600584dc10/`; the prior
 handoff below records that historical delivery, not the current default.
 
+Fresh source/operator commit `e17868e`; ZIP 681,217 bytes, SHA256
+`9b9c3be5fea9ac1449ad85e85aa3d73547bd95ca5840fe5ff69caefd78afe0a3`.
+The [fresh release review](../notebooks/validation/i01-development/fresh-release-review.json)
+passes 14/26 scopes, 78 source entries, installed wheel/CLI independent init,
+fresh report without Matplotlib, source/bootstrap checks and optional historical
+continuation compatibility. Sixteen focused checks pass (plus an overlapping
+notebook scope recheck); the final delivery audit preserves old evidence and
+confirms 232 document links. Both notebook outputs are empty. Actual Kaggle
+installation/inference/headroom and all new empirical stages remain unverified.
+The source-only upload and precise first execution are ready in the runbook.
+
 The user has now authorized full repair of the reviewed course-3 solution.
 Specification section 12 explicitly adopts direct-only protocol qualification,
 consistent pilot mathematical-outcome treatment and campaign reserve accounting.
