@@ -82,3 +82,37 @@ The [focused receipt](../../notebooks/validation/i01-development/run-all-checks.
 records these executed checks and their scripted-only boundary. Inference modules,
 runtime/model pins, math/views/prompts, input/seed/schedule/turn settings, exact
 scoring/uncertainty and thesis specification sections 1–11 remain unchanged.
+
+## Ready-to-upload delivery
+
+Adoption checkpoint `509ce6b`; complete implementation/source checkpoint
+`39ad71bf6b00aebade13c443ff3c693128945add`. Delivery directory:
+`dist/i01-course-run-all/`. Both notebook filenames contain identical bytes;
+upload either one. Its `kaggle-input/` contains only the matching `i01-source.zip`.
+The ZIP is 692,262 bytes, SHA256
+`a6f7c177de97876d4b58c9930aee624f0034e98bdaae46fa14fc3f2b1499e71b`.
+
+The [release review](../../notebooks/validation/i01-development/run-all-release-review.json)
+passes 33 ordinary scopes, exact ZIP/source/wheel inventory, installed isolated
+CLI init at 0/500, report export without Matplotlib/model dependencies, verified
+ZIP/expanded source bootstrap/rerun and optional backward continuation regression.
+The backward check uses preserved historical fixtures for CPU compatibility only;
+neither notebook imports or reuses them. The
+[delivery audit](../../notebooks/validation/i01-development/run-all-delivery-review.json)
+records artifact preservation, protected scientific settings and resolved links.
+Older preparation/continuation packets remain unchanged in their prior directories.
+Final receipt/handoff updates do not regenerate this source checkpoint's packet.
+
+First execution: use a fresh online T4×2 allocation, upload either notebook and
+attach its new source-only private dataset, reduce the 700-minute estimate if
+necessary, and press Run All. No pilot approval/freeze notes/batch acknowledgements
+are needed. Download the final archive and executed notebook and stop Kaggle.
+See the [exact runbook](../I01_KAGGLE.md#first-execution).
+
+Implemented and scripted/installed verified: complete workflow, objective gates,
+numbered replay, reports/export/restore and shutdown. Already Kaggle-observed in
+course-4: preceding preparation runtime, native tokenizer, direct protocol and
+headroom. Still unverified: the new whole-study Run All on the actual Kaggle
+frontend/runtime, pilot behavior, all twenty main outcomes, actual session
+completion time, provider quota/release, and externally successful downloads.
+No model inference, actual qualification, pilots or main experiments ran here.

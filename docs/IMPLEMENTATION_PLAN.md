@@ -21,6 +21,19 @@ Source-only delivery will be `dist/i01-course-run-all/kaggle-input/`. See
 [course-4 and Run All evidence](validation/i01-course-4-run-all.md) and the
 [current runbook](I01_KAGGLE.md). Earlier releases remain historical, unchanged.
 
+Whole-study adoption checkpoint `509ce6b`; implementation/source checkpoint
+`39ad71bf6b00aebade13c443ff3c693128945add`. Nineteen focused checks pass,
+including a scripted complete twenty-world run through actual stage interfaces,
+zero-call replay, strict pilot/resource failures and exact report/archive restore.
+The [installed release review](../notebooks/validation/i01-development/run-all-release-review.json)
+passes both identical 33-cell notebooks, source/wheel matching, bootstrap/source
+guards, fresh 0/500 CLI setup and CPU reporting. The source ZIP is 692,262 bytes,
+SHA256 `a6f7c177de97876d4b58c9930aee624f0034e98bdaae46fa14fc3f2b1499e71b`.
+No GPU inference ran here; current full Run All, collaboration/main outcomes and
+actual twelve-hour feasibility remain Kaggle-only. Human communication review
+is retrospective, not automatically approved. Final receipt-only updates do not
+regenerate the source checkpoint's packet.
+
 Latest steering: the user explicitly requests a fresh beginning with Run All and
 no course-3 continuation or imported old results. Specification §12 records the
 independent-study exception: zero initial attempts, own 500 ceiling and unchanged

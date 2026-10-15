@@ -1,0 +1,552 @@
+{
+  "passed": true,
+  "code_cells": 33,
+  "widget_panels": 0,
+  "independent_cell_scopes": {
+    "configuration": [],
+    "session-window": [
+      {
+        "method": "configure_session",
+        "args": [],
+        "kwargs": {
+          "remaining_minutes": 700,
+          "evidence": "User reports an approximately 12-hour session; 700-minute fresh-session planning bound, provider quota/deadline not independently verified."
+        }
+      }
+    ],
+    "setup": [
+      {
+        "method": "install_runtime",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "open-study": [
+      {
+        "method": "start_new",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "selfcheck": [
+      {
+        "method": "check_implementation",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "weights": [
+      {
+        "method": "download_weights",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "load": [
+      {
+        "method": "load_models",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "plan": [
+      {
+        "method": "plan_execution",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "readiness": [
+      {
+        "method": "check_readiness",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "direct-screen": [
+      {
+        "method": "qualify_direct",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "qualification": [
+      {
+        "method": "inspect_qualification",
+        "args": [],
+        "kwargs": {
+          "mode": "direct"
+        }
+      }
+    ],
+    "envelope": [
+      {
+        "method": "check_headroom",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "pilot-1": [
+      {
+        "method": "run_pilot",
+        "args": [
+          1
+        ],
+        "kwargs": {}
+      }
+    ],
+    "check-pilot-1": [
+      {
+        "method": "check_pilot",
+        "args": [
+          1
+        ],
+        "kwargs": {}
+      }
+    ],
+    "pilot-2": [
+      {
+        "method": "run_pilot",
+        "args": [
+          2
+        ],
+        "kwargs": {}
+      }
+    ],
+    "check-pilot-2": [
+      {
+        "method": "check_pilot",
+        "args": [
+          2
+        ],
+        "kwargs": {}
+      }
+    ],
+    "pilot-3": [
+      {
+        "method": "run_pilot",
+        "args": [
+          3
+        ],
+        "kwargs": {}
+      }
+    ],
+    "check-pilot-3": [
+      {
+        "method": "check_pilot",
+        "args": [
+          3
+        ],
+        "kwargs": {}
+      }
+    ],
+    "admit-main": [
+      {
+        "method": "admit_main",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "main-01": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          1
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-02": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          2
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-03": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          3
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-04": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          4
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-05": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          5
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-06": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          6
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-07": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          7
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-08": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          8
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-09": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          9
+        ],
+        "kwargs": {}
+      }
+    ],
+    "main-10": [
+      {
+        "method": "run_main_batch",
+        "args": [
+          10
+        ],
+        "kwargs": {}
+      }
+    ],
+    "report": [
+      {
+        "method": "build_report",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "archive": [
+      {
+        "method": "save_checkpoint",
+        "args": [],
+        "kwargs": {
+          "verify": true
+        }
+      }
+    ],
+    "close": [
+      {
+        "method": "finish_session",
+        "args": [],
+        "kwargs": {}
+      }
+    ]
+  },
+  "run_all_supported": true,
+  "run_all_scope": "whole-study",
+  "first_attempt_ceiling": 460,
+  "run_all_can_execute_inference": true,
+  "model_attempts": 0,
+  "source_head": "39ad71bf6b00aebade13c443ff3c693128945add",
+  "source_members": 81,
+  "research_notebook": {
+    "code_cells": 33,
+    "widget_panels": 0,
+    "independent_cell_scopes": {
+      "configuration": [],
+      "session-window": [
+        {
+          "method": "configure_session",
+          "args": [],
+          "kwargs": {
+            "remaining_minutes": 700,
+            "evidence": "User reports an approximately 12-hour session; 700-minute fresh-session planning bound, provider quota/deadline not independently verified."
+          }
+        }
+      ],
+      "setup": [
+        {
+          "method": "install_runtime",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "open-study": [
+        {
+          "method": "start_new",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "selfcheck": [
+        {
+          "method": "check_implementation",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "weights": [
+        {
+          "method": "download_weights",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "load": [
+        {
+          "method": "load_models",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "plan": [
+        {
+          "method": "plan_execution",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "readiness": [
+        {
+          "method": "check_readiness",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "direct-screen": [
+        {
+          "method": "qualify_direct",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "qualification": [
+        {
+          "method": "inspect_qualification",
+          "args": [],
+          "kwargs": {
+            "mode": "direct"
+          }
+        }
+      ],
+      "envelope": [
+        {
+          "method": "check_headroom",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "pilot-1": [
+        {
+          "method": "run_pilot",
+          "args": [
+            1
+          ],
+          "kwargs": {}
+        }
+      ],
+      "check-pilot-1": [
+        {
+          "method": "check_pilot",
+          "args": [
+            1
+          ],
+          "kwargs": {}
+        }
+      ],
+      "pilot-2": [
+        {
+          "method": "run_pilot",
+          "args": [
+            2
+          ],
+          "kwargs": {}
+        }
+      ],
+      "check-pilot-2": [
+        {
+          "method": "check_pilot",
+          "args": [
+            2
+          ],
+          "kwargs": {}
+        }
+      ],
+      "pilot-3": [
+        {
+          "method": "run_pilot",
+          "args": [
+            3
+          ],
+          "kwargs": {}
+        }
+      ],
+      "check-pilot-3": [
+        {
+          "method": "check_pilot",
+          "args": [
+            3
+          ],
+          "kwargs": {}
+        }
+      ],
+      "admit-main": [
+        {
+          "method": "admit_main",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "main-01": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            1
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-02": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            2
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-03": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            3
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-04": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            4
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-05": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            5
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-06": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            6
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-07": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            7
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-08": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            8
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-09": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            9
+          ],
+          "kwargs": {}
+        }
+      ],
+      "main-10": [
+        {
+          "method": "run_main_batch",
+          "args": [
+            10
+          ],
+          "kwargs": {}
+        }
+      ],
+      "report": [
+        {
+          "method": "build_report",
+          "args": [],
+          "kwargs": {}
+        }
+      ],
+      "archive": [
+        {
+          "method": "save_checkpoint",
+          "args": [],
+          "kwargs": {
+            "verify": true
+          }
+        }
+      ],
+      "close": [
+        {
+          "method": "finish_session",
+          "args": [],
+          "kwargs": {}
+        }
+      ]
+    },
+    "run_all_supported": true,
+    "run_all_scope": "whole-study",
+    "first_attempt_ceiling": 460,
+    "run_all_can_execute_inference": true,
+    "model_attempts": 0
+  },
+  "installed_fresh_independent_initialization": true,
+  "source_zip_bytes": 692262,
+  "source_zip_sha256": "a6f7c177de97876d4b58c9930aee624f0034e98bdaae46fa14fc3f2b1499e71b",
+  "installed_wheel_source_matches": true,
+  "installed_outside_checkout_cli": true,
+  "installed_venv_isolated_entry": true,
+  "installed_actual_course3_continuation": true,
+  "installed_cpu_only_report_without_matplotlib": true,
+  "zip_expanded_source_bootstrap_and_rerun": true,
+  "complete_source_preserved_in_checkpoints": true,
+  "notebook_execution_outputs_empty": true,
+  "kaggle_host_verified": false,
+  "qualification_pilot_main_executed": false
+}

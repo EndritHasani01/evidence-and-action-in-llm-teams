@@ -708,7 +708,7 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | M2-T01–T04 | Implemented; fresh-run/accounting checks pass | Explicit independent study starts empty; idempotent new/reopen/restore retains its own 500/28 accounting; older campaign continuation and gap/slot safeguards preserved |
 | M3-T01–T04 | Original T4 inference evidence retained; runtime fixes implemented | Normal output failures consume turns; real defects stop; load-pair probes bind before dispatch; actual repaired full-envelope acceptance remains pending |
 | M4-T01–T04 | Implemented; saved-fixture and transactional-read checks pass | Both partial mode summaries, control error/call references, prior-spending CSV, qualification figures and unknown logical-cost semantics |
-| M5-T01–T04 | Whole-study Run All implemented; focused review in progress | 33 ordinary scopes, both filenames identical; source-only attachment; automatic pilot/main resource gates and all ten main batches |
+| M5-T01–T04 | Whole-study Run All delivered; installed release review passed | 33 ordinary scopes, both filenames identical; source-only attachment; objective pilot/main resource gates and all ten main batches; 19 focused checks including scripted full coverage |
 | M6-T01–T04 | Saved direct scalar protocol eligible under adopted amendment; later gates unexecuted | Preserve 10/12 mathematical diagnostic and old failed gate; thinking 4 correct/1 invalid/7 unknown; current full envelopes, pilots and freeze remain pending |
 | M7-T01–T03 | Paths delivered; no empirical main execution | Twenty main pairs unknown; final notebook report/archive/close cells unexecuted; supplied error-boundary archive verifies |
 
