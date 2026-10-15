@@ -16,6 +16,65 @@ from .core import canonical
 SCHEMA = "i01-episodes-v1"
 
 
+def logical_slot(path):
+    name = Path(path).name
+    return int(name[7]) if name in ('worker-0.sqlite', 'worker-1.sqlite') else None
+
+
+def validate_call_slots(manifest, calls):
+    """Legacy stores lack a slot tag; scheduled calls still cannot move slots."""
+    worlds = {w['id']: w['device'] for w in manifest['worlds']}
+    seen = set()
+    for row in calls:
+        if row['id'] in seen:
+            raise ValueError('Duplicate logical call across canonical worker databases: '+row['id'])
+        seen.add(row['id'])
+        expected = worlds.get(row['id'].split('/')[0])
+        import re
+        match = re.match(r'hardware/(?:state-([01])-|envelope-(?:direct|thinking)-([01])(?:/|$))', row['id'])
+        if match:
+            expected = int(next(v for v in match.groups() if v is not None))
+        if expected is not None and expected != row['slot']:
+            raise ValueError('Misplaced logical worker call: '+row['id'])
+
+
+def usage(attempts, metadata, *, limit=500):
+    """One arithmetic definition for admission, saved inspection and reports."""
+    prior = metadata.get('prior_spending', [])
+    identities = [p['study_id'] for p in prior]
+    if len(identities) != len(set(identities)):
+        raise ValueError('Duplicate prior-study spending charge')
+    for p in prior:
+        if (type(p.get('attempts')) is not int or p['attempts']<0 or
+            type(p.get('contingency_charge')) is not int or p['contingency_charge']!=p['attempts']):
+            raise ValueError('Prior preparation charge must preserve every known physical attempt')
+    gap = metadata.get('lost_spending', {'upper': 0, 'resolved': True})
+    extra = gap.get('upper') if gap.get('resolved') else None
+    if extra is not None and (type(extra) is not int or extra<0):
+        raise ValueError('Invalid lost-spending bound')
+    previous = sum(p['attempts'] for p in prior)
+    contingency = sum(r['contingency'] for r in attempts)
+    return dict(attempts=len(attempts), prior_attempts=previous, campaign_attempts=len(attempts)+previous,
+                in_flight=sum(r['status']=='admitted' for r in attempts),
+                local_contingency=contingency,
+                contingency=contingency+sum(p['contingency_charge'] for p in prior)+(extra or 0),
+                prior_spending_pending=metadata.get('prior_spending_pending'),
+                lost_spending=gap, remaining=None if extra is None or metadata.get('prior_spending_pending') else limit-len(attempts)-previous-extra)
+
+
+def restore_tail(store, tail, evidence, *, boundary):
+    """A zero *new* tail never cancels a gap already saved in the checkpoint."""
+    if tail not in ('latest', 'unknown') or not isinstance(evidence, str) or not evidence.strip():
+        raise ValueError('Select latest/unknown tail and supply actual boundary evidence')
+    previous = store.meta('lost_spending', {'upper':0, 'resolved':True})
+    receipt = dict(boundary=boundary, tail=tail, evidence=evidence, prior_gap=previous, at=utc())
+    if tail=='unknown':
+        store.put_meta('lost_spending', dict(upper=None, resolved=False,
+            evidence=evidence, prior_gap=previous, additional_tail='unknown'))
+    store.put_meta('restore_tail', receipt)
+    return dict(receipt, lost_spending=store.meta('lost_spending', previous))
+
+
 def utc():
     return datetime.now(timezone.utc).isoformat()
 
@@ -53,6 +112,10 @@ class Store:
             metadata={r['key']:json.loads(r['value']) for r in db.execute("SELECT * FROM meta WHERE key IN ('schema','binding')")}
             if metadata.get('schema')!=SCHEMA or metadata.get('binding')!=binding:
                 raise ValueError("source/config/input/schema mismatch; read-only inspection only")
+            slot = db.execute("SELECT value FROM meta WHERE key='logical_slot'").fetchone()
+            expected = logical_slot(path)
+            if slot and expected is not None and json.loads(slot[0]) != expected:
+                raise ValueError('Canonical logical worker slot differs: '+str(path))
 
     def __init__(self, path, binding, *, readonly=False, create=False):
         self.path, self.readonly = Path(path), readonly
@@ -77,6 +140,8 @@ class Store:
             self.db.commit()
             self.bind("schema", SCHEMA)
             self.bind("binding", binding)
+            if logical_slot(path) is not None:
+                self.bind('logical_slot', logical_slot(path))
         if self.meta("schema") != SCHEMA or self.meta("binding") != binding:
             raise ValueError("source/config/input/schema mismatch; read-only inspection only")
 
@@ -170,17 +235,16 @@ class Admission:
 
     def usage(self):
         attempts = [r for store in self.stores for r in store.rows("attempts")]
-        gap = self.stores[0].meta("lost_spending", {"upper": 0, "resolved": True})
-        extra = gap.get("upper") if gap.get("resolved") else None
-        return dict(attempts=len(attempts), in_flight=sum(r["status"] == "admitted" for r in attempts),
-                    contingency=sum(r["contingency"] for r in attempts) + (extra or 0),
-                    lost_spending=gap, remaining=None if extra is None else self.limit - len(attempts) - extra)
+        metadata = {r['key']:json.loads(r['value']) for r in self.stores[0].rows('meta')}
+        return usage(attempts, metadata, limit=self.limit)
 
     def admit(self, store, call_id, stage, *, contingency=False):
         with self.lock:
             usage = self.usage()
             if usage["remaining"] is None or usage["remaining"] <= 0:
                 raise ValueError("whole-study allowance exhausted or lost spending unresolved")
+            if usage['contingency'] > self.contingency:
+                raise ValueError('Prior preparation/lost spending exceeds the shared contingency reserve')
             rows = [r for r in store.rows("attempts") if r["call_id"] == call_id]
             if store.call(call_id)["outcome"] is not None:
                 raise ValueError("completed call cannot regenerate")

@@ -62,13 +62,16 @@ class NotebookUI(unittest.TestCase):
         with self.assertRaises(ValueError): self.ui.thinking_screen('Do not bypass a protocol defect')
 
     def test_selected_mode_and_reload_use_saved_state(self):
+        self.client.reply=dict(result=None,error='No complete passing protocol qualification',checkpoint={'integrity':'passed'})
         with self.assertRaises(ValueError): self.ui.envelope()
+        self.assertEqual([c for c in self.client.calls if c[0]=='envelope'],[('envelope',dict(reload=False))])
+        self.client.reply=dict(result={},error=None,checkpoint={'integrity':'passed'})
         self.client.gates={'screen/direct':dict(passed=True)}
         self.ui.envelope()
-        self.assertEqual(self.client.calls[-1],('envelope',dict(mode='direct',reload=False)))
+        self.assertEqual(self.client.calls[-1],('envelope',dict(reload=False)))
         self.client.gates={'freeze':dict(mode='thinking'),'screen/direct':dict(passed=True)}
         self.ui.envelope(reload=True)
-        self.assertEqual(self.client.calls[-1],('envelope',dict(mode='thinking',reload=True)))
+        self.assertEqual(self.client.calls[-1],('envelope',dict(reload=True)))
 
     def test_pilot_review_has_no_assumed_human_findings(self):
         with self.assertRaises(ValueError): self.ui.review_pilot(1)

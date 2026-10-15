@@ -68,7 +68,7 @@ class Repairs(unittest.TestCase):
             with self.assertRaises(ValueError):initialize(path,ROOT,self.manifest['config'])
         self.assertFalse(path.exists())
     def test_each_replaced_load_pair_gets_two_probes_and_exact_rerun_zero(self):
-        s,w=self.open();s.meta.put_meta('screen/direct',dict(passed=True));s.envelope('direct')
+        s,w=self.open();s.screen_result=lambda mode:dict(passed=True);s.envelope('direct')
         for n in (1,2):
             s.stores[1].put_meta('resident_load',f'{s.session_id}/replacement-{n}')
             s.meta.put_meta('reload_required',True);before=sum(x.calls for x in w)

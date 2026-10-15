@@ -16,6 +16,7 @@ from .archive import atomic_json, digest, export, extract_selected, inventory
 from .core import (apply_outcome, canonical, initial_episode, manifests, messages,
                    next_agent, permitted_view, seed_for, validate_action)
 from .store import Admission, Store, utc
+from .policy import PROTOCOL_POLICY
 
 
 def source_files(root):
@@ -47,26 +48,41 @@ def _initialize(run, source, config):
         raise ValueError("configuration differs from adopted release")
     if (run/"run.json").exists():
         old = json.loads((run/"run.json").read_text())
-        if old["config"] != config or old["source_identity"] != source_files(source):
+        from .continuation import validate_active_source
+        if old["config"] != config:
             raise ValueError("existing study differs; do not overwrite")
+        validate_active_source(run, source, old)
         return old
     if run.exists() and any(run.iterdir()):
         raise ValueError("fresh run directory required")
     run.mkdir(parents=True, exist_ok=True)
     manifest = dict(manifests(config), study_id=str(uuid.uuid4()), created_at=utc(),
                     source_identity=source_files(source))
-    for relative in manifest["source_identity"]:
-        target = run/"source"/relative
+    capture_source(source, run/'source')
+    atomic_json(run/"run.json", manifest)
+    binding = {"manifest":manifest}
+    for slot in range(2):
+        store = Store(run/f"worker-{slot}.sqlite",binding,create=True)
+        if slot==0: store.bind('qualification_policy', PROTOCOL_POLICY)
+        store.close()
+    return manifest
+
+
+def capture_source(source, destination):
+    source, destination = Path(source), Path(destination)
+    for relative in source_files(source):
+        target = destination/relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source/relative, target)
     for relative in ("docs/I01_KAGGLE.md", "PROJECT_SPECIFICATION.md", "scripts/i01_course.py",
                      "scripts/build_i01_course_notebook.py", "notebooks/i01_course_kaggle.ipynb"):
         if (source/relative).exists():
-            target = run/"source"/relative
+            target = destination/relative
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source/relative,target)
     for p in list(source.glob("*.whl"))+list(source.glob("source-release.json")):
-        shutil.copy2(p,run/"source"/p.name)
+        destination.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(p,destination/p.name)
     release_path=source/"source-release.json"
     if release_path.exists():
         release=json.loads(release_path.read_text())
@@ -77,13 +93,8 @@ def _initialize(run, source, config):
             original=source/rel
             if original.stat().st_size!=wanted["bytes"] or digest(original)!=wanted["sha256"]:
                 raise ValueError("exact source-release member differs: "+relative)
-            target=run/"source"/rel; target.parent.mkdir(parents=True,exist_ok=True)
+            target=destination/rel; target.parent.mkdir(parents=True,exist_ok=True)
             shutil.copy2(original,target)
-    atomic_json(run/"run.json", manifest)
-    binding = {"manifest":manifest}
-    for slot in range(2):
-        Store(run/f"worker-{slot}.sqlite",binding,create=True).close()
-    return manifest
 
 
 class Ownership:
@@ -110,11 +121,15 @@ class Session:
     def __init__(self, run, source=None, *, providers=None, prepare_request=None, progress=None):
         self.run = Path(run)
         self.manifest = json.loads((self.run/"run.json").read_text())
-        if source is not None and self.manifest["source_identity"] != source_files(source):
-            raise ValueError("source differs; reporting remains available read-only")
-        self.config = self.manifest["config"]
         binding={'manifest':self.manifest}
         for slot in range(2): Store.validate(self.run/f'worker-{slot}.sqlite',binding)
+        from .continuation import validate_active_source, active_source
+        if source is not None:
+            validate_active_source(self.run, source, self.manifest)
+        self.source = Path(source) if source is not None else active_source(self.run)
+        self.config = self.manifest["config"]
+        from .report import read_run
+        read_run(self.run)  # Slot/call identity and transactional table consistency.
         self.ownership = Ownership(self.run/"controller.lock")
         self.stores=[]
         try:
@@ -149,13 +164,14 @@ class Session:
         if not self.meta.meta(key):
             raise ValueError("prerequisite missing: " + key)
 
-    def window(self, deadline, evidence):
+    def window(self, deadline, evidence, observed_minutes=None):
         value = datetime.fromisoformat(deadline)
         if value.tzinfo is None or value <= datetime.now(timezone.utc) or not evidence.strip():
             raise ValueError("actual future session deadline and operator allowance evidence required")
         previous=self.meta.meta("window",{})
         observed_start=previous.get("observed_start") if previous.get("session")==self.session_id else utc()
-        self.meta.put_meta("window", dict(deadline=deadline, evidence=evidence, observed_start=observed_start, session=self.session_id))
+        observation = previous.get('observation') if previous.get('session')==self.session_id and previous.get('deadline')==deadline else dict(at=utc(),remaining_minutes=observed_minutes)
+        self.meta.put_meta("window", dict(deadline=deadline, evidence=evidence, observed_start=observed_start, session=self.session_id, observation=observation))
         return self.meta.meta("window")
 
     def remaining_time(self):
@@ -166,8 +182,9 @@ class Session:
 
     def status(self):
         from .report import analysis
-        s = analysis(self.run)["summary"]
+        result=analysis(self.run);s=result['summary']
         return dict(s, study_id=self.manifest['study_id'],run_dir=str(self.run),usage=self.admission.usage(), session=self.session_id, remaining_session_seconds=self.remaining_time(),
+                    qualification=result['qualification'],
                     models=[dict(resident=w is not None and getattr(w,"process",None) is not None and w.process.is_alive() and not getattr(w,'unconfirmed',False),
                                  termination_unconfirmed=getattr(w,'unconfirmed',False),
                                  load_report=getattr(w,"load_report",None)) for w in self.workers],
@@ -185,7 +202,7 @@ class Session:
     def load(self, snapshot, host):
         self.require("selfcheck")
         from .setup import runtime_inventory
-        runtime_inventory(self.run/"source")
+        runtime_inventory(self.source)
         if any(r["status"]=="admitted" for s in self.stores for r in s.rows("attempts")):
             raise ValueError("reconcile prior admitted attempts and confirm old process exit before loading replacements")
         for s in self.stores:
@@ -201,7 +218,6 @@ class Session:
             raise ValueError("two distinct actual T4s required")
         self.tokenizer = AutoTokenizer.from_pretrained(snapshot, local_files_only=True, trust_remote_code=False)
         reports = []
-        replacing = self.meta.meta("loaded_session") is not None and any(w is None or getattr(w,"process",None) is None for w in self.workers)
         try:
             for slot in range(2):
                 if self.remaining_time()<self.config["load_timeout_seconds"]+2*self.config["termination_seconds"]+self.config["export_reserve_seconds"]:
@@ -234,7 +250,7 @@ class Session:
             self.close_models()
             raise
         self.meta.put_meta("loaded_session", self.session_id)
-        if replacing and self.meta.meta("envelope"):
+        if self.meta.meta('envelope') and self.meta.meta('envelope').get('loads') != [s.meta('resident_load') for s in self.stores]:
             self.meta.put_meta("reload_required",True)
         return reports
 
@@ -293,7 +309,9 @@ class Session:
             if outcome.get("termination_pending"):
                 evidence = worker.close()
                 store.put_meta("timeout_termination/"+identity,evidence)
-            if outcome.get("failure") == "provider_defect" or outcome.get("framing_error"):
+            # Native output/framing mistakes consume a turn; backend/cache faults
+            # remain global stops. Never repair the generated final action.
+            if outcome.get("failure") == "provider_defect":
                 self.meta.put_meta("model_defect", dict(call=identity,outcome=outcome))
             self.emit("raw_persisted",call=identity,outcome=outcome)
             returned = True
@@ -393,26 +411,48 @@ class Session:
             raise ValueError("passing readiness required")
         if self.meta.meta('readiness',{}).get('needs_review') and not self.meta.meta('review/readiness'):
             raise ValueError('A/B/A differs: inspect saved cache/token evidence and record_state_review(notes) before qualification')
+        if self.meta.meta('qualification_policy') == PROTOCOL_POLICY and mode=='thinking':
+            return dict(skipped=True, reason='The adopted primary condition is direct only; saved thinking remains diagnostic evidence.')
         if mode == "thinking":
             direct = self.meta.meta("screen/direct")
             if not direct or direct["passed"] or direct["protocol_errors"] or not reason.strip():
                 raise ValueError("thinking needs documented direct competence failure without protocol defects")
+        existing = self.screen_result(mode)
+        if existing['committed']==12:
+            return existing
         rows = [self.control(w,p,mode,mode) for w in self.manifest["worlds"] if w["group"]=="qualification" for p in ("original","revised")]
         receipt = dict(correct=sum(r["correct"] for r in rows),total=12,protocol_errors=sum(bool(r["error"]) for r in rows),reason=reason)
-        receipt["passed"] = receipt["correct"]>=11 and receipt["protocol_errors"]==0
-        self.meta.put_meta("screen/"+mode,receipt)
-        return receipt
+        receipt['policy'] = self.meta.meta('qualification_policy', 'i01-competence-11-of-12')
+        receipt["passed"] = receipt['protocol_errors']==0 and (mode=='direct' if receipt['policy']==PROTOCOL_POLICY else receipt['correct']>=11)
+        if self.meta.meta('screen/'+mode) is None:
+            self.meta.put_meta("screen/"+mode,receipt)
+        return self.screen_result(mode)
 
-    def envelope(self, mode, *, reload=False):
-        if not self.meta.meta("screen/"+mode,{}).get("passed"):
-            raise ValueError("passing selected competence screen required")
+    def screen_result(self, mode):
+        from .report import analysis
+        return analysis(self.run)['qualification'][mode]
+
+    def envelope(self, mode=None, *, reload=False):
+        mode = mode or ('direct' if self.meta.meta('qualification_policy')==PROTOCOL_POLICY else self.meta.meta('selected_mode', 'direct'))
+        if not self.screen_result(mode)['passed']:
+            raise ValueError("passing complete selected-mode protocol qualification required")
         frozen = self.meta.meta("freeze")
         if frozen and frozen["mode"] != mode:
             raise ValueError("selected frozen mode cannot change")
         prior=self.meta.meta("envelope",{})
-        if prior and (prior.get("session")!=self.session_id or self.meta.meta("reload_required")) and not reload:
-            raise ValueError("new/reloaded session requires explicit two contingency-charged reload probes")
         loads=self.load_references()
+        if prior and (prior.get("session")!=self.session_id or prior.get('loads')!=loads or self.meta.meta("reload_required")) and not reload:
+            raise ValueError("new/reloaded session requires explicit two contingency-charged reload probes")
+        # If this pair has already passed, both ordinary/reload reruns reuse it.
+        if prior.get('passed') and prior.get('session')==self.session_id and prior.get('loads')==loads:
+            return prior
+        if reload and not prior:
+            raise ValueError('No earlier envelope exists; use the two initial ordinary probes (reload=False)')
+        if prior and prior.get('session')==self.session_id and prior.get('loads')==loads:
+            reload=prior.get('reload',False)  # Resume the same scope/charges after a partial probe pair.
+        # Bind the pair BEFORE dispatch too: a crash between the two probes must
+        # not make the first raw outcome reusable for different loaded workers.
+        self.meta.put_meta('envelope',dict(passed=False,mode=mode,session=self.session_id,loads=loads,reload=reload,results=[]))
         results = []
         for slot in range(2):
             identity = f"hardware/envelope-{mode}-{slot}" + ("/reload-"+'+'.join(loads) if reload else "")
@@ -440,7 +480,10 @@ class Session:
             raise ValueError("selected envelope required in current session; restored sessions need two budgeted reload probes")
         if receipt.get('loads')!=self.load_references():
             raise ValueError('Current replica loads require fresh contingency-charged envelope probes')
-        return self.meta.meta("selected_mode")
+        mode=self.meta.meta("selected_mode")
+        if not self.screen_result(mode)['passed'] or self.meta.meta('model_defect'):
+            raise ValueError('Current qualification or runtime integrity is not accepted')
+        return mode
 
     def load_references(self):
         if any(w is None or hasattr(w,'process') and (w.process is None or not w.process.is_alive() or w.unconfirmed) for w in self.workers):
@@ -518,11 +561,12 @@ class Session:
         for number in (1,2,3):
             r = next(w for w in result["worlds"] if w["id"]==f"pilot-{number-1:02d}")
             review = self.meta.meta("review/pilot-"+str(number),{})
-            if (r["prefix"]!=1 or r.get("control_original_"+mode)!=1 or r.get("control_revised_"+mode)!=1 or
+            protocol_policy = self.meta.meta('qualification_policy')==PROTOCOL_POLICY
+            if (any(r.get(key) is None if protocol_policy else r.get(key)!=1 for key in ('prefix','control_original_'+mode,'control_revised_'+mode)) or
                 not review.get("useful_communication") or not review.get("usable")):
-                raise ValueError("three original teams/controls and documented communication/usability reviews required")
+                raise ValueError("three complete original teams/controls and documented communication/usability reviews required")
         pilot_calls = [t for t in result["traces"] if t["episode"].startswith("pilot-")]
-        if any(json.loads(t["outcome"]).get("truncated") or json.loads(t["outcome"]).get("failure") for t in pilot_calls if t["outcome"]):
+        if any(any(json.loads(t["outcome"]).get(k) for k in ('truncated','failure','framing_error')) for t in pilot_calls if t["outcome"]):
             raise ValueError("pilot truncation/provider defects not accepted")
         if any(ev.get("error") for s in self.stores for ep in s.rows("episodes") if ep["id"].startswith("pilot-") for ev in json.loads(ep["state"]).get("events",[])):
             raise ValueError("pilot malformed actions not accepted")
@@ -536,6 +580,8 @@ class Session:
         if old:
             return old
         value = dict(mode=mode,at=utc(),notes=notes,forecast=forecast,manifest=self.manifest,
+                     qualification_policy=self.meta.meta('qualification_policy'),prior_spending=self.meta.meta('prior_spending',[]),
+                     implementation_transition=self.meta.meta('implementation_transition'),
                      settings=self.request(dict(complete_input=[0]),0,mode,control=True)["settings"],
                      rubric=self.config["rubric"],prompt_system=messages(permitted_view(self.manifest["worlds"][0],initial_episode(self.manifest["worlds"][0],"prefix"),0))[0],
                      sessions=[s.rows("sessions") for s in self.stores])

@@ -71,7 +71,7 @@ class Operator:
         # Scientific state remains in SQLite; this is only a live view.
         kind=event.get("kind")
         if kind=="admitted":
-            line=f"{event['call']} · GPU slot {event['slot']} · attempt {event['attempt']} · {event['usage']['attempts']}/500"
+            line=f"{event['call']} · GPU slot {event['slot']} · attempt {event['attempt']} · campaign {event['usage']['campaign_attempts']}/500 ({event['usage']['attempts']} here)"
         elif kind=="effect_committed":
             line=f"{event['world']} / {event['phase']} / agent {event['agent']}: {event['action'] or event['error']} · {event['terminal'] or 'continuing'}"
         elif kind=="checkpoint":
@@ -121,29 +121,49 @@ class Operator:
     def _env(self):
         return child_environment(self.scratch/'hf-cache')
 
-    def initialize(self, mode="new", selected=None, tail=None, evidence=""):
+    def initialize(self, mode="new", selected=None, tail=None, evidence="", prior_checkpoints=None):
         if self.environment is None:
             raise ValueError("Online setup prerequisite missing")
-        if mode not in ("new","restore","reopen"):
-            raise ValueError("choose new, restore or reopen explicitly")
+        if mode not in ("new","restore","reopen","continue"):
+            raise ValueError("choose new, restore, reopen or the explicit reviewed continue mode")
+        if self.client is not None and self.client.process.poll() is None:
+            if mode=='restore': raise ActionStopped('A controller is already attached; restore only into a fresh destination')
+            from .continuation import validate_active_source
+            validate_active_source(self.run_dir,self.source,json.loads((self.run_dir/'run.json').read_text()))
+            return self.client.command('status')
+        restored=None
+        if mode=='continue':
+            from .continuation import continue_checkpoint, choose_checkpoint, COURSE_2_STUDY, COURSE_3_STUDY
+            if (self.run_dir/'run.json').exists():
+                from .continuation import validate_active_source
+                validate_active_source(self.run_dir,self.source,json.loads((self.run_dir/'run.json').read_text()))
+            else:
+                selected=selected or choose_checkpoint(COURSE_3_STUDY)
+                prior_checkpoints=prior_checkpoints if prior_checkpoints is not None else [choose_checkpoint(COURSE_2_STUDY)]
+                continue_checkpoint(selected,self.run_dir,self.source,prior_checkpoints=prior_checkpoints,
+                                    tail=tail,evidence=evidence)
         if mode=="restore":
             if not selected or tail not in ("latest","unknown") or not evidence.strip():
                 raise ValueError("select exact bundle and document latest-snapshot or unknown-tail evidence")
-            extract_selected(selected,self.run_dir)
+            restored=extract_selected(selected,self.run_dir)
         elif mode=="new":
             from .workflow import initialize
             config=json.loads((self.source/"configs/i01-course.json").read_text())
             initialize(self.run_dir,self.source,config)
+            if prior_checkpoints:
+                from .continuation import record_prior_preparation
+                from .workflow import Session
+                s=Session(self.run_dir,self.source)
+                try:record_prior_preparation(self.run_dir,s.stores,prior_checkpoints)
+                finally:s.close()
         elif not (self.run_dir/"run.json").exists():
             raise ValueError("reopen requires files intact; no implicit new study")
-        if self.client is not None and self.client.process.poll() is None:
-            return self.client.command("status")
         self.client=Client(self.environment["interpreter"],self.source,self.run_dir,self.scratch/"hf-cache",self.emit)
         self.receipt_session=self.client.command("status")["session"]
         if self.setup_dir.exists():
             shutil.copytree(self.setup_dir,self.run_dir/"receipts/setup"/self.receipt_session,dirs_exist_ok=True)
         if mode=="restore":
-            self.client.command("lost_spending",gap=dict(resolved=tail=="latest",upper=0 if tail=="latest" else None,evidence=evidence))
+            self.client.command('restore_tail',tail=tail,evidence=evidence,boundary=restored['created_at'])
         # Deadlines belong to this controller session; never reuse an old one.
         if self.deadline and self.allowance_evidence:
             receipt=self.client.action("window",deadline=self.deadline,evidence=self.allowance_evidence)
@@ -176,7 +196,7 @@ class Operator:
             raise ActionStopped('Session deadline must be an actual future time with a UTC offset.')
         self.deadline,self.allowance_evidence=deadline,evidence
         if self.client:
-            return self.client.action("window",deadline=deadline,evidence=evidence)
+            return self.client.action("window",deadline=deadline,evidence=evidence,observed_minutes=remaining_minutes)
         return dict(deadline=deadline,evidence=evidence,apply_after_initialization=True)
 
     def external_checkpoint(self,boundary):
@@ -302,12 +322,15 @@ class Operator:
             if rows: _table(['Measurement','Recorded value'],rows)
             if 'known_pairs' in payload:
                 _table(['Main coverage','Value'],[('Known paired outcomes',f"{payload['known_pairs']} / 20"),
-                    ('New physical attempts',f"{payload['attempts']} / 500"),('Clear minus retain',payload['clear_minus_retain']),
+                    ('Campaign physical attempts',f"{payload.get('campaign_attempts',payload['attempts'])} / 500 ({payload['attempts']} here)"),('Clear minus retain',payload['clear_minus_retain']),
                     ('Unknown-outcome bounds',payload['missingness_bounds'])])
             if 'models' in payload:
                 _table(['Logical slot','Resident','Load receipt'],[(i,m['resident'],'Recorded' if m.get('load_report') else 'Not recorded') for i,m in enumerate(payload['models'])])
             if action=='screen' and 'correct' in payload:
-                print(f"Competence: {payload['correct']}/12 correct; {payload['protocol_errors']} protocol errors. Required: at least 11/12 and zero protocol errors.")
+                print(f"Protocol qualification: {payload.get('committed',0)}/12 committed; {payload['protocol_errors']} invalid actions; current eligible: {payload.get('passed')}. Mathematical diagnostic: {payload['correct']}/12.")
+                historical=payload.get('historical_gate')
+                if historical: print('Original saved gate decision (unchanged): '+str(historical.get('passed'))+'; rule '+str(historical.get('policy','original 11/12 competence')))
+                _table(['Failed call','Truth','Submission','Error'],[(r['call'],r['truth'],r['submission'],r['error'] or 'wrong scalar') for r in payload.get('controls',[]) if r['correct']==0])
             if action=='readiness' and payload.get('results'):
                 _table(['Slot','Probe','Raw visible reply','Finite score steps','Fresh cache'],[(r['slot'],r['label'],r['outcome'].get('visible_text'),r['outcome'].get('backend',{}).get('finite_score_steps'),r['outcome'].get('backend',{}).get('cache',{}).get('initial_empty')) for r in payload['results']])
                 print('A/B/A equal by slot: '+str(payload.get('ABA_equal'))+'; '+str(payload.get('equality_policy','')))
@@ -324,14 +347,15 @@ class Operator:
                 _table(['Slot','Generated tokens','Observed free headroom (GiB)','Failure'],[(i,o.get('generated_tokens'),round(o['backend']['observed_peak_free_lower_bytes']/2**30,3) if o.get('backend',{}).get('observed_peak_free_lower_bytes') is not None else None,o.get('failure') or 'None recorded') for i,o in enumerate(payload['results'])])
             # Full replies/tokens live in the trace files; avoid embedding them in
             # every hidden receipt DOM as well as the dedicated audit display.
-            compact={k:v for k,v in payload.items() if k not in ('results','manifest','sessions','identity','versions','host','tokenizer')}
+            compact={k:v for k,v in payload.items() if k not in ('results','manifest','sessions','identity','versions','host','tokenizer','models','controls','qualification')}
             if payload.get('tokenizer'):compact['tokenizer']={k:v for k,v in payload['tokenizer'].items() if k!='template'}
             if payload.get('results') is not None: compact['raw_result_count']=len(payload['results'])
             if 'gates' in compact: compact['gates']=list(compact['gates'])
             _details('Receipt summary; complete evidence is in the reports and checkpoint',compact)
         elif isinstance(payload,list):
             _table(['Logical slot','CUDA UUID','Load seconds','Total device GiB'],[(i,r.get('cuda_device_uuid'),r.get('load_seconds'),round(r['total_device_bytes']/2**30,2) if r.get('total_device_bytes') is not None else None) for i,r in enumerate(payload) if isinstance(r,dict)],'Resident load evidence')
-            _details('Load receipts',payload)
+            print('Pinned text-only NF4/FP16 replicas accepted by the reviewed loader. The loading-only generation profile is not the per-call I-01 profile: direct uses 512 output tokens, temperature 0.7/top-p 0.8/top-k 20.')
+            print('Known upstream documentation/deprecation messages and optional recurrent-kernel fallback are retained in controller-stderr.log. Full load/tensor inventories remain in sessions.csv and the checkpoint; no runtime upgrade is applied.')
         checkpoint=result.get('checkpoint',{}) if isinstance(result,dict) else {}
         if checkpoint: print('Checkpoint: '+str(checkpoint.get('error') or checkpoint.get('integrity','not recorded')))
 
@@ -342,13 +366,14 @@ class Operator:
         else:notice='Controller not attached; saved evidence only.'
         if not (self.run_dir/'run.json').is_file():raise ValueError('Open or restore the study first.')
         from .report import analysis
-        s=analysis(self.run_dir)['summary'];gap=s['lost_spending']
+        from .store import usage
+        result=analysis(self.run_dir);s=result['summary']
+        budget=usage(result['attempts'],s['gates'])
         return dict(s,controller_unavailable=notice,session=None,remaining_session_seconds=None,
-                    usage=dict(attempts=s['attempts'],contingency=s['contingency']+(gap.get('upper') or 0),lost_spending=gap,
-                               remaining=500-s['attempts']-(gap.get('upper') or 0) if gap.get('resolved') else None),
+                    qualification=result['qualification'],usage=budget,
                     models=[dict(resident=None,load_report=None) for _ in range(2)])
 
-    def open_study(self, mode='new', *, deadline=None, allowance_evidence='', selected=None, tail=None, evidence=''):
+    def open_study(self, mode='new', *, deadline=None, allowance_evidence='', selected=None, tail=None, evidence='', prior_checkpoints=None):
         if deadline is not None or allowance_evidence:
             receipt=self.set_window(deadline,allowance_evidence)
             if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
@@ -358,17 +383,23 @@ class Operator:
             # Opening/inspection is zero-generation preparation. A new
             # controller must not inherit an old session's allowance.
             self.deadline=self.allowance_evidence=None
-        return self.run('initialize',mode=mode,selected=selected,tail=tail,evidence=evidence)
+        args=dict(mode=mode,selected=selected,tail=tail,evidence=evidence)
+        if prior_checkpoints is not None:args['prior_checkpoints']=prior_checkpoints
+        return self.run('initialize',**args)
 
     def selected_mode(self):
-        gates=self.status()['gates']
+        status=self.status();gates=status['gates']
         mode=gates.get('freeze',{}).get('mode') or gates.get('selected_mode')
         if mode: return mode
         for mode in ('direct','thinking'):
-            if gates.get('screen/'+mode,{}).get('passed'): return mode
-        raise ActionStopped('No passing competence screen. Inspect qualification before envelope or pilots.')
+            if status.get('qualification',{}).get(mode,{}).get('passed'): return mode
+        raise ActionStopped('No complete passing protocol qualification. Inspect the saved controls before headroom or pilots.')
 
     def thinking_screen(self, reason=None):
+        from .policy import PROTOCOL_POLICY
+        if self.status()['gates'].get('qualification_policy')==PROTOCOL_POLICY:
+            print('The primary condition is direct only. Inspect saved thinking diagnostics; zero new calls.')
+            return dict(skipped=True)
         direct=self.status()['gates'].get('screen/direct',{})
         if direct.get('passed'):
             print('Direct mode passed. Thinking qualification is skipped; zero new attempts.')
@@ -378,7 +409,8 @@ class Operator:
         return self.run('screen',mode='thinking',reason=reason)
 
     def envelope(self, *, reload=False):
-        return self.run('envelope',mode=self.selected_mode(),reload=reload)
+        # Resolve inside the action: precondition refusals must get receipts.
+        return self.run('envelope',reload=reload)
 
     def review_pilot(self, number, *, useful_communication=None, usable=None, notes=''):
         if type(number) is not int or number not in (1,2,3): raise ActionStopped('Pilot number must be 1, 2 or 3.')
@@ -408,7 +440,8 @@ class Operator:
     def preview_freeze(self):
         status=self.status()
         config=json.loads((self.run_dir/'run.json').read_text())['config']
-        _table(['Gate','Recorded state'],[(k,'State review required' if k=='readiness' and status['gates'].get(k,{}).get('needs_review') and not status['gates'].get('review/readiness') else 'Passed' if status['gates'].get(k,{}).get('passed') else 'Not passed / not recorded') for k in ('readiness','screen/direct','screen/thinking','envelope')], 'Qualification')
+        _table(['Gate','Recorded state'],[(k,'State review required' if k=='readiness' and status['gates'].get(k,{}).get('needs_review') and not status['gates'].get('review/readiness') else 'Passed' if status['gates'].get(k,{}).get('passed') else 'Not passed / not recorded') for k in ('readiness','envelope')], 'Runtime gates')
+        self.inspect(worlds=[f'qualification-{i:02d}' for i in range(6)],audit_limit=0,downloads=False)
         _table(['Pilot','Communication','Usable','Review notes'],[(i,status['gates'].get(f'review/pilot-{i}',{}).get('useful_communication'),status['gates'].get(f'review/pilot-{i}',{}).get('usable'),status['gates'].get(f'review/pilot-{i}',{}).get('notes')) for i in (1,2,3)], 'Pilot reviews')
         self.inspect(worlds=[f'pilot-{i:02d}' for i in range(3)],audit_limit=0,downloads=False)
         forecast=self.client.command('forecast')
@@ -442,7 +475,7 @@ class Operator:
             inventory='<ul>'+''.join('<li>'+link(p,str(p.relative_to(report_dir)))+'</li>' for p in files)+'</ul>'
             _display(inventory if all_files else '<details><summary>All reports, tables, raw traces and figures</summary>'+inventory+'</details>', 'All report files:\n'+'\n'.join(str(p) for p in files))
 
-    def inspect(self, world=None, phase=None, agent=None, *, worlds=None, audit_limit=6, downloads=True):
+    def inspect(self, world=None, phase=None, agent=None, *, worlds=None, audit_limit=6, downloads=True, qualification_mode=None):
         from .report import analysis
         if not (self.run_dir/"run.json").exists():
             raise ValueError("initialize or restore first")
@@ -454,13 +487,17 @@ class Operator:
         mode=gates.get('selected_mode') or ('thinking' if gates.get('screen/thinking',{}).get('passed') else 'direct')
         def score(v): return 'Unknown / not executed' if v is None else ('Correct' if v else 'Unsuccessful (recorded)')
         if rows and all(r['group']=='qualification' for r in rows):
-            _table(['World','Original control','Revised control'],[(r['id'],score(r.get('control_original_'+mode)),score(r.get('control_revised_'+mode))) for r in rows],mode.title()+' qualification controls')
+            if qualification_mode not in (None,'direct','thinking'):raise ValueError('Qualification mode must be direct/thinking or None for both')
+            for qmode,q in result['qualification'].items():
+                if qualification_mode and qmode!=qualification_mode:continue
+                _table(['Mode','Committed/planned','Correct','Wrong scalar','Invalid','Unexecuted','Current eligible','Historical passed'],[(qmode,f"{q['committed']}/12",q['correct'],q['wrong_scalar'],q['protocol_errors'],q['unexecuted'],q['passed'],(q['historical_gate'] or {}).get('passed'))], 'Qualification scope; accuracy is diagnostic')
+                _table(['Call','Truth','Submission','Valid','Correct','Error','Tokens','Ready seconds'],[(r['call'],r['truth'],r['submission'],r['valid'],r['correct'],r['error'],r['generated_tokens'],r['ready_seconds']) for r in q['controls'] if selected is None or r['world'] in selected], qmode.title()+' controls (unknown means pending/unexecuted)')
         elif rows and all(r['group']=='main' for r in rows):
             _table(['World','Original team','Retain','Clear','Revised control'],[(r['id'],score(r['prefix']),score(r['retain']),score(r['clear']),score(r.get('control_revised_'+mode))) for r in rows], 'Recorded main outcomes')
         else:
             _table(['World','Original team','Retain','Clear','Original control','Revised control'],[(r['id'],score(r['prefix']),score(r['retain']),score(r['clear']),score(r.get('control_original_'+mode)),score(r.get('control_revised_'+mode))) for r in rows], 'Recorded outcomes')
         s=result['summary']
-        print(f"Main paired coverage: {s['known_pairs']}/20 intended worlds. New physical attempts: {s['attempts']}/500; recorded contingency: {s['contingency']}/28. Historical 45 remain separate.")
+        print(f"Main paired coverage: {s['known_pairs']}/20 intended worlds. Campaign: {s['campaign_attempts']}/500 physical attempts ({s['attempts']} here, {s['prior_attempts']} prior); contingency including prior charges/gaps: {s['contingency']}/28. Historical 45 remain separate.")
         if self.client is not None:
             status=self.status(); usage=status.get('usage',{})
             if usage: _table(['Admission resource','Value'],[('Remaining attempt allowance',usage['remaining']),('Contingency including bounded lost spending',usage['contingency']),('Lost spending evidence',usage['lost_spending']),('Remaining session seconds',status['remaining_session_seconds'])])
@@ -469,6 +506,7 @@ class Operator:
         for ep in result['episodes']:
             identity,ep_phase=ep['id'].split('/',1)
             if selected is not None and identity not in selected: continue
+            if qualification_mode and not ep_phase.endswith('-'+qualification_mode):continue
             if phase and ep_phase!=phase: continue
             state=json.loads(ep['state'])
             # Events are already in their committed invocation/delivery order.
@@ -484,9 +522,11 @@ class Operator:
             _details('Private evaluator audit: submissions, retained history and phase boundary',state)
         _details('Private evaluator audit: source edits and exact truth',[(w) for w in json.loads((self.run_dir/'run.json').read_text())['worlds'] if selected is None or w['id'] in selected])
         shown=0; matched=0
-        for t in result["traces"]:
+        failed={r['call'] for r in result['qualification_controls'] if r['correct']==0}
+        for t in sorted(result["traces"],key=lambda t:t['id'] not in failed):
             req=json.loads(t["request"])
             if selected is not None and t['episode'].split('/')[0] not in selected: continue
+            if qualification_mode and req['settings']['mode']!=qualification_mode:continue
             if phase and t["episode"].split("/")[-1]!=phase: continue
             if agent is not None and req["view"].get("agent")!=agent: continue
             matched+=1

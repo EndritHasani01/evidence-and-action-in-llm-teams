@@ -9,6 +9,7 @@ import threading
 
 from .archive import atomic_json, digest, extract_selected
 from .core import canonical
+from .store import restore_tail
 
 
 def serve(run, source):
@@ -87,6 +88,9 @@ def serve(run, source):
                     session.meta.put_meta("lost_spending",gap)
                     session.meta.put_meta("blocked_worlds",affected)
                     value=gap
+                elif op=='restore_tail':
+                    if busy: raise ValueError('Pause before tail reconciliation')
+                    value=restore_tail(session.meta,req['tail'],req['evidence'],boundary=req['boundary'])
                 elif op=="annotate":
                     if busy: raise ValueError("pause before annotations")
                     ann=req["annotation"]
@@ -132,7 +136,12 @@ def parser():
     p.add_argument("--run",type=Path)
     sub=p.add_subparsers(dest="command",required=True)
     sub.add_parser("serve")
-    sub.add_parser("init")
+    init=sub.add_parser("init"); init.add_argument('--prior',type=Path,action='append',default=[])
+    continuation=sub.add_parser('continue-checkpoint')
+    continuation.add_argument('selected',type=Path)
+    continuation.add_argument('--prior',type=Path,action='append',default=[])
+    continuation.add_argument('--tail',choices=['latest','unknown'],required=True)
+    continuation.add_argument('--evidence',required=True)
     restore=sub.add_parser("restore"); restore.add_argument("selected",type=Path); restore.add_argument("--tail",choices=["latest","unknown"],required=True); restore.add_argument("--evidence",required=True)
     check=sub.add_parser("selfcheck"); check.add_argument("--metadata",type=Path)
     inventory=sub.add_parser("runtime-inventory"); inventory.add_argument("--output",type=Path,required=True)
@@ -157,12 +166,22 @@ def main(argv=None):
     elif args.command=="init":
         from .workflow import initialize
         result=initialize(args.run,args.source,config)
+        if args.prior:
+            from .workflow import Session
+            from .continuation import record_prior_preparation
+            session=Session(args.run,args.source)
+            try:record_prior_preparation(args.run,session.stores,args.prior)
+            finally:session.close()
+    elif args.command=='continue-checkpoint':
+        from .continuation import continue_checkpoint
+        result=continue_checkpoint(args.selected,args.run,args.source,prior_checkpoints=args.prior,
+                                   tail=args.tail,evidence=args.evidence)
     elif args.command=="restore":
         from .workflow import Session
         receipt=extract_selected(args.selected,args.run)
         session=Session(args.run,args.source)
         try:
-            session.meta.put_meta("lost_spending",dict(upper=0 if args.tail=="latest" else None,resolved=args.tail=="latest",evidence=args.evidence))
+            restore_tail(session.meta,args.tail,args.evidence,boundary=receipt['created_at'])
             result=dict(restored=receipt,continuation_requires_current_session_reload=True,tail=args.tail)
         finally:
             session.close()

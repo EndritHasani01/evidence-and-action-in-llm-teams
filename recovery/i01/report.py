@@ -13,7 +13,8 @@ import random
 import sqlite3
 
 from .core import canonical, success
-from .store import connection
+from .store import connection, Store, validate_call_slots, usage
+from .policy import qualification
 
 
 def read_run(run):
@@ -22,14 +23,17 @@ def read_run(run):
     tables = {name: [] for name in ("episodes", "calls", "attempts", "sessions", "annotations")}
     metadata = {}
     for slot in range(2):
+        Store.validate(run/f'worker-{slot}.sqlite', {'manifest':manifest})
         db = connection(run/f"worker-{slot}.sqlite", True)
         try:
+            db.execute('BEGIN')
             for name in tables:
                 tables[name] += [dict(r, slot=slot) for r in db.execute("SELECT * FROM " + name)]
             if slot == 0:
                 metadata = {r["key"]:json.loads(r["value"]) for r in db.execute("SELECT * FROM meta")}
         finally:
             db.close()
+    validate_call_slots(manifest, tables['calls'])
     return manifest, tables, metadata
 
 
@@ -114,14 +118,21 @@ def analysis(run):
                    attempts=len(attempts), contingency=contingency, hard_limit=500, historical_attempts_separate=45,
                    in_flight=sum(a["status"] == "admitted" for a in attempts), gates={k:v for k,v in meta.items() if k not in ("schema","binding")},
                    terminal_reasons=dict(failures), lost_spending=gap)
+    budget = usage(tables['attempts'], meta)
+    summary.update(campaign_attempts=budget['campaign_attempts'], prior_attempts=budget['prior_attempts'],
+                   contingency=budget['contingency'], local_contingency=budget['local_contingency'],
+                   remaining_attempt_allowance=budget['remaining'], prior_spending=meta.get('prior_spending', []))
     policy_costs=[]
     by_cost={(r["world"],r["phase"]):r for r in cost_rows}
     for w in world_rows:
         for phase in ("retain","clear"):
             prefix, recovery=by_cost[(w["id"],"prefix")],by_cost[(w["id"],phase)]
             policy_costs.append(dict(world=w["id"],group=w["group"],policy=phase,success=w[phase],
-                physical_prefix_shared_once=True,logical_prefix_calls=prefix["calls"],recovery_calls=recovery["calls"],
-                logical_end_to_end_calls=prefix["calls"]+recovery["calls"],
+                physical_prefix_shared_once=True,logical_prefix_calls=prefix["calls"] if prefix['complete'] else None,
+                recovery_calls=recovery["calls"] if recovery['complete'] else None,
+                logical_end_to_end_calls=prefix["calls"]+recovery["calls"] if prefix['complete'] and recovery['complete'] else None,
+                observed_prefix_calls=prefix['calls'],observed_recovery_calls=recovery['calls'],
+                observed_end_to_end_calls=prefix['calls']+recovery['calls'],
                 complete=prefix["complete"] and recovery["complete"],
                 post_revision_ready_seconds=recovery["ready_seconds"] if recovery["complete"] else None,
                 observed_post_revision_seconds=recovery["observed_seconds"],
@@ -131,6 +142,8 @@ def analysis(run):
     summary["physical_dispatch_seconds_observed"]=sum(a["observed_seconds"] or 0 for a in attempts)
     summary["attempts_unknown_ready_seconds"]=sum(a["ready_seconds"] is None for a in attempts)
     summary["generated_tokens_observed"]=sum(a["generated_tokens"] or 0 for a in attempts)
+    summary['campaign_ready_seconds_observed']=summary['physical_ready_seconds_observed']+sum(p.get('ready_seconds_observed',0) for p in meta.get('prior_spending',[]))
+    summary['campaign_generated_tokens_observed']=summary['generated_tokens_observed']+sum(p.get('generated_tokens_observed',0) for p in meta.get('prior_spending',[]))
     summary["attempts_unknown_generated_tokens"]=sum(a["generated_tokens"] is None for a in attempts)
     summary["model_load_seconds_observed"]=sum(json.loads(s["evidence"]).get("load",{}).get("load_seconds",0) for s in tables["sessions"])
     summary["failed_model_load_seconds_observed"]=sum(json.loads(s["evidence"]).get("load_seconds") or 0 for s in tables["sessions"] if json.loads(s["evidence"]).get("load_failure"))
@@ -164,15 +177,21 @@ def analysis(run):
         labels=[]
         if state.get("terminal") in ("waiting_deadlock","horizon_exhausted"): labels.append(state["terminal"])
         if any(v is not None and v!=truth for v in state.get("submissions",[])): labels.append("wrong_submission")
+        if state.get('error'):
+            error=state['error']
+            labels.append(error if error in manifest['config']['rubric'] else 'provider_failure')
         for event in state.get("events",[]):
             if event.get("error"):
                 labels.append(event["error"] if event["error"] in manifest["config"]["rubric"] else "provider_failure")
             if phase in ("retain","clear") and event.get("action") and event["action"].get("submit")==world["before"]:
                 labels.append("obsolete_value_repeated")
         for label in sorted(set(labels)):
-            failure_rows.append(dict(episode=ep["id"],label=label,calls=[e["call"] for e in state.get("events",[])],
+            refs=[e['call'] for e in state.get('events',[])] or [r['id'] for r in tables['calls'] if r['episode']==ep['id']]
+            failure_rows.append(dict(episode=ep["id"],label=label,calls=refs,
                                      basis="Observable record; internal explanation remains ambiguous"))
+    screens=qualification(manifest,tables,meta)
     return dict(summary=summary, worlds=world_rows, costs=cost_rows, policy_costs=policy_costs, attempts=attempts,
+                qualification=screens,qualification_controls=[r for mode in screens.values() for r in mode['controls']],
                 paired_costs=paired_costs,failure_analysis=failure_rows,
                 episodes=tables["episodes"],traces=tables["calls"], annotations=tables["annotations"], sessions=tables["sessions"], manifest=manifest)
 
@@ -243,7 +262,7 @@ def write_report(run, out, *, plot=True):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     (out/"analysis.json").write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf-8")
-    for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions"):
+    for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions", "qualification_controls"):
         csv_file(out/(name+".csv"), result[name])
     csv_file(out/"plotting-data.csv", result["costs"])
     csv_file(out/"plotting-outcomes.csv", result["worlds"])
@@ -269,9 +288,15 @@ def write_report(run, out, *, plot=True):
     (out/"conversations.html").write_text("\n".join(body),encoding="utf-8")
     (out/"conversations.txt").write_text("\n\n".join(text),encoding="utf-8")
     s = result["summary"]
+    qualification_text='## Qualification and protocol admission\n\nMathematical accuracy is reported separately from protocol eligibility. Historical decisions retain their original rule. Thinking completion is not inferred from a missing aggregate.\n\n'
+    qualification_text+='| Mode | Committed / planned | Correct | Wrong scalar | Invalid | Unexecuted | Current eligible | Ready seconds | Tokens | Historical passed |\n|---|---:|---:|---:|---:|---:|---|---:|---:|---|\n'
+    for mode,q in result['qualification'].items():
+        qualification_text+=f"| {mode} | {q['committed']}/12 | {q['correct']} | {q['wrong_scalar']} | {q['protocol_errors']} | {q['unexecuted']} | {q['passed']} | {q['ready_seconds_observed']:.3f} | {q['generated_tokens_observed']} | {(q['historical_gate'] or {}).get('passed', 'not recorded')} |\n"
+    qualification_text+='\nSee qualification_controls.csv and conversations.html for every planned control, exact answer/truth, validity, effort and call reference. Unresolved attempts and raw-but-uncommitted calls are pending, not unexecuted.\n\n'
     narrative = (f"# I-01 course recovery report — {s['status']}\n\n"
                  f"Intended main population: 20 independent worlds; known paired outcomes: {s['known_pairs']}/20. "
-                 f"Physical new attempts: {s['attempts']}/500; historical 45 recorded separately.\n\n"
+                 f"Current-study physical attempts: {s['attempts']}; prior-study charges: {s['prior_attempts']}; campaign total: {s['campaign_attempts']}/500. "
+                 f"Shared contingency used: {s['contingency']}/28; historical 45 recorded separately.\n\n"+qualification_text+
                  f"Clear-minus-retain mean: {s['clear_minus_retain']}; unknown bounds: {s['missingness_bounds']}. "
                  f"Correct-prefix descriptive denominator: {s['correct_prefix_denominator']}; unknown prefixes: {s['unknown_prefixes']}.\n\n"
                  "This is a controlled recovery extension of SILO-BENCH I-01. Clearing removes remote information in prior messages. "
@@ -285,8 +310,19 @@ def write_report(run, out, *, plot=True):
     (out/"overview.md").write_text(narrative,encoding="utf-8")
     html=['<!doctype html><meta charset="utf-8"><title>I-01 research report</title><style>body{font:16px system-ui;line-height:1.5;max-width:1200px;margin:2rem auto;padding:0 1rem;color:#243345}header{border-bottom:3px solid #297c71;padding-bottom:1rem}.cards{display:flex;gap:1rem;flex-wrap:wrap}.card{background:#edf3f5;padding:1rem;border-radius:8px;min-width:180px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:.5rem;border-bottom:1px solid #dae1e5;text-align:left}pre{white-space:pre-wrap;overflow-wrap:anywhere}img{max-width:100%}</style>',
           f'<header><h1>I-01 distributed-team recovery</h1><p>Controlled recovery extension of SILO-BENCH I-01 · {escape(s["status"])} evidence</p><a href="conversations.html">Browse every prompt, action and raw audit outcome</a></header>',
-          f'<div class="cards"><div class="card">Known pairs<br><b>{s["known_pairs"]}/20</b></div><div class="card">Physical attempts<br><b>{s["attempts"]}/500</b></div><div class="card">Correct-prefix stratum<br><b>{s["correct_prefix_denominator"]}</b></div><div class="card">Clear minus retain<br><b>{s["clear_minus_retain"]}</b></div></div>',
+          f'<div class="cards"><div class="card">Known pairs<br><b>{s["known_pairs"]}/20</b></div><div class="card">Campaign physical attempts<br><b>{s["campaign_attempts"]}/500</b> ({s["attempts"]} here)</div><div class="card">Correct-prefix stratum<br><b>{s["correct_prefix_denominator"]}</b></div><div class="card">Clear minus retain<br><b>{s["clear_minus_retain"]}</b></div></div>',
           '<h2>All intended worlds</h2><p>Unknown is distinct from a recorded unsuccessful outcome. Controls never select the population.</p><table><tr><th>World</th><th>Group</th><th>Old truth</th><th>New truth</th><th>Prefix</th><th>Retain</th><th>Clear</th></tr>']
+    # Qualification leads the report while main is unknown; complete traces stay
+    # in the existing escaped conversation audit, rather than another data store.
+    from urllib.parse import quote
+    qualification_html=['<h2>Qualification: every planned control</h2><p>Accuracy is a diagnostic; current eligibility and historical gate decisions are distinct. See the summary below for pending/unexecuted counts.</p><table><tr><th>Call / trace</th><th>Truth</th><th>Submission</th><th>Committed</th><th>Valid</th><th>Correct</th><th>Error</th><th>Tokens</th><th>Seconds</th></tr>']
+    for r in result['qualification_controls']:
+        label=escape(r['call'])
+        if r['recorded']:
+            label='<a href="conversations.html#'+escape(quote(r['call'],safe='/'),quote=True)+'">'+label+'</a>'
+        qualification_html.append('<tr><td>'+label+'</td>'+''.join('<td>'+escape(str(r[k]) if r[k] is not None else 'unknown')+'</td>' for k in ('truth','submission','committed','valid','correct','error','generated_tokens','ready_seconds'))+'</tr>')
+    qualification_html.append('</table><p><a href="qualification_controls.csv">Download qualification controls</a></p>')
+    html.insert(-1, '\n'.join(qualification_html))
     for w in result["worlds"]:
         html.append('<tr>'+''.join('<td>'+escape(str(w[k]) if w[k] is not None else 'unknown')+'</td>' for k in ("id","group","original_truth","revised_truth","prefix","retain","clear"))+'</tr>')
     html.append('</table><h2>Paired results and costs</h2><p><a href="paired-results.csv">Paired outcomes</a> · <a href="paired_costs.csv">Paired costs</a> · <a href="attempts.csv">Attempt ledger</a> · <a href="failure_analysis.csv">Observable failure audit</a> · <a href="analysis.json">Complete reconstruction</a></p>')
