@@ -812,6 +812,38 @@ waiver is permitted. Pilot reviews, explicit freeze and bounded main execution
 remain individually operated in the complete research workflow. All model,
 runtime, task, population, scoring and uncertainty settings remain unchanged.
 
+Recovery-admission amendment (15 October 2026, course-5 follow-up): the user
+approved implementation of the course-5 repair proposal and explicitly chose
+a fresh beginning with complete Run All. New independent studies precommit
+`i01-recovery-admission-run-all-2026-10-15` before any model call. This supersedes
+only the all-phase pilot protocol requirement below for that policy; historical
+plans and failed gates keep their original meaning. No course-5 continuation or
+result import is selected. The existing independent 500-attempt allocation and
+fixed three-pilot/twenty-world schedule apply without expansion.
+
+Qualification still requires twelve legal, committed direct controls. Each
+pilot requires legal original-prefix actions, both original-team submissions,
+legal original/revised controls, terminal states and committed raw/effects for
+every phase, reconciled spending, current hardware/isolation evidence and an
+adequate measured resource forecast. Accuracy remains diagnostic. Ordinary
+post-revision retain/clear invalid, malformed, truncated, framing, wrong and
+noncompletion outcomes are measured failures and do not veto admission. A
+recorded recovery timeout is eligible only with confirmed process termination.
+Unresolved termination/spending, genuine provider/cache/numerical faults,
+source/storage/headroom and resource failures still block. Use the same rule at
+pilot checks and main admission. Strict action validation, turn consumption,
+delivery, views, prompts, seeds, inference settings and scoring are unchanged;
+never repair a model reply. Prompt/protocol/model redesign remains deferred.
+
+On unattended failure, stop admission, preserve a settled partial export before
+bounded worker cleanup, and record actual closure acknowledgements or failure;
+never claim provider release. Keep the last valid archive if export fails.
+Derive persistent blocked status from saved gate/stage receipts. Preserve the
+original session observation timestamp, duration and estimate/observed basis
+through initialization; repeated cells never extend its deadline. Diagnostics
+distinguish syntax, schema and illegal action, phase and admission consequence.
+Human communication/mechanism review remains retrospective and pending.
+
 Whole-experiment Run All amendment (15 October 2026): the user explicitly
 approved replacing the blocking pilot-review procedure with predefined objective
 checks and retrospective human review, then requested the complete end-to-end
