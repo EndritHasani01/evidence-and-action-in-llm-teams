@@ -148,6 +148,7 @@ def parser():
     sub=p.add_subparsers(dest="command",required=True)
     sub.add_parser("serve")
     init=sub.add_parser("init"); init.add_argument('--prior',type=Path,action='append',default=[])
+    init.add_argument('--independent',action='store_true',help='Explicit new independent study; never resets an existing campaign')
     continuation=sub.add_parser('continue-checkpoint')
     continuation.add_argument('selected',type=Path)
     continuation.add_argument('--prior',type=Path,action='append',default=[])
@@ -178,7 +179,9 @@ def main(argv=None):
         result=download(args.source,args.scratch,args.working,weights=args.command=="weights")
     elif args.command=="init":
         from .workflow import initialize
-        result=initialize(args.run,args.source,config)
+        if args.independent and args.prior:
+            raise ValueError('Independent rerun must not import prior checkpoints')
+        result=initialize(args.run,args.source,config,independent=args.independent)
         if args.prior:
             from .workflow import Session
             from .continuation import record_prior_preparation

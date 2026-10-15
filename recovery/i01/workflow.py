@@ -26,23 +26,31 @@ def source_files(root):
     return {p.relative_to(root).as_posix():digest(p) for p in sorted(files) if p.is_file()}
 
 
-def initialize(run, source, config):
+def initialize(run, source, config, *, independent=False):
+    if type(independent) is not bool:
+        raise ValueError('independent must be an explicit True/False choice')
     run=Path(run)
     if (run/'run.json').exists():
         manifest=_initialize(run,source,config)
         for slot in range(2): Store.validate(run/f'worker-{slot}.sqlite',{'manifest':manifest})
+        if independent:
+            store=Store(run/'worker-0.sqlite', {'manifest':manifest}, readonly=True)
+            try:
+                if store.meta('attempt_scope') != 'independent-study':
+                    raise ValueError('Independent rerun requires a fresh destination; existing study accounting is preserved')
+            finally:store.close()
         return manifest
     if run.exists() and any(run.iterdir()): raise ValueError('fresh run directory required')
     run.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='i01-initialize-',dir=run.parent) as name:
         staging=Path(name)/'study'
-        manifest=_initialize(staging,source,config)
+        manifest=_initialize(staging,source,config,independent=independent)
         if run.exists(): run.rmdir()  # Only the previously checked empty destination.
         staging.replace(run)
     return manifest
 
 
-def _initialize(run, source, config):
+def _initialize(run, source, config, *, independent=False):
     run, source = Path(run), Path(source)
     if config != json.loads((source/"configs/i01-course.json").read_text()):
         raise ValueError("configuration differs from adopted release")
@@ -65,7 +73,8 @@ def _initialize(run, source, config):
         store = Store(run/f"worker-{slot}.sqlite",binding,create=True)
         if slot==0:
             store.bind('qualification_policy', PROTOCOL_POLICY)
-            store.bind('required_preparation_studies',list(CAMPAIGN_STUDIES))
+            store.bind('attempt_scope','independent-study' if independent else 'shared-campaign')
+            store.bind('required_preparation_studies',[] if independent else list(CAMPAIGN_STUDIES))
         store.close()
     return manifest
 
@@ -77,7 +86,8 @@ def capture_source(source, destination):
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source/relative, target)
     for relative in ("docs/I01_KAGGLE.md", "PROJECT_SPECIFICATION.md", "scripts/i01_course.py",
-                     "scripts/build_i01_course_notebook.py", "notebooks/i01_course_kaggle.ipynb"):
+                     "scripts/build_i01_course_notebook.py", "notebooks/i01_course_kaggle.ipynb",
+                     "notebooks/i01_course_research.ipynb"):
         if (source/relative).exists():
             target = destination/relative
             target.parent.mkdir(parents=True, exist_ok=True)

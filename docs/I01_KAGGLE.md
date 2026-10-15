@@ -1,93 +1,85 @@
-# I-01 Kaggle: repaired direct-mode continuation
+# I-01 Kaggle execution
 
-Use [notebooks/i01_course_kaggle.ipynb](../notebooks/i01_course_kaggle.ipynb) with
-[dist/i01-course/i01-source.zip](../dist/i01-course/i01-source.zip). The notebook
-has 26 ordinary code cells, zero widget forms/buttons and no automatic later
-stage. **Do not use Run All / Save & Run All**: those commands can execute
-multiple inference stages.
+## Fresh start with Run All
 
-The adopted 15 October amendment uses direct/nonthinking with protocol-first
-qualification. All twelve direct controls remain valid and 10/12 mathematically
-correct; the old 11/12 failure stays in history. Thinking remains five diagnostic
-attempts: four correct finals, one unfinished 4,096-token reply, seven unexecuted.
-Mathematical mistakes are outcomes in qualification and pilots; runtime,
-protocol, communication, resource and evidence prerequisites remain strict.
-See [repair evidence](validation/i01-course-3-repair.md) and
-[specification section 12](../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime).
-No model inference is performed while building or checking this repair.
+The latest user instruction replaces course-3 continuation as the default.
+No previous result or checkpoint is required. The direct/nonthinking protocol
+repair remains active: all twelve controls must follow the JSON/action protocol;
+mathematical mistakes are reported as outcomes, without an accuracy cutoff.
+No model inference is performed while building or checking this package.
 
-## First execution: continue course-3 without resampling
+1. Upload **dist/i01-course-fresh/i01_course_kaggle.ipynb** to Kaggle.
+2. Make one private dataset from **dist/i01-course-fresh/kaggle-input/**. It contains
+   only **i01-source.zip**. Attach it, enable Internet and select **GPU T4 x2**.
+   Use a fresh Kaggle session. Do not attach course-2/course-3 checkpoints or old
+   source releases. Restart the kernel after replacing an active source package.
+3. In the first cell, set `SESSION_REMAINING_MINUTES` to the actual minutes left
+   in the CURRENT Kaggle session, and `SESSION_ALLOWANCE_EVIDENCE` to a truthful
+   note describing the current GPU allowance shown by Kaggle. Leave RUN_DIR at
+   `/kaggle/working/i01-fresh-study`. No old deadline is reusable. Example values
+   must not be copied as if they were your provider's observation.
+4. Press **Run All**. Fourteen ordinary code cells perform configuration,
+   workspace/source inspection, fixed-window recording, pinned installation,
+   explicit new-study creation, native/scripted self-check, verified weights,
+   loading, readiness, direct qualification, inspection, headroom, reporting and
+   verified checkpoint export. No thinking, pilot, freeze or main call runs.
+5. Successful first attempts total **20 here, zero prior charges**: six readiness,
+   twelve direct controls and two headroom probes. Every inference has durable
+   admission and raw output. Mathematical accuracy can be below 12/12; malformed,
+   truncated or illegal controls still fail protocol qualification. Hardware/
+   cache/provider defects, insufficient headroom and inadequate session time
+   still block inference and preserve an error receipt/checkpoint.
+6. Download **/kaggle/working/i01-fresh-study/exports/latest.zip**, the reports and
+   executed notebook using the displayed links. Every completed action already
+   offers its cumulative checkpoint. Save the output without scheduling another
+   Run All solely to save it. Workers stay resident for inspection/continuation.
+   When finished, `study.finish_session()` closes the controller; stop Kaggle
+   through its UI to release the allocation.
 
-1. Create ONE private Kaggle dataset from the three files in
-   **dist/i01-course/kaggle-input/**: i01-source.zip, course-3-latest.zip and
-   course-2-latest.zip. Attach that dataset to the matching uploaded notebook.
-   These are the new source and exact original checkpoint bytes with unique
-   filenames. Kaggle-expanded roots and identical ZIP/expanded copies work. Select Internet on and **GPU T4 x2**.
-   Restart the kernel after replacing source attachments; remove stale active
-   source attachments or set SOURCE_BUNDLE explicitly if ambiguous. The bootstrap
-   ignores the old source packets embedded inside the supplied checkpoints.
-2. In Configure and inspect the workspace, keep **START_MODE = "continue"** and
-   **RUN_DIR = "/kaggle/working/i01-direct-study"**. Leave RESTORE_CHECKPOINT and
-   PRIOR_CHECKPOINTS as None when each exact study has one attached candidate;
-   selection uses study IDs, never filenames/timestamps. If ambiguous, set the
-   exact course-3 path and a one-element list containing the course-2 path.
-3. Set **RESTORE_TAIL** and **RESTORE_EVIDENCE** before opening. Use "latest" only
-   when no generation occurred after the supplied course-3 boundary and the old
-   session/processes have ended. Write your actual evidence. For example, only
-   if true: "I stopped the old session after the saved headroom refusal; no
-   generation followed the checkpoint." If uncertain, use "unknown" and say so;
-   reporting remains available, but loading/admission wait for reconciliation.
-   The notebook cannot determine this provider/session fact from a ZIP alone.
-4. Run workspace, Install the pinned runtime, then Continue the saved study.
-   This is a zero-model preparation step. It preserves the course-3 study ID,
-   original manifest/source, 23 physical calls, states and old failed gates. It
-   adds the active source/policy transition, narrowly adjudicates the normal-cap
-   misclassification and imports course-2's verified eighteen-call reserve charge.
-   Expected status: **23 local / 41 campaign attempts, 18/28 reserve used,
-   459 arithmetic remaining** before other exposure. Download this checkpoint.
-5. Run Check the implementation and Download verified weights. Setup, native
-   checks, metadata/weights and source validation do not generate model outputs.
-   The pinned runtime and HF/pip caches are reused where valid; old environments
-   are preserved. No ensurepip, host startup hooks or unpinned upgrades are used.
-6. In Record this session window, enter the CURRENT actual remaining minutes and
-   actual allowance evidence observed in Kaggle. Rerunning keeps a fixed deadline;
-   it does not grant another twelve hours. Loading is the separate next cell.
-7. Run Load both T4 workers. Inspect its concise device/load evidence; complete
-   tensor inventories remain in sessions.csv/checkpoints. The known optional
-   recurrent-kernel fallback and documentation/deprecation diagnostics are
-   explained; raw logs remain available. Models stay resident during inspection.
-8. Run readiness and direct protocol qualification. Existing six/twelve calls
-   are reused with **zero new model attempts**. Direct is eligible under the new
-   protocol policy and still 10/12 mathematically correct. Inspect qualification;
-   optional thinking history is read-only and may be skipped. Do not complete
-   its seven missing controls or manually edit a saved pass/defect flag.
-9. Run direct headroom with **study.check_headroom()**. No envelope previously
-   ran, so these are TWO ordinary 8,192-input/512-output probes, not reload
-   contingency. Each T4 must retain at least 1.5 GiB measured free headroom.
-   Expected campaign count after successful first attempts: 43. For later
-   replacement loads after an accepted envelope use reload=True instead.
-10. Run pilot 1 only; inspect the complete conversation, exact outcomes/costs and
-    download its checkpoint. Enter actual communication/usability findings and
-    trace-based notes. Repeat separately for pilots 2 and 3. Wrong mathematical
-    answers alone do not reject a pilot. Invalid protocol, missing evidence,
-    useless communication or an inadequate resource forecast still block main.
-11. Review configuration/forecast, freeze explicitly with actual notes, then
-    prepare/run/review the fixed one/two-world main batches. Each cell requests
-    only that bounded stage; review/download before preparing the next batch.
-    All twenty worlds remain in the primary population regardless of prefix or
-    control correctness. A passed gate does not itself authorize later execution.
-12. Build the final/partial report, save and verify the archive, and download the
-    archive and executed notebook outside Kaggle WITHOUT Save & Run All. Finish
-    the session, then stop Kaggle through its UI. Process exit alone does not
-    establish provider deallocation.
+The observation is recorded BEFORE installation and downloads, so their elapsed
+wall time consumes the same fixed deadline. Cell reruns do not extend it. Supply
+an explicit fresh observation with refresh=True only when the provider actually
+shows a new remaining duration. A/B/A inequality requires trace-based human review
+before qualification, not an automatic waiver or extra samples.
 
-Use "reopen" for intact repaired files after kernel restart, or "restore" with
-an exact repaired checkpoint and fresh destination. Do not choose "new" to evade
-an old gate/source mismatch: that would rerun already spent controls. A genuinely
-fresh study must explicitly carry every prior preparation checkpoint through
-PRIOR_CHECKPOINTS; known campaign spending is not reset by another study ID.
-Both known study IDs must be reconciled. Charging all prior work to a third fresh
-study can exceed the reserve and block admission; continue course-3 instead.
+This is an explicitly authorized independent study with its own 500-attempt
+ceiling and 28-attempt reserve. It starts with empty calls/attempts and a new
+study ID. The prior 41 executions and earlier 45 remain historical evidence,
+not imported results. Independent scope is stored and exported. Repeating the
+new-study cell reuses that same study; it cannot clear its accounting or convert
+an old campaign to an independent one. Scientific settings are unchanged.
+
+## Complete research workflow after preparation
+
+**i01_course_research.ipynb** contains all ordinary pilot, review, freeze,
+batch, reporting, restore and shutdown stages. Its individual-stage operation
+preserves the required human findings; Run All is for the preparation notebook.
+
+To retain the current model replicas, copy the pilot 1 and review cells from the
+research notebook into the successfully prepared notebook and run them with its
+existing `study` object. Continue pilot 2/review, pilot 3/review, configuration
+review, explicit freeze, then prepare/run/review each one/two-world main batch.
+Each pilot automatically shows its complete conversation and checkpoint. Actual
+useful-communication/usability findings and notes are human observations, not
+inferred from mathematical accuracy. All twenty main worlds remain primary.
+No research gate or condition is automatically waived or changed.
+
+Alternatively, finish the preparation controller, download its NEW checkpoint,
+and upload the full research notebook. Attach the matching new source plus that
+checkpoint; set START_MODE="restore", a fresh RUN_DIR, RESTORE_CHECKPOINT and
+actual RESTORE_TAIL/RESTORE_EVIDENCE. Set actual current session facts in its
+session-window cell. Rerun native checks/weight verification, load the replicas,
+reuse readiness/qualification without resampling, and run
+set `RELOAD_HEADROOM = True` in its headroom cell for the two charged
+current-load probes (`study.check_headroom(reload=True)`).
+Then continue the individually reviewed research stages. A source mismatch or
+unresolved tail blocks; naming a new directory never resets a restored study.
+
+For a complete study from scratch using individual cells instead, keep the
+research notebook's START_MODE="new" default. It explicitly creates an
+independent study, just as the preparation notebook does. The older course-3
+continuation remains an explicit CLI capability for historical reproduction;
+it is not used or required by this fresh upload.
 
 ## Explicit session commands
 
@@ -118,7 +110,7 @@ actual quota units/boundaries must come from the active account.
 
 ## Runtime and source preservation
 
-Model/runtime, inputs, prompts, decoding, limits and exact scoring remain unchanged; protocol/pilot admission and campaign reserve treatment are explicitly amended. I-01 runs through a
+Model/runtime, inputs, prompts, decoding, limits and exact scoring remain unchanged; protocol/pilot admission and the explicitly independent rerun are adopted in specification section 12. I-01 runs through a
 stdlib-only -I -S -X utf8 entry, explicitly restores Python 3.13 venv prefixes,
 and adds normal verified wheel directories without processing sitecustomize or
 .pth hooks. Spawned residents restore the same prefixes; plotting selects Agg
@@ -131,29 +123,24 @@ New releases use /kaggle/temp/i01/i01-venv-<source-head> and
 matching ones are checked and reused without reinstalling. Logs append.
 Source caches use /kaggle/working/i01-source-<source-head>.
 
-The original 8f5bcdb delivery is preserved locally at dist/i01-course-8f5bcdb661a1/; course-1 packets remain at dist/i01-course-659c056abfd1/ and dist/i01-course-4db263ea25c8/. Ordinary reopen/restore keeps exact active-source binding. Only the reviewed pre-main 8f5bcdb transition is supported; frozen/experimental runs and unreviewed scientific/runtime differences are refused. The repaired checkpoint retains source/ as original and source/continuation/ as active, including their wheels. The persistence-version tag changes only through this
+The completed continuation delivery is preserved at dist/i01-course-0f600584dc10/. The original 8f5bcdb delivery is preserved locally at dist/i01-course-8f5bcdb661a1/; course-1 packets remain at dist/i01-course-659c056abfd1/ and dist/i01-course-4db263ea25c8/. Ordinary reopen/restore keeps exact active-source binding. Only the reviewed pre-main 8f5bcdb transition is supported; frozen/experimental runs and unreviewed scientific/runtime differences are refused. The repaired checkpoint retains source/ as original and source/continuation/ as active, including their wheels. The persistence-version tag changes only through this
 explicit transition and prevents old runtime code from writing a repaired study;
 original source and scientific rows stay intact. Never overwrite old source/manifest bytes or assume a ZIP proves no later spending.
 
 ## Accounting, archives and reports
 
-Hard admission is 500 new campaign attempts and 28 shared reserve. Course-3's
-23 local attempts plus eighteen verified course-2 repetitions total 41; those
-eighteen are an explicit prior preparation reserve charge, not infrastructure
-retries, lost calls or historical-45 spending. Ten reserve attempts remain.
-At most 442 further ordinary envelope/pilot/main calls bring the known total to
-483. Seventeen arithmetic slots are not seventeen usable reserve attempts;
-seven belong to the unexecuted thinking scope and add no worlds/reserve.
-Prior proof ZIPs are preserved under receipts/prior-studies/ and their charges
-survive restoration. A failed prior-proof import blocks admission until repaired.
-
-Local first-attempt ceilings remain 380 main, 60 pilot, twelve direct controls
-and eight hardware/state calls; five historical thinking calls stay spent and
-no further thinking is selected. All failures/diagnostics and eligible retries
-count. Loads/downloads do not. A retry requires no durable outcome and confirmed
-prior process termination; wrong/malformed/truncated replies and recorded
-terminal timeouts never retry. Global/runtime faults stop; ordinary invalid
-model actions consume their bounded turn and deliver nothing.
+Hard admission for the fresh study is 500 physical attempts with 28 shared
+contingency attempts. First-attempt ceilings remain 380 main, 60 pilot, twelve
+direct controls and eight hardware/state calls; no thinking is selected.
+Direct-only first attempts total at most 460, plus at most 28 contingency.
+The preparation notebook consumes up to twenty of those 460, not an extra pool.
+All failures/diagnostics and eligible retries count. Loads/downloads do not.
+A retry requires no durable outcome and confirmed prior process termination;
+wrong/malformed/truncated replies and recorded timeouts never retry. Global
+runtime faults stop; ordinary invalid team actions consume their bounded turn.
+Restores retain all calls, charges and lost-spending uncertainty. Prior-campaign
+continuation, when explicitly selected instead, still preserves its verified
+41 calls and eighteen reserve charges; the independent path never mutates it.
 
 Two explicitly named WAL/FULL canonical DBs own inputs, raw results, effects and
 spending. Missing/corrupt/incomplete existing DBs refuse before writers open;
@@ -205,7 +192,7 @@ An already restored destination requires the explicit reopen route.
 
 Record a fresh actual window, reuse/verify weights and load both workers. An
 accepted study need not repeat readiness/qualification merely for restore.
-After an accepted envelope, new/replaced replicas require two contingency probes bound to actual load IDs. If none exists (as in course-3), first use study.check_headroom() for its two ordinary probes. For a replacement after acceptance:
+After an accepted envelope, new/replaced replicas require two contingency probes bound to actual load IDs. If none exists in this study, first use study.check_headroom() for its two ordinary probes. For a replacement after acceptance:
 
 ```python
 study.check_headroom(reload=True)
@@ -254,12 +241,16 @@ All scientific behavior remains in the same Python modules. For zero-model
 preparation outside a notebook, use the current source and its isolated runtime:
 
 ```text
-python scripts/i01_course.py --source CURRENT_SOURCE --run FRESH_DESTINATION continue-checkpoint COURSE3_CHECKPOINT --prior COURSE2_CHECKPOINT --tail latest --evidence "Actual no-later-generation and prior-exit evidence"
+python scripts/i01_course.py --source CURRENT_SOURCE --run FRESH_DESTINATION init --independent
 python scripts/i01_course.py --source CURRENT_SOURCE --run FRESH_DESTINATION status
 python scripts/i01_course.py --source CURRENT_SOURCE --run FRESH_DESTINATION report --output REPORT_DIRECTORY
 ```
 
-Use --tail unknown if appropriate; the evidence text must describe actual facts.
+This explicit independent init never imports an old checkpoint. The optional
+historical command `continue-checkpoint COURSE3_CHECKPOINT --prior COURSE2_CHECKPOINT
+--tail latest --evidence "Actual exit/boundary evidence"` instead preserves that
+old campaign's calls and reserve charge; it is not part of the fresh workflow.
+Use --tail unknown when appropriate; the evidence must describe actual facts.
 For resident inference the notebook's named Study methods keep the controller
 and replicas alive; one-shot CLI actions close them by design. For later
 reconstruction, CURRENT_SOURCE is the verified repaired packet (or the preserved

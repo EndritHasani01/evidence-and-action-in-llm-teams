@@ -64,6 +64,7 @@ def usage(attempts, metadata, *, limit=500):
     own=metadata.get('binding',{}).get('manifest',{}).get('study_id')
     missing=sorted(set(metadata.get('required_preparation_studies',[]))-set(identities)-{own})
     return dict(attempts=len(attempts), prior_attempts=previous, campaign_attempts=len(attempts)+previous,
+                attempt_scope=metadata.get('attempt_scope','shared-campaign'),
                 in_flight=sum(r['status']=='admitted' for r in attempts),
                 local_contingency=contingency,
                 contingency=contingency+sum(p['contingency_charge'] for p in prior)+charged_gap(gap),

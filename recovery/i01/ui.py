@@ -121,15 +121,20 @@ class Operator:
     def _env(self):
         return child_environment(self.scratch/'hf-cache')
 
-    def initialize(self, mode="new", selected=None, tail=None, evidence="", prior_checkpoints=None):
+    def initialize(self, mode="new", selected=None, tail=None, evidence="", prior_checkpoints=None, independent=False):
         if self.environment is None:
             raise ValueError("Online setup prerequisite missing")
         if mode not in ("new","restore","reopen","continue"):
             raise ValueError("choose new, restore, reopen or the explicit reviewed continue mode")
+        if independent and (mode!='new' or prior_checkpoints or selected):
+            raise ValueError('An independent rerun starts new without prior checkpoints; restoration preserves its own accounting')
         if self.client is not None and self.client.process.poll() is None:
             if mode=='restore': raise ActionStopped('A controller is already attached; restore only into a fresh destination')
             from .continuation import validate_active_source
             validate_active_source(self.run_dir,self.source,json.loads((self.run_dir/'run.json').read_text()))
+            if independent:
+                from .workflow import initialize
+                initialize(self.run_dir,self.source,json.loads((self.source/'configs/i01-course.json').read_text()),independent=True)
             return self.client.command('status')
         restored=None
         if mode=='continue':
@@ -149,7 +154,7 @@ class Operator:
         elif mode=="new":
             from .workflow import initialize
             config=json.loads((self.source/"configs/i01-course.json").read_text())
-            initialize(self.run_dir,self.source,config)
+            initialize(self.run_dir,self.source,config,independent=independent)
             if prior_checkpoints:
                 from .continuation import record_prior_preparation
                 from .workflow import Session
@@ -386,7 +391,7 @@ class Operator:
                     qualification=result['qualification'],usage=budget,
                     models=[dict(resident=None,load_report=None) for _ in range(2)])
 
-    def open_study(self, mode='new', *, deadline=None, allowance_evidence='', selected=None, tail=None, evidence='', prior_checkpoints=None):
+    def open_study(self, mode='new', *, deadline=None, allowance_evidence='', selected=None, tail=None, evidence='', prior_checkpoints=None, independent=False):
         if deadline is not None or allowance_evidence:
             receipt=self.run('window',deadline=deadline,evidence=allowance_evidence)
             if receipt.get('error') or receipt.get('checkpoint',{}).get('error'):
@@ -398,6 +403,7 @@ class Operator:
             self.deadline=self.allowance_evidence=None
         args=dict(mode=mode,selected=selected,tail=tail,evidence=evidence)
         if prior_checkpoints is not None:args['prior_checkpoints']=prior_checkpoints
+        if independent:args['independent']=True
         return self.run('initialize',**args)
 
     def selected_mode(self):

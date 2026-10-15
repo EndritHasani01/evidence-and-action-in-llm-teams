@@ -7,6 +7,10 @@ from .ui import Operator
 
 
 class Study(Operator):
+    def start_new(self):
+        """Explicit fresh rerun; retain the window observed before preparation."""
+        return self.open('new',independent=True,deadline=self.deadline,
+                         allowance_evidence=self.allowance_evidence or '')
     def install_runtime(self): return self.run('setup')
     def open(self, mode='new', **session_facts): return self.open_study(mode,**session_facts)
     def set_session_window(self, deadline, evidence): return self.run('window',deadline=deadline,evidence=evidence)

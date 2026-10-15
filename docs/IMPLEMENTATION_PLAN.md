@@ -2,6 +2,21 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
+Latest steering: the user explicitly requests a fresh beginning with Run All and
+no course-3 continuation or imported old results. Specification §12 records the
+independent-study exception: zero initial attempts, own 500 ceiling and unchanged
+stage/reserve limits. Existing studies and unknown-tail accounting never reset.
+The new default is fourteen ordinary preparation cells; the complete twenty-six
+research cells remain in a separate notebook with explicit pilot/freeze/main
+reviews. Source-only upload: `dist/i01-course-fresh/kaggle-input/`. See the
+[fresh-run evidence](validation/i01-fresh-run.md) and updated
+[first-execution instructions](I01_KAGGLE.md). Five focused fresh-start checks
+pass, including a scripted twenty-call preparation, zero-call replay, archive
+reconstruction, old-campaign conversion refusal and fixed-window forwarding.
+No actual model/native GPU stage is executed here. The completed continuation
+packet is preserved byte-for-byte at `dist/i01-course-0f600584dc10/`; the prior
+handoff below records that historical delivery, not the current default.
+
 The user has now authorized full repair of the reviewed course-3 solution.
 Specification section 12 explicitly adopts direct-only protocol qualification,
 consistent pilot mathematical-outcome treatment and campaign reserve accounting.

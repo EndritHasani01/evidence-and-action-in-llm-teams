@@ -1,5 +1,13 @@
 # I-01 notebook: ordinary cells and natural progression
 
+15 October latest follow-up: the user now requests a fresh independent Run All
+preparation without previous checkpoints. The default notebook has fourteen
+ordinary cells from session facts to verified report/archive. The complete
+twenty-six-cell pilot/review/freeze/main notebook remains individually operated.
+See the [current runbook](../I01_KAGGLE.md) and
+[fresh-run evidence](../validation/i01-fresh-run.md). Earlier cell counts and
+blanket Run All restrictions below describe the previous interaction design.
+
 14 October 2026. **Implemented; focused checks passed; Kaggle acceptance pending.**
 
 Working checkout: `E:\Github\recovery_blueprint\recovery_blueprint`, branch

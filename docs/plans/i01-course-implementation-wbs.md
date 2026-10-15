@@ -6,6 +6,16 @@ Prepared 14 October 2026 against repository `0b0a44a3cf3a0306559a716e5df45b3dbe0
 
 This is the implementation reference for the I-01 course study explicitly adopted by the user on 14 October 2026. [Specification §12](../../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime) is authoritative. Approval covers implementation and focused lightweight checks only; actual Kaggle readiness, qualification, pilots, freeze and main remain operator stages. The existing roadmap points here instead of duplicating the task list.
 
+Latest amendment (15 October): the user requests a fresh independent run with
+Run All and no old result/checkpoint import. Specification §12 explicitly grants
+this study its own unchanged 500-attempt allocation. Fourteen ordinary cells now
+support Run All through preparation/report/export (up to 20 first attempts);
+the full twenty-six-cell research notebook keeps individual pilot review,
+freeze and main batches. This supersedes earlier blanket Run All prohibitions
+and default course-3 continuation only within that preparation scope. No GPU
+stage is executed during implementation. See [fresh-run evidence](../validation/i01-fresh-run.md)
+and [current runbook](../I01_KAGGLE.md).
+
 The delivery order is **complete Python research scripts → interactive Kaggle notebook → in-notebook validation, qualification, pilots, main execution, and final outputs**. There is **no separate CPU verification phase**. Lightweight mathematical, protocol, persistence, and packaging checks are implemented with the scripts and executed inside the Kaggle workflow before expensive calls. Ordinary code review and syntax checking during development are not a separate research acceptance campaign.
 
 ## 1. Delivery objective and scope
@@ -683,10 +693,10 @@ qualification, pilot, freeze or main execution occurs during implementation.
 |---|---|---|
 | M0-T01–T02 | Adopted | Specification §12; configs/i01-course.json; this handoff |
 | M1-T01–T04 | Implemented; target native checks passed | core.py and course-2 native self-check; fixed manifest reproduces |
-| M2-T01–T04 | Implemented; focused recovery/accounting checks pass | Preserve 23 local calls plus 18 verified prior preparation charges; slot tags, campaign cap, gap merge and explicit pre-main source/format continuation |
+| M2-T01–T04 | Implemented; fresh-run/accounting checks pass | Explicit independent study starts empty; idempotent new/reopen/restore retains its own 500/28 accounting; older campaign continuation and gap/slot safeguards preserved |
 | M3-T01–T04 | Original T4 inference evidence retained; runtime fixes implemented | Normal output failures consume turns; real defects stop; load-pair probes bind before dispatch; actual repaired full-envelope acceptance remains pending |
 | M4-T01–T04 | Implemented; saved-fixture and transactional-read checks pass | Both partial mode summaries, control error/call references, prior-spending CSV, qualification figures and unknown logical-cost semantics |
-| M5-T01–T04 | Delivered; 26 ordinary scopes reviewed | Default reviewed course-3 continuation, read-only thinking history, no widgets, compact loads, explicit restore/evidence and current source/wheel packaging |
+| M5-T01–T04 | Fresh Run All implemented; package review pending | 14 ordinary preparation scopes and separate complete 26-cell research notebook; source-only attachment; no old checkpoints, widget forms or string action calls in delivered cells |
 | M6-T01–T04 | Saved direct scalar protocol eligible under adopted amendment; later gates unexecuted | Preserve 10/12 mathematical diagnostic and old failed gate; thinking 4 correct/1 invalid/7 unknown; current full envelopes, pilots and freeze remain pending |
 | M7-T01–T03 | Paths delivered; no empirical main execution | Twenty main pairs unknown; final notebook report/archive/close cells unexecuted; supplied error-boundary archive verifies |
 

@@ -789,6 +789,29 @@ campaign to 483, before any additional exposure/reload/retry. Unused seven
 thinking slots do not expand the ten remaining reserve or add worlds. Restores
 must preserve prior-study charges and all earlier lost-spending uncertainty.
 
+Fresh-rerun amendment (15 October 2026, subsequent user instruction): the user
+explicitly requests a new run from the beginning, with no previous checkpoint
+or result reuse, using Run All to check the repaired workflow. This independently
+identified study starts at zero with its own 500-attempt ceiling and unchanged
+stage/reserve limits. The prior 41 I-01 executions remain separate historical
+preparation evidence, as do the earlier 45; they are not deleted, imported,
+pooled as new outcomes or presented as unspent calls within their old campaign.
+Only explicit independent initialization grants this scope. Renaming, reopening
+or restoring an existing study never resets its attempts, charges or unknown
+exposure. This exception supersedes the shared-campaign requirement above only
+for the newly authorized independent rerun.
+
+Run All is supported for this new study's bounded preparation: setup, source/
+native checks, model loading, six readiness calls, twelve direct controls, two
+full-envelope calls, reporting and verified checkpoint export. It makes at most
+20 first attempts plus eligible charged infrastructure retries. Current provider
+facts are observed before preparation; setup/download time consumes the same
+fixed session window. Thinking inference is not selected. A failed protocol,
+isolation, resource or evidence prerequisite blocks further inference; no automatic
+waiver is permitted. Pilot reviews, explicit freeze and bounded main execution
+remain individually operated in the complete research workflow. All model,
+runtime, task, population, scoring and uncertainty settings remain unchanged.
+
 Actual-host prerequisites are source/dependency/restore/self-check acceptance,
 two distinct T4s, six short state checks, twelve completed direct full-information
 controls with zero malformed/truncated/illegal final actions, and two direct full

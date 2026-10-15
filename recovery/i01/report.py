@@ -120,6 +120,7 @@ def analysis(run):
                    terminal_reasons=dict(failures), lost_spending=gap)
     budget = usage(tables['attempts'], meta)
     summary.update(campaign_attempts=budget['campaign_attempts'], prior_attempts=budget['prior_attempts'],
+                   attempt_scope=budget['attempt_scope'],
                    missing_prior_studies=budget['missing_prior_studies'],
                    contingency=budget['contingency'], local_contingency=budget['local_contingency'],
                    remaining_attempt_allowance=budget['remaining'], prior_spending=meta.get('prior_spending', []))
@@ -315,7 +316,7 @@ def write_report(run, out, *, plot=True):
     qualification_text+='\nSee qualification_controls.csv and conversations.html for every planned control, exact answer/truth, validity, effort and call reference. Unresolved attempts and raw-but-uncommitted calls are pending, not unexecuted.\n\n'
     narrative = (f"# I-01 course recovery report — {s['status']}\n\n"
                  f"Intended main population: 20 independent worlds; known paired outcomes: {s['known_pairs']}/20. "
-                 f"Current-study physical attempts: {s['attempts']}; prior-study charges: {s['prior_attempts']}; campaign total: {s['campaign_attempts']}/500. "
+                 f"Budget scope: {s['attempt_scope']}. Current-study physical attempts: {s['attempts']}; prior-study charges: {s['prior_attempts']}; campaign total: {s['campaign_attempts']}/500. "
                  f"Shared contingency used: {s['contingency']}/28; historical 45 recorded separately.\n\n"+qualification_text+
                  f"Known prior studies still requiring reconciliation: {s['missing_prior_studies']}. Remaining allowance: {s['remaining_attempt_allowance']} (unknown blocks admission).\n\n"+
                  f"Clear-minus-retain mean: {s['clear_minus_retain']}; unknown bounds: {s['missingness_bounds']}. "
