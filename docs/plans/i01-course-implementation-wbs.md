@@ -14,7 +14,7 @@ Deliver a private, ready-to-upload notebook for online Kaggle T4×2 operation, b
 
 Success means a completed, auditable **20-world paired retain/clear study** on authentic SILO-BENCH I-01 mathematics, subject to actual qualification. It does not mean that retention wins. A qualification failure must instead produce a complete, truthful feasibility report and resumable evidence; it must not be presented as completed main research.
 
-Included: native-size worlds and revisions; two-agent communication; phase-final submission; isolated continuations; direct and conditionally available thinking inference; durable attempts and checkpoints; hard attempt admission; staged controls; exact scoring; paired uncertainty and costs; full conversations; figures; portable exports; documented interruption recovery.
+Included: native-size worlds and revisions; two-agent communication; phase-final submission; isolated continuations; direct inference and preserved thinking diagnostics; durable attempts and checkpoints; hard attempt admission; staged controls; exact scoring; paired uncertainty and costs; full conversations; figures; portable exports; documented interruption recovery.
 
 Excluded: additional tasks/models, sham arms, mixed retention masks, receipt interventions, message-delay experiments, semantic source certification, a supervisor LLM, LLM judging, general orchestration frameworks, remote experiment services, offline model bundles, and automatic qualification-to-main progression. Preserve existing thesis/course artifacts for future work without adapting their old schedules to this study.
 
@@ -57,7 +57,7 @@ M0 should adopt one short I-01-specific specification section. This plan recomme
 | Termination | Both submitted; exhausted legal opportunities; or no unsubmitted agent can progress. Disagreement and wrong answers can complete. Stop resource/provider defects separately from ordinary mathematical failure |
 | Controls/development | Six qualification worlds; three separate complete pilot worlds with original/revised full-information controls; one revised full-information control per main world |
 | Order/seeds | Five main worlds per changed-owner/recovery-first-speaker combination. Save prefix order explicitly, preferably the same first speaker for simplicity. Match recovery order and per-agent invocation seeds within sibling pairs; balance retain-first/clear-first execution order |
-| Mode | Direct 9B first; thinking only after a justified direct competence failure, never an automatic remedy for protocol defects |
+| Mode | Direct 9B only under the 15 October protocol-first amendment; preserve prior partial thinking as diagnostic history |
 | Outcomes | All-world paired team success; correct-prefix descriptive stratum; principal practical effort is post-revision ready-model inference time. Report calls/tokens/messages and failures jointly |
 | Allocation | 380 main + 60 pilot + 24 possible qualification + 8 hardware/state + 28 contingency = 500 new physical attempts |
 
@@ -126,7 +126,7 @@ The run sequence is:
 
 ```text
 adopted inputs -> loaded environment -> readiness checks -> direct screen
-             -> optional thinking screen -> selected-mode envelope
+             -> inspect saved thinking history (optional, zero calls) -> direct envelope
              -> pilot 1 -> inspect/export -> pilot 2 -> inspect/export
              -> pilot 3 -> inspect/export -> explicit freeze
              -> explicit main batch -> inspect/export -> next explicit batch
@@ -402,10 +402,10 @@ flowchart LR
 
 #### M6-T02 — Resident GPU checks and selected-mode qualification
 
-- **Objective/change:** load models, run six short A/B/A checks across the two GPUs, run the 12 direct controls, optionally run 12 thinking controls, then two selected-mode envelope generations.
+- **Objective/change:** load models, run six short A/B/A checks across the two GPUs, reuse/run the twelve direct controls, inspect historical thinking without further calls, then two direct envelope generations.
 - **Existing anchors:** M3 inference/controller, M4 gates, saved development inputs.
 - **Dependencies:** M6-T01.
-- **Deliverable/acceptance:** finite output, correct loading/device placement, fresh state instrumentation, ≥11/12 exact controls and no malformed/truncated final action for the selected mode, and ≥1.5 GiB observed free headroom on each selected envelope. Force the full output reserve only in the labeled envelope diagnostics; never force scientific answers. A/B/A equality is supporting evidence, not a substitute for cache checks or a promise of universal determinism. Every attempt is counted; report failure rather than auto-switching stages.
+- **Deliverable/acceptance:** finite output, correct placement, fresh state instrumentation, twelve committed direct controls with zero malformed/truncated/illegal finals, and at least 1.5 GiB observed free headroom on each full envelope. Report mathematical accuracy independently; preserve the failed original 11/12 decision. Force output reserve only in labelled envelope diagnostics. Every attempt counts and no stage advances automatically.
 - **Risks:** R05, R10, R11. **Effort:** 2–3 h active plus measured inference time.
 
 #### M6-T03 — Three individually controlled pilots and inspection handoffs
@@ -413,7 +413,7 @@ flowchart LR
 - **Objective/change:** execute pilot 1, stop/export/inspect; then separately pilot 2 and pilot 3. Preselect structural coverage rather than favorable outcomes.
 - **Existing anchors:** M4 stage/report paths, M5 pilot cells, M6-T02 selected mode.
 - **Dependencies:** M6-T02; each later pilot requires the preceding inspection/export checkpoint.
-- **Deliverable/acceptance:** three downloadable complete pilot checkpoints; all three original teams and six full-information controls correct; genuine original collaboration; zero malformed/truncated actions or unresolved implementation/resource defects. Recovery mathematics may fail without disqualifying the model solely for an unfavorable effect; investigate deadlock/cap/protocol-dominated failures before proceeding.
+- **Deliverable/acceptance:** three downloadable complete pilot checkpoints; complete original teams and six full-information controls; genuine task-relevant original collaboration; zero malformed/truncated actions or unresolved implementation/resource defects. Mathematical mistakes alone do not disqualify. Review usability/resources independently of effect direction.
 - **Risks:** R04, R05, R09, R13. **Effort:** 3–5 h active plus at most 60 first-attempt calls.
 
 #### M6-T04 — Explicit freeze and main admission
@@ -577,9 +577,9 @@ Inspection and reports do not unload models by default. A long human pause can u
 | G0 adopted contract | Approved I-01 section, fixed scope and budget | Scientific ambiguity or unapproved configuration |
 | G1 host/self-check | Actual image/source/dependency checks; lightweight mathematical/protocol/persistence checks; safe restore/export | Incompatible host, leaked data, failed durability/accounting, insufficient storage |
 | G2 model readiness | Correct pinned loading, two T4 identities, fresh state, finite outputs; six counted short checks | Wrong placement/weights, hidden cache carryover, nonfinite generation, uncontrolled child |
-| G3 competence | Direct ≥11/12 correct and zero malformed/truncated final actions; conditional thinking only if justified | Neither declared candidate qualifies; unresolved protocol defects |
+| G3 protocol qualification | Twelve committed direct controls, zero malformed/truncated/illegal finals; mathematical accuracy reported without an admission cutoff | Incomplete direct evidence or invalid actions; no automatic thinking fallback |
 | G4 selected envelope | Actual 8,192-input bound plus selected output reserve on each device, ≥1.5 GiB observed free headroom | OOM, insufficient transient headroom, cap/framing defect |
-| G5 three pilots | All original teams and six controls correct; useful original communication; valid protocol; complete trace/export review | Premature-finalization/deadlock/horizon pattern undermines usability; unresolved artifacts or unaffordable forecast |
+| G5 three pilots | Complete original teams and six controls; useful original communication; valid protocol; complete trace/export review; mathematical accuracy remains an outcome | Premature-finalization/deadlock/horizon pattern undermines usability; unresolved artifacts or unaffordable forecast |
 | G6 freeze/main admission | Exact selected config, inputs, schedule, endpoints/rubric; sufficient conservative attempt/time allowance | Settings drift or resource forecast cannot support intended execution |
 | G7 completion | Full intended coverage, reconciled evidence/costs, validated final archive/reconstruction | Unknowns remain: report partial status, not “complete” |
 
@@ -869,3 +869,29 @@ CRC/inventories/source/wheel/DB integrity and exact read-only reconstructions
 pass. Original inputs, production code, scientific settings and the verbatim
 earlier evaluation are preserved. All twenty main pairs remain unknown.
 Analysis/audit checkpoint: `6eae0a1`; 222 current local document links resolve.
+
+## 16. Course-3 repair and adopted protocol-first amendment
+
+15 October 2026: the user requests full implementation of the reviewed
+[course-3 solution](../proposals/i01-course-3-direct-mode-solution.md).
+Specification section 12 now explicitly adopts direct-only protocol admission
+and consistent pilot mathematical-outcome treatment. This dated amendment
+supersedes earlier 11/12/perfect-pilot/conditional-thinking instructions in this
+plan; the historical analyses and original failed gate receipts remain intact.
+All twelve direct controls and three existing pilots remain mandatory; no world,
+prompt, seed, model/runtime/decoding pin, turn limit, scoring or population changes.
+
+The 500 ceiling covers known campaign executions. Course-3 keeps its 23 original
+rows; course-2's eighteen repeated preparation calls are a separate verified
+checkpoint-linked reserve charge, not retries or the unrelated historical 45.
+This explicit allocation amendment consumes eighteen of the existing 28 reserve,
+leaving ten. With at most 442 further ordinary envelope/pilot/main attempts the
+known total is 483. Seven unexecuted thinking slots add no reserve or worlds.
+Preserve prior charges and earlier gap uncertainty on every restore.
+
+Repair implementation is in progress: qualification is derived from canonical
+calls/states, historical passes are not overwritten, and a narrowly verified
+pre-main source/policy continuation publishes only into a fresh destination.
+The notebook remains ordinary named cells. No inference or empirical acceptance
+is authorized or performed during this work. Focused regression/package evidence
+and milestone commit references will be recorded here at completion.

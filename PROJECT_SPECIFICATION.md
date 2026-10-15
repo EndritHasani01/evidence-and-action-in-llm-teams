@@ -702,6 +702,15 @@ identified controlled recovery extension of native SILO-BENCH I-01. Sections
 Run All policy, fallback models, gates and hour ceilings do not govern I-01.
 Implementation approval authorizes no inference, qualification, pilot or main run.
 
+Amended 15 October 2026 by the user's instruction to fully repair the reviewed
+[course-3 solution](docs/proposals/i01-course-3-direct-mode-solution.md): use
+direct-only protocol-first admission, consistent pilot accuracy treatment and
+reconciled campaign spending as specified below. This is data-informed after
+two 10/12 direct screens and five thinking attempts, before every pilot/main
+outcome. Preserve the original 11/12 failures and the incomplete thinking screen;
+new eligibility is not a rewritten historical pass. No further execution is
+authorized by this software-repair instruction.
+
 The question is the practical effect of retaining versus clearing a short
 distributed conversation after withdrawing its previously winning value. Use
 two agents with twenty independent uniform integers each in −1000…1000. An
@@ -744,12 +753,14 @@ continuation answers across treatments. Exact resume reuses recorded raw output.
 
 Use pinned Qwen3.5-9B revision c202236235762e1c871ad0ccb60c8ee5ba337b9a,
 text-only NF4 double quantization, FP16 and the reviewed T4 attention runtime.
-Direct first: temperature 0.7/top-p 0.8/top-k 20, repetition penalty 1,
-presence penalty 0, maximum 512 output tokens. Thinking is conditional only on
-a documented direct competence limitation without protocol defects:
-1.0/0.95/20, maximum 4,096 total output tokens and 512 visible final tokens.
-Both have 8,192 input tokens (resident bounds 8,704/12,288). Retain all generated
-tokens/latency and separate thinking in the audit. Never carry thinking forward.
+The primary condition is direct/nonthinking: temperature 0.7/top-p 0.8/top-k 20,
+repetition penalty 1, presence penalty 0, maximum 512 output tokens and 8,192
+input tokens (resident bound 8,704). Under the original 14 October rule, thinking
+was conditionally available at 1.0/0.95/20, maximum 4,096 total output tokens and
+512 visible final tokens (resident bound 12,288). Preserve the observed partial
+thinking qualification, raw tokens and latency as diagnostic history; do not
+complete it, use it as an automatic fallback, or select it for this primary
+study. Never carry private thinking forward.
 Use fresh call-owned KV/recurrent state and finite-score checks. Provisional
 load/direct/thinking deadlines are 600/180/900 seconds with bounded cleanup;
 freeze observed adequate selected bounds before main. No extra model candidate.
@@ -765,14 +776,32 @@ admission before dispatch, raw outcome before effects, and atomically checkpoint
 effects. A single controller admits across two explicitly named WAL/FULL worker
 databases. No unbounded lost-session spending is assumed zero.
 
+The 500 limit covers the I-01 campaign, not each newly named directory. Preserve
+known prior-study spending as explicit checkpoint-linked charges in the same
+admission owner. For the supplied course-3 continuation, its 23 physical attempts
+and course-2's 18 separate repeated preparation attempts total 41. This amendment
+charges those earlier 18 to the existing 28-attempt reserve as known repeated
+preparation, leaving ten reserve attempts; their original stage rows are not
+rewritten or described as retries, lost calls or the historical 45. The five
+thinking attempts remain spent and seven thinking controls remain unexecuted.
+At most 442 further ordinary envelope/pilot/main attempts would bring this known
+campaign to 483, before any additional exposure/reload/retry. Unused seven
+thinking slots do not expand the ten remaining reserve or add worlds. Restores
+must preserve prior-study charges and all earlier lost-spending uncertainty.
+
 Actual-host prerequisites are source/dependency/restore/self-check acceptance,
-two distinct T4s, six short state checks, ≥11/12 correct full-information
-controls with zero malformed/truncated actions, and two selected-mode full
+two distinct T4s, six short state checks, twelve completed direct full-information
+controls with zero malformed/truncated/illegal final actions, and two direct full
 envelopes with ≥1.5 GiB measured free headroom on each device. Force output
-reserve only in envelope diagnostics. Three separately executed pilots require
-correct original teams, six correct controls, useful original communication,
+reserve only in envelope diagnostics. Mathematical qualification accuracy is
+reported completely as a diagnostic, with no accuracy admission threshold.
+Three separately executed pilots require complete original teams and six
+complete controls, useful task-relevant original communication,
 valid protocol, inspectable exports and an adequate measured attempt/time
-forecast. Recovery errors or effect direction alone do not fail a gate.
+forecast. Mathematical errors in any phase/control and effect direction alone
+do not fail a gate. Ordinary malformed/truncated model replies remain recorded
+invalid actions, not global backend defects; runtime/cache/numerical faults
+continue to block dispatch. Pilot protocol checks remain strict.
 Freeze configuration, inputs, schedule, prompts, runtime, bounds, endpoints and
 rubric explicitly before main. Main scopes are fixed one/two-world actions;
 success never automatically authorizes a next stage. Preserve session deadline
