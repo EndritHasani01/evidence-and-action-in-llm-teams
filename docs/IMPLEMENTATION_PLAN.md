@@ -2,19 +2,36 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
-Latest course-2 audit: the supplied executed notebook and checkpoint verify
-Linux pinned setup, native checks, both actual T4 loads and six state diagnostics.
-The direct competence screen completed at 10/12, zero protocol errors, and
-correctly stopped before every later model/experiment stage. Eighteen new
-attempts are saved; twenty main pairs remain unknown. See the
-[complete results analysis](validation/i01-course-2-results-analysis.md) and
-[fix proposal](proposals/i01-course-2-fix-proposal.md). Five further defects
-reproduce in temporary fixtures: flag-independent envelope binding, prior-gap
-preservation on restore, logical worker identity, thinking-truncation
-classification and live read consistency. These repairs are proposed, not
-implemented. The original files/source and scientific semantics remain unchanged;
-this audit performed no inference. Earlier target-host-pending statements below
-are historical and are superseded only to the extent established by this run.
+Latest course-3 audit: the supplied notebook/checkpoint again verify pinned
+Linux preparation, both T4 loads and six state diagnostics. Direct repeats
+10/12 correct with zero protocol errors. Conditional thinking records four
+correct finals and one 4,096-token noncompletion, with seven controls unexecuted.
+It consumes 1,022.044 ready-model seconds versus 11.215 for the same five direct
+inputs (91.13 times); the two direct-error cases were not reached in thinking.
+The normal capped output incorrectly sets global `model_defect`, confirming the
+earlier scripted classification defect on the target host. Partial-screen and
+failure-report gaps are also observed; no selected envelope, pilot or main ran.
+See the [complete analysis](validation/i01-course-3-results-analysis.md),
+[solution proposal](proposals/i01-course-3-direct-mode-solution.md) and
+[read-only audit receipt](validation/course-3-audit.json). Exact reconstruction,
+source/wheel identity and all input hashes pass; this audit ran no inference.
+
+Course-3 is a fresh study with 23 physical attempts, not a resume of course-2's
+18. The supplied studies therefore contain 41 executions; settle campaign budget
+scope and repeated-stage charges before continuation. Twenty main pairs remain
+unknown. Direct/protocol-first qualification is recommended as an explicit
+scientific amendment, consistently covering pilot accuracy rules; it is not
+adopted or implemented. Preserve §12's current decisions and failed outcomes.
+The prior [course-2 proposal](proposals/i01-course-2-fix-proposal.md) still covers
+unfixed envelope/load binding, lost-spending restore, logical worker identity,
+truncation classification and live-read defects. A supported source-compatible
+transition is required for the existing run. Original evidence, the verbatim
+protocol-first evaluation and production/scientific files remain unchanged.
+Earlier target-host-pending statements below are historical and are superseded
+only to the extent established by these runs.
+Course-3 analysis/audit checkpoint: `6eae0a1`. Both archive reconstructions,
+numeric consistency, four original artifact hashes, the untouched evaluation
+hash, audit-script syntax and 222 local document links pass.
 
 The user explicitly adopted the reviewed I-01 scientific regime in specification
 §12. Its single task/status reference is the

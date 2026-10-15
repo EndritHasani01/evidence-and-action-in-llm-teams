@@ -683,11 +683,11 @@ qualification, pilot, freeze or main execution occurs during implementation.
 |---|---|---|
 | M0-T01–T02 | Adopted | Specification §12; configs/i01-course.json; this handoff |
 | M1-T01–T04 | Implemented; target native checks passed | core.py and course-2 native self-check; fixed manifest reproduces |
-| M2-T01–T04 | Implemented; course-2 audit repairs open | Eighteen durable attempts and exact checkpoint reconstruction; prior-gap restore and logical-slot protection need C2 fixes |
-| M3-T01–T04 | Both T4 loads/short direct inference verified; further repairs open | Course-2 six fresh-state checks pass; thinking/long envelopes unexecuted; load-pair and protocol-classification findings remain |
-| M4-T01–T04 | Implemented; report/live-read fixes proposed | Exact partial reconstruction; control trace references, live read consistency and presentation findings documented |
-| M5-T01–T04 | Delivered; nine ordinary cells executed in course-2 | Matching 8f5bcdb source/wheel; 26 ordinary cells; complete workflow paths delivered, later target behavior pending |
-| M6-T01–T04 | Target preparation/readiness passed; direct competence failed | Course-2 10/12 correct, zero protocol errors; thinking, envelopes, three pilots and freeze unexecuted |
+| M2-T01–T04 | Implemented; accounting/restore repairs open | Course-3 23 durable attempts reconstruct exactly; course-2 adds 18 separate executions; reconcile budget scope/repeated stages and fix prior-gap/slot defects |
+| M3-T01–T04 | Both T4 loads and both modes observed; repairs open | Six state checks pass; thinking 4 valid finals/1 capped output; load-pair and global classification defects remain; full envelopes unexecuted |
+| M4-T01–T04 | Implemented; report/live-read fixes proposed | Exact partial reconstruction; partial-screen counts, missing control error/call references, live reads and display findings documented |
+| M5-T01–T04 | Delivered; twelve ordinary cells executed in course-3 | Matching 8f5bcdb source/wheel; 26 ordinary cells; later headroom refusal appears only in notebook, after the saved archive boundary |
+| M6-T01–T04 | Preparation/readiness passed; no mode accepted under current rule | Direct 10/12, zero protocol errors; thinking 5/12 attempted, 4 correct/1 invalid/7 unknown; envelopes, pilots and freeze unexecuted |
 | M7-T01–T03 | Paths delivered; no empirical main execution | Twenty main pairs unknown; final notebook report/archive/close cells unexecuted; supplied error-boundary archive verifies |
 
 Baseline: branch `feat/smaller-natural-experiment`, HEAD `0b0a44a`;
@@ -847,3 +847,25 @@ from five reproduced future-path defects. Source modules and both supplied files
 remain unchanged; fixes are proposed, not implemented. No inference ran during
 this audit. Preserve all eighteen admissions and exact source identity in any
 subsequently reviewed compatibility transition; no silent study/budget reset.
+
+15 October 2026 course-3 thinking audit: the
+[full results analysis](../validation/i01-course-3-results-analysis.md),
+[direct-mode solution proposal](../proposals/i01-course-3-direct-mode-solution.md)
+and [audit receipt](../validation/course-3-audit.json) compare the actual saved
+conditions without new inference. Thinking uses 1,022.044 ready-model seconds
+and 10,250 tokens on five controls versus direct's 11.215 seconds/81 tokens on
+the same inputs. Four thinking finals are correct; the fifth has no final at
+4,096 tokens. Seven controls, including the direct-error world, are unexecuted.
+This supports a pragmatic direct-mode choice, not a general accuracy ranking.
+
+The target run confirms C2-07's erroneous global runtime classification and
+reveals missing partial-screen/control-failure reporting. Course-3 is a fresh
+23-attempt study; with course-2's 18 attempts the supplied physical total is 41,
+not 23. Reconcile campaign scope and repeated-stage allocations; retain the
+historical 45 separately. Protocol-first admission and consistent pilot accuracy
+relaxation require explicit §12 adoption; neither is implemented. The other C2
+repairs and a verified compatible source/policy transition remain prerequisites.
+CRC/inventories/source/wheel/DB integrity and exact read-only reconstructions
+pass. Original inputs, production code, scientific settings and the verbatim
+earlier evaluation are preserved. All twenty main pairs remain unknown.
+Analysis/audit checkpoint: `6eae0a1`; 222 current local document links resolve.
