@@ -32,7 +32,7 @@ def verify_notebook(notebook):
     meta=notebook['metadata']['i01']
     assert meta['run_all_supported'] and meta['run_all_scope']=='whole-study'
     assert meta['first_attempt_ceiling']==460 and meta['hard_attempt_limit']==500 and meta['contingency_limit']==28
-    assert meta['execution_policy']=='i01-recovery-admission-run-all-2026-10-15'
+    assert meta['execution_policy']=='i01-recorded-outcomes-run-all-2026-10-15'
     class Stub:
         def __init__(self):self.calls=[]
         def __getattr__(self,name):
@@ -174,10 +174,10 @@ def verify(root,delivery):
                  zip_expanded_source_bootstrap_and_rerun=True,complete_source_preserved_in_checkpoints=True,
                  notebook_execution_outputs_empty=True,
                  kaggle_host_verified=False,qualification_pilot_main_executed=False)
-    atomic_json(root/"notebooks/validation/i01-development/recovery-run-all-release-review.json",receipt)
+    atomic_json(root/"notebooks/validation/i01-development/outcomes-run-all-release-review.json",receipt)
     return receipt
 
 
 if __name__=="__main__":
     root=Path(__file__).resolve().parents[1]
-    print(json.dumps(verify(root,root/"dist/i01-course-recovery-run-all"),indent=2))
+    print(json.dumps(verify(root,root/"dist/i01-course-outcomes-run-all"),indent=2))

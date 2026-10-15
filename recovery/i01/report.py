@@ -193,8 +193,16 @@ def analysis(run):
                 labels.append("obsolete_value_repeated")
         for label in sorted(set(labels)):
             refs=[e['call'] for e in state.get('events',[])] or [r['id'] for r in tables['calls'] if r['episode']==ep['id']]
+            scope='episode_context'
+            if label in ('malformed_action','truncated_action','provider_failure'):
+                refs=[e['call'] for e in state.get('events',[]) if e.get('error') and (e['error']==label or label=='provider_failure' and e['error'] not in manifest['config']['rubric'])] or refs
+                scope='exact_offending_calls'
+            elif label in ('wrong_submission','obsolete_value_repeated') and state.get('events'):
+                refs=[e['call'] for e in state['events'] if e.get('action') and e['action']['submit'] is not None and
+                      (e['action']['submit']!=truth if label=='wrong_submission' else e['action']['submit']==world['before'])]
+                scope='exact_offending_calls'
             failure_rows.append(dict(episode=ep["id"],label=label,calls=refs,
-                                     basis="Observable record; internal explanation remains ambiguous"))
+                                     call_scope=scope,basis="Observable record; internal explanation remains ambiguous"))
     screens=qualification(manifest,tables,meta)
     summary['qualification']={mode:{k:v for k,v in q.items() if k!='controls'} for mode,q in screens.items()}
     plan=meta.get('execution_plan',{})
@@ -235,6 +243,9 @@ def analysis(run):
                        policy=meta.get(f'automatic/pilot-{n}',{}).get('policy'),
                        protocol_errors=meta.get(f'automatic/pilot-{n}',{}).get('protocol_errors'),
                        recovery_protocol_errors=meta.get(f'automatic/pilot-{n}',{}).get('recovery_protocol_errors'),
+                       prefix_protocol_errors=meta.get(f'automatic/pilot-{n}',{}).get('prefix_protocol_errors'),
+                       control_protocol_errors=meta.get(f'automatic/pilot-{n}',{}).get('control_protocol_errors'),
+                       original_team_completed=meta.get(f'automatic/pilot-{n}',{}).get('original_team_completed'),
                        original_messages=meta.get(f'automatic/pilot-{n}',{}).get('original_messages'),
                        useful_communication=meta.get(f'review/pilot-{n}',{}).get('useful_communication'),
                        human_review=meta.get(f'automatic/pilot-{n}',{}).get('human_review','not_recorded')) for n in (1,2,3)]
@@ -303,6 +314,9 @@ def figures(result, out):
                 ax.plot([i+1,i+1],[r[metric],c[metric]],color="#c5c5c5",linewidth=1,zorder=0)
         ax.set(xlabel="Fixed main world index", ylabel=metric.replace("_", " "), title="Recovery cost; circles success, crosses unsuccessful; unknown omitted")
         ax.set_xlim(.5,20.5); ax.set_xticks(range(1,21)); ax.tick_params(axis="x",labelsize=9)
+        if not any(costs[(w['id'],p)]['complete'] for w in main for p in ('retain','clear')):
+            ax.text(.5,.5,'No main recovery data recorded.\nPilot results are reported separately.',
+                    transform=ax.transAxes,ha='center',va='center',color='#566d80')
         handles, labels = ax.get_legend_handles_labels()
         if handles:
             ax.legend()
@@ -354,9 +368,16 @@ def write_report(run, out, *, plot=True):
     (out/"conversations.html").write_text("\n".join(body),encoding="utf-8")
     (out/"conversations.txt").write_text("\n\n".join(text),encoding="utf-8")
     s = result["summary"]
+    progress=[('Scalar interface qualification',str(result['qualification']['direct']['committed'])+'/12 committed; eligible '+str(result['qualification']['direct']['passed'])),
+              *[(f"Pilot {p['pilot']} admission",'Pending' if p['passed'] is None else 'Admitted recorded outcomes' if p['passed'] else 'Blocked') for p in result['pilot_checks']],
+              ('Main paired coverage',str(s['known_pairs'])+'/20'),
+              ('Failure worker closure',str((s['failure_cleanup'] or {}).get('termination_confirmed','No failure cleanup recorded'))),
+              ('Provider release','Unknown unless established separately')]
     diagnostics_html=['<h2>Admission and protocol diagnostics</h2><p>Scientific gate: <b>'+escape(s['scientific_gate_status'])+'</b>. '+escape('; '.join(s['blocking_reasons']))+'</p>',
         '<p>A successful snapshot preserves evidence; it does not clear a blocked gate. Policy: '+escape(s['execution_policy'])+'. Human review: '+escape(s['human_review_status'])+'.</p>',
         '<p><a href="validation_details.csv">Every scientific action</a> · <a href="protocol_compliance.csv">Phase denominators</a> · <a href="pilot_checks.csv">Pilot admission checks</a></p>',
+        '<table><tr><th>Stage</th><th>Recorded state</th></tr>'+''.join('<tr><td>'+escape(k)+'</td><td>'+escape(v)+'</td></tr>' for k,v in progress)+'</table>',
+        '<p>Admission preserves measured mistakes; it does not mean every action was legal, the original team completed, or recovery succeeded.</p>',
         '<table><tr><th>Call</th><th>Reason</th><th>Admission blocking</th></tr>']
     for row in validation_errors(result):
         diagnostics_html.append('<tr>'+''.join('<td>'+escape(str(row[key]))+'</td>' for key in ('call','reason','admission_blocking'))+'</tr>')

@@ -11,7 +11,7 @@ import zipfile
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from recovery.i01.archive import atomic_json, digest, inventory
-from recovery.i01.policy import RECOVERY_POLICY
+from recovery.i01.policy import OUTCOME_POLICY
 
 
 def build(root, out):
@@ -36,10 +36,12 @@ def build(root, out):
         relative += [Path('tests/test_i01_fresh_run.py'),Path('docs/validation/i01-fresh-run.md')]
         relative += [Path('tests/test_i01_recovery_admission.py'),Path('docs/validation/i01-course-5-repair.md')]
         relative += [Path('docs/validation/i01-course-5-results-analysis.md'),Path('docs/proposals/i01-course-5-fix-and-improvement-proposal.md')]
+        relative += [Path('tests/test_i01_outcome_admission.py'),Path('docs/validation/i01-course-6-repair.md'),Path('docs/validation/i01-course-6-results-analysis.md'),Path('docs/proposals/i01-course-6-fix-and-improvement-proposal.md')]
         relative += [Path('tests/test_i01_run_all.py'),Path('docs/validation/i01-course-4-run-all.md')]
         relative += [Path('notebooks/validation/i01-development')/(name+'.json') for name in
                      ('course3-core-checks','course3-final-checks','course3-format-checks','fresh-run-checks','run-all-checks',
-                      'recovery-final-checks','recovery-guard-checks','recovery-admission-checks','recovery-saved-evidence')]
+                      'recovery-final-checks','recovery-guard-checks','recovery-admission-checks','recovery-saved-evidence',
+                      'outcomes-focused-checks','outcomes-forecast-checks','outcomes-guard-checks','outcomes-checks-summary','outcomes-saved-evidence')]
         # Builder can make a Python-only release before notebook completion.
         for name in ('i01_course_kaggle.ipynb','i01_course_research.ipynb'):
             if (root/'notebooks'/name).exists():relative.append(Path('notebooks')/name)
@@ -56,7 +58,7 @@ def build(root, out):
         head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=root,text=True).strip()
         dirty=subprocess.check_output(["git","status","--porcelain"],cwd=root,text=True).splitlines()
         manifest=dict(format="i01-online-source-v1",git_head=head,working_tree=dirty,
-                      execution_policy=RECOVERY_POLICY,run_all_scope='whole-study',
+                      execution_policy=OUTCOME_POLICY,run_all_scope='whole-study',
                       files=inventory(source),model_weights_included=False,dependencies_included=False)
         atomic_json(source/"source-release.json",manifest)
         target=out/"i01-source.zip"; partial=out/"i01-source.zip.partial"
@@ -80,11 +82,11 @@ def build(root, out):
                     kaggle_input_directory=str(attachment),continuation_inputs=[],
                     attempt_scope='independent-study',run_all_supported=True,run_all_scope='whole-study',
                     first_attempt_ceiling=460,hard_attempt_limit=500,contingency_limit=28,
-                    execution_policy=RECOVERY_POLICY,human_review='retrospective_pending',
+                    execution_policy=OUTCOME_POLICY,human_review='retrospective_pending',
                     implemented=True,kaggle_verified=False,model_attempts=0))
         return target
 
 
 if __name__=="__main__":
-    p=argparse.ArgumentParser(); p.add_argument("--output",type=Path,default=Path("dist/i01-course-recovery-run-all"))
+    p=argparse.ArgumentParser(); p.add_argument("--output",type=Path,default=Path("dist/i01-course-outcomes-run-all"))
     args=p.parse_args(); print(build(Path(__file__).resolve().parents[1],args.output))

@@ -20,6 +20,7 @@ BAD_REPLIES=(
 
 
 class RecoveryAdmission(unittest.TestCase):
+    policy_fixture=RECOVERY_POLICY  # Preserve the historical recovery-only gate.
     setUp=base.RunAll.setUp
     tearDown=base.RunAll.tearDown
 

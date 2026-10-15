@@ -2,6 +2,28 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
+Latest course-6 implementation: the user approves the proposal's recommended
+post-qualification recorded-outcome policy and chooses fresh complete Run All.
+Adoption `a31be4d` binds new plans to
+`i01-recorded-outcomes-run-all-2026-10-15`: twelve scalar qualification controls
+remain strict; ordinary pilot prefix/recovery/later-control mistakes and terminal
+noncompletion remain measured outcomes. Both pilot/main gates share that rule.
+Historical policies/data are preserved. No prompt, feedback, model, inference,
+core semantics or scoring change; no course-6 migration or old-result import.
+Both notebook names remain identical 33-cell complete workflows, now using
+`/kaggle/working/i01-outcomes-study` and source-only packet
+`dist/i01-course-outcomes-run-all/kaggle-input/`. Exact diagnostics, progress,
+failure references, empty-main notices and resource/export forecasts are improved;
+clock, durability, replay/restore and safe cleanup remain. See
+[implementation evidence](validation/i01-course-6-repair.md) and
+[first-execution instructions](I01_KAGGLE.md). GPU research stages are unrun here.
+Thirty-seven distinct focused checks now pass, including a full 460-call scripted
+study with 440 ordinary invalid scientific actions, zero-call numbered replay,
+exact export/restore and closure. A first-export forecast lookup was corrected
+and its case plus the time guard retested. Eight saved-data figure pairs render
+with the new empty-main notice. Source-only installed delivery review follows
+the implementation checkpoint; empirical amended Kaggle stages remain unrun.
+
 Latest course-6 evidence review is documentation only:
 [complete analysis](validation/i01-course-6-results-analysis.md) and
 [repair/improvement proposal](proposals/i01-course-6-fix-and-improvement-proposal.md).

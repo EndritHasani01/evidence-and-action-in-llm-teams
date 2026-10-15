@@ -65,9 +65,9 @@ def serve(run, source):
                     if busy:
                         session.pause.set()
                         raise ValueError('Pause requested; wait for action settlement before cleanup')
-                    from .policy import RECOVERY_POLICY
-                    if session.meta.meta('execution_plan',{}).get('policy')!=RECOVERY_POLICY:
-                        raise ValueError('Unattended cleanup requires the recovery Run All plan')
+                    from .policy import FAILURE_CLEANUP_POLICIES
+                    if session.meta.meta('execution_plan',{}).get('policy') not in FAILURE_CLEANUP_POLICIES:
+                        raise ValueError('Unattended cleanup requires an approved Run All plan')
                     value=session.failure_cleanup(req['action'],req['error'])
                 elif op=="reconcile":
                     if busy: raise ValueError("pause before reconciliation")

@@ -6,6 +6,25 @@ Prepared 14 October 2026 against repository `0b0a44a3cf3a0306559a716e5df45b3dbe0
 
 This is the implementation reference for the I-01 course study explicitly adopted by the user on 14 October 2026. [Specification §12](../../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime) is authoritative. Approval covers implementation and focused lightweight checks only; actual Kaggle readiness, qualification, pilots, freeze and main remain operator stages. The existing roadmap points here instead of duplicating the task list.
 
+Latest course-6 implementation: adoption `a31be4d` approves a fresh complete
+Run All under `i01-recorded-outcomes-run-all-2026-10-15`. The fixed twelve direct
+qualification controls stay strict; ordinary pilot prefix/recovery/later-control
+mistakes and terminal noncompletion become outcomes, without changing action
+legality/delivery/scoring. Terminal committed evidence, runtime/isolation/source,
+spending, current-load headroom and resources still gate both pilot/main admission.
+M0–M7 software deliverables stay included: 33 ordinary cells, three pilots, twenty
+fixed main worlds, resident replicas, conversations, checkpoints, reports/eight
+figure pairs, portable export, exact-source restore and safe closure. New package:
+`dist/i01-course-outcomes-run-all/`; new study directory `i01-outcomes-study`.
+No old-result import, course-6 migration, prompt/feedback/model redesign or GPU
+execution. [Repair evidence](../validation/i01-course-6-repair.md) separates
+focused/scripted/installed validation from future actual Kaggle results.
+Thirty-seven distinct focused checks pass after a corrected forecast edge case,
+including a complete 460-call scripted twenty-world study with 440 invalid
+scientific outcomes, exact replay/restore and safe closure. Eight figure pairs
+render from saved evidence. M0–M7 software paths are implemented; the amended
+native Kaggle qualification/pilot/main stages remain operator validation.
+
 Latest course-5 follow-up: implement the approved recovery-specific admission
 repair and a fresh complete Run All. Specification §12 adopts
 `i01-recovery-admission-run-all-2026-10-15` at `56a8fc8`. All WBS deliverables stay

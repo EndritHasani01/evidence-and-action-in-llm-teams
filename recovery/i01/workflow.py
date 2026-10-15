@@ -8,6 +8,7 @@ from pathlib import Path
 import shutil
 import threading
 from time import monotonic
+from math import ceil
 import uuid
 import tempfile
 import traceback
@@ -16,7 +17,7 @@ from .archive import atomic_json, digest, export, extract_selected, inventory
 from .core import (apply_outcome, canonical, initial_episode, manifests, messages,
                    next_agent, permitted_view, seed_for, validate_action)
 from .store import Admission, Store, utc
-from .policy import (PROTOCOL_POLICY, RECOVERY_POLICY, AUTOMATIC_POLICIES,
+from .policy import (PROTOCOL_POLICY, RECOVERY_POLICY, OUTCOME_POLICY, AUTOMATIC_POLICIES, FAILURE_CLEANUP_POLICIES,
                      CAMPAIGN_STUDIES, outcome_action, validation_detail, runtime_safe, admission_blocks)
 
 
@@ -539,9 +540,9 @@ class Session:
             self.meta.meta('qualification_policy')!=PROTOCOL_POLICY or
             self.admission.usage()['attempts'] or self.meta.meta('freeze')):
             raise ValueError('Run All plan requires a new independent direct study before its first model call')
-        value=dict(policy=RECOVERY_POLICY,at=utc(),mode='direct',manifest=self.manifest,
+        value=dict(policy=OUTCOME_POLICY,at=utc(),mode='direct',manifest=self.manifest,
                    settings=self.request(dict(complete_input=[0]),0,'direct',control=True)['settings'],
-                   pilot_admission='complete durable phases; legal prefix/original submissions and controls; recovery errors and all accuracy diagnostic',
+                   pilot_admission='fixed scalar qualification; terminal committed pilot phases/controls and intact runtime/resources; ordinary model errors and original completion diagnostic',
                    main_admission='three objective pilot passes and adequate measured resources; no settings tuning',
                    main_batches=10,worlds_per_batch=2,human_review='retrospective_pending',
                    useful_communication=None,human_understanding_verified=False,external_download_verified=False)
@@ -578,8 +579,9 @@ class Session:
         checks=dict(terminal_evidence=all(s and s.get('terminal') for s in states),
                     committed_calls=bool(rows) and all(r['outcome'] and r['effect_committed'] for r in rows),
                     every_episode_has_calls=all(any(r['episode']==key for r in rows) for key in required))
-        if pilot:
-            checks.update(original_team_completed=len(prefix.get('submissions',[]))==2 and all(v is not None for v in prefix['submissions']),
+        original_completed=len(prefix.get('submissions',[]))==2 and all(v is not None for v in prefix['submissions'])
+        if pilot and policy!=OUTCOME_POLICY:
+            checks.update(original_team_completed=original_completed,
                           valid_protocol=not any(d['admission_blocking'] for d in diagnostics))
             if policy!=RECOVERY_POLICY:
                 checks['valid_protocol'] &= not any((s or {}).get('error') or any(e.get('error') for e in (s or {}).get('events',[])) for s in states)
@@ -589,6 +591,9 @@ class Session:
         checks['runtime_integrity']=all(d['runtime_safe'] for d in diagnostics) and not bool(self.meta.meta('model_defect'))
         return dict(world=world['id'],passed=all(checks.values()),checks=checks,recorded_calls=len(rows),
                     protocol_errors=protocol_errors,validation=diagnostics,
+                    original_team_completed=original_completed,
+                    prefix_protocol_errors=sum(bool(d['error']) for d in diagnostics if d['phase']=='prefix'),
+                    control_protocol_errors=sum(bool(d['error']) for d in diagnostics if d['phase'].startswith('control-')),
                     recovery_protocol_errors=sum(bool(d['error']) for d in diagnostics if d['phase'] in ('retain','clear')),
                     original_messages=sum(e.get('action',{}).get('message') is not None for e in prefix.get('events',[]) if e.get('action')),
                     useful_communication=None,human_review='retrospective_pending')
@@ -609,7 +614,11 @@ class Session:
         previous=self.meta.meta('automatic/pilot-'+str(number))
         if previous!=value:self.meta.put_meta('automatic/pilot-'+str(number),value)
         if not value['passed']:
-            raise ValueError('Automatic pilot check failed: '+', '.join(k for k,v in value['checks'].items() if not v))
+            failed=', '.join(k for k,v in value['checks'].items() if not v)
+            blocking=[d for d in value['validation'] if d['admission_blocking']]
+            details='; '.join(d['call']+': '+str(d['reason'])+' ['+d['phase']+']' for d in blocking)
+            raise ValueError(f"Automatic pilot check failed: {failed}. Pilot {number}; policy {value['policy']}. "+
+                             (details if details else 'Inspect the saved durable/runtime/resource checks.'))
         return value
 
     def admit_main(self):
@@ -651,12 +660,34 @@ class Session:
                 elif not state.get("terminal"):
                     remaining+=sum(3-state["turns"][a] for a in range(2) if state["submissions"][a] is None)
         remaining += sum(r.get("control_revised_"+mode) is None for r in result["worlds"] if r["group"]=="main")
+        pilot_remaining=0
+        for w in self.manifest['worlds']:
+            if w['group']!='pilot':continue
+            store=self.stores[w['device']]
+            for phase in ('prefix','retain','clear'):
+                state=store.state(w['id']+'/'+phase)
+                if not state:pilot_remaining+=6
+                elif not state.get('terminal'):
+                    pilot_remaining+=sum(3-state['turns'][agent] for agent in range(2) if state['submissions'][agent] is None)
+            pilot_remaining+=sum(not store.state(f"{w['id']}/control-{phase}-{mode}") or
+                                 not store.state(f"{w['id']}/control-{phase}-{mode}").get('terminal') for phase in ('original','revised'))
+        pending_main=sum(w['group']=='main' and (any(w[p] is None for p in ('prefix','retain','clear')) or w.get('control_revised_'+mode) is None) for w in result['worlds'])
+        pending_pilots=sum(w['group']=='pilot' and (any(w[p] is None for p in ('prefix','retain','clear')) or any(w.get('control_'+p+'_'+mode) is None for p in ('original','revised'))) for w in result['worlds'])
+        work_seconds=(remaining+pilot_remaining)*(max(observed)*1.25+5) if observed else None
+        checkpoint_max=getattr(self,'checkpoint_timing',self.meta.meta('checkpoint_timing',{})).get('max_seconds')
+        export_count=pending_main+ceil(pending_main/2)+2*pending_pilots+4
+        if work_seconds is not None:export_count+=ceil(work_seconds/self.config['checkpoint_seconds'])
+        overhead=export_count*checkpoint_max if checkpoint_max is not None else None
         usage = self.admission.usage()
         return dict(worst_remaining_first_attempts=remaining,remaining_attempt_allowance=usage["remaining"],
+                    remaining_pilot_first_attempts=pilot_remaining,
+                    estimated_remaining_exports=export_count,estimated_checkpoint_overhead_seconds=overhead,
+                    whole_remaining_wall_seconds=(work_seconds+overhead+self.config['export_reserve_seconds'] if work_seconds is not None and overhead is not None else None),
+                    whole_forecast_basis='remaining pilot/main calls, observed maximum +25% and 5s/call, observed export maximum; heuristic, excludes setup/load and abnormal tails',
                     forecast_scope='main_only; not a whole-session completion guarantee',
                     remaining_pilots=sum(not self.meta.meta('automatic/pilot-'+str(n),{}).get('passed') for n in (1,2,3)),
                     session_observation=self.meta.meta('window',{}).get('observation'),
-                    measured_checkpoint_seconds=self.meta.meta('checkpoint_timing',{}).get('max_seconds'),
+                    measured_checkpoint_seconds=checkpoint_max,
                     observed_max_ready_seconds=max(observed) if observed else None,
                     conservative_wall_seconds=(remaining*(max(observed)*1.25+5)+self.config["export_reserve_seconds"] if observed else None),
                     timeout_worst_case_seconds=remaining*self.config[mode+"_timeout_seconds"]+self.config["export_reserve_seconds"],
@@ -685,11 +716,13 @@ class Session:
                 not review.get("useful_communication") or not review.get("usable")):
                 raise ValueError("three complete original teams/controls and documented communication/usability reviews required")
         pilot_calls = [t for t in result["traces"] if t["episode"].startswith("pilot-")]
-        if policy!=RECOVERY_POLICY and any(any(json.loads(t["outcome"]).get(k) for k in ('truncated','failure','framing_error')) for t in pilot_calls if t["outcome"]):
+        if policy not in (RECOVERY_POLICY,OUTCOME_POLICY) and any(any(json.loads(t["outcome"]).get(k) for k in ('truncated','failure','framing_error')) for t in pilot_calls if t["outcome"]):
             raise ValueError("pilot truncation/provider defects not accepted")
-        if policy!=RECOVERY_POLICY and any(ev.get("error") for s in self.stores for ep in s.rows("episodes") if ep["id"].startswith("pilot-") for ev in json.loads(ep["state"]).get("events",[])):
+        if policy not in (RECOVERY_POLICY,OUTCOME_POLICY) and any(ev.get("error") for s in self.stores for ep in s.rows("episodes") if ep["id"].startswith("pilot-") for ev in json.loads(ep["state"]).get("events",[])):
             raise ValueError("pilot malformed actions not accepted")
         forecast = self.forecast()
+        if policy==OUTCOME_POLICY and (forecast['whole_remaining_wall_seconds'] is None or self.remaining_time()<forecast['whole_remaining_wall_seconds']):
+            raise ValueError('documented adequate attempt/time forecast including remaining work and checkpoint overhead required')
         if (not notes.strip() or forecast["remaining_attempt_allowance"] is None or
             forecast["remaining_attempt_allowance"] < forecast["worst_remaining_first_attempts"] or
             forecast["conservative_wall_seconds"] is None or self.remaining_time() < forecast["conservative_wall_seconds"] or
@@ -830,7 +863,7 @@ class Session:
                 if action not in methods:
                     raise ValueError("unknown finite action")
                 result = methods[action](**args)
-                if self.meta.meta('execution_plan',{}).get('policy')==RECOVERY_POLICY:
+                if self.meta.meta('execution_plan',{}).get('policy') in FAILURE_CLEANUP_POLICIES:
                     if action in ('selfcheck','readiness','screen','envelope') and isinstance(result,dict) and result.get('passed') is False:
                         raise ValueError(action+' prerequisite failed; inspect saved evidence')
                     if action=='readiness' and result.get('needs_review') and not self.meta.meta('review/readiness'):
@@ -850,7 +883,7 @@ class Session:
                     checkpoint=self.checkpoint(args.get('boundary','action/snapshot') if action=='snapshot' else 'action/'+action)
                 except Exception as exc:
                     checkpoint=dict(error=f"{type(exc).__name__}: {exc}",last_valid_preserved=True)
-                if self.meta.meta('execution_plan',{}).get('policy')==RECOVERY_POLICY and (error or checkpoint.get('error')):
+                if self.meta.meta('execution_plan',{}).get('policy') in FAILURE_CLEANUP_POLICIES and (error or checkpoint.get('error')):
                     if not error:
                         error='Checkpoint failed: '+checkpoint['error']
                         self.meta.put_meta('action',dict(name=action,args=args,status='stopped',error=error,at=utc()))

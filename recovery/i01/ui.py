@@ -231,8 +231,8 @@ class Operator:
         if receipt['checkpoint']=='pending':
             try:self.external_checkpoint('operator-error-'+action)
             except (ValueError,OSError) as exc:print('Failure checkpoint unavailable: '+str(exc))
-            from .policy import RECOVERY_POLICY
-            if status['gates'].get('execution_plan',{}).get('policy')==RECOVERY_POLICY and not status['gates'].get('failure_cleanup'):
+            from .policy import FAILURE_CLEANUP_POLICIES
+            if status['gates'].get('execution_plan',{}).get('policy') in FAILURE_CLEANUP_POLICIES and not status['gates'].get('failure_cleanup'):
                 try:self.client.command('failure_cleanup',timeout=120,action=action,error=str(error))
                 except (ValueError,OSError) as exc:print('Cleanup unconfirmed: '+str(exc)+'; stop Kaggle after saving available evidence.')
 
@@ -366,6 +366,11 @@ class Operator:
                 _table(['Prepared scope','Value'],[('Worlds',', '.join(payload.get('worlds',[])) or 'No remaining worlds'),('First-attempt ceiling',payload.get('first_ceiling')),('Eligible retry allowance',payload.get('eligible_retry_allowance'))])
                 if payload.get('forecast'):
                     _table(['Resource forecast','Value'],list(payload['forecast'].items()))
+            if action=='check_pilot':
+                _table(['Pilot admission','Value'],[('Policy',payload.get('policy')),('Evidence admitted',payload.get('passed')),
+                    ('Original team completed (diagnostic)',payload.get('original_team_completed')),
+                    ('Invalid prefix / recovery / controls',str(payload.get('prefix_protocol_errors'))+' / '+str(payload.get('recovery_protocol_errors'))+' / '+str(payload.get('control_protocol_errors')))],'Recorded outcomes; admission is not protocol perfection')
+                _table(['Blocking prerequisite','Passed'],list(payload.get('checks',{}).items()))
             if action=='selfcheck':
                 _table(['Lightweight check','State'],[(name,'Passed') for name in payload.get('checks',[])])
                 print('Native tokenizer: '+('passed' if payload.get('native_tokenizer') else 'not accepted on this host'))

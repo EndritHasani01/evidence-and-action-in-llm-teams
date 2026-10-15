@@ -12,7 +12,7 @@ from unittest.mock import patch
 from recovery.i01.archive import extract_selected
 from recovery.i01.core import canonical
 from recovery.i01.notebook import Study
-from recovery.i01.policy import RECOVERY_POLICY
+from recovery.i01.policy import OUTCOME_POLICY
 from recovery.i01.report import analysis, write_report
 from recovery.i01.workflow import initialize, Session
 from tests.test_i01_course3_repairs import Scripted, prepare
@@ -33,6 +33,8 @@ class RunAll(unittest.TestCase):
         for n,store in enumerate(self.s.stores):store.put_meta('resident_load',f'{self.s.session_id}/scripted-{n}')
         self.no_plots=patch('recovery.i01.report.figures',return_value=None);self.no_plots.start()
         self.s.plan_execution()
+        if getattr(self,'policy_fixture',OUTCOME_POLICY)!=OUTCOME_POLICY:
+            self.s.meta.put_meta('execution_plan',dict(self.s.meta.meta('execution_plan'),policy=self.policy_fixture))
         self.s.readiness();self.s.screen('direct');self.s.envelope()
     def tearDown(self):
         self.s.close();self.no_plots.stop();self.temp.cleanup()
@@ -41,13 +43,11 @@ class RunAll(unittest.TestCase):
 
     def test_whole_study_through_actual_facade_reports_archive_and_free_replay(self):
         s=self.s
-        # Course-5's exact legal-JSON/illegal-wait pattern in every recovery.
+        # Worst-case ordinary failures in EVERY phase/control after qualification.
         for worker in self.workers:
             def reply(req):
-                invalid='revision_notice' in req['view']
-                action=dict(message='I will wait for the partner submission.' if invalid else None,
-                            submit=None if invalid else -1000,wait=invalid)
-                return dict(failure=None,visible_text=canonical(action),truncated=False,
+                action=dict(message='I will wait for the partner submission.',submit=None,wait=True)
+                return dict(failure=None,visible_text='bad JSON' if req.get('control') else canonical(action),truncated=False,
                             generated_tokens=1,ready_seconds=.001,input_tokens=1)
             worker.reply=reply
         class Client:
@@ -77,7 +77,7 @@ class RunAll(unittest.TestCase):
         self.assertEqual(result['summary']['known_pairs'],20)
         self.assertEqual(result['summary']['paired_counts'],{'neither':20})
         self.assertEqual(result['summary']['qualification']['direct']['correct'],0)
-        self.assertEqual(result['summary']['attempts'],368)
+        self.assertEqual(result['summary']['attempts'],460)
         self.assertEqual(result['summary']['prior_attempts'],0)
         self.assertEqual(result['summary']['human_review_status'],'retrospective_pending')
         self.assertEqual(s.meta.meta('execution_plan'),plan)
@@ -85,25 +85,26 @@ class RunAll(unittest.TestCase):
         self.assertTrue(all(r['passed'] and r['useful_communication'] is None for r in result['pilot_checks']))
         self.assertTrue((self.run/'reports/pilot_checks.csv').is_file())
         errors=[r for r in result['validation_details'] if r['error']]
-        self.assertEqual(len(errors),276)
-        self.assertTrue(all(r['reason']=='wait_requires_null_message_and_submit' and not r['admission_blocking'] for r in errors))
+        self.assertEqual(len(errors),440)
+        self.assertTrue(all(r['reason'] in ('wait_requires_null_message_and_submit','invalid_json') and not r['admission_blocking'] for r in errors))
+        self.assertTrue(all(r['original_team_completed'] is False for r in result['pilot_checks']))
         self.assertEqual(result['summary']['scientific_gate_status'],'complete')
         restored=Path(self.temp.name)/'restored'
         extract_selected(self.run/'exports/latest.zip',restored)
         self.assertEqual(analysis(restored),result)
 
-    def test_pilot_protocol_failure_is_recorded_and_blocks_next_pilot_and_main(self):
+    def test_pilot_protocol_failure_is_recorded_without_veto_but_all_pilots_required(self):
         for worker in self.workers:
             worker.reply=lambda req:dict(failure=None,visible_text='bad JSON',truncated=False,generated_tokens=1,ready_seconds=.001,input_tokens=1)
         self.s.pilot(1)
-        with self.assertRaisesRegex(ValueError,'valid_protocol'):self.s.check_pilot(1)
+        receipt=self.s.check_pilot(1)
+        self.assertTrue(receipt['passed']);self.assertEqual(receipt['protocol_errors'],20)
         before=sum(w.calls for w in self.workers)
-        with self.assertRaisesRegex(ValueError,'Previous automatic'):self.s.pilot(2)
         with self.assertRaisesRegex(ValueError,'Three passing'):self.s.admit_main()
-        self.assertFalse(self.s.meta.meta('automatic/pilot-1')['passed'])
+        self.assertTrue(self.s.meta.meta('automatic/pilot-1')['passed'])
         self.assertEqual(sum(w.calls for w in self.workers),before)
 
-    def test_no_message_quality_gate_but_original_team_must_finish(self):
+    def test_no_message_or_original_completion_gate_after_qualification(self):
         for worker in self.workers:
             worker.reply=lambda req:dict(failure=None,visible_text=canonical(dict(message=None,submit=-1000,wait=False)),
                                         generated_tokens=1,ready_seconds=.001,input_tokens=1)
@@ -111,12 +112,13 @@ class RunAll(unittest.TestCase):
         receipt=self.s.check_pilot(1)
         self.assertTrue(receipt['passed']);self.assertEqual(receipt['original_messages'],0)
         self.assertIsNone(receipt['useful_communication'])
-        # A protocol-legal all-wait original phase is still incomplete, not useful.
+        # A legal all-wait original is a recorded terminal failure, not unknown.
         for worker in self.workers:
             worker.reply=lambda req:dict(failure=None,visible_text=canonical(dict(message=None,submit=-1000 if req.get('control') else None,wait=not req.get('control',False))),
                                         generated_tokens=1,ready_seconds=.001,input_tokens=1)
         self.s.pilot(2)
-        with self.assertRaisesRegex(ValueError,'original_team_completed'):self.s.check_pilot(2)
+        receipt=self.s.check_pilot(2)
+        self.assertTrue(receipt['passed']);self.assertFalse(receipt['original_team_completed'])
 
     def test_main_invalid_actions_are_outcomes_and_numbered_scopes_do_not_skip(self):
         self.pilots();self.s.admit_main()
@@ -139,7 +141,7 @@ class RunAll(unittest.TestCase):
         self.s.remaining_time=lambda:forecast['conservative_wall_seconds']-1
         with self.assertRaisesRegex(ValueError,'adequate attempt/time'):self.s.admit_main()
         self.assertIsNone(self.s.meta.meta('freeze'))
-        self.assertEqual(self.s.meta.meta('execution_plan')['policy'],RECOVERY_POLICY)
+        self.assertEqual(self.s.meta.meta('execution_plan')['policy'],OUTCOME_POLICY)
 
 
 if __name__=='__main__':unittest.main()

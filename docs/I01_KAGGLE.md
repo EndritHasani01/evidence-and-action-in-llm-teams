@@ -7,14 +7,14 @@ remain in their historical release directories. No course-2/3/4/5 result is impo
 
 ## First execution
 
-1. Upload **dist/i01-course-recovery-run-all/i01_course_kaggle.ipynb** to a fresh Kaggle
+1. Upload **dist/i01-course-outcomes-run-all/i01_course_kaggle.ipynb** to a fresh Kaggle
    notebook. The research filename works identically; you need only one.
-2. Create one private dataset from **dist/i01-course-recovery-run-all/kaggle-input/**,
+2. Create one private dataset from **dist/i01-course-outcomes-run-all/kaggle-input/**,
    containing only **i01-source.zip**, and attach it. Select **GPU T4 x2** and
    enable Internet. Remove old active source datasets; restart the kernel when
    replacing an already imported source release. Only a matching whole-study
    source packet is accepted, including ZIP or Kaggle-expanded roots.
-3. Check the first cell. It defaults to `/kaggle/working/i01-recovery-study` and
+3. Check the first cell. It defaults to `/kaggle/working/i01-outcomes-study` and
    a **700-minute fresh-session planning window**, leaving twenty minutes against
    your approximately twelve-hour maximum. The evidence note explicitly says
    provider allowance/deadline is unverified. Reduce the minutes to actual time
@@ -26,7 +26,7 @@ remain in their historical release directories. No course-2/3/4/5 result is impo
    measured main admission, all ten fixed two-world main batches, full reporting,
    verified checkpoint export and worker/controller shutdown. No forms, review
    placeholders, freeze-note fields, batch acknowledgements or further Run clicks.
-5. Download **/kaggle/working/i01-recovery-study/exports/latest.zip**, reports and
+5. Download **/kaggle/working/i01-outcomes-study/exports/latest.zip**, reports and
    the executed notebook using the displayed links. Save the existing output;
    do not schedule another inference run solely to save it. Stop Kaggle through
    its UI to release the allocation. Process closure cannot prove deallocation
@@ -41,15 +41,20 @@ worlds or trigger an accuracy cutoff. Direct qualification still requires twelve
 committed, protocol-valid controls. Readiness/headroom and strict isolation gates
 remain. Thinking is not selected and there is no model fallback.
 
-Each pilot requires terminal prefix/retain/clear and both controls, both original
-team submissions, legal original-prefix actions and legal original/revised controls, committed durable
-results, reconciled spending and inspectable checkpoint evidence. Incorrect
-submissions pass the completion check. Recovery malformed, truncated, framing, illegal action and noncompletion outcomes are measured failures and do not veto admission. Unknown termination or real backend faults still block. The new policy is `i01-recovery-admission-run-all-2026-10-15`; historical strict plans keep their meaning. Message counts and entire conversations
-are diagnostics. Useful communication, human understanding and mechanisms remain
-**retrospective review pending**; software never invents human approval.
+Each pilot requires terminal prefix/retain/clear and both controls, committed
+raw/effects, reconciled spending, intact runtime and inspectable exports. After
+the fixed twelve-control scalar qualification, ordinary prefix, recovery and
+later pilot-control wrong/invalid/truncated/framing replies and terminal
+noncompletion are measured outcomes. Original-team completion and legal-action
+counts are diagnostics, not admission vetoes. Invalid actions still deliver
+nothing and consume a turn. The policy is
+`i01-recorded-outcomes-run-all-2026-10-15`; historical strict/recovery-only plans
+keep their original meaning. Source/privacy/backend/cache/numerical faults,
+unknown termination/spending and inadequate resources still block. Message
+quality and mechanisms remain **retrospective review pending**.
 
 All three pilots must pass before automatic main resource admission. The measured
-attempt/time forecast must fit the unchanged settings and configured deadline.
+attempt/time forecast, including remaining work and checkpoint overhead, must fit the unchanged settings and configured deadline.
 The notebook then runs all twenty predetermined main worlds in ten numbered
 batches, one world per logical slot. Wrong/malformed/truncated recorded main
 replies remain measured outcomes; real runtime, unresolved evidence, storage,
@@ -71,7 +76,7 @@ eligible retries, restores and reload probes remain spent. Previous studies are
 preserved historical evidence, never silently imported or pooled.
 
 Progress shows call/world/phase/slot, physical spending, action outcomes and
-checkpoints. `validation_details.csv` and `protocol_compliance.csv` separate syntax, schema and legal-action compliance by phase; invalid raw calls appear first in inspection. The original clock timestamp/minutes/estimate basis survives setup. Forecasts are labelled main-only, not a whole-session guarantee. Models remain resident through inspection and research stages.
+checkpoints. `validation_details.csv` and `protocol_compliance.csv` separate syntax, schema and legal-action compliance by phase; invalid raw calls appear first in inspection. The original clock timestamp/minutes/estimate basis survives setup. Forecasts distinguish the original main-only calculation from remaining pilot/main work and measured export overhead; neither guarantees provider duration. Models remain resident through inspection and research stages.
 Each pilot shows its complete conversation and cumulative archive; every main
 batch displays its exact worlds, results and cumulative archive. Every settled
 error also attempts export. Checkpoints require no clicks and are not disabled
@@ -100,9 +105,10 @@ and record real human rubric annotations with exact call references; automatic
 checks do not establish meaningful communication or any favorable scientific
 mechanism. Adding a review never changes the prespecified primary population.
 
-The [course-4 audit and implementation evidence](validation/i01-course-4-run-all.md)
-distinguishes the already successful preparation runtime from this newly
-implemented full workflow. Target Kaggle pilot/main execution remains unverified.
+The [course-6 repair evidence](validation/i01-course-6-repair.md)
+distinguishes observed course-6 preparation/pilot behavior from this newly
+implemented broader admission policy. No course-6 migration or prompt/feedback
+change is selected; this new study starts at zero with its own unchanged ceiling. Target Kaggle pilot/main execution remains unverified.
 
 ## Explicit session commands
 

@@ -6,7 +6,9 @@ from .core import validate_action
 PROTOCOL_POLICY = "i01-direct-protocol-2026-10-15"
 AUTOMATIC_POLICY = "i01-whole-study-run-all-2026-10-15"
 RECOVERY_POLICY = "i01-recovery-admission-run-all-2026-10-15"
-AUTOMATIC_POLICIES = (AUTOMATIC_POLICY, RECOVERY_POLICY)
+OUTCOME_POLICY = "i01-recorded-outcomes-run-all-2026-10-15"
+AUTOMATIC_POLICIES = (AUTOMATIC_POLICY, RECOVERY_POLICY, OUTCOME_POLICY)
+FAILURE_CLEANUP_POLICIES = (RECOVERY_POLICY, OUTCOME_POLICY)
 LEGACY_POLICY = "i01-competence-11-of-12"
 COURSE_2_STUDY = 'c2973855-84fa-411d-9f6c-a08f8acc79d6'
 COURSE_3_STUDY = 'de1b347e-2cb7-41e5-a8b9-2789abda2da3'
@@ -67,6 +69,7 @@ def admission_blocks(policy, group, phase, detail, *, safe=True):
     if not safe:return True
     if group=='qualification':return not detail['legal_action']
     if group=='pilot':
+        if policy==OUTCOME_POLICY:return False
         return not detail['legal_action'] and (policy!=RECOVERY_POLICY or phase not in ('retain','clear'))
     return False
 

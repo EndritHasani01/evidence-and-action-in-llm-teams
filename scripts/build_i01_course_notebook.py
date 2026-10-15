@@ -20,7 +20,7 @@ def repaired_source_manifest(path):
         else:
             with zipfile.ZipFile(path) as archive:
                 manifest = json.loads(archive.read('source-release.json'))
-        return manifest if manifest.get('execution_policy') == 'i01-recovery-admission-run-all-2026-10-15' and all('recovery/i01/'+name+'.py' in manifest['files'] for name in ('policy','continuation')) else None
+        return manifest if manifest.get('execution_policy') == 'i01-recorded-outcomes-run-all-2026-10-15' and all('recovery/i01/'+name+'.py' in manifest['files'] for name in ('policy','continuation')) else None
     except (OSError, ValueError, KeyError, zipfile.BadZipFile):
         return None
 unique_sources = {}
@@ -58,7 +58,7 @@ with tempfile.TemporaryDirectory(prefix='i01-source-', dir='/kaggle/working') as
     release = json.loads((staging/'source-release.json').read_text())
     if release['format'] != 'i01-online-source-v1':
         raise RuntimeError('Wrong source release format')
-    if release.get('execution_policy') != 'i01-recovery-admission-run-all-2026-10-15' or not all('recovery/i01/'+name+'.py' in release['files'] for name in ('policy','continuation')):
+    if release.get('execution_policy') != 'i01-recorded-outcomes-run-all-2026-10-15' or not all('recovery/i01/'+name+'.py' in release['files'] for name in ('policy','continuation')):
         raise RuntimeError('This notebook requires the whole-study Run All source packet; preserve old checkpoints and replace the active source attachment.')
     head = release.get('git_head', '')
     if len(head) != 40 or any(c not in '0123456789abcdef' for c in head):
@@ -109,9 +109,11 @@ Models stay resident throughout the research stages. Thinking is not selected.
 
 The fresh study starts at **0/500 physical attempts**; direct-only first attempts
 are at most **460**, with at most **28 contingency** attempts. Wrong mathematics
-is measured, never an admission threshold. Qualification and pilot prefix/control
-protocol gates remain strict. Recovery action errors remain recorded failures,
-without vetoing pilot admission. Evidence/runtime and resource gates stop safely.
+is measured, never an admission threshold. The twelve scalar qualification
+controls must be legal. After qualification, ordinary pilot errors, including
+prefix, recovery and later controls, remain measured outcomes. Original-team
+noncompletion does not veto admission. Invalid actions still deliver nothing.
+Durable evidence, runtime and resource gates stop safely.
 Every pilot, batch and settled error exports a
 cumulative checkpoint. No existing outcome is regenerated on rerun.
 
@@ -124,7 +126,7 @@ Human communication/mechanism review remains retrospective and explicitly pendin
     for args in [
         ('configuration','1. Fresh-session configuration',
          'Defaults assume a new approximately twelve-hour allocation. Check actual GPU allowance; lower the minutes for any time already elapsed. The evidence note describes an estimate truthfully. Do not copy a previous session deadline or extend the window by rerunning.',
-         'RUN_DIR = "/kaggle/working/i01-recovery-study"\nSESSION_REMAINING_MINUTES = 700  # Conservative fresh-session estimate; reduce to actual time left.\nSESSION_ALLOWANCE_EVIDENCE = "User reports an approximately 12-hour session; 700-minute fresh-session planning bound, provider quota/deadline not independently verified."\n'),
+         'RUN_DIR = "/kaggle/working/i01-outcomes-study"\nSESSION_REMAINING_MINUTES = 700  # Conservative fresh-session estimate; reduce to actual time left.\nSESSION_ALLOWANCE_EVIDENCE = "User reports an approximately 12-hour session; 700-minute fresh-session planning bound, provider quota/deadline not independently verified."\n'),
         ('workspace','2. Verify source and inspect the workspace','Only the matching whole-study source release is accepted. Inventory only; no model loading or inference.',BOOTSTRAP),
         ('session-window','3. Record the fixed execution window','Record BEFORE installation and downloads. Reruns retain this deadline. No provider assignment, quota or release is inferred from the configured planning window.',
          'study.configure_session(remaining_minutes=SESSION_REMAINING_MINUTES,\n    evidence=SESSION_ALLOWANCE_EVIDENCE, basis="planning_estimate");\n','window'),
@@ -154,7 +156,7 @@ Human communication/mechanism review remains retrospective and explicitly pendin
               f'Pilot {number} only: prefix, literal retain/clear siblings and original/revised controls, at most twenty first attempts. Conversation and cumulative checkpoint appear automatically. No outcome-based replacement or extra seed.',
               f'study.run_pilot({number});\n','pilot',True)
         stage(f'check-pilot-{number}',f'Check pilot {number} automatically',
-              'Require complete durable terminal episodes/controls, both original-team submissions, legal prefix/control actions, reconciled spending and intact runtime/export evidence. Recovery malformed/truncated/illegal actions remain measured failures and do not veto admission. Mathematical errors and message quality do not gate admission. Useful communication remains unreviewed.',
+              'Require every scheduled episode/control to have terminal committed evidence, reconciled spending and intact runtime/export evidence. All ordinary prefix/recovery/control mistakes and terminal noncompletion are measured outcomes after scalar qualification. Compliance and original-team completion are shown separately. Useful communication remains unreviewed.',
               f'study.check_pilot({number});\n','check_pilot')
     stage('admit-main','Admit the unchanged main experiment',
           'All three objective pilot checks must pass. Record measured attempt/time feasibility under the already locked configuration. No human approval is invented and no pilot-driven tuning occurs. An inadequate forecast stops with a partial checkpoint.',
@@ -175,9 +177,9 @@ Human communication/mechanism review remains retrospective and explicitly pendin
           'study.finish_session();\n','shutdown')
     markdown("""## Results, errors and later restoration
 
-The cumulative checkpoint is **/kaggle/working/i01-recovery-study/exports/latest.zip**;
+The cumulative checkpoint is **/kaggle/working/i01-outcomes-study/exports/latest.zip**;
 reports, all conversations/raw outcomes, CSV tables and figures are under
-**/kaggle/working/i01-recovery-study/reports/**. Download them and the executed
+**/kaggle/working/i01-outcomes-study/reports/**. Download them and the executed
 notebook outside the session. Save existing output without another inference run.
 
 A real prerequisite failure stops further admission, attempts a settled partial export, closes workers with recorded acknowledgements and keeps the last valid
@@ -215,7 +217,7 @@ human understanding, download completion or a favorable scientific effect.
                               language_info=dict(name='python'),kaggle=dict(accelerator='gpu',isInternetEnabled=True),
                               i01=dict(regime='i01-course-v1',research_execution='whole-study Run All; finite numbered stages',
                                        qualification_policy='i01-direct-protocol-2026-10-15',
-                                       execution_policy='i01-recovery-admission-run-all-2026-10-15',attempt_scope='independent-study',
+                                       execution_policy='i01-recorded-outcomes-run-all-2026-10-15',attempt_scope='independent-study',
                                        run_all_supported=True,run_all_scope='whole-study',run_all_can_execute_inference=True,
                                        first_attempt_ceiling=460,hard_attempt_limit=500,contingency_limit=28,
                                        human_review='retrospective_pending',kaggle_verified=False)))
