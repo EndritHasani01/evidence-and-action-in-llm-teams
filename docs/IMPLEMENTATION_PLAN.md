@@ -2,6 +2,24 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
+Latest empirical update: the supplied **course-7** run completes all 33 notebook
+code cells and all **20/20 intended main pairs** under the recorded-outcome
+policy. The [report-ready analysis](validation/i01-course-7-results-analysis.md)
+and [read-only audit](../notebooks/validation/i01-course7-analysis/README.md)
+verify archive/source/wheel identity, all 29 worlds, 206 team-call and 38 control
+replays, exact report reconstruction and the paired bootstrap intervals.
+Audit checkpoint: `7d8f854`. Both policies succeed on 2/20 worlds; clear minus
+retain is 0 pp (exploratory 95% interval -10 to +10 pp). Retain repeats the
+obsolete maximum in ten worlds and uses less recovery time; that is not a
+general policy-superiority claim. Actual native preparation, three pilots,
+freeze, ten main batches, reporting/export and worker closure are now evidenced
+for source `65462e1`. There are 252 physical attempts, zero contingency/retries
+or missing main outcomes. Earlier unrun statements below describe their dated
+implementation checkpoints. Human annotation, independently verified GPU
+utilization/provider release and cross-session GPU restoration remain unverified.
+No inference, scientific change or original-evidence mutation occurs in this
+analysis; historical runs, source packets and thesis semantics are preserved.
+
 Latest course-6 implementation: the user approves the proposal's recommended
 post-qualification recorded-outcome policy and chooses fresh complete Run All.
 Adoption `a31be4d` binds new plans to

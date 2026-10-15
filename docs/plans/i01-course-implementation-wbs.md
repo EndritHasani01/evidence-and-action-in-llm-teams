@@ -1,10 +1,26 @@
 # I-01 course experiment: implementation plan and WBS
 
-**DESIGN ADOPTED — IMPLEMENTATION IN PROGRESS; KAGGLE EXECUTION NOT AUTHORIZED HERE**
+**IMPLEMENTED — COURSE-7 EMPIRICAL EXECUTION AUDITED; NO NEW INFERENCE IN THIS REVIEW**
 
 Prepared 14 October 2026 against repository `0b0a44a3cf3a0306559a716e5df45b3dbe074ed0`, branch `feat/smaller-natural-experiment`.
 
 This is the implementation reference for the I-01 course study explicitly adopted by the user on 14 October 2026. [Specification §12](../../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime) is authoritative. Approval covers implementation and focused lightweight checks only; actual Kaggle readiness, qualification, pilots, freeze and main remain operator stages. The existing roadmap points here instead of duplicating the task list.
+
+Latest empirical update (15 October 2026): the supplied course-7 Run All
+completes all 33 code cells, three pilots and **20/20 paired main worlds**.
+[Analysis for the six report sections](../validation/i01-course-7-results-analysis.md)
+and [derived audit evidence](../../notebooks/validation/i01-course7-analysis/README.md)
+verify 160 inventoried files, source/wheel identities, all 29 generated worlds,
+206 team calls, 38 controls, exact saved analysis and both paired bootstrap
+intervals. Audit checkpoint: `7d8f854`; executed source remains `65462e1`.
+Retain and clear each succeed on 2/20 worlds; no general superiority/equivalence
+is established. The 252 physical attempts reconcile with zero contingency,
+retries, unfinished attempts or missing main outcomes. Target-host preparation,
+pilots, freeze, all ten batches, reporting/export and worker closure are now
+empirically evidenced. This supersedes earlier pending-main statements for this
+cohort only. Human annotation, utilization/provider-release evidence and an
+actual cross-session GPU restore remain unverified. Original inputs and all
+scientific/runtime settings are preserved; this follow-up is read-only analysis.
 
 Latest course-6 implementation: adoption `a31be4d` approves a fresh complete
 Run All under `i01-recorded-outcomes-run-all-2026-10-15`. The fixed twelve direct
@@ -751,11 +767,11 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | M0-T01–T02 | Adopted | Specification §12; configs/i01-course.json; this handoff |
 | M1-T01–T04 | Implemented; target native checks passed | core.py and course-2 native self-check; fixed manifest reproduces |
 | M2-T01–T04 | Implemented; fresh-run/accounting checks pass | Explicit independent study starts empty; idempotent new/reopen/restore retains its own 500/28 accounting; older campaign continuation and gap/slot safeguards preserved |
-| M3-T01–T04 | Original T4 inference evidence retained; runtime fixes implemented | Normal output failures consume turns; real defects stop; load-pair probes bind before dispatch; actual repaired full-envelope acceptance remains pending |
-| M4-T01–T04 | Implemented; saved-fixture and transactional-read checks pass | Both partial mode summaries, control error/call references, prior-spending CSV, qualification figures and unknown logical-cost semantics |
+| M3-T01–T04 | Implemented; course-7 target T4 loading/readiness/envelope passed | Two resident devices, matching A/B/A outputs, direct envelopes, finite/cache/headroom evidence and confirmed worker closure; no general numerical-equivalence or provider-release claim |
+| M4-T01–T04 | Implemented; full empirical course-7 reconstruction verified | Exact saved analysis, all calls/controls replay, intended twenty-world paired scoring/effort intervals, reports/eight figure pairs and portable final checkpoint |
 | M5-T01?T04 | Fresh recorded-outcome Run All and installed review delivered | Identical 33-cell aliases, source/wheel matching, three pilots/all ten main batches, diagnostics/cleanup/clock/forecast; 37 focused checks and full 460-call scripted study |
-| M6-T01?T04 | Historical course-6 native preparation/two pilots analyzed; new-policy stages unrun | Twelve scalar controls legal/ten correct, both envelopes passed; pilot 1 admitted, pilot 2 blocked by historical prefix legality. Broader post-qualification outcome policy implemented, not Kaggle-verified |
-| M7-T01?T03 | Complete software/package and portable delivery; actual main unrun | Twenty main pairs unknown empirically; scripted twenty-world run with 440 invalid outcomes, zero-call replay, reports/export/restore/closure pass; actual downloads/resume/timing remain |
+| M6-T01?T04 | Course-7 native preparation and all three pilots empirically executed | Twelve legal direct controls/ten correct; both envelopes and three objective pilot checks pass under recorded-outcome policy; pilot team mistakes remain outcomes; retrospective human annotation remains pending |
+| M7-T01?T03 | All twenty main pairs, final report/export and worker closure empirically executed and audited | Source 65462e1; audit 7d8f854; 2/20 exact successes each, paired contrast 0 pp with exploratory [-10,+10] pp interval; 252 attempts; no missing main data; provider release/utilization and actual cross-session GPU restore unverified |
 
 Baseline: branch `feat/smaller-natural-experiment`, HEAD `0b0a44a`;
 only the user-provided WBS was untracked. Canonical I-01 evidence will use
