@@ -26,6 +26,16 @@ guards, fixed clock evidence and export/receipt/closure failure handling. The
 saved course-5 ZIP is analyzed read-only; its historical failed gate is preserved.
 The earlier strict Run All handoff below is preserved for its historical packet.
 
+Final current source checkpoint: `b92cdbfcc9084e873dc231a4a27fe9114aed5725`.
+The [installed review](../notebooks/validation/i01-development/recovery-run-all-release-review.json)
+and [preservation/delivery audit](../notebooks/validation/i01-development/recovery-delivery-review.json)
+pass. Current source ZIP is 740,438 bytes, SHA256
+`9a678685249d2d9c68ad4f5393767015bfde08107dae1a8625f19bb179264826`.
+Both source-matched notebook names are complete; use the new source-only packet
+and the [fresh-run instructions](I01_KAGGLE.md). Historical course inputs/releases
+and unrelated scientific source hashes remain exact. This final receipt-only
+handoff does not regenerate the verified source checkpoint's packet.
+
 Current whole-study request supersedes the preparation-only handoff below. The
 user approved objective pilot checks and retrospective human review and requested
 one end-to-end Run All. Specification §12 records that procedural amendment.

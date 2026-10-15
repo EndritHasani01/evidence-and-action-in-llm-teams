@@ -70,6 +70,11 @@ to the original artifacts.
 
 The installed-package review follows the source checkpoint and is recorded in
 `notebooks/validation/i01-development/recovery-run-all-release-review.json`.
+It passes both identical 33-cell notebooks, all ordinary scope calls, the new
+policy/clock basis, zero widget panels, ZIP/expanded bootstrap and rerun, isolated
+installed CLI/venv entry, source/wheel byte matching, fresh 0/500 initialization,
+read-only CPU report and existing historical transition compatibility. This
+compatibility check does not select a continuation for the new study.
 No GPU/model inference, actual qualification, pilot or main experiment
 is performed during this repair. Scripted full coverage is engineering evidence;
 actual model compliance, collaboration, speed and resource feasibility remain
@@ -79,6 +84,26 @@ converted to successful collaboration.
 The unchanged limits are 500 total physical attempts and 28 contingency attempts,
 with at most 460 ordinary direct first attempts: 20 preparation, 60 pilot and 380
 main. No extra seed, replacement world, hidden retry or expanded reserve is added.
+
+## Milestones and final artifact identity
+
+| Milestone | Status |
+|---|---|
+| Scientific adoption | `56a8fc8`, fresh recovery-admission policy adopted |
+| Python, reports, notebook and package builders | `b92cdbfcc9084e873dc231a4a27fe9114aed5725`, implemented |
+| Focused checks and installed release | Passed; thirty distinct checks and separate installed review |
+| Preservation | Passed; all course-3/4/5 inputs, prior releases and verbatim proposal retain exact hashes |
+| Actual amended Kaggle workflow | Unrun here; qualification, pilots, main, timing and frontend/download validation remain |
+
+Source ZIP: **740,438 bytes**, SHA256
+`9a678685249d2d9c68ad4f5393767015bfde08107dae1a8625f19bb179264826`.
+The [delivery review](../../notebooks/validation/i01-development/recovery-delivery-review.json)
+records exact protected-input and historical-release hashes. Only six I-01
+source modules differ from course-5's source identity (workflow, policy, report,
+notebook, UI presentation and CLI); every other identity hash, including core,
+inference, process/runtime, config and dependencies, remains exact. Thesis
+specification sections 1–11 remain unchanged. The final receipt/handoff commit
+does not rebuild or change the source checkpoint's verified packet.
 
 ## First Kaggle execution
 

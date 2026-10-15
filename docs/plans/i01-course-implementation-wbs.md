@@ -23,6 +23,10 @@ M0–M7 software deliverables remain implemented. The course-5 amendment now pas
 thirty distinct focused checks, including full scripted twenty-world execution
 with recovery errors and exact export/restore; actual target-host acceptance of
 the amended full workflow remains unverified. No GPU execution occurred here.
+Final current implementation/source checkpoint is `b92cdbf`. The installed
+release review and preservation audit pass; source ZIP is 740,438 bytes with
+SHA256 `9a678685249d2d9c68ad4f5393767015bfde08107dae1a8625f19bb179264826`.
+See [delivery audit](../../notebooks/validation/i01-development/recovery-delivery-review.json).
 
 Latest whole-study amendment (15 October): the user explicitly approves objective
 pilot checks and retrospective human review, and requests the complete experiment
@@ -726,9 +730,9 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | M2-T01–T04 | Implemented; fresh-run/accounting checks pass | Explicit independent study starts empty; idempotent new/reopen/restore retains its own 500/28 accounting; older campaign continuation and gap/slot safeguards preserved |
 | M3-T01–T04 | Original T4 inference evidence retained; runtime fixes implemented | Normal output failures consume turns; real defects stop; load-pair probes bind before dispatch; actual repaired full-envelope acceptance remains pending |
 | M4-T01–T04 | Implemented; saved-fixture and transactional-read checks pass | Both partial mode summaries, control error/call references, prior-spending CSV, qualification figures and unknown logical-cost semantics |
-| M5-T01–T04 | Whole-study Run All delivered; installed release review passed | 33 ordinary scopes, both filenames identical; source-only attachment; objective pilot/main resource gates and all ten main batches; 19 focused checks including scripted full coverage |
-| M6-T01–T04 | Saved direct scalar protocol eligible under adopted amendment; later gates unexecuted | Preserve 10/12 mathematical diagnostic and old failed gate; thinking 4 correct/1 invalid/7 unknown; current full envelopes, pilots and freeze remain pending |
-| M7-T01–T03 | Paths delivered; no empirical main execution | Twenty main pairs unknown; final notebook report/archive/close cells unexecuted; supplied error-boundary archive verifies |
+| M5-T01?T04 | Fresh recovery-admission Run All delivered; installed review passed | Identical 33-cell notebooks, source-only matching wheel/ZIP, three pilots, all ten main batches, diagnostics/cleanup/clock fixes; 30 distinct focused checks and scripted full coverage |
+| M6-T01?T04 | Historical course-5 preparation/pilot-1 evidence analyzed; new fresh host gates unrun | Twelve direct controls legal/ten correct, both envelopes passed; original strict pilot gate failed on two recovery actions. New phase-sensitive policy implemented, not Kaggle-verified |
+| M7-T01?T03 | Complete implementation and portable delivery; actual main unrun | All twenty main pairs unknown empirically; scripted twenty-world execution, zero-call replay, reports/export/restore/closure pass; current Kaggle final-report/download/restore acceptance remains |
 
 Baseline: branch `feat/smaller-natural-experiment`, HEAD `0b0a44a`;
 only the user-provided WBS was untracked. Canonical I-01 evidence will use
