@@ -682,13 +682,13 @@ qualification, pilot, freeze or main execution occurs during implementation.
 | Tasks | Status | Evidence / next dependency |
 |---|---|---|
 | M0-T01–T02 | Adopted | Specification §12; configs/i01-course.json; this handoff |
-| M1-T01–T04 | Implemented; native checks passed | recovery/i01/core.py; validation/i01-implementation.md; native tokenizer pending |
-| M2-T01–T04 | Implemented; focused scripted checks passed | WAL/FULL episode stores, serialized 500/28 admission, idempotent raw/effects, backup/ZIP/expanded restore; target-host pending |
-| M3-T01–T04 | Implemented; target-host pending | Reviewed loader/cache engine, direct/thinking adapter, resident children/client, pinned online setup, packaged checks |
-| M4-T01–T04 | Python complete; focused integration passed | Finite gates/stages; exact scoring/uncertainty/costs; full traces, figures, export and command/UI surfaces; docs/I01_KAGGLE.md |
-| M5-T01–T04 | Implemented; delivery checks passed | notebooks/i01_course_kaggle.ipynb, source ZIP/wheel, 24 staged code cells/35 controls, explicit fallback, inspection/download/restore paths |
-| M6-T01–T04 | All execution paths implemented; operator validation pending | Actual host/UI/native checks, residency/readiness, competence/envelope, three pilots and explicit freeze have not run |
-| M7-T01–T03 | All execution/report/export paths implemented; operator execution pending | Fixed bounded batches, complete/partial reconstruction, figures, trace rubric, final archive and shutdown; outcomes unknown |
+| M1-T01–T04 | Implemented; target native checks passed | core.py and course-2 native self-check; fixed manifest reproduces |
+| M2-T01–T04 | Implemented; course-2 audit repairs open | Eighteen durable attempts and exact checkpoint reconstruction; prior-gap restore and logical-slot protection need C2 fixes |
+| M3-T01–T04 | Both T4 loads/short direct inference verified; further repairs open | Course-2 six fresh-state checks pass; thinking/long envelopes unexecuted; load-pair and protocol-classification findings remain |
+| M4-T01–T04 | Implemented; report/live-read fixes proposed | Exact partial reconstruction; control trace references, live read consistency and presentation findings documented |
+| M5-T01–T04 | Delivered; nine ordinary cells executed in course-2 | Matching 8f5bcdb source/wheel; 26 ordinary cells; complete workflow paths delivered, later target behavior pending |
+| M6-T01–T04 | Target preparation/readiness passed; direct competence failed | Course-2 10/12 correct, zero protocol errors; thinking, envelopes, three pilots and freeze unexecuted |
+| M7-T01–T03 | Paths delivered; no empirical main execution | Twenty main pairs unknown; final notebook report/archive/close cells unexecuted; supplied error-boundary archive verifies |
 
 Baseline: branch `feat/smaller-natural-experiment`, HEAD `0b0a44a`;
 only the user-provided WBS was untracked. Canonical I-01 evidence will use
@@ -834,3 +834,16 @@ Final release review passes all 26 cells, exact wheel/source identity and isolat
 installed CLI entry outside the checkout. Original six course-1 files, two logs,
 two old source packets and scientific authority/configuration pins are unchanged;
 214 document links resolve. Receipt recording does not regenerate this packet.
+
+15 October 2026 course-2 audit: the supplied notebook executes nine of twenty-six
+ordinary cells through direct competence. Both T4 loads, pinned/native preparation
+and six A/B/A diagnostics pass; the screen records 10/12 with zero protocol errors
+and correctly withholds acceptance. Eighteen attempts, zero contingency and all
+twenty unknown main pairs reconstruct exactly from the 121-entry archive.
+[Results analysis](../validation/i01-course-2-results-analysis.md),
+[fix proposal](../proposals/i01-course-2-fix-proposal.md) and
+[audit receipt](../validation/course-2-audit.json) separate the observed gate stop
+from five reproduced future-path defects. Source modules and both supplied files
+remain unchanged; fixes are proposed, not implemented. No inference ran during
+this audit. Preserve all eighteen admissions and exact source identity in any
+subsequently reviewed compatibility transition; no silent study/budget reset.

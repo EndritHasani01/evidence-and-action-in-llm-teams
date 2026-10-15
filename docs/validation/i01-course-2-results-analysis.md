@@ -158,6 +158,12 @@ an error. Both replicas report logical `cuda:0` because each child sees only its
 assigned physical device. `CUDA_VISIBLE_DEVICES` and actual UUIDs distinguish
 the physical T4s; this is not accidental placement on one GPU.
 
+CUDA device properties expose 15,636,037,632 usable bytes (14.5625 GiB) per
+replica, whereas `nvidia-smi` reports 15,360 MiB (15 GiB). The two recorded totals
+come from different interfaces; their difference is not diagnosed by this
+archive. Use actual free-memory observations for admission, not an advertised
+16 GB or the sum of two devices as one model's available memory.
+
 The load receipt contains an inherited 256-token generation configuration from
 the reused reviewed loader. It is labelled loading-only. All eighteen saved
 requests instead have the adopted **512-token direct configuration**, and the

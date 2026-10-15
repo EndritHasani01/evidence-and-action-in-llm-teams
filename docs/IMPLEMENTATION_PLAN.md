@@ -1,6 +1,20 @@
 # Implementation plan
 
-## I-01 implementation handoff (14 October 2026)
+## I-01 implementation handoff (15 October 2026)
+
+Latest course-2 audit: the supplied executed notebook and checkpoint verify
+Linux pinned setup, native checks, both actual T4 loads and six state diagnostics.
+The direct competence screen completed at 10/12, zero protocol errors, and
+correctly stopped before every later model/experiment stage. Eighteen new
+attempts are saved; twenty main pairs remain unknown. See the
+[complete results analysis](validation/i01-course-2-results-analysis.md) and
+[fix proposal](proposals/i01-course-2-fix-proposal.md). Five further defects
+reproduce in temporary fixtures: flag-independent envelope binding, prior-gap
+preservation on restore, logical worker identity, thinking-truncation
+classification and live read consistency. These repairs are proposed, not
+implemented. The original files/source and scientific semantics remain unchanged;
+this audit performed no inference. Earlier target-host-pending statements below
+are historical and are superseded only to the extent established by this run.
 
 The user explicitly adopted the reviewed I-01 scientific regime in specification
 §12. Its single task/status reference is the
