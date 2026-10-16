@@ -1,5 +1,15 @@
 # Recovery in distributed LLM teams
 
+Current course development: the approved assisted I-01 design is adopted in
+[specification §12.1](PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026).
+The [current runbook](docs/I01_KAGGLE.md) describes its 37 finite cells, four
+pilots, twenty fixed main worlds and 480+20 physical-attempt ceiling. Core,
+workflow and reporting CPU checks pass; final delivery/installed verification
+is in progress in the [implementation checklist](docs/plans/i01-assisted-implementation-progress.md).
+No new model inference or GPU execution is authorized or performed. Course-7
+remains the separate completed historical result. The legacy summaries below
+retain their condition-specific meaning.
+
 The current I-01 course experiment is a separate, explicitly adopted study:
 see the [I-01 Kaggle runbook](docs/I01_KAGGLE.md) and
 [implementation WBS](docs/plans/i01-course-implementation-wbs.md).

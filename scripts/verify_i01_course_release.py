@@ -16,12 +16,16 @@ from recovery.i01.runtime import command as runtime_command
 
 def verify_notebook(notebook):
     """Execute all ordinary cells with a recorder; never load a real model."""
+    meta=notebook['metadata']['i01']
+    assisted=meta['regime']=='i01-course-assisted-v2'
     expected=dict(configuration=[],workspace=[],**{'session-window':['configure_session'],
         'setup':['install_runtime'],'open-study':['start_new'],'selfcheck':['check_implementation'],
         'weights':['download_weights'],'load':['load_models'],'plan':['plan_execution'],
         'readiness':['check_readiness'],'direct-screen':['qualify_direct'],
         'qualification':['inspect_qualification'],'envelope':['check_headroom']})
-    for n in (1,2,3):
+    if assisted:
+        expected['diagnostics']=['run_diagnostics'];expected['prepared-checkpoint']=['save_checkpoint']
+    for n in range(1,5 if assisted else 4):
         expected[f'pilot-{n}']=['run_pilot'];expected[f'check-pilot-{n}']=['check_pilot']
     expected['admit-main']=['admit_main']
     for n in range(1,11):expected[f'main-{n:02d}']=['run_main_batch']
@@ -31,8 +35,9 @@ def verify_notebook(notebook):
     assert all(c['execution_count'] is None and not c['outputs'] for c in cells)
     meta=notebook['metadata']['i01']
     assert meta['run_all_supported'] and meta['run_all_scope']=='whole-study'
-    assert meta['first_attempt_ceiling']==460 and meta['hard_attempt_limit']==500 and meta['contingency_limit']==28
-    assert meta['execution_policy']=='i01-recorded-outcomes-run-all-2026-10-15'
+    ceiling=480 if assisted else 460
+    assert meta['first_attempt_ceiling']==ceiling and meta['hard_attempt_limit']==500 and meta['contingency_limit']==(20 if assisted else 28)
+    assert meta['execution_policy']==('i01-assisted-feasibility-2026-10-16' if assisted else 'i01-recorded-outcomes-run-all-2026-10-15')
     class Stub:
         def __init__(self):self.calls=[]
         def __getattr__(self,name):
@@ -56,13 +61,14 @@ def verify_notebook(notebook):
     assert receipts['session-window'][0]['kwargs']['basis']=='planning_estimate'
     assert 'not independently verified' in receipts['session-window'][0]['kwargs']['evidence']
     assert receipts['plan'][0]['kwargs']=={} and receipts['admit-main'][0]['kwargs']=={}
-    for n in (1,2,3):
+    for n in range(1,5 if assisted else 4):
         assert receipts[f'pilot-{n}'][0]['args']==[n]
         assert receipts[f'check-pilot-{n}'][0]['args']==[n]
     for n in range(1,11):assert receipts[f'main-{n:02d}'][0]['args']==[n]
     assert receipts['archive'][0]['kwargs']==dict(verify=True)
+    if assisted:assert receipts['prepared-checkpoint'][0]['kwargs']==dict(verify=True)
     return dict(code_cells=len(cells),widget_panels=0,independent_cell_scopes=receipts,
-                run_all_supported=True,run_all_scope='whole-study',first_attempt_ceiling=460,
+                run_all_supported=True,run_all_scope='whole-study',first_attempt_ceiling=ceiling,
                 run_all_can_execute_inference=True,model_attempts=0)
 
 
@@ -77,11 +83,12 @@ def verify(root,delivery):
     import nbformat
     nbformat.validate(nbformat.from_dict(notebook))
     notebook_receipt=verify_notebook(notebook)
+    assisted=notebook['metadata']['i01']['regime']=='i01-course-assisted-v2'
     research=json.loads((delivery/'i01_course_research.ipynb').read_text(encoding='utf-8'))
     nbformat.validate(nbformat.from_dict(research))
     research_receipt=verify_research_notebook(research)
-    assert (root/'notebooks/i01_course_kaggle.ipynb').read_bytes()==(delivery/'i01_course_kaggle.ipynb').read_bytes()
-    assert (root/'notebooks/i01_course_research.ipynb').read_bytes()==(delivery/'i01_course_research.ipynb').read_bytes()
+    from scripts.build_i01_course_notebook import notebook as expected_notebook
+    assert notebook==expected_notebook(assisted=assisted)
     assert (delivery/'i01_course_research.ipynb').read_bytes()==(delivery/'i01_course_kaggle.ipynb').read_bytes()
     assert sorted(p.name for p in (delivery/'kaggle-input').iterdir())==['i01-source.zip']
     installed_continuation=False
@@ -105,7 +112,7 @@ def verify(root,delivery):
         (old_source/'source-release.json').write_text(json.dumps(dict(format='i01-online-source-v1',files={'recovery/i01/workflow.py':{}})))
         shutil.copytree(source,inputs/'expanded-repaired-source')
         class BootstrapStub:
-            def __init__(self,source,**kwargs):self.source=Path(source);self.run_dir=Path(kwargs['run'])
+            def __init__(self,source,**kwargs):self.source=Path(source);self.run_dir=Path(kwargs['run']);self.assisted=kwargs.get('assisted',False)
             def bootstrap_status(self): pass
         bootstrap="".join(next(c for c in cells if c['id']=='workspace')["source"]).replace("/kaggle/input",inputs.as_posix()).replace("/kaggle/working",working.as_posix())
         bootstrap=bootstrap.replace("from recovery.i01.notebook import Study","Study = BootstrapStub")
@@ -138,16 +145,23 @@ def verify(root,delivery):
                 assert digest(installed/rel)==wanted["sha256"],rel
         env=dict(os.environ,PYTHONPATH='/unapproved/host/hooks',MPLBACKEND='module://unavailable_renderer')
         command=runtime_command(python,source,'-m','recovery.i01.cli','--source',source)
+        if assisted:command+=['--assisted']
         run=temp/"scripted-empty"
         subprocess.run(command+["--run",str(run),"init","--independent"],cwd=temp,env=env,check=True,stdout=subprocess.DEVNULL,timeout=30)
         status=json.loads(subprocess.check_output(command+["--run",str(run),"status"],cwd=temp,env=env,text=True,timeout=30))
         assert status["attempts"]==0 and status["known_pairs"]==0 and status["missingness_bounds"]==[-1,1]
         assert status['remaining_attempt_allowance']==500 and status['missing_prior_studies']==[]
         assert status['attempt_scope']=='independent-study' and status['prior_attempts']==0
+        if assisted:
+            assert status['qualification']['direct']['planned']==8 and set(status['qualification'])=={'direct'}
+            from recovery.i01.checks import input_separation
+            config=json.loads((source/'configs/i01-course-assisted.json').read_text())
+            assert manifest['input_separation']==input_separation(root,config)
+            subprocess.run(command+['selfcheck'],cwd=temp,env=env,check=True,stdout=subprocess.DEVNULL,timeout=90)
         subprocess.run(command+['--run',str(run),'report','--output',str(temp/'fresh-report'),'--no-plots'],cwd=temp,env=env,check=True,stdout=subprocess.DEVNULL,timeout=30)
         assert 'independent-study' in (temp/'fresh-report/overview.md').read_text(encoding='utf-8')
         older=root/'notebooks/run/course-2/latest.zip';selected=root/'notebooks/run/course-3/latest.zip'
-        if older.is_file() and selected.is_file():
+        if not assisted and older.is_file() and selected.is_file():
             continued=temp/'continued'
             receipt=json.loads(subprocess.check_output(command+['--run',str(continued),'continue-checkpoint',str(selected),'--prior',str(older),'--tail','latest','--evidence','Zero-model package verification fixture; no additional exposure'],cwd=temp,env=env,text=True,timeout=45))
             assert receipt['preserved_attempts']==23 and receipt['campaign_attempts']==41
@@ -161,6 +175,27 @@ def verify(root,delivery):
             assert '41/500' in (offline/'overview.md').read_text(encoding='utf-8')
             assert len(json.loads((offline/'analysis.json').read_text())['attempts'])==23
             installed_continuation=True
+        if assisted:
+            # The installed library exports/restores its exact new source without
+            # optional model or plotting dependencies and with zero attempts.
+            code='''from pathlib import Path
+import json, sys
+from recovery.i01.workflow import Session
+from recovery.i01.archive import export,extract_selected
+from recovery.i01.report import analysis
+run,source,target=map(Path,sys.argv[1:])
+s=Session(run,source)
+try:receipt=export(run,s.stores,boundary="installed-empty",reports=False)
+finally:s.close()
+saved=analysis(run)
+extract_selected(receipt["path"],target)
+assert analysis(target)==saved
+assert saved["summary"]["attempts"]==0
+assert "torch" not in sys.modules and "transformers" not in sys.modules
+print(json.dumps({"installed_restore_exact":True,"attempts":0}))
+'''
+            proof=json.loads(subprocess.check_output(runtime_command(python,source,'-c',code,str(run),str(source),str(temp/'restored')),cwd=temp,env=env,text=True,timeout=45))
+            assert proof['installed_restore_exact'] and proof['attempts']==0
         for rel,wanted in manifest["files"].items():
             assert digest(run/"source"/rel)==wanted["sha256"],rel
         assert not any(".safetensors" in p or ".env" in p or "/site-packages/" in p for p in manifest["files"])
@@ -170,14 +205,18 @@ def verify(root,delivery):
                  installed_wheel_source_matches=True,installed_outside_checkout_cli=True,
                  installed_venv_isolated_entry=True,
                  installed_actual_course3_continuation=installed_continuation,
-                 installed_cpu_only_report_without_matplotlib=installed_continuation,
+                 installed_cpu_only_report_without_matplotlib=installed_continuation or assisted,
+                 installed_assisted_source_restore=assisted,
                  zip_expanded_source_bootstrap_and_rerun=True,complete_source_preserved_in_checkpoints=True,
                  notebook_execution_outputs_empty=True,
                  kaggle_host_verified=False,qualification_pilot_main_executed=False)
-    atomic_json(root/"notebooks/validation/i01-development/outcomes-run-all-release-review.json",receipt)
+    atomic_json(root/('notebooks/validation/i01-development/assisted-release-review.json' if assisted else 'notebooks/validation/i01-development/outcomes-run-all-release-review.json'),receipt)
     return receipt
 
 
 if __name__=="__main__":
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--assisted',action='store_true');parser.add_argument('--delivery',type=Path)
+    args=parser.parse_args()
     root=Path(__file__).resolve().parents[1]
-    print(json.dumps(verify(root,root/"dist/i01-course-outcomes-run-all"),indent=2))
+    print(json.dumps(verify(root,args.delivery or root/('dist/i01-course-assisted' if args.assisted else 'dist/i01-course-outcomes-run-all')),indent=2))

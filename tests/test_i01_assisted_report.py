@@ -9,6 +9,7 @@ from recovery.i01.core import (apply_outcome,canonical,initial_episode,next_agen
 from recovery.i01.report import analysis,bootstrap,DEGENERATE_WARNING,write_report
 from recovery.i01.store import Admission,Store
 from recovery.i01.workflow import initialize
+from recovery.i01.policy import outcome_feedback
 
 ROOT=Path(__file__).parents[1]
 CONFIG=json.loads((ROOT/'configs/i01-course-assisted.json').read_text())
@@ -41,7 +42,7 @@ class AssistedReport(unittest.TestCase):
                          generated_tokens=1,input_tokens=0,failure=None,truncated=False)
             store.raw(cid,attempt,outcome)
             error='malformed_action' if first and illegal else None
-            state=apply_outcome(state,agent,None if error else action,error,cid)
+            state=apply_outcome(state,agent,None if error else action,error,cid,feedback=outcome_feedback(outcome) if error else None)
             store.effects(cid,identity,state);first=False
         return state
     def cases(self):
@@ -59,6 +60,12 @@ class AssistedReport(unittest.TestCase):
         self.assertEqual(summary['paired_counts'],{'clear_only':1,'retain_only':1,'neither':1,'both':1,'unknown':16})
         self.assertEqual(summary['missingness_bounds'],[-.8,.8])
         self.assertIsNone(summary['clear_minus_retain']);self.assertIsNone(summary['interval'])
+        self.assertEqual(summary['retain_successes'],2)
+        self.assertEqual(summary['clear_successes'],2)
+        self.assertIsNone(summary['retain_success_rate'])
+        self.assertEqual(summary['retain_rate_completion_bounds'],[.1,.9])
+        self.assertEqual(summary['correct_prefix_recovery'],dict(denominator=4,retain_correct=2,retain_unknown=0,clear_correct=2,clear_unknown=0))
+        self.assertIsNone(summary['correct_prefix_mean'])
         rows={r['phase']:r for r in result['process_outcomes']}
         self.assertEqual(rows['prefix']['episodes_with_illegal_model_action'],1)
         self.assertEqual(rows['retain']['locally_refutable_submissions'],2)
@@ -82,6 +89,8 @@ class AssistedReport(unittest.TestCase):
         r=next(r for r in result['costs'] if r['world']=='main-00' and r['phase']=='retain')
         self.assertIsNone(r['ready_seconds']);self.assertIsNone(r['observed_seconds'])
         self.assertEqual(r['attempts_unknown_ready_seconds'],1)
+        self.assertEqual(summary['attempts_unknown_input_tokens'],1)
+        self.assertIsNone(next(r for r in result['costs'] if r['world']=='main-00' and r['phase']=='prefix')['input_tokens'])
         row=next(r for r in result['attempt_compliance'] if r['group']=='main' and r['phase']=='prefix')
         self.assertEqual((row['physical_attempts'],row['unknown_outcomes']),(10,1))
         row=next(r for r in result['protocol_compliance'] if r['group']=='main' and r['phase']=='prefix')
@@ -93,6 +102,8 @@ class AssistedReport(unittest.TestCase):
         result=analysis(self.run)
         self.assertEqual(len(result['policy_costs']),48)
         self.assertEqual(len(result['costs']),72)
+        self.assertTrue(all(r['input_tokens'] is None and r['ready_seconds'] is None for r in result['costs']))
+        self.assertTrue(all(r['observed_ready_seconds']==0 for r in result['costs']))
         self.assertTrue(all(r['unknown_submission_slots']==40 for r in result['process_outcomes']))
         self.assertTrue(all(not r['present'] for r in result['casebook']))
         self.assertEqual(result['summary']['missingness_bounds'],[-1,1])

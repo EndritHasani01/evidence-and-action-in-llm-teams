@@ -1,5 +1,14 @@
 # I-01 course experiment: implementation plan and WBS
 
+Assisted follow-up (16 October 2026): approved implementation of the final
+[design](i01-course-final-experimental-design.md) and
+[annex](i01-course-final-design-protocol-and-acceptance.md) is scoped by
+[specification §12.1](../../PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026).
+The [active checklist](i01-assisted-implementation-progress.md) records the new
+four-pilot/37-cell delivery and CPU evidence; final installed review is pending.
+No new GPU inference or experimental execution is authorized. Historical
+Course-7, legacy I-01 and the original WBS evidence below remain preserved.
+
 **IMPLEMENTED — COURSE-7 EMPIRICAL EXECUTION AUDITED; NO NEW INFERENCE IN THIS REVIEW**
 
 Prepared 14 October 2026 against repository `0b0a44a3cf3a0306559a716e5df45b3dbe074ed0`, branch `feat/smaller-natural-experiment`.

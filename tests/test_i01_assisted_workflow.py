@@ -90,13 +90,20 @@ class AssistedWorkflow(unittest.TestCase):
         return s,workers
     def pilots(self,s):
         for number in range(1,5):
-            s.pilot(number);self.assertTrue(s.check_pilot(number)['passed'])
+            before=getattr(s,'checkpoint_timing',{}).get('successful_exports',0)
+            result=s.run_action('pilot',number=number)
+            self.assertIsNone(result['error'])
+            checked=s.run_action('check_pilot',number=number)
+            self.assertIsNone(checked['error']);self.assertTrue(checked['result']['passed'])
+            self.assertEqual(s.checkpoint_timing['successful_exports']-before,2)
         self.assertEqual(s.admission.usage()['attempts'],100)
 
     def test_full_480_calls_ordinary_errors_do_not_veto_and_restore_replay_is_exact(self):
         s,workers=self.open();self.pilots(s)
         self.assertTrue(s.admit_main())
-        for number in range(1,11):self.assertTrue(s.automatic_main(number)['passed'])
+        for number in range(1,11):
+            result=s.run_action('automatic_main',number=number)
+            self.assertIsNone(result['error']);self.assertTrue(result['result']['passed'])
         self.assertEqual(s.admission.usage()['attempts'],480)
         self.assertEqual(s.admission.usage()['contingency'],0)
         result=analysis(self.run)

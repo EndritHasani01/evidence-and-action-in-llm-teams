@@ -86,8 +86,9 @@ study.bootstrap_status()
 
 
 
-def notebook():
+def notebook(*, assisted=False):
     """One whole-study Run All, with ordinary finite cells and stable scopes."""
+    if assisted:return assisted_notebook()
     cells=[]
     def markdown(text):
         cells.append(dict(cell_type='markdown',id=f'i01-text-{len(cells):02d}',metadata={},source=text.splitlines(keepends=True)))
@@ -223,13 +224,86 @@ human understanding, download completion or a favorable scientific effect.
                                        human_review='retrospective_pending',kaggle_verified=False)))
 
 
-def research_notebook():
+def assisted_notebook():
+    """Reuse the complete finite notebook with explicit assisted stage replacements."""
+    value=notebook();cells=value['cells']
+    policy='i01-assisted-feasibility-2026-10-16'
+    def replace_text(cell,text):cell['source']=text.splitlines(keepends=True)
+    replace_text(cells[0],'''# I-01: assisted recovery with one fixed Run All
+
+Use a fresh online **T4 x2** session and the matching assisted **i01-source.zip**.
+This notebook executes one precommitted condition: eight scalar qualification
+controls, four single-call diagnostics, four balanced live pilots, then (only
+if eligible) twenty fixed main worlds in ten batches. The two agents receive
+one openly disclosed strategy/interface package; retain and clear share it.
+
+The maximum is **480 ordinary physical attempts +20 contingency =500**. All
+warmups, failures, diagnostics and eligible retries count. Main eligibility
+requires complete pilot evidence, at least **3/4 correct original teams** and
+**7/8 correct pilot controls**, current health and an adequate measured forecast.
+There is no recovery-success, effect-direction, all-actions-legal or qualitative
+message veto. If usefulness fails, preserve a complete feasibility report and
+leave main unexecuted. No prompt/model tuning or repeat-until-pass is allowed.
+
+Ordinary main mistakes stay in the fixed population. Scalar/probe success does
+not certify live collaboration. Each cell has one finite, idempotent scope;
+completed stages spend zero on rerun. Models remain resident through the work.
+Setup/downloads consume the same fixed window. The 700-minute planning estimate
+is not a provider allowance guarantee; reduce it to the actual time remaining.
+
+Running this notebook is a separate explicit execution request. The software's
+CPU checks and design approval alone authorize no inference. Human trace review
+remains retrospective and visibly pending. Download every checkpoint and the
+executed notebook; a provider may end the session before the final export.
+''')
+    workspace=BOOTSTRAP.replace('i01-recorded-outcomes-run-all-2026-10-15',policy)
+    workspace=workspace.replace('Study(source_root, run=RUN_DIR)','Study(source_root, run=RUN_DIR, assisted=True)')
+    workspace=workspace.replace('Path(RUN_DIR).resolve():','Path(RUN_DIR).resolve() or not study.assisted:')
+    descriptions={
+        'direct-screen':('Qualify the eight direct controls','All eight fixed qualification actions must be legal and committed. Scalar accuracy here is diagnostic; no resampling.'),
+        'qualification':('Inspect qualification','Four qualification worlds, eight planned controls; complete raw evidence, accuracy, legality and unknown coverage.'),
+        'admit-main':('Make the one fixed feasibility decision','All four pilot scopes must be settled; require 3/4 correct original teams and 7/8 correct pilot scalar controls plus current health/resources. No recovery-effect or qualitative veto. Failure stops scientific admission with all main outcomes unknown.'),
+        'report':('Build the complete or truthful feasibility/partial report','All twenty intended main worlds, unknown bounds, stratified paired uncertainty, effort coverage, physical/logical validity denominators, exact process tables, fixed casebook, diagnostics and eight figure pairs. Human annotations remain pending unless supplied.')}
+    for i,cell in enumerate(cells):
+        if cell['cell_type']!='code':continue
+        identity=cell['id']
+        if identity=='configuration':replace_text(cell,''.join(cell['source']).replace('i01-outcomes-study','i01-assisted-study'))
+        if identity=='workspace':replace_text(cell,workspace)
+        if identity in descriptions:
+            title,description=descriptions[identity];replace_text(cells[i-1],f'## {title}\n\n{description}\n')
+        if identity.startswith('main-'):
+            number=int(identity.split('-')[1]);first=(number-1)*2
+            replace_text(cells[i-1],f'## Main batch {number}/10: worlds {first:02d} and {first+1:02d}\n\nExecute these fixed worlds, at most 38 first attempts. Different devices may overlap; same-device worlds serialize by index. All ordinary failures remain outcomes. Export before the next batch; reruns reuse exact saved data.\n')
+    def pair(identity,title,description,body,action,generation=False):
+        return [dict(cell_type='markdown',id='assisted-text-'+identity,metadata={},source=f'## {title}\n\n{description}\n'.splitlines(keepends=True)),
+                dict(cell_type='code',id=identity,metadata=dict(i01=dict(action=action,generation=generation)),
+                     execution_count=None,outputs=[],source=body.splitlines(keepends=True))]
+    position=next(i for i,c in enumerate(cells) if c.get('id')=='envelope')+1
+    cells[position:position]=pair('diagnostics','Run four supplied-view diagnostics','D00–D03 once each. Record actual target actions; nonpasses do not veto main or tune the fixed candidate. Scripted histories are diagnostic fixtures, not naturally generated collaboration.',
+        'study.run_diagnostics();\n','diagnostics',True)+pair('prepared-checkpoint','Verify the preparation checkpoint','Quiescent portable export after diagnostics; actual measured export cost is required before admitting pilots.',
+        'study.save_checkpoint(verify=True);\n','snapshot')
+    position=next(i for i,c in enumerate(cells) if c.get('id')=='check-pilot-3')+1
+    cells[position:position]=pair('pilot-4','Run pilot 4','Fourth owner/first-speaker cell; execute prefix, both siblings and two controls once, despite ordinary model mistakes.',
+        'study.run_pilot(4);\n','pilot',True)+pair('check-pilot-4','Check pilot 4 evidence','Terminal committed scopes, spending and export/health checks. The separate main decision applies the fixed 3/4 and 7/8 thresholds.',
+        'study.check_pilot(4);\n','check_pilot')
+    for cell in cells:
+        if cell['cell_type']=='markdown':
+            text=''.join(cell['source']).replace('i01-outcomes-study','i01-assisted-study')
+            text=text.replace('two charged reload probes','six current-load state checks and two envelopes, all charged to the 20-attempt reserve')
+            replace_text(cell,text)
+    value['metadata']['i01'].update(regime='i01-course-assisted-v2',execution_policy=policy,
+        first_attempt_ceiling=480,contingency_limit=20,qualification_worlds=4,diagnostic_calls=4,pilot_worlds=4,
+        main_usefulness='3/4 correct originals and 7/8 correct pilot scalar controls; intact health/evidence/resources')
+    return value
+
+
+def research_notebook(*, assisted=False):
     # Compatibility filename: both names deliver the same complete notebook.
-    return notebook()
+    return notebook(assisted=assisted)
 
 
-def build(path, *, research=False):
-    value=notebook()
+def build(path, *, research=False, assisted=False):
+    value=notebook(assisted=assisted)
     for cell in value['cells']:
         if cell['cell_type']=='code':compile(''.join(cell['source']),cell['id'],'exec')
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
@@ -238,5 +312,8 @@ def build(path, *, research=False):
 
 
 if __name__=='__main__':
+    import argparse
+    parser=argparse.ArgumentParser();parser.add_argument('--assisted',action='store_true')
+    args=parser.parse_args()
     for name in ('i01_course_kaggle.ipynb','i01_course_research.ipynb'):
-        print(build(Path(__file__).resolve().parents[1]/'notebooks'/name))
+        print(build(Path(__file__).resolve().parents[1]/'notebooks'/name,assisted=args.assisted))

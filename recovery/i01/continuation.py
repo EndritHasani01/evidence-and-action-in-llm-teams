@@ -4,6 +4,8 @@ Original manifest, source, calls and gates remain intact. A fresh destination
 publishes only after validation; ordinary reopen never invents this transition.
 """
 from contextlib import closing
+import ast
+from copy import deepcopy
 import hashlib
 import json
 from pathlib import Path
@@ -18,7 +20,43 @@ from .store import Store, connection, restore_tail, utc, SCHEMA, LEGACY_SCHEMA
 
 LEGACY_SOURCE_SHA256 = '1aa0866281d866941ae49bda5436a50e2001d66689c2d39026209bfc142002e2'
 CHANGED_MODULES = {'recovery/i01/'+name+'.py' for name in
-                   ('workflow','store','report','ui','notebook','cli','setup','policy','continuation')}
+                   ('workflow','store','report','ui','notebook','cli','setup','policy','continuation',
+                    '__init__','core','inference','checks')} | {'configs/i01-course-assisted.json'}
+
+
+def _review_legacy_core(previous, current):
+    """The approved v2 additions must preserve v1 mathematics, syntax and native settings."""
+    def definitions(root,name):
+        return {getattr(node,'name',None):node for node in ast.parse((Path(root)/('recovery/i01/'+name+'.py')).read_text(encoding='utf-8')).body}
+    old=definitions(previous,'core');new=definitions(current,'core')
+    for name in ('canonical','seed_for','oracle','eligible','make_world','validate_action','next_agent','finish','success'):
+        if ast.dump(old[name])!=ast.dump(new[name]):
+            raise ValueError('Unreviewed scientific v1 core function: '+name)
+    def constant(root,name,module='core'):
+        for node in ast.parse((Path(root)/('recovery/i01/'+module+'.py')).read_text(encoding='utf-8')).body:
+            if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id==name for t in node.targets):
+                return ast.literal_eval(node.value)
+        raise ValueError('Unreviewed scientific missing legacy constant: '+name)
+    for name in ('SYSTEM','CONTROL_SYSTEM'):
+        if constant(previous,name)!=constant(current,name):
+            raise ValueError('Unreviewed scientific legacy prompt: '+name)
+    if constant(previous,'REGIME','__init__')!=constant(current,'REGIME','__init__'):
+        raise ValueError('Unreviewed scientific legacy default regime')
+    old=definitions(previous,'inference');new=definitions(current,'inference')
+    # The only approved adapter differences are a direct-only guard for v2 and
+    # passing the explicit regime to the renderer. Old native behavior stays exact.
+    settings=deepcopy(new['settings'])
+    if (isinstance(settings.body[0],ast.If) and isinstance(settings.body[0].test,ast.BoolOp) and
+        isinstance(settings.body[0].test.values[0],ast.Call) and getattr(settings.body[0].test.values[0].func,'id',None)=='assisted'):
+        settings.body=settings.body[1:]
+    prepared=deepcopy(new['prepare'])
+    for node in ast.walk(prepared):
+        if isinstance(node,ast.Call) and isinstance(node.func,ast.Name) and node.func.id=='messages':
+            node.keywords=[key for key in node.keywords if key.arg!='regime']
+    for name,candidate in (('settings',settings),('prepare',prepared),('split_visible',new['split_visible']),
+                           ('ModelFactory',new['ModelFactory']),('Adapter',new['Adapter'])):
+        if ast.dump(old[name])!=ast.dump(candidate):
+            raise ValueError('Unreviewed scientific/native v1 adapter difference: '+name)
 
 
 def metadata(run):
@@ -213,6 +251,12 @@ def continue_checkpoint(selected, target, source, *, prior_checkpoints=(), tail=
         differences={key for key in old.keys()|current.keys() if old.get(key)!=current.get(key)}
         if not differences<=CHANGED_MODULES:
             raise ValueError('Unreviewed scientific/runtime source difference: '+str(sorted(differences-CHANGED_MODULES)))
+        actual=Path(__file__).parents[2]
+        if any(relative.startswith('recovery/') and
+               (not (actual/relative).is_file() or digest(actual/relative)!=wanted)
+               for relative,wanted in current.items()):
+            raise ValueError('Unreviewed scientific source differs from the imported reviewed implementation')
+        _review_legacy_core(staging/'source',source)
         if (manifest['config']!=json.loads((source/'configs/i01-course.json').read_text()) or
             manifest['worlds']!=manifests(manifest['config'])['worlds'] or before['summary']['gates'].get('envelope')):
             raise ValueError('Unchanged fixed inputs/configuration and no prior envelope are required')

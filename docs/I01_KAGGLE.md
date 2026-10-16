@@ -1,3 +1,108 @@
+# I-01 assisted-v2: fixed campaign and current delivery
+
+The current implementation follows
+[specification §12.1](../PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026)
+and the approved [design](plans/i01-course-final-experimental-design.md) /
+[exact annex](plans/i01-course-final-design-protocol-and-acceptance.md).
+Implementation and CPU checks are authorized. **Actual GPU inference and
+experimental execution require a separate explicit request.** No actual-host
+or agent-performance result is established by the new software.
+
+The assisted source-only delivery is `dist/i01-course-assisted/`. Both notebook
+names contain the same complete **37 finite code cells**. The legacy builder
+default still generates the original 33-cell recorded-outcome flow; its
+configuration, reports and historical release/run directories remain separate.
+
+## Build and verify on CPU
+
+```powershell
+python scripts/build_i01_course_notebook.py --assisted
+python scripts/build_i01_course_release.py --assisted --output dist/i01-course-assisted
+python scripts/verify_i01_course_release.py --assisted
+```
+
+These commands package and check source/wheel/notebook/empty-store behavior.
+They do not load weights, run qualification or execute a research experiment.
+The source packet contains its checked 28-world input manifest and a receipt
+identifying the locally available historical inputs checked for exact overlap.
+Initialization/self-check require exact regeneration of those checked worlds;
+the runtime must not quietly generate another set under the same seed labels.
+Paper PDFs and model/dependency binaries are not included.
+
+## First execution, only after separate authorization
+
+1. Use a fresh online T4 x2 Kaggle session. Upload either generated notebook and
+   attach only `dist/i01-course-assisted/kaggle-input/i01-source.zip` as a private
+   source dataset. The notebook accepts the assisted-policy source packet;
+   another condition or cached imported source is rejected.
+2. Review `RUN_DIR=/kaggle/working/i01-assisted-study`, actual remaining GPU
+   allowance and the fixed session window. The default 700 minutes is an
+   operator planning estimate, not a verified provider entitlement. Installation,
+   downloads and inspection use the same clock; cell reruns cannot extend it.
+3. An authorized Run All locks the fixed candidate before its first model call,
+   performs six state checks, eight legal scalar controls and two full envelopes,
+   then four single-call diagnostics and a verified preparation checkpoint.
+   Probe nonpasses are diagnostic; they do not select a different candidate.
+4. All four balanced pilots run once, each with a natural original, both literal
+   siblings and original/revised scalar controls. Ordinary mistakes remain
+   outcomes. Main eligibility requires complete committed/effect/accounting/export
+   evidence, at least 3/4 correct original teams, at least 7/8 correct pilot controls,
+   current health and an adequate measured resource forecast. There is no
+   recovery-success, effect-direction or qualitative-message veto.
+5. On eligibility, the ten numbered batches execute all twenty fixed worlds.
+   Same-device worlds serialize; different devices may overlap. Ordinary main
+   failures do not replace worlds or stop later batches. Real health, source,
+   storage, unresolved-spending or resource faults stop dispatch and preserve
+   truthful partial evidence.
+6. Download `i01-assisted-study/exports/latest.zip`, reports and the executed
+   notebook. Export follows each pilot/batch and settled error; weights remain
+   resident through reporting and close after final export. Actual process exit
+   is reported separately from unknown provider deallocation/download completion.
+
+The whole campaign is capped at **480 ordinary +20 contingency =500 physical
+attempts**: hardware/state 8, scalar qualification 8, diagnostics 4, pilots 80,
+main 380. Early terminal episodes save attempts without enlarging another stage.
+Known wrong/invalid/truncated/timeout outcomes never retry. Eligible identical
+pre-outcome infrastructure retry and new-load qualification consume reserve.
+Course-7's unused allowance and a renamed directory provide no new authority.
+
+If usefulness fails, the report says `feasibility_complete`, main stays wholly
+unknown, and workers close after settled export. A partial integrity/resource
+stop remains partial. Neither outcome licenses prompt tuning or another cohort.
+All four pilot checks concern durable scopes; the distinct main decision applies
+the numerical usefulness thresholds. Four pilots do not certify reliability.
+
+## Inspect, resume and review
+
+Use `study.inspect(..., audit_limit=None)` for all raw calls. Eight qualification
+controls, four diagnostic predicates, four pilot scopes, physical and logical
+validity denominators, unknown cost coverage and the deterministic casebook are
+visible in the report/UI. Both arm rates and the all-world paired contrast stay
+primary; correct-prefix results are descriptive counts only. Human review is
+pending unless actually recorded. Optional `reviewer=` on `study.annotate(...)`
+records a supplied identity, not independent coding or causal attribution.
+
+Restore only this campaign's exact portable checkpoint and source. Construct
+`Study(source_root, run=RUN_DIR, assisted=True)`, use the existing explicit
+restore/reopen commands with actual exit/tail evidence, and set a new session's
+actual time window. Unknown additional spending blocks continuation until
+reconciled. A new loaded pair requires **six state checks plus two envelopes**,
+all charged to reserve: after loading use `study.check_headroom(reload=True)`.
+Completed scalar/diagnostic/pilot/main outcomes do not regenerate. Two full
+eight-call reload cycles fit the reserve only if other spending permits them.
+No Course-3/7 migration, prior-result import, implicit fresh campaign, relaxed
+gate or model fallback is selected for assisted-v2. Preserve existing outputs
+without rerunning inference merely to save them.
+
+Read [implementation evidence](validation/i01-assisted-implementation.md) and
+the [requirement checklist](plans/i01-assisted-implementation-progress.md) for
+verified status and remaining actual-host gates.
+
+## Legacy v1 runbook (historical condition)
+
+The following instructions describe `i01-course-v1` and its preserved
+recorded-outcome packet. Its counts, policies and paths do not govern assisted-v2.
+
 # I-01: the entire experiment with Run All
 
 The current delivery is one complete 33-cell notebook. Both

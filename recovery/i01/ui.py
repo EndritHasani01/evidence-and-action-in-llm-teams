@@ -14,6 +14,7 @@ from .core import canonical
 from .setup import host_inventory, install, setup_directory
 from .runtime import command as runtime_command
 from .store import utc
+from . import assisted as is_assisted
 import math
 import traceback
 
@@ -56,8 +57,11 @@ def _details(title, value):
 
 
 class Operator:
-    def __init__(self, source, scratch="/kaggle/temp/i01", working="/kaggle/working", run="/kaggle/working/i01-study"):
+    def __init__(self, source, scratch="/kaggle/temp/i01", working="/kaggle/working", run="/kaggle/working/i01-study", *, assisted=False):
         self.source,self.scratch,self.working,self.run_dir=map(Path,(source,scratch,working,run))
+        if type(assisted) is not bool:raise ValueError('Select assisted explicitly as True or False')
+        self.assisted=assisted
+        self.config_filename='i01-course-assisted.json' if assisted else 'i01-course.json'
         self.client=None; self.environment=None; self.metadata=None; self.weights=None
         self.busy=threading.Lock(); self.outputs=[]
         self.deadline=None; self.allowance_evidence=None
@@ -137,10 +141,11 @@ class Operator:
             validate_active_source(self.run_dir,self.source,json.loads((self.run_dir/'run.json').read_text()))
             if independent:
                 from .workflow import initialize
-                initialize(self.run_dir,self.source,json.loads((self.source/'configs/i01-course.json').read_text()),independent=True)
+                initialize(self.run_dir,self.source,json.loads((self.source/'configs'/self.config_filename).read_text()),independent=True)
             return self.client.command('status')
         restored=None
         if mode=='continue':
+            if self.assisted:raise ValueError('Assisted I-01 starts independently; historical pre-main migration is not selected')
             from .continuation import continue_checkpoint, choose_checkpoint, COURSE_2_STUDY, COURSE_3_STUDY
             if (self.run_dir/'run.json').exists():
                 from .continuation import validate_active_source
@@ -156,7 +161,7 @@ class Operator:
             restored=extract_selected(selected,self.run_dir)
         elif mode=="new":
             from .workflow import initialize
-            config=json.loads((self.source/"configs/i01-course.json").read_text())
+            config=json.loads((self.source/'configs'/self.config_filename).read_text())
             initialize(self.run_dir,self.source,config,independent=independent)
             if prior_checkpoints:
                 from .continuation import record_prior_preparation
@@ -166,6 +171,8 @@ class Operator:
                 finally:s.close()
         elif not (self.run_dir/"run.json").exists():
             raise ValueError("reopen requires files intact; no implicit new study")
+        if is_assisted(json.loads((self.run_dir/'run.json').read_text())['config'])!=self.assisted:
+            raise ValueError('Notebook condition differs from saved study; select its exact source/assisted flag without replacing records')
         self.client=Client(self.environment["interpreter"],self.source,self.run_dir,self.scratch/"hf-cache",self.emit)
         self.receipt_session=self.client.command("status")["session"]
         if self.setup_dir.exists():
@@ -355,7 +362,8 @@ class Operator:
             if 'models' in payload:
                 _table(['Logical slot','Resident','Load receipt'],[(i,m['resident'],'Recorded' if m.get('load_report') else 'Not recorded') for i,m in enumerate(payload['models'])])
             if action=='screen' and 'correct' in payload:
-                print(f"Protocol qualification: {payload.get('committed',0)}/12 committed; {payload['protocol_errors']} invalid actions; current eligible: {payload.get('passed')}. Mathematical diagnostic: {payload['correct']}/12.")
+                planned=payload.get('planned',12)
+                print(f"Protocol qualification: {payload.get('committed',0)}/{planned} committed; {payload['protocol_errors']} invalid actions; current eligible: {payload.get('passed')}. Mathematical diagnostic: {payload['correct']}/{planned}.")
                 historical=payload.get('historical_gate')
                 if historical: print('Original saved gate decision (unchanged): '+str(historical.get('passed'))+'; rule '+str(historical.get('policy','original 11/12 competence')))
                 _table(['Failed call','Truth','Submission','Error'],[(r['call'],r['truth'],r['submission'],r['error'] or 'wrong scalar') for r in payload.get('controls',[]) if r['correct']==0])
@@ -371,6 +379,8 @@ class Operator:
                     ('Original team completed (diagnostic)',payload.get('original_team_completed')),
                     ('Invalid prefix / recovery / controls',str(payload.get('prefix_protocol_errors'))+' / '+str(payload.get('recovery_protocol_errors'))+' / '+str(payload.get('control_protocol_errors')))],'Recorded outcomes; admission is not protocol perfection')
                 _table(['Blocking prerequisite','Passed'],list(payload.get('checks',{}).items()))
+            if action=='diagnostics' and payload.get('results'):
+                _table(['Call','Legal action','Target action occurred','Private expected value'],[(r['call'],r.get('action') is not None,r['passed'],r['expected']) for r in payload['results']], 'Single-call diagnostics; target nonpass does not veto main')
             if action=='selfcheck':
                 _table(['Lightweight check','State'],[(name,'Passed') for name in payload.get('checks',[])])
                 print('Native tokenizer: '+('passed' if payload.get('native_tokenizer') else 'not accepted on this host'))
@@ -450,7 +460,8 @@ class Operator:
         return self.run('envelope',reload=reload)
 
     def review_pilot(self, number, *, useful_communication=None, usable=None, notes=''):
-        if type(number) is not int or number not in (1,2,3): self.stop_before_action('review','Pilot number must be 1, 2 or 3.')
+        count=4 if self.assisted else 3
+        if type(number) is not int or number not in range(1,count+1): self.stop_before_action('review',f'Pilot number must be within 1..{count}.')
         if type(useful_communication) is not bool or type(usable) is not bool or not notes.strip():
             self.stop_before_action('review','Inspect this pilot, then supply actual communication/usability findings (True or False) and review notes. Unreviewed is not approved.')
         return self.run('review',scope=f'pilot-{number}',notes=notes,useful_communication=useful_communication,usable=usable)
@@ -478,9 +489,9 @@ class Operator:
         status=self.status()
         config=json.loads((self.run_dir/'run.json').read_text())['config']
         _table(['Gate','Recorded state'],[(k,'State review required' if k=='readiness' and status['gates'].get(k,{}).get('needs_review') and not status['gates'].get('review/readiness') else 'Passed' if status['gates'].get(k,{}).get('passed') else 'Not passed / not recorded') for k in ('readiness','envelope')], 'Runtime gates')
-        self.inspect(worlds=[f'qualification-{i:02d}' for i in range(6)],audit_limit=0,downloads=False)
-        _table(['Pilot','Communication','Usable','Review notes'],[(i,status['gates'].get(f'review/pilot-{i}',{}).get('useful_communication'),status['gates'].get(f'review/pilot-{i}',{}).get('usable'),status['gates'].get(f'review/pilot-{i}',{}).get('notes')) for i in (1,2,3)], 'Pilot reviews')
-        self.inspect(worlds=[f'pilot-{i:02d}' for i in range(3)],audit_limit=0,downloads=False)
+        self.inspect(worlds=[f'qualification-{i:02d}' for i in range(config['qualification_worlds'])],audit_limit=0,downloads=False)
+        _table(['Pilot','Communication','Usable','Review notes'],[(i,status['gates'].get(f'review/pilot-{i}',{}).get('useful_communication'),status['gates'].get(f'review/pilot-{i}',{}).get('usable'),status['gates'].get(f'review/pilot-{i}',{}).get('notes')) for i in range(1,config['pilot_worlds']+1)], 'Retrospective pilot reviews; no qualitative veto')
+        self.inspect(worlds=[f'pilot-{i:02d}' for i in range(config['pilot_worlds'])],audit_limit=0,downloads=False)
         forecast=self.client.command('forecast')
         _table(['Resource forecast','Value'],list(forecast.items()),'Main admission forecast')
         _details('Exact configuration proposed for freeze',config)
@@ -529,19 +540,26 @@ class Operator:
             if qualification_mode not in (None,'direct','thinking'):raise ValueError('Qualification mode must be direct/thinking or None for both')
             for qmode,q in result['qualification'].items():
                 if qualification_mode and qmode!=qualification_mode:continue
-                _table(['Mode','Committed/planned','Correct','Wrong scalar','Invalid','Unexecuted','Current eligible','Historical passed'],[(qmode,f"{q['committed']}/12",q['correct'],q['wrong_scalar'],q['protocol_errors'],q['unexecuted'],q['passed'],(q['historical_gate'] or {}).get('passed'))], 'Qualification scope; accuracy is diagnostic')
+                _table(['Mode','Committed/planned','Correct','Wrong scalar','Invalid','Unexecuted','Current eligible','Historical passed'],[(qmode,f"{q['committed']}/{q['planned']}",q['correct'],q['wrong_scalar'],q['protocol_errors'],q['unexecuted'],q['passed'],(q['historical_gate'] or {}).get('passed'))], 'Qualification scope; accuracy is diagnostic')
                 _table(['Call','Truth','Submission','Valid','Correct','Error','Tokens','Ready seconds'],[(r['call'],r['truth'],r['submission'],r['valid'],r['correct'],r['error'],r['generated_tokens'],r['ready_seconds']) for r in q['controls'] if selected is None or r['world'] in selected], qmode.title()+' controls (unknown means pending/unexecuted)')
         elif rows and all(r['group']=='main' for r in rows):
             _table(['World','Original team','Retain','Clear','Revised control'],[(r['id'],score(r['prefix']),score(r['retain']),score(r['clear']),score(r.get('control_revised_'+mode))) for r in rows], 'Recorded main outcomes')
         else:
             _table(['World','Original team','Retain','Clear','Original control','Revised control'],[(r['id'],score(r['prefix']),score(r['retain']),score(r['clear']),score(r.get('control_original_'+mode)),score(r.get('control_revised_'+mode))) for r in rows], 'Recorded outcomes')
         s=result['summary']
-        print(f"Main paired coverage: {s['known_pairs']}/20 intended worlds. Campaign: {s['campaign_attempts']}/500 physical attempts ({s['attempts']} here, {s['prior_attempts']} prior); contingency including prior charges/gaps: {s['contingency']}/28. Historical 45 remain separate.")
+        reserve=result['manifest']['config']['contingency_limit']
+        print(f"Main paired coverage: {s['known_pairs']}/20 intended worlds. Campaign: {s['campaign_attempts']}/500 physical attempts ({s['attempts']} here, {s['prior_attempts']} prior); contingency including prior charges/gaps: {s['contingency']}/{reserve}. Historical 45 remain separate.")
+        if 'diagnostics' in result:
+            _table(['Call','Committed','Legal','Target occurred','Private expected value'],[(r['call'],r['committed'],r['legal_action'],r['passed'],r['expected']) for r in result['diagnostics'] if selected is None or r['world'] in selected], 'Supplied-view diagnostics; no aggregate main gate')
+            d=s['assisted_feasibility']
+            _table(['Decision','Observed'],[('Correct original teams',f"{d['correct_originals']}/4; require 3"),('Correct pilot controls',f"{d['correct_controls']}/8; require 7"),('Complete pilot evidence',d['checks']['complete_pilot_evidence']),('Usefulness passed',d['passed'])], 'Fixed main usefulness decision; no recovery-effect criterion')
         if self.client is not None:
             status=self.status(); usage=status.get('usage',{})
             if usage: _table(['Admission resource','Value'],[('Remaining attempt allowance',usage['remaining']),('Contingency including bounded lost spending',usage['contingency']),('Lost spending evidence',usage['lost_spending']),('Remaining session seconds',status['remaining_session_seconds'])])
         if not rows or not all(r['group']=='qualification' for r in rows):
             _table(['World','Phase','Calls','Generated tokens','Ready-model seconds','Messages'],[(r['world'],r['phase'],r['calls'],r['generated_tokens'],r['ready_seconds'],r['messages']) for r in result['costs'] if (selected is None or r['world'] in selected) and (not phase or r['phase']==phase)], 'Phase effort (unknown is not zero)')
+            if 'diagnostics' in result:
+                _table(['World','Phase','Recorded attempts','Observed ready seconds','Attempts without ready time'],[(r['world'],r['phase'],r['calls'],r['observed_ready_seconds'],r['attempts_unknown_ready_seconds']) for r in result['costs'] if (selected is None or r['world'] in selected) and (not phase or r['phase']==phase)], 'Observed spending only; incomplete whole-episode costs remain unknown')
         for ep in result['episodes']:
             identity,ep_phase=ep['id'].split('/',1)
             if selected is not None and identity not in selected: continue
@@ -596,14 +614,16 @@ class Operator:
         except ImportError: print('Figures available in the report files.')
         return receipt
 
-    def annotate(self, identity, label, calls, notes):
+    def annotate(self, identity, label, calls, notes, *, reviewer=None):
         if self.client is None: raise ValueError("open controller for canonical annotation writes")
-        return self.client.command("annotate",annotation=dict(id=identity,label=label,calls=calls,notes=notes))
+        value=dict(id=identity,label=label,calls=calls,notes=notes)
+        if reviewer is not None:value['reviewer']=reviewer
+        return self.client.command("annotate",annotation=value)
 
     def panel(self, action, title=None, ceiling=0, **defaults):
         from IPython.display import display, HTML
         title=title or action
-        description=(f'First-attempt ceiling: {ceiling}. Eligible identical infrastructure retries consume the shared 28 contingency and 500 whole-study ceiling.' if ceiling else 'Zero model generations; setup, state or reporting only.')
+        description=(f'First-attempt ceiling: {ceiling}. Eligible identical infrastructure retries consume the shared {20 if self.assisted else 28} contingency and 500 whole-study ceiling.' if ceiling else 'Zero model generations; setup, state or reporting only.')
         display(HTML(f'<h3>{escape(title)}</h3><p>{description} Successful completion starts no later stage.</p>'))
         print(f"Explicit command: ui.run({action!r}"+"".join(f", {k}={v!r}" for k,v in defaults.items())+")")
         try:

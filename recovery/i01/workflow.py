@@ -74,6 +74,12 @@ def _initialize(run, source, config, *, independent=False):
     run.mkdir(parents=True, exist_ok=True)
     manifest = dict(manifests(config), study_id=str(uuid.uuid4()), created_at=utc(),
                     source_identity=source_files(source))
+    separation=None
+    if assisted(config):
+        from .checks import input_separation
+        separation=input_separation(source,config)
+        if separation['new_worlds']!=manifest['worlds']:
+            raise ValueError('Prepared worlds differ from the exact exposed-input audit')
     capture_source(source, run/'source')
     atomic_json(run/"run.json", manifest)
     binding = {"manifest":manifest}
@@ -83,6 +89,8 @@ def _initialize(run, source, config, *, independent=False):
             store.bind('qualification_policy', PROTOCOL_POLICY)
             store.bind('attempt_scope','independent-study' if independent else 'shared-campaign')
             store.bind('required_preparation_studies',[] if independent else list(CAMPAIGN_STUDIES))
+            if separation is not None:
+                store.bind('input_separation',{k:v for k,v in separation.items() if k not in ('new_worlds','config')})
         store.close()
     return manifest
 
@@ -214,7 +222,7 @@ class Session:
 
     def selfcheck(self, metadata_path=None):
         from .checks import run_checks
-        receipt = run_checks(metadata_path, self.config)
+        receipt = run_checks(metadata_path, self.config, **({'source':self.source} if assisted(self.config) else {}))
         atomic_json(self.run/"receipts/selfcheck.json", receipt)
         # Native check is mandatory on Kaggle, development-only scripted receipt is insufficient.
         if receipt["passed"] and receipt["native_tokenizer"]:
@@ -608,7 +616,10 @@ class Session:
         if w["group"] == "pilot":
             self.control(w,"original",mode)
         self.control(w,"revised",mode)
-        self.checkpoint("world/"+w["id"])
+        # The assisted finite pilot action and check action each export once
+        # (2*P_p in the selected forecast). Main still needs per-world exports.
+        if not assisted(self.config) or w['group']=='main':
+            self.checkpoint("world/"+w["id"])
 
     def pilot(self, number):
         mode = self.qualified()
@@ -846,7 +857,8 @@ class Session:
         for number in range(1,self.config['pilot_worlds']+1):
             if automatic:
                 if not self.meta.meta('automatic/pilot-'+str(number),{}).get('passed'):
-                    raise ValueError(f"{self.config['pilot_worlds']} passing objective pilot checks required for automatic main admission")
+                    count='Four' if assisted(self.config) else 'Three'
+                    raise ValueError(f"{count} passing objective pilot checks required for automatic main admission")
                 # Reconstruct actual evidence too; metadata is not a substitute.
                 if not self.scope_evidence(next(w for w in self.manifest['worlds'] if w['id']==f'pilot-{number-1:02d}'),pilot=True)['passed']:
                     raise ValueError('Automatic pilot evidence no longer satisfies the precommitted checks')

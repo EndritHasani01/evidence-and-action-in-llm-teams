@@ -80,9 +80,53 @@ The existing Course-7 analyzer output still equals its preserved saved
 only authorized specification/plan and I-01 package changes differ so far.
 Receipt: [assisted-workflow-report-checks.json](../../notebooks/validation/i01-development/assisted-workflow-report-checks.json).
 
+## Source delivery and compatibility checkpoint
+
+The assisted operator/CLI and both identical 37-cell notebooks now expose the
+four diagnostics, preparation checkpoint, four finite pilots/checks and ten
+fixed main batches. The builder's legacy default still generates its separate
+33-cell flow. Explicit regime selection prevents an old packet or cached import
+from silently entering the assisted notebook. Full raw inspection, intended
+coverage, scalar/diagnostic distinctions, observed partial cost and unknown
+whole-phase cost remain visible. Correct-prefix reporting is counts only.
+
+The historical course-3 migration guard now checks the unchanged legacy core
+functions/prompts and native settings while permitting reviewed assisted-only
+additions. Proposed source must also equal the actually imported reviewed
+library. Existing negative source-change checks remain effective. Assisted
+studies cannot use that historical migration route.
+
+Executed the affected source regression:
+
+```powershell
+python -m unittest discover -s tests -p test_i01*.py -v
+```
+
+This exercised **108 tests in 490.675 seconds: 107 passed and one failed** because
+the legacy error changed from `Three passing` to `3 passing`. The error wording
+was restored without changing admission. The failing case and four delivery/
+report cases then passed together (**five tests, 24.957 seconds**). The complete
+108-test command is not represented as a clean passing run. No known failure
+remains; the focused rerun covers the correction and final counts-only report.
+The three delivery tests exercise both finite notebook flows, actual exposed
+input inventory and exact packet-world binding (including tamper rejection),
+and a real assisted operator opening/inspecting/exporting with zero model calls.
+
+The final native tokenizer self-check passed after strengthening its private
+source/notice extremes and adversarial histories: conservative bound
+**7,634/8,192**, resident direct bound 8,704; seven literal families include
+multiline, Unicode, escapes/control bytes, header imitation and large integers.
+All five feedback strings use 8–17 native tokens. The actual disjointness audit
+checks **56 new ordered original/revised inputs against 60 distinct exposed
+inputs**, from nine sources covering Course-1…7 and the native fixture. The
+source release carries the checked 28-world manifest and requires exact
+regeneration, preventing an unnoticed host-RNG version change. Diagnostics
+intentionally reuse qualification inputs. No binary research/model material is
+added. Receipt:
+[assisted-final-source-checks.json](../../notebooks/validation/i01-development/assisted-final-source-checks.json).
+
 ## Remaining work
 
-Complete UI/CLI/notebook/release delivery and the exposed-input audit, then
-verify installed source/wheel, remaining affected legacy paths and the final
-requirement-by-requirement completion audit. Actual-host/model gates remain
+Build and verify the source-only installed release, then complete preservation
+and the requirement-by-requirement audit. Actual-host/model gates remain
 separately authorized future work.

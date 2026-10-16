@@ -152,6 +152,7 @@ def serve(run, source):
 def parser():
     p=argparse.ArgumentParser(description="I-01 finite research stages; no automatic progression")
     p.add_argument("--source",type=Path,default=Path(__file__).parents[2])
+    p.add_argument('--assisted',action='store_true',help='Select the adopted assisted-v2 configuration for init/selfcheck; legacy default is preserved')
     p.add_argument("--run",type=Path)
     sub=p.add_subparsers(dest="command",required=True)
     sub.add_parser("serve")
@@ -178,7 +179,7 @@ def parser():
 
 def main(argv=None):
     args=parser().parse_args(argv)
-    config=json.loads((args.source/"configs/i01-course.json").read_text())
+    config=json.loads((args.source/'configs'/('i01-course-assisted.json' if args.assisted else 'i01-course.json')).read_text())
     if args.command=="runtime-inventory":
         from .setup import runtime_inventory
         result=runtime_inventory(args.source); atomic_json(args.output,result)
@@ -197,6 +198,7 @@ def main(argv=None):
             try:record_prior_preparation(args.run,session.stores,args.prior)
             finally:session.close()
     elif args.command=='continue-checkpoint':
+        if args.assisted:raise ValueError('Assisted I-01 requires independent initialization; legacy migration does not select the new condition')
         from .continuation import continue_checkpoint
         result=continue_checkpoint(args.selected,args.run,args.source,prior_checkpoints=args.prior,
                                    tail=args.tail,evidence=args.evidence)
@@ -211,7 +213,7 @@ def main(argv=None):
             session.close()
     elif args.command=="selfcheck":
         from .checks import run_checks
-        result=run_checks(args.metadata,config)
+        result=run_checks(args.metadata,config,source=args.source)
     elif args.command in ("status","report"):
         from .report import analysis, write_report
         result=analysis(args.run)["summary"] if args.command=="status" else write_report(args.run,args.output or args.run/"reports",plot=not args.no_plots)

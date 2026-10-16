@@ -76,11 +76,12 @@ def analysis(run):
         req = json.loads(calls[row["call_id"]]["request"])
         outcome = json.loads(row["evidence"]) if row["evidence"] else {}
         attempts.append(dict(row, episode=calls[row["call_id"]]["episode"], seed=req["seed"],
-                             settings=req["settings"], input_tokens=outcome.get("input_tokens", len(req.get("input_ids", []))),
+                             settings=req["settings"], input_tokens=(outcome.get('input_tokens') if selected_assisted else outcome.get("input_tokens", len(req.get("input_ids", [])))),
                              generated_tokens=outcome.get("generated_tokens"), ready_seconds=outcome.get("ready_seconds"),
                              dispatch_seconds=outcome.get("dispatch_seconds"),observed_seconds=outcome.get("observed_seconds",outcome.get("dispatch_seconds",outcome.get("ready_seconds"))),
                              termination=outcome.get("termination"), device=outcome.get("backend", {}).get("device"),
                              pid=outcome.get("backend", {}).get("pid")))
+        if selected_assisted:attempts[-1]['requested_input_tokens']=len(req.get('input_ids',[]))
     world_rows, cost_rows = [], []
     for w in manifest["worlds"]:
         r = {k:w[k] for k in ("id", "group", "owner", "first", "original_truth", "revised_truth")}
@@ -94,7 +95,7 @@ def analysis(run):
             r[phase+"_submissions"] = e.get("submissions") if e else None
             a = [v for v in attempts if v["episode"] == w["id"]+"/"+phase]
             c = dict(world=w["id"], phase=phase, complete=bool(e and e.get("terminal")), calls=len(a),
-                     input_tokens=sum(v["input_tokens"] for v in a),
+                     input_tokens=None if any(v['input_tokens'] is None for v in a) else sum(v["input_tokens"] for v in a),
                      generated_tokens=None if any(v["generated_tokens"] is None for v in a) else sum(v["generated_tokens"] for v in a),
                      ready_seconds=None if any(v["ready_seconds"] is None for v in a) else sum(v["ready_seconds"] for v in a),
                      observed_seconds=sum(v["observed_seconds"] or 0 for v in a),
@@ -103,8 +104,12 @@ def analysis(run):
                 c.update(ready_seconds=None, generated_tokens=None)
             if selected_assisted:
                 c.update(attempts_unknown_ready_seconds=sum(v['ready_seconds'] is None for v in a),
-                         attempts_unknown_observed_seconds=sum(v['observed_seconds'] is None for v in a))
+                         attempts_unknown_observed_seconds=sum(v['observed_seconds'] is None for v in a),
+                         observed_ready_seconds=sum(v['ready_seconds'] for v in a if v['ready_seconds'] is not None),
+                         observed_input_tokens=sum(v['input_tokens'] for v in a if v['input_tokens'] is not None),
+                         observed_generated_tokens=sum(v['generated_tokens'] for v in a if v['generated_tokens'] is not None))
                 if any(v['observed_seconds'] is None for v in a):c['observed_seconds']=None
+                if not c['complete']:c.update(ready_seconds=None,input_tokens=None,generated_tokens=None)
             if not selected_assisted or w['group']!='qualification':cost_rows.append(c)
         for mode in ("direct", "thinking"):
             for input_phase in ("original", "revised"):
@@ -279,6 +284,7 @@ def analysis(run):
                 paired_costs=paired_costs,failure_analysis=failure_rows,
                 episodes=tables["episodes"],traces=tables["calls"], annotations=tables["annotations"], sessions=tables["sessions"], manifest=manifest)
     if selected_assisted:
+        summary['correct_prefix_mean']=None  # Counts only in the approved assisted regime.
         diagnostics=[]
         for label in ('D00','D01','D02','D03'):
             fixture=diagnostic_fixture(manifest,label);identity=fixture['id'];call=calls.get(identity)
@@ -302,6 +308,27 @@ def analysis(run):
                        diagnostic_committed=sum(r['committed'] for r in diagnostics),diagnostic_planned=4,
                        contingency_limit=20,ordinary_first_attempt_limit=480,
                        uncertainty_scope='Observed cohort contrast is exact when complete; exploratory bootstrap resamples worlds, not repeated generations or all model seeds.')
+        summary.update(original_team_successes=sum(r['prefix']==1 for r in main),
+                       main_revised_control_successes=sum(r['control_revised_direct']==1 for r in main),
+                       main_revised_control_unknown=sum(r['control_revised_direct'] is None for r in main),
+                       physical_input_tokens_observed=sum(a['input_tokens'] for a in attempts if a['input_tokens'] is not None),
+                       attempts_unknown_input_tokens=sum(a['input_tokens'] is None for a in attempts),
+                       requested_input_tokens=sum(a['requested_input_tokens'] for a in attempts))
+        for policy in ('retain','clear'):
+            count=sum(r[policy]==1 for r in main);unknown=sum(r[policy] is None for r in main)
+            summary.update({policy+'_successes':count,policy+'_unknown':unknown,
+                policy+'_success_rate':count/20 if not unknown else None,
+                policy+'_rate_completion_bounds':[count/20,(count+unknown)/20]})
+        summary['correct_prefix_recovery']=dict(denominator=len(correct_prefix),
+            **{policy+'_'+key:sum(r[policy]==1 if key=='correct' else r[policy] is None for r in correct_prefix)
+               for policy in ('retain','clear') for key in ('correct','unknown')})
+        summary['paired_stratum_coverage']=[]
+        for owner,first in ((0,0),(0,1),(1,0),(1,1)):
+            rows=[r for r in known if (r['owner'],r['first'])==(owner,first)]
+            values=[r['clear']-r['retain'] for r in rows]
+            summary['paired_stratum_coverage'].append(dict(owner=owner,first=first,intended=5,known_pairs=len(rows),
+                retain_only=sum(v==-1 for v in values),clear_only=sum(v==1 for v in values),
+                empty_observed_stratum=not values,constant_observed_contrast=bool(values) and len(set(values))==1))
         result['diagnostics']=diagnostics
         feasibility_complete=(usefulness['checks']['complete_pilot_evidence'] and not usefulness['passed'] and
                               screens['direct']['passed'] and all(r['committed'] for r in diagnostics) and
@@ -563,6 +590,13 @@ def write_report(run, out, *, plot=True):
                  "```json\n"+json.dumps(s,indent=2)+"\n```\n")
     if selected_assisted:
         process_text='\n## Exact main process observables\n\nCalls are dependent and their counts depend on behavior. Physical attempt-level validity is in attempt_compliance.csv; logical registered-call validity is in protocol_compliance.csv. No independent-binomial or causal failure-percentage interpretation is selected.\n\n'
+        policy_text='\n## Primary exact recovery\n\n| Policy | Observed correct /20 intended | Unknown | Complete-cohort success rate |\n|---|---:|---:|---:|\n'
+        for policy in ('retain','clear'):
+            rate=s[policy+'_success_rate']
+            policy_text+=f"| {policy} | {s[policy+'_successes']} | {s[policy+'_unknown']} | {rate if rate is not None else 'unavailable'} |\n"
+        policy_text+='\nCorrect-prefix recovery (descriptive counts only): '+json.dumps(s['correct_prefix_recovery'])+'.\n'
+        policy_text+='\nStratum coverage/empirical variation: '+json.dumps(s['paired_stratum_coverage'])+'. Constant or empty observed strata cannot reveal unobserved discordance.\n'
+        process_text=policy_text+process_text
         process_text+='| Phase | Terminal /20 | Both submitted | Agreement | Wrong agreement | Locally refutable /40 slots | Present submissions /40 | Unknown submission slots | Obsolete submissions |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\n'
         for r in result['process_outcomes']:
             process_text+='| '+' | '.join(str(r[key]) for key in ('phase','terminal_episodes','both_submitted','agreement','wrong_agreement','locally_refutable_submissions','present_submissions','unknown_submission_slots','obsolete_submissions'))+' |\n'
