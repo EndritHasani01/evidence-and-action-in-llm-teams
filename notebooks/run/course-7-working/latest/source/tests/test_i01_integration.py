@@ -1,0 +1,181 @@
+"""Focused scripted integration only. No model qualification/pilot/main run."""
+from datetime import datetime, timedelta, timezone
+import json
+from pathlib import Path
+import tempfile
+import unittest
+import sys
+import os
+from unittest.mock import patch
+
+from recovery.i01.core import canonical
+from recovery.i01.workflow import Session, initialize
+from recovery.i01.report import analysis, write_report
+
+
+class Scripted:
+    def __init__(self, actions):
+        self.actions=list(actions); self.calls=0
+    def obtain(self, request, timeout):
+        self.calls+=1
+        text=canonical(self.actions.pop(0))
+        return dict(visible_text=text,raw_text=text,token_ids=[1],truncated=False,
+                    failure=None,ready_seconds=.001,generated_tokens=1,input_tokens=1)
+    def close(self): return dict(termination_confirmed=True)
+
+
+def prepare(view,seed,mode,**flags):
+    return dict(view=view,seed=seed,settings={"mode":mode},input_ids=[1],rendered=canonical(view),**flags)
+
+
+class Integration(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory(prefix="i01-integration-")
+        self.run=Path(self.temp.name)/"run"
+        root=Path(__file__).parents[1]
+        initialize(self.run,root,json.loads((root/"configs/i01-course.json").read_text()))
+        from recovery.i01.store import Store
+        manifest=json.loads((self.run/'run.json').read_text())
+        store=Store(self.run/'worker-0.sqlite',{'manifest':manifest})
+        store.put_meta('required_preparation_studies',[])  # Isolated scripted fixture.
+        store.close()
+        self.session=None
+    def tearDown(self):
+        if self.session: self.session.close()
+        self.temp.cleanup()
+    def open(self, actions):
+        worker=Scripted(actions)
+        self.session=Session(self.run,providers=[worker,Scripted([])],prepare_request=prepare)
+        self.session.window((datetime.now(timezone.utc)+timedelta(hours=2)).isoformat(),"scripted test allowance")
+        return self.session,worker
+    def test_raw_resume_literal_siblings_report(self):
+        actions=[dict(message="<script>alert(1)</script>",submit=None,wait=False),
+                 dict(message="global",submit=999,wait=False),dict(message="agree",submit=999,wait=False)]
+        s,w=self.open(actions)
+        world=s.manifest["worlds"][6]
+        store=s.stores[world["device"]]
+        original=store.effects
+        def crash(*args): raise RuntimeError("scripted crash after raw persistence")
+        store.effects=crash
+        with self.assertRaises(RuntimeError): s.episode(world,"prefix","direct")
+        self.assertEqual(w.calls,1)
+        self.assertEqual(s.admission.usage()["attempts"],1)
+        store.effects=original
+        prefix=s.episode(world,"prefix","direct")
+        self.assertEqual(w.calls,3)
+        self.assertEqual(prefix["terminal"],"both_submitted")
+        self.assertEqual(s.episode(world,"prefix","direct"),prefix)
+        self.assertEqual(w.calls,3)
+        from recovery.i01.core import initial_episode
+        self.assertEqual(initial_episode(world,"retain",prefix)["history"],prefix["history"])
+        self.assertEqual(initial_episode(world,"clear",prefix)["history"],[[],[]])
+        report=write_report(self.run,self.run/"reports")
+        html=(self.run/"reports/conversations.html").read_text()
+        self.assertNotIn("<script>alert",html)
+        self.assertIn("&lt;script&gt;",html)
+        self.assertEqual(report["summary"]["known_pairs"],0)
+        checkpoint=s.checkpoint("scripted-raw-resume")
+        self.assertEqual(checkpoint["attempts"],3)
+    def test_missing_prerequisites_no_attempts(self):
+        s,w=self.open([])
+        for call in (lambda:s.pilot(1),lambda:s.main(),lambda:s.freeze("review"),lambda:s.screen("thinking","competence")):
+            with self.assertRaises(ValueError): call()
+        self.assertEqual(s.admission.usage()["attempts"],0)
+        self.assertEqual(w.calls,0)
+    def test_missing_or_previous_session_window_blocks_before_attempt_admission(self):
+        worker=Scripted([])
+        self.session=Session(self.run,providers=[worker,Scripted([])],prepare_request=prepare)
+        s=self.session
+        request=prepare({'scripted':'window gate'},1,'direct')
+        for old in (None,dict(session='previous-controller',deadline='2099-01-01T00:00:00+00:00',evidence='old allowance')):
+            if old: s.meta.put_meta('window',old)
+            with self.assertRaisesRegex(ValueError,'insufficient session time'):
+                s.call(0,'scripted-window','scripted-window/prefix',request,'pilot')
+            self.assertEqual(s.admission.usage()['attempts'],0)
+            self.assertEqual(worker.calls,0)
+            self.assertFalse(s.active_calls)
+    def test_restore_reload_cannot_relabel_cached_envelope(self):
+        s,w=self.open([])
+        s.meta.put_meta("screen/direct",dict(passed=True))
+        s.meta.put_meta("envelope",dict(passed=True,mode="direct",session="old-session"))
+        with self.assertRaises(ValueError): s.envelope("direct")
+        self.assertEqual(w.calls,0)
+    def test_read_only_full_population(self):
+        result=analysis(self.run)
+        self.assertEqual(result["summary"]["intended_worlds"],20)
+        self.assertEqual(result["summary"]["missingness_bounds"],[-1,1])
+        self.assertEqual(result["summary"]["attempts"],0)
+    def test_retained_client_and_explicit_fallback(self):
+        from recovery.i01.client import Client
+        root=Path(__file__).parents[1]
+        client=Client(sys.executable,root,self.run,Path(self.temp.name)/"cache")
+        try:
+            first=client.command("status")
+            result=client.action("prepare_batch",count=1)
+            self.assertIn("prerequisite",result["error"])
+            self.assertEqual(client.command("status")["usage"]["attempts"],0)
+            self.assertEqual(first["session"],client.command("status")["session"])
+            self.assertEqual(result["checkpoint"]["integrity"],"passed")
+        finally:
+            client.close()
+    def test_parallel_writers_quiesce_for_snapshot(self):
+        from concurrent.futures import ThreadPoolExecutor
+        import threading
+        import time
+        actions=[dict(message=None,submit=999,wait=False)]*2
+        s,w=self.open(actions)
+        s.workers[1]=Scripted(actions)
+        ready=threading.Barrier(2)
+        for worker in s.workers:
+            original=worker.obtain
+            def slow(req,timeout,original=original):
+                ready.wait(timeout=5); time.sleep(.05)
+                return original(req,timeout)
+            worker.obtain=slow
+        worlds=s.manifest["worlds"][6:8]
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            states=list(pool.map(lambda world:s.episode(world,"prefix","direct"),worlds))
+        self.assertTrue(all(e["terminal"]=="both_submitted" for e in states))
+        self.assertFalse(s.active_calls)
+        receipt=s.checkpoint("scripted-parallel")
+        self.assertEqual(receipt["attempts"],4)
+        self.assertEqual(receipt["integrity"],"passed")
+    def test_named_study_steps_use_real_controller(self):
+        from recovery.i01.notebook import Study
+        base=Path(self.temp.name)
+        ui=Study(Path(__file__).parents[1],base/"scratch",base/"working",self.run)
+        self.assertTrue(callable(ui.install_runtime))
+        self.assertEqual(ui.run_dir,self.run)
+        self.assertIsNotNone(ui.show_status().get('controller_unavailable'))
+        # Real UI -> retained client -> controller, with no model or GPU call.
+        ui.environment=dict(interpreter=sys.executable)
+        ui.show=lambda value:None
+        ui.links=lambda:None
+        ui.emit=lambda event:None
+        hostile=base/'hostile'; hostile.mkdir()
+        sentinel=base/'startup-hook-ran'
+        (hostile/'sitecustomize.py').write_text(
+            f'from pathlib import Path\nPath({str(sentinel)!r}).write_text("contaminated")\nraise RuntimeError("host notebook hook leaked")\n')
+        polluted=dict(PYTHONPATH=str(hostile),MPLBACKEND='module://missing_notebook_renderer',
+                      MPLCONFIGDIR=str(hostile),PYTHONUSERBASE=str(hostile))
+        try:
+            with patch.dict(os.environ,polluted):
+                ui.open('reopen')
+                self.assertEqual(os.environ['MPLBACKEND'],polluted['MPLBACKEND'])
+            self.assertEqual(ui.show_status()["usage"]["attempts"],0)
+            self.assertIsNone(ui.show_status()['remaining_session_seconds'])
+            self.assertFalse(sentinel.exists())
+            self.assertNotIn('host notebook hook leaked',ui.client.log_path.read_text())
+            from recovery.i01.ui import ActionStopped
+            with self.assertRaises(ActionStopped): ui.prepare_main_batch(count=1)
+            self.assertEqual(ui.client.command('forecast')['remaining_attempt_allowance'],500)
+            receipt=ui.save_checkpoint(verify=True)
+            self.assertEqual(receipt["checkpoint"]["integrity"],"passed")
+            self.assertEqual(ui.show_status()["known_pairs"],0)
+            ui.set_session_window((datetime.now(timezone.utc)+timedelta(hours=2)).isoformat(),'Scripted controller window only')
+            self.assertGreater(ui.show_status()['remaining_session_seconds'],0)
+        finally:
+            if ui.client: ui.client.close()
+
+
+if __name__=="__main__": unittest.main()

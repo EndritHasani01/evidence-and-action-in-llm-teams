@@ -1,0 +1,827 @@
+
+Controller startup
+Model load: pinned weights on physical device 0
+[ERROR] `loss` is part of Qwen3_5CausalLMOutputWithPast.__init__'s signature, but not documented. Make sure to add it to the docstring of the function in /kaggle/temp/i01/i01-venv-65462e1e5fc6/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py.
+[ERROR] `logits` is part of Qwen3_5CausalLMOutputWithPast.__init__'s signature, but not documented. Make sure to add it to the docstring of the function in /kaggle/temp/i01/i01-venv-65462e1e5fc6/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py.
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:08<59:23,  8.37s/it]Loading weights:   0%|          | 2/427 [00:13<46:48,  6.61s/it]/kaggle/temp/i01/i01-venv-65462e1e5fc6/lib/python3.13/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+Loading weights:   2%|▏         | 7/427 [00:13<09:03,  1.29s/it]Loading weights:   2%|▏         | 9/427 [00:14<06:23,  1.09it/s]Loading weights:   3%|▎         | 13/427 [00:14<03:33,  1.94it/s]Loading weights:   4%|▎         | 15/427 [00:14<02:57,  2.31it/s]Loading weights:   5%|▌         | 23/427 [00:14<01:18,  5.13it/s]Loading weights:   6%|▋         | 27/427 [00:15<01:01,  6.51it/s]Loading weights:   7%|▋         | 29/427 [00:15<01:02,  6.38it/s]Loading weights:   9%|▉         | 38/427 [00:15<00:31, 12.47it/s]Loading weights:  10%|▉         | 42/427 [00:15<00:28, 13.41it/s]Loading weights:  11%|█         | 46/427 [00:16<00:25, 14.72it/s]Loading weights:  11%|█▏        | 49/427 [00:16<00:26, 14.44it/s]Loading weights:  13%|█▎        | 54/427 [00:16<00:19, 18.95it/s]Loading weights:  15%|█▍        | 63/427 [00:16<00:12, 29.49it/s]Loading weights:  16%|█▌        | 68/427 [00:17<00:31, 11.26it/s]Loading weights:  18%|█▊        | 77/427 [00:17<00:20, 17.44it/s]Loading weights:  19%|█▉        | 82/427 [00:18<00:20, 16.49it/s]Loading weights:  21%|██▏       | 91/427 [00:18<00:14, 23.90it/s]Loading weights:  23%|██▎       | 97/427 [00:18<00:15, 21.72it/s]Loading weights:  24%|██▍       | 102/427 [00:18<00:16, 20.09it/s]Loading weights:  25%|██▌       | 107/427 [00:19<00:13, 23.67it/s]Loading weights:  27%|██▋       | 116/427 [00:19<00:09, 33.11it/s]Loading weights:  29%|██▊       | 122/427 [00:19<00:15, 19.85it/s]Loading weights:  30%|███       | 130/427 [00:19<00:11, 26.61it/s]Loading weights:  32%|███▏      | 136/427 [00:20<00:22, 12.99it/s]Loading weights:  33%|███▎      | 143/427 [00:21<00:17, 15.79it/s]Loading weights:  34%|███▍      | 147/427 [00:21<00:19, 14.30it/s]Loading weights:  35%|███▌      | 150/427 [00:22<00:27,  9.97it/s]Loading weights:  36%|███▌      | 153/427 [00:23<00:35,  7.62it/s]Loading weights:  36%|███▋      | 155/427 [00:23<00:38,  7.02it/s]Loading weights:  37%|███▋      | 160/427 [00:23<00:29,  9.11it/s]Loading weights:  40%|███▉      | 169/427 [00:23<00:16, 15.99it/s]Loading weights:  41%|████      | 173/427 [00:24<00:22, 11.05it/s]Loading weights:  41%|████      | 176/427 [00:24<00:23, 10.53it/s]Loading weights:  43%|████▎     | 183/427 [00:25<00:15, 15.83it/s]Loading weights:  44%|████▍     | 187/427 [00:25<00:22, 10.88it/s]Loading weights:  44%|████▍     | 190/427 [00:26<00:23, 10.09it/s]Loading weights:  46%|████▌     | 196/427 [00:26<00:17, 13.19it/s]Loading weights:  47%|████▋     | 200/427 [00:26<00:18, 12.02it/s]Loading weights:  47%|████▋     | 202/427 [00:27<00:29,  7.60it/s]Loading weights:  48%|████▊     | 205/427 [00:27<00:29,  7.62it/s]Loading weights:  48%|████▊     | 207/427 [00:28<00:39,  5.51it/s]Loading weights:  50%|████▉     | 213/427 [00:28<00:25,  8.55it/s]Loading weights:  52%|█████▏    | 221/427 [00:29<00:16, 12.77it/s]Loading weights:  53%|█████▎    | 225/427 [00:29<00:17, 11.75it/s]Loading weights:  53%|█████▎    | 227/427 [00:30<00:26,  7.60it/s]Loading weights:  55%|█████▌    | 235/427 [00:30<00:16, 11.70it/s]Loading weights:  56%|█████▌    | 237/427 [00:30<00:15, 12.17it/s]Loading weights:  56%|█████▌    | 239/427 [00:31<00:20,  9.09it/s]Loading weights:  56%|█████▋    | 241/427 [00:32<00:30,  6.04it/s]Loading weights:  58%|█████▊    | 249/427 [00:32<00:16, 10.60it/s]Loading weights:  59%|█████▉    | 251/427 [00:32<00:15, 11.25it/s]Loading weights:  59%|█████▉    | 253/427 [00:33<00:21,  8.19it/s]Loading weights:  60%|█████▉    | 255/427 [00:33<00:30,  5.59it/s]Loading weights:  60%|██████    | 258/427 [00:34<00:27,  6.08it/s]Loading weights:  61%|██████    | 259/427 [00:34<00:32,  5.22it/s]Loading weights:  61%|██████    | 260/427 [00:34<00:37,  4.50it/s]Loading weights:  62%|██████▏   | 264/427 [00:35<00:21,  7.42it/s]Loading weights:  62%|██████▏   | 266/427 [00:35<00:21,  7.41it/s]Loading weights:  64%|██████▍   | 274/427 [00:35<00:11, 12.99it/s]Loading weights:  65%|██████▍   | 276/427 [00:35<00:11, 13.48it/s]Loading weights:  65%|██████▌   | 278/427 [00:36<00:16,  8.83it/s]Loading weights:  66%|██████▌   | 280/427 [00:36<00:18,  7.98it/s]Loading weights:  67%|██████▋   | 288/427 [00:36<00:09, 14.19it/s]Loading weights:  68%|██████▊   | 290/427 [00:36<00:09, 14.73it/s]Loading weights:  68%|██████▊   | 292/427 [00:37<00:14,  9.36it/s]Loading weights:  69%|██████▉   | 294/427 [00:38<00:22,  5.90it/s]Loading weights:  71%|███████   | 303/427 [00:38<00:10, 11.83it/s]Loading weights:  72%|███████▏  | 306/427 [00:39<00:12,  9.94it/s]Loading weights:  72%|███████▏  | 308/427 [00:39<00:18,  6.60it/s]Loading weights:  73%|███████▎  | 311/427 [00:40<00:17,  6.82it/s]Loading weights:  73%|███████▎  | 313/427 [00:41<00:22,  5.05it/s]Loading weights:  74%|███████▍  | 317/427 [00:41<00:15,  7.23it/s]Loading weights:  75%|███████▍  | 319/427 [00:41<00:13,  8.18it/s]Loading weights:  77%|███████▋  | 327/427 [00:41<00:06, 15.33it/s]Loading weights:  77%|███████▋  | 330/427 [00:41<00:06, 14.96it/s]Loading weights:  78%|███████▊  | 333/427 [00:42<00:09,  9.92it/s]Loading weights:  80%|███████▉  | 341/427 [00:42<00:05, 16.80it/s]Loading weights:  81%|████████  | 345/427 [00:42<00:06, 11.93it/s]Loading weights:  81%|████████▏ | 348/427 [00:43<00:07, 11.16it/s]Loading weights:  83%|████████▎ | 355/427 [00:43<00:04, 17.17it/s]Loading weights:  84%|████████▍ | 359/427 [00:44<00:05, 12.21it/s]Loading weights:  85%|████████▍ | 362/427 [00:44<00:07,  8.26it/s]Loading weights:  85%|████████▌ | 364/427 [00:45<00:08,  7.44it/s]Loading weights:  86%|████████▌ | 366/427 [00:46<00:11,  5.38it/s]Loading weights:  87%|████████▋ | 370/427 [00:46<00:07,  7.55it/s]Loading weights:  87%|████████▋ | 373/427 [00:46<00:05,  9.32it/s]Loading weights:  89%|████████▉ | 380/427 [00:46<00:03, 14.00it/s]Loading weights:  90%|████████▉ | 383/427 [00:46<00:03, 13.61it/s]Loading weights:  90%|█████████ | 385/427 [00:47<00:03, 11.59it/s]Loading weights:  91%|█████████ | 387/427 [00:47<00:03, 12.05it/s]Loading weights:  92%|█████████▏| 394/427 [00:47<00:01, 17.65it/s]Loading weights:  93%|█████████▎| 397/427 [00:47<00:01, 15.96it/s]Loading weights:  93%|█████████▎| 399/427 [00:48<00:02, 11.03it/s]Loading weights:  94%|█████████▍| 401/427 [00:48<00:02, 10.52it/s]Loading weights:  96%|█████████▌| 408/427 [00:48<00:01, 17.57it/s]Loading weights:  96%|█████████▋| 411/427 [00:48<00:00, 16.60it/s]Loading weights:  97%|█████████▋| 414/427 [00:49<00:01,  6.81it/s]Loading weights:  98%|█████████▊| 417/427 [00:50<00:01,  6.96it/s]Loading weights:  98%|█████████▊| 419/427 [00:51<00:01,  5.12it/s]Loading weights:  99%|█████████▉| 423/427 [00:51<00:00,  7.29it/s]Loading weights: 100%|█████████▉| 425/427 [00:51<00:00,  8.22it/s]Loading weights: 100%|██████████| 427/427 [00:51<00:00,  8.31it/s]
+Model load: audit actual tensors, quantization and loading diagnostics
+Model load: pinned weights on physical device 1
+[ERROR] `loss` is part of Qwen3_5CausalLMOutputWithPast.__init__'s signature, but not documented. Make sure to add it to the docstring of the function in /kaggle/temp/i01/i01-venv-65462e1e5fc6/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py.
+[ERROR] `logits` is part of Qwen3_5CausalLMOutputWithPast.__init__'s signature, but not documented. Make sure to add it to the docstring of the function in /kaggle/temp/i01/i01-venv-65462e1e5fc6/lib/python3.13/site-packages/transformers/models/qwen3_5/modeling_qwen3_5.py.
+[transformers] The fast path is not available because one of the required library is not installed. Falling back to torch implementation. To install follow https://github.com/fla-org/flash-linear-attention#installation and https://github.com/Dao-AILab/causal-conv1d
+Loading weights:   0%|          | 0/427 [00:00<?, ?it/s]Loading weights:   0%|          | 1/427 [00:07<54:35,  7.69s/it]Loading weights:   0%|          | 2/427 [00:12<43:10,  6.10s/it]/kaggle/temp/i01/i01-venv-65462e1e5fc6/lib/python3.13/site-packages/bitsandbytes/backends/cuda/ops.py:213: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+Loading weights:   2%|▏         | 7/427 [00:12<08:19,  1.19s/it]Loading weights:   2%|▏         | 10/427 [00:12<04:59,  1.39it/s]Loading weights:   3%|▎         | 13/427 [00:13<03:27,  1.99it/s]Loading weights:   4%|▎         | 15/427 [00:13<03:10,  2.16it/s]Loading weights:   6%|▌         | 24/427 [00:14<01:12,  5.54it/s]Loading weights:   7%|▋         | 28/427 [00:14<01:07,  5.91it/s]Loading weights:   7%|▋         | 31/427 [00:14<00:59,  6.65it/s]Loading weights:   9%|▉         | 38/427 [00:15<00:35, 10.95it/s]Loading weights:  10%|▉         | 42/427 [00:15<00:32, 11.85it/s]Loading weights:  11%|█         | 46/427 [00:15<00:34, 11.09it/s]Loading weights:  11%|█▏        | 49/427 [00:16<00:44,  8.48it/s]Loading weights:  13%|█▎        | 54/427 [00:16<00:31, 11.84it/s]Loading weights:  15%|█▍        | 63/427 [00:16<00:18, 19.79it/s]Loading weights:  16%|█▌        | 68/427 [00:16<00:20, 17.84it/s]Loading weights:  18%|█▊        | 77/427 [00:17<00:13, 26.48it/s]Loading weights:  19%|█▉        | 82/427 [00:17<00:15, 22.13it/s]Loading weights:  21%|██▏       | 91/427 [00:17<00:10, 31.01it/s]Loading weights:  23%|██▎       | 97/427 [00:17<00:12, 25.95it/s]Loading weights:  24%|██▍       | 102/427 [00:18<00:14, 22.90it/s]Loading weights:  25%|██▌       | 107/427 [00:18<00:12, 26.39it/s]Loading weights:  27%|██▋       | 116/427 [00:18<00:08, 35.90it/s]Loading weights:  29%|██▊       | 122/427 [00:18<00:10, 28.19it/s]Loading weights:  30%|███       | 130/427 [00:18<00:08, 35.97it/s]Loading weights:  32%|███▏      | 136/427 [00:19<00:10, 28.43it/s]Loading weights:  34%|███▎      | 144/427 [00:19<00:07, 36.01it/s]Loading weights:  35%|███▌      | 150/427 [00:20<00:16, 16.52it/s]Loading weights:  36%|███▌      | 154/427 [00:21<00:26, 10.32it/s]Loading weights:  37%|███▋      | 160/427 [00:21<00:19, 13.70it/s]Loading weights:  40%|███▉      | 169/427 [00:21<00:12, 20.29it/s]Loading weights:  41%|████      | 174/427 [00:21<00:13, 18.66it/s]Loading weights:  43%|████▎     | 183/427 [00:21<00:09, 26.15it/s]Loading weights:  44%|████▍     | 188/427 [00:22<00:10, 22.26it/s]Loading weights:  46%|████▌     | 197/427 [00:22<00:07, 30.58it/s]Loading weights:  48%|████▊     | 203/427 [00:23<00:14, 15.53it/s]Loading weights:  48%|████▊     | 207/427 [00:24<00:21, 10.02it/s]Loading weights:  50%|████▉     | 213/427 [00:24<00:16, 13.25it/s]Loading weights:  52%|█████▏    | 222/427 [00:24<00:10, 19.68it/s]Loading weights:  53%|█████▎    | 227/427 [00:25<00:16, 12.02it/s]Loading weights:  55%|█████▌    | 236/427 [00:25<00:10, 17.74it/s]Loading weights:  56%|█████▋    | 241/427 [00:26<00:17, 10.36it/s]Loading weights:  59%|█████▊    | 250/427 [00:26<00:11, 15.36it/s]Loading weights:  60%|█████▉    | 255/427 [00:27<00:17,  9.70it/s]Loading weights:  61%|██████    | 259/427 [00:28<00:18,  9.33it/s]Loading weights:  62%|██████▏   | 263/427 [00:28<00:14, 11.26it/s]Loading weights:  63%|██████▎   | 267/427 [00:28<00:11, 13.58it/s]Loading weights:  64%|██████▍   | 275/427 [00:28<00:07, 20.39it/s]Loading weights:  66%|██████▌   | 280/427 [00:28<00:08, 18.28it/s]Loading weights:  68%|██████▊   | 289/427 [00:29<00:05, 26.92it/s]Loading weights:  69%|██████▉   | 295/427 [00:30<00:10, 12.27it/s]Loading weights:  71%|███████   | 303/427 [00:30<00:07, 17.34it/s]Loading weights:  72%|███████▏  | 308/427 [00:31<00:11, 10.17it/s]Loading weights:  73%|███████▎  | 312/427 [00:32<00:13,  8.62it/s]Loading weights:  74%|███████▍  | 315/427 [00:32<00:13,  8.54it/s]Loading weights:  75%|███████▍  | 319/427 [00:32<00:10, 10.68it/s]Loading weights:  77%|███████▋  | 328/427 [00:32<00:05, 17.57it/s]Loading weights:  78%|███████▊  | 333/427 [00:33<00:06, 15.02it/s]Loading weights:  80%|████████  | 342/427 [00:33<00:03, 22.39it/s]Loading weights:  81%|████████▏ | 347/427 [00:33<00:04, 16.57it/s]Loading weights:  83%|████████▎ | 356/427 [00:34<00:03, 23.34it/s]Loading weights:  85%|████████▍ | 361/427 [00:34<00:05, 13.10it/s]Loading weights:  85%|████████▌ | 365/427 [00:35<00:06, 10.20it/s]Loading weights:  86%|████████▌ | 368/427 [00:36<00:06,  9.82it/s]Loading weights:  87%|████████▋ | 372/427 [00:36<00:04, 11.65it/s]Loading weights:  89%|████████▉ | 380/427 [00:36<00:02, 16.63it/s]Loading weights:  90%|████████▉ | 384/427 [00:36<00:03, 14.21it/s]Loading weights:  91%|█████████ | 387/427 [00:37<00:04,  9.32it/s]Loading weights:  93%|█████████▎| 395/427 [00:37<00:02, 14.97it/s]Loading weights:  93%|█████████▎| 399/427 [00:38<00:02, 10.54it/s]Loading weights:  94%|█████████▍| 402/427 [00:38<00:02, 10.00it/s]Loading weights:  96%|█████████▌| 408/427 [00:39<00:01, 12.85it/s]Loading weights:  96%|█████████▋| 412/427 [00:39<00:01, 12.06it/s]Loading weights:  97%|█████████▋| 414/427 [00:39<00:01,  8.94it/s]Loading weights:  98%|█████████▊| 417/427 [00:40<00:01,  9.30it/s]Loading weights:  98%|█████████▊| 419/427 [00:40<00:01,  6.71it/s]Loading weights: 100%|█████████▉| 425/427 [00:41<00:00,  9.88it/s]Loading weights: 100%|██████████| 427/427 [00:41<00:00, 10.37it/s]
+Model load: audit actual tensors, quantization and loading diagnostics
+Inference pid=351 device=0 seed=2895223694339253810 phase=prefill elapsed=0.2s input=0/67 decode=0/512 peak_reserved_mib=7392.0
+Inference pid=351 device=0 seed=2895223694339253810 phase=decode elapsed=2.1s input=67/67 decode=0/512 peak_reserved_mib=7524.0
+/kaggle/temp/i01/i01-venv-65462e1e5fc6/lib/python3.13/site-packages/bitsandbytes/backends/cuda/ops.py:468: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+Inference pid=351 device=0 seed=2895223694339253810 phase=decode elapsed=3.9s input=67/67 decode=14/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=1172835993072093706 phase=prefill elapsed=0.0s input=0/69 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=1172835993072093706 phase=decode elapsed=0.6s input=69/69 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=1172835993072093706 phase=decode elapsed=2.3s input=69/69 decode=16/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=2895223694339253810 phase=prefill elapsed=0.0s input=0/67 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=2895223694339253810 phase=decode elapsed=0.3s input=67/67 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=2895223694339253810 phase=decode elapsed=1.8s input=67/67 decode=14/512 peak_reserved_mib=7524.0
+Inference pid=365 device=1 seed=9113091594724103221 phase=prefill elapsed=0.2s input=0/67 decode=0/512 peak_reserved_mib=7392.0
+Inference pid=365 device=1 seed=9113091594724103221 phase=decode elapsed=1.2s input=67/67 decode=0/512 peak_reserved_mib=7524.0
+/kaggle/temp/i01/i01-venv-65462e1e5fc6/lib/python3.13/site-packages/bitsandbytes/backends/cuda/ops.py:468: FutureWarning: _check_is_size will be removed in a future PyTorch release along with guard_size_oblivious.     Use _check(i >= 0) instead.
+  torch._check_is_size(blocksize)
+Inference pid=365 device=1 seed=9113091594724103221 phase=decode elapsed=2.8s input=67/67 decode=14/512 peak_reserved_mib=7524.0
+Inference pid=365 device=1 seed=718885271260442133 phase=prefill elapsed=0.0s input=0/69 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=365 device=1 seed=718885271260442133 phase=decode elapsed=0.6s input=69/69 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=365 device=1 seed=718885271260442133 phase=decode elapsed=2.2s input=69/69 decode=16/512 peak_reserved_mib=7524.0
+Inference pid=365 device=1 seed=9113091594724103221 phase=prefill elapsed=0.0s input=0/67 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=365 device=1 seed=9113091594724103221 phase=decode elapsed=0.3s input=67/67 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=365 device=1 seed=9113091594724103221 phase=decode elapsed=1.7s input=67/67 decode=14/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=7034365729602933730 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=7034365729602933730 phase=decode elapsed=0.7s input=255/255 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=351 device=0 seed=7034365729602933730 phase=decode elapsed=2.3s input=255/255 decode=16/512 peak_reserved_mib=7534.0
+Inference pid=351 device=0 seed=6470821694236683869 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7534.0
+Inference pid=351 device=0 seed=6470821694236683869 phase=decode elapsed=0.4s input=255/255 decode=0/512 peak_reserved_mib=7534.0
+Inference pid=351 device=0 seed=6470821694236683869 phase=decode elapsed=2.0s input=255/255 decode=16/512 peak_reserved_mib=7534.0
+Inference pid=365 device=1 seed=5667570157035812265 phase=prefill elapsed=0.0s input=0/258 decode=0/512 peak_reserved_mib=7524.0
+Inference pid=365 device=1 seed=5667570157035812265 phase=decode elapsed=1.0s input=258/258 decode=0/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=5667570157035812265 phase=decode elapsed=2.7s input=258/258 decode=16/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=1898883763934146872 phase=prefill elapsed=0.0s input=0/257 decode=0/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=1898883763934146872 phase=decode elapsed=0.5s input=257/257 decode=0/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=1898883763934146872 phase=decode elapsed=2.1s input=257/257 decode=16/512 peak_reserved_mib=7538.0
+Inference pid=351 device=0 seed=2474994583072236036 phase=prefill elapsed=0.0s input=0/257 decode=0/512 peak_reserved_mib=7534.0
+Inference pid=351 device=0 seed=2474994583072236036 phase=decode elapsed=0.8s input=257/257 decode=0/512 peak_reserved_mib=7534.0
+Inference pid=351 device=0 seed=2474994583072236036 phase=decode elapsed=2.6s input=257/257 decode=17/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=6776502664314749800 phase=prefill elapsed=0.0s input=0/256 decode=0/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=6776502664314749800 phase=decode elapsed=0.4s input=256/256 decode=0/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=6776502664314749800 phase=decode elapsed=2.0s input=256/256 decode=16/512 peak_reserved_mib=7536.0
+Inference pid=365 device=1 seed=367958775560601292 phase=prefill elapsed=0.0s input=0/257 decode=0/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=367958775560601292 phase=decode elapsed=0.6s input=257/257 decode=0/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=367958775560601292 phase=decode elapsed=2.2s input=257/257 decode=16/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=6417685603553177256 phase=prefill elapsed=0.0s input=0/257 decode=0/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=6417685603553177256 phase=decode elapsed=0.5s input=257/257 decode=0/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=6417685603553177256 phase=decode elapsed=2.1s input=257/257 decode=16/512 peak_reserved_mib=7538.0
+Inference pid=351 device=0 seed=8507201115962376320 phase=prefill elapsed=0.0s input=0/252 decode=0/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=8507201115962376320 phase=decode elapsed=0.7s input=252/252 decode=0/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=8507201115962376320 phase=decode elapsed=2.5s input=252/252 decode=16/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=6694793944570056551 phase=prefill elapsed=0.0s input=0/252 decode=0/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=6694793944570056551 phase=decode elapsed=0.4s input=252/252 decode=0/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=6694793944570056551 phase=decode elapsed=2.0s input=252/252 decode=16/512 peak_reserved_mib=7536.0
+Inference pid=365 device=1 seed=8287168954115719378 phase=prefill elapsed=0.0s input=0/259 decode=0/512 peak_reserved_mib=7538.0
+Inference pid=365 device=1 seed=8287168954115719378 phase=decode elapsed=1.0s input=259/259 decode=0/512 peak_reserved_mib=7540.0
+Inference pid=365 device=1 seed=8287168954115719378 phase=decode elapsed=2.7s input=259/259 decode=16/512 peak_reserved_mib=7540.0
+Inference pid=365 device=1 seed=7213998243262002842 phase=prefill elapsed=0.0s input=0/258 decode=0/512 peak_reserved_mib=7540.0
+Inference pid=365 device=1 seed=7213998243262002842 phase=decode elapsed=0.7s input=258/258 decode=0/512 peak_reserved_mib=7540.0
+Inference pid=365 device=1 seed=7213998243262002842 phase=decode elapsed=2.3s input=258/258 decode=16/512 peak_reserved_mib=7540.0
+Inference pid=351 device=0 seed=3554240822569505675 phase=prefill elapsed=0.0s input=0/8192 decode=0/512 peak_reserved_mib=7536.0
+Inference pid=351 device=0 seed=3554240822569505675 phase=decode elapsed=13.3s input=8192/8192 decode=0/512 peak_reserved_mib=7824.0
+Inference pid=351 device=0 seed=3554240822569505675 phase=decode elapsed=28.3s input=8192/8192 decode=137/512 peak_reserved_mib=7824.0
+Inference pid=351 device=0 seed=3554240822569505675 phase=decode elapsed=43.3s input=8192/8192 decode=274/512 peak_reserved_mib=7824.0
+Inference pid=351 device=0 seed=3554240822569505675 phase=decode elapsed=58.3s input=8192/8192 decode=414/512 peak_reserved_mib=7824.0
+Inference pid=351 device=0 seed=3554240822569505675 phase=decode elapsed=69.0s input=8192/8192 decode=512/512 peak_reserved_mib=7824.0
+Inference pid=365 device=1 seed=6895241862355992459 phase=prefill elapsed=0.0s input=0/8192 decode=0/512 peak_reserved_mib=7540.0
+Inference pid=365 device=1 seed=6895241862355992459 phase=decode elapsed=13.6s input=8192/8192 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=6895241862355992459 phase=decode elapsed=28.7s input=8192/8192 decode=139/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=6895241862355992459 phase=decode elapsed=43.7s input=8192/8192 decode=278/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=6895241862355992459 phase=decode elapsed=58.8s input=8192/8192 decode=416/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=6895241862355992459 phase=decode elapsed=69.2s input=8192/8192 decode=512/512 peak_reserved_mib=7828.0
+Inference pid=351 device=0 seed=4862200359885706185 phase=prefill elapsed=0.0s input=0/337 decode=0/512 peak_reserved_mib=7824.0
+Inference pid=351 device=0 seed=4862200359885706185 phase=decode elapsed=1.0s input=337/337 decode=0/512 peak_reserved_mib=7826.0
+Inference pid=351 device=0 seed=4862200359885706185 phase=decode elapsed=2.6s input=337/337 decode=16/512 peak_reserved_mib=7826.0
+Inference pid=351 device=0 seed=5241200695438049338 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7826.0
+Inference pid=351 device=0 seed=5241200695438049338 phase=decode elapsed=1.0s input=338/338 decode=0/512 peak_reserved_mib=7826.0
+Inference pid=351 device=0 seed=5241200695438049338 phase=decode elapsed=9.2s input=338/338 decode=78/512 peak_reserved_mib=7828.0
+Inference pid=351 device=0 seed=1023110753385749315 phase=prefill elapsed=0.0s input=0/416 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=351 device=0 seed=1023110753385749315 phase=decode elapsed=1.0s input=416/416 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=351 device=0 seed=1023110753385749315 phase=decode elapsed=7.5s input=416/416 decode=61/512 peak_reserved_mib=7828.0
+Inference pid=351 device=0 seed=3347234689565640300 phase=prefill elapsed=0.0s input=0/498 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=351 device=0 seed=3347234689565640300 phase=decode elapsed=1.0s input=498/498 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=351 device=0 seed=3347234689565640300 phase=decode elapsed=7.6s input=498/498 decode=61/512 peak_reserved_mib=7830.0
+Inference pid=351 device=0 seed=7951545925196133279 phase=prefill elapsed=0.0s input=0/530 decode=0/512 peak_reserved_mib=7830.0
+Inference pid=351 device=0 seed=7951545925196133279 phase=decode elapsed=1.4s input=530/530 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7951545925196133279 phase=decode elapsed=8.3s input=530/530 decode=65/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9068172075070223439 phase=prefill elapsed=0.0s input=0/539 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9068172075070223439 phase=decode elapsed=1.5s input=539/539 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9068172075070223439 phase=decode elapsed=8.1s input=539/539 decode=62/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4242985494088566540 phase=prefill elapsed=0.0s input=0/598 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4242985494088566540 phase=decode elapsed=1.4s input=598/598 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4242985494088566540 phase=decode elapsed=8.1s input=598/598 decode=62/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3347234689565640300 phase=prefill elapsed=0.0s input=0/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3347234689565640300 phase=decode elapsed=1.0s input=361/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3347234689565640300 phase=decode elapsed=6.3s input=361/361 decode=50/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7951545925196133279 phase=prefill elapsed=0.0s input=0/355 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7951545925196133279 phase=decode elapsed=1.0s input=355/355 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7951545925196133279 phase=decode elapsed=6.8s input=355/355 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7926385093500598411 phase=prefill elapsed=0.0s input=0/413 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7926385093500598411 phase=decode elapsed=1.0s input=413/413 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7926385093500598411 phase=decode elapsed=2.6s input=413/413 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7202948235205110027 phase=prefill elapsed=0.0s input=0/256 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7202948235205110027 phase=decode elapsed=0.4s input=256/256 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7202948235205110027 phase=decode elapsed=2.1s input=256/256 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2712785873405090662 phase=prefill elapsed=0.0s input=0/256 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2712785873405090662 phase=decode elapsed=0.4s input=256/256 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2712785873405090662 phase=decode elapsed=2.0s input=256/256 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6068910610471527175 phase=prefill elapsed=0.0s input=0/337 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=6068910610471527175 phase=decode elapsed=1.0s input=337/337 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=6068910610471527175 phase=decode elapsed=2.7s input=337/337 decode=16/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=8024261074218990468 phase=prefill elapsed=0.0s input=0/336 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=8024261074218990468 phase=decode elapsed=0.9s input=336/336 decode=0/512 peak_reserved_mib=7828.0
+Inference pid=365 device=1 seed=8024261074218990468 phase=decode elapsed=16.0s input=336/336 decode=137/512 peak_reserved_mib=7830.0
+Inference pid=365 device=1 seed=8024261074218990468 phase=decode elapsed=17.2s input=336/336 decode=149/512 peak_reserved_mib=7830.0
+Inference pid=365 device=1 seed=7684684620624210612 phase=prefill elapsed=0.0s input=0/345 decode=0/512 peak_reserved_mib=7830.0
+Inference pid=365 device=1 seed=7684684620624210612 phase=decode elapsed=1.0s input=345/345 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7684684620624210612 phase=decode elapsed=5.1s input=345/345 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5109202408067130647 phase=prefill elapsed=0.0s input=0/377 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5109202408067130647 phase=decode elapsed=1.0s input=377/377 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5109202408067130647 phase=decode elapsed=2.9s input=377/377 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3259302922276671101 phase=prefill elapsed=0.0s input=0/354 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3259302922276671101 phase=decode elapsed=0.9s input=354/354 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3259302922276671101 phase=decode elapsed=13.1s input=354/354 decode=112/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=657496878342466428 phase=prefill elapsed=0.0s input=0/358 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=657496878342466428 phase=decode elapsed=1.0s input=358/358 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=657496878342466428 phase=decode elapsed=6.9s input=358/358 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5227453265228557459 phase=prefill elapsed=0.0s input=0/408 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5227453265228557459 phase=decode elapsed=1.0s input=408/408 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5227453265228557459 phase=decode elapsed=6.8s input=408/408 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3259302922276671101 phase=prefill elapsed=0.0s input=0/409 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3259302922276671101 phase=decode elapsed=1.0s input=409/409 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3259302922276671101 phase=decode elapsed=5.1s input=409/409 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=657496878342466428 phase=prefill elapsed=0.0s input=0/431 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=657496878342466428 phase=decode elapsed=1.0s input=431/431 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=657496878342466428 phase=decode elapsed=5.1s input=431/431 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2432397541971568865 phase=prefill elapsed=0.0s input=0/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2432397541971568865 phase=decode elapsed=0.7s input=254/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2432397541971568865 phase=decode elapsed=2.3s input=254/254 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4564994103806736101 phase=prefill elapsed=0.0s input=0/253 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4564994103806736101 phase=decode elapsed=0.7s input=253/253 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4564994103806736101 phase=decode elapsed=2.4s input=253/253 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4114484684654210243 phase=prefill elapsed=0.0s input=0/337 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4114484684654210243 phase=decode elapsed=0.7s input=337/337 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4114484684654210243 phase=decode elapsed=4.2s input=337/337 decode=34/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7049442019502801809 phase=prefill elapsed=0.0s input=0/336 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7049442019502801809 phase=decode elapsed=1.0s input=336/336 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7049442019502801809 phase=decode elapsed=16.0s input=336/336 decode=139/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7049442019502801809 phase=decode elapsed=16.8s input=336/336 decode=147/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1303939391147026415 phase=prefill elapsed=0.0s input=0/346 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1303939391147026415 phase=decode elapsed=1.0s input=346/346 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1303939391147026415 phase=decode elapsed=16.0s input=346/346 decode=141/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1303939391147026415 phase=decode elapsed=22.2s input=346/346 decode=200/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6836940397847036542 phase=prefill elapsed=0.0s input=0/345 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6836940397847036542 phase=decode elapsed=1.0s input=345/345 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6836940397847036542 phase=decode elapsed=16.1s input=345/345 decode=139/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6836940397847036542 phase=decode elapsed=16.2s input=345/345 decode=141/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3202899689243768497 phase=prefill elapsed=0.0s input=0/485 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3202899689243768497 phase=decode elapsed=1.1s input=485/485 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3202899689243768497 phase=decode elapsed=16.1s input=485/485 decode=139/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3202899689243768497 phase=decode elapsed=16.4s input=485/485 decode=142/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8763162528738937420 phase=prefill elapsed=0.0s input=0/640 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8763162528738937420 phase=decode elapsed=1.4s input=640/640 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8763162528738937420 phase=decode elapsed=3.0s input=640/640 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4792976250752518887 phase=prefill elapsed=0.0s input=0/637 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4792976250752518887 phase=decode elapsed=1.4s input=637/637 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4792976250752518887 phase=decode elapsed=16.3s input=637/637 decode=141/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8536876883942813207 phase=prefill elapsed=0.0s input=0/782 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8536876883942813207 phase=decode elapsed=1.8s input=782/782 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8536876883942813207 phase=decode elapsed=3.8s input=782/782 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8763162528738937420 phase=prefill elapsed=0.0s input=0/353 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8763162528738937420 phase=decode elapsed=1.0s input=353/353 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8763162528738937420 phase=decode elapsed=6.8s input=353/353 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4792976250752518887 phase=prefill elapsed=0.0s input=0/403 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4792976250752518887 phase=decode elapsed=1.0s input=403/403 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4792976250752518887 phase=decode elapsed=6.3s input=403/403 decode=51/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8384168939389075560 phase=prefill elapsed=0.0s input=0/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8384168939389075560 phase=decode elapsed=0.7s input=254/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8384168939389075560 phase=decode elapsed=2.3s input=254/254 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6801689851870198115 phase=prefill elapsed=0.0s input=0/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6801689851870198115 phase=decode elapsed=0.4s input=254/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6801689851870198115 phase=decode elapsed=2.0s input=254/254 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7613389024471320949 phase=prefill elapsed=0.0s input=0/340 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1619430377463203250 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1619430377463203250 phase=decode elapsed=1.0s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7613389024471320949 phase=decode elapsed=1.0s input=340/340 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1619430377463203250 phase=decode elapsed=2.7s input=339/339 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2392044105153311016 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2392044105153311016 phase=decode elapsed=0.7s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7613389024471320949 phase=decode elapsed=5.0s input=340/340 decode=35/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4798458808050766445 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4798458808050766445 phase=decode elapsed=1.0s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4798458808050766445 phase=decode elapsed=2.6s input=339/339 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2430595037025299620 phase=prefill elapsed=0.0s input=0/349 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2430595037025299620 phase=decode elapsed=1.0s input=349/349 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2392044105153311016 phase=decode elapsed=7.4s input=339/339 decode=62/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4915930630265407126 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4915930630265407126 phase=decode elapsed=1.0s input=348/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2430595037025299620 phase=decode elapsed=5.7s input=349/349 decode=43/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7632132044748201474 phase=prefill elapsed=0.0s input=0/358 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7632132044748201474 phase=decode elapsed=1.1s input=358/358 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4915930630265407126 phase=decode elapsed=5.1s input=348/348 decode=38/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2770636549167397914 phase=prefill elapsed=0.0s input=0/357 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2770636549167397914 phase=decode elapsed=1.0s input=357/357 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7632132044748201474 phase=decode elapsed=6.4s input=358/358 decode=49/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8822928244286280046 phase=prefill elapsed=0.0s input=0/389 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2770636549167397914 phase=decode elapsed=4.6s input=357/357 decode=34/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6784604259975473913 phase=prefill elapsed=0.0s input=0/363 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8822928244286280046 phase=decode elapsed=1.0s input=389/389 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6784604259975473913 phase=decode elapsed=1.0s input=363/363 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8822928244286280046 phase=decode elapsed=5.7s input=389/389 decode=43/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3459283983308522598 phase=prefill elapsed=0.0s input=0/460 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3459283983308522598 phase=decode elapsed=1.1s input=460/460 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6784604259975473913 phase=decode elapsed=6.9s input=363/363 decode=54/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4385210743583052582 phase=prefill elapsed=0.0s input=0/399 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4385210743583052582 phase=decode elapsed=1.0s input=399/399 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3459283983308522598 phase=decode elapsed=3.1s input=460/460 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1252619848572711051 phase=prefill elapsed=0.0s input=0/446 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1252619848572711051 phase=decode elapsed=1.1s input=446/446 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4385210743583052582 phase=decode elapsed=6.8s input=399/399 decode=54/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6784604259975473913 phase=prefill elapsed=0.0s input=0/375 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6784604259975473913 phase=decode elapsed=1.0s input=375/375 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1252619848572711051 phase=decode elapsed=6.2s input=446/446 decode=43/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3459283983308522598 phase=prefill elapsed=0.0s input=0/364 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3459283983308522598 phase=decode elapsed=1.0s input=364/364 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3459283983308522598 phase=decode elapsed=3.0s input=364/364 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1252619848572711051 phase=prefill elapsed=0.0s input=0/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1252619848572711051 phase=decode elapsed=1.0s input=356/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6784604259975473913 phase=decode elapsed=6.2s input=375/375 decode=49/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4385210743583052582 phase=prefill elapsed=0.0s input=0/421 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4385210743583052582 phase=decode elapsed=1.0s input=421/421 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4385210743583052582 phase=decode elapsed=2.7s input=421/421 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7239859807044094272 phase=prefill elapsed=0.0s input=0/430 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1252619848572711051 phase=decode elapsed=5.3s input=356/356 decode=40/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=298906340986623092 phase=prefill elapsed=0.0s input=0/260 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7239859807044094272 phase=decode elapsed=1.0s input=430/430 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=298906340986623092 phase=decode elapsed=1.1s input=260/260 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7239859807044094272 phase=decode elapsed=3.1s input=430/430 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6352946184833924874 phase=prefill elapsed=0.0s input=0/259 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=298906340986623092 phase=decode elapsed=2.7s input=260/260 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6352946184833924874 phase=decode elapsed=0.7s input=259/259 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6352946184833924874 phase=decode elapsed=2.3s input=259/259 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3978482016353816917 phase=prefill elapsed=0.0s input=0/337 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=139902953584322306 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3978482016353816917 phase=decode elapsed=0.8s input=337/337 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=139902953584322306 phase=decode elapsed=1.0s input=338/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3978482016353816917 phase=decode elapsed=2.5s input=337/337 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8476846841885711904 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8476846841885711904 phase=decode elapsed=0.7s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8476846841885711904 phase=decode elapsed=5.3s input=339/339 decode=41/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2229360315824126971 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2229360315824126971 phase=decode elapsed=1.0s input=348/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=139902953584322306 phase=decode elapsed=10.5s input=338/338 decode=87/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2983288974554191250 phase=prefill elapsed=0.0s input=0/414 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2983288974554191250 phase=decode elapsed=1.0s input=414/414 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2229360315824126971 phase=decode elapsed=16.0s input=348/348 decode=134/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2229360315824126971 phase=decode elapsed=18.5s input=348/348 decode=156/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2051761436065831103 phase=prefill elapsed=0.0s input=0/357 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2983288974554191250 phase=decode elapsed=16.0s input=414/414 decode=137/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2051761436065831103 phase=decode elapsed=1.0s input=357/357 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2051761436065831103 phase=decode elapsed=2.8s input=357/357 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5960279899263789434 phase=prefill elapsed=0.0s input=0/373 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2983288974554191250 phase=decode elapsed=19.2s input=414/414 decode=166/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3268728654576400253 phase=prefill elapsed=0.0s input=0/580 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5960279899263789434 phase=decode elapsed=1.0s input=373/373 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3268728654576400253 phase=decode elapsed=1.4s input=580/580 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3268728654576400253 phase=decode elapsed=7.4s input=580/580 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4521724768519690317 phase=prefill elapsed=0.0s input=0/621 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4521724768519690317 phase=decode elapsed=1.5s input=621/621 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4521724768519690317 phase=decode elapsed=4.1s input=621/621 decode=24/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1775432120674568221 phase=prefill elapsed=0.0s input=0/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1775432120674568221 phase=decode elapsed=1.0s input=361/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5960279899263789434 phase=decode elapsed=13.4s input=373/373 decode=110/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=740317857514137191 phase=prefill elapsed=0.0s input=0/485 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=740317857514137191 phase=decode elapsed=0.9s input=485/485 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=740317857514137191 phase=decode elapsed=13.6s input=485/485 decode=115/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5960279899263789434 phase=prefill elapsed=0.0s input=0/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5960279899263789434 phase=decode elapsed=0.7s input=361/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1775432120674568221 phase=decode elapsed=16.0s input=361/361 decode=135/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1775432120674568221 phase=decode elapsed=17.9s input=361/361 decode=153/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5387240266317778948 phase=prefill elapsed=0.0s input=0/351 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5387240266317778948 phase=decode elapsed=1.0s input=351/351 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5960279899263789434 phase=decode elapsed=15.8s input=361/361 decode=134/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5960279899263789434 phase=decode elapsed=17.8s input=361/361 decode=153/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=740317857514137191 phase=prefill elapsed=0.0s input=0/498 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=740317857514137191 phase=decode elapsed=0.8s input=498/498 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5387240266317778948 phase=decode elapsed=16.1s input=351/351 decode=134/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=740317857514137191 phase=decode elapsed=15.8s input=498/498 decode=136/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5387240266317778948 phase=decode elapsed=31.1s input=351/351 decode=268/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=740317857514137191 phase=decode elapsed=18.1s input=498/498 decode=158/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1417816023888265619 phase=prefill elapsed=0.0s input=0/257 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1417816023888265619 phase=decode elapsed=0.5s input=257/257 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5387240266317778948 phase=decode elapsed=34.0s input=351/351 decode=294/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5017298312933826769 phase=prefill elapsed=0.0s input=0/656 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1417816023888265619 phase=decode elapsed=2.3s input=257/257 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5017298312933826769 phase=decode elapsed=1.5s input=656/656 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5017298312933826769 phase=decode elapsed=6.7s input=656/656 decode=50/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1014741761784909330 phase=prefill elapsed=0.0s input=0/681 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1014741761784909330 phase=decode elapsed=1.4s input=681/681 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1014741761784909330 phase=decode elapsed=7.0s input=681/681 decode=52/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1775432120674568221 phase=prefill elapsed=0.0s input=0/655 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1775432120674568221 phase=decode elapsed=1.2s input=655/655 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1775432120674568221 phase=decode elapsed=7.0s input=655/655 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5387240266317778948 phase=prefill elapsed=0.0s input=0/696 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5387240266317778948 phase=decode elapsed=1.4s input=696/696 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5387240266317778948 phase=decode elapsed=7.3s input=696/696 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6470849730561868516 phase=prefill elapsed=0.0s input=0/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6470849730561868516 phase=decode elapsed=0.4s input=254/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6470849730561868516 phase=decode elapsed=2.1s input=254/254 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4452187471933571023 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7259646355533685262 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4452187471933571023 phase=decode elapsed=0.8s input=338/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7259646355533685262 phase=decode elapsed=0.8s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7259646355533685262 phase=decode elapsed=15.8s input=339/339 decode=135/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4452187471933571023 phase=decode elapsed=15.9s input=338/338 decode=133/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4452187471933571023 phase=decode elapsed=17.7s input=338/338 decode=150/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4099672381084009203 phase=prefill elapsed=0.0s input=0/336 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7259646355533685262 phase=decode elapsed=17.8s input=339/339 decode=154/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=561649063181457771 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4099672381084009203 phase=decode elapsed=0.7s input=336/336 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=561649063181457771 phase=decode elapsed=0.8s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4099672381084009203 phase=decode elapsed=2.5s input=336/336 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7321724501442330755 phase=prefill elapsed=0.0s input=0/347 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=561649063181457771 phase=decode elapsed=2.5s input=339/339 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2976846420035572698 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2976846420035572698 phase=decode elapsed=0.7s input=348/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7321724501442330755 phase=decode elapsed=1.0s input=347/347 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2976846420035572698 phase=decode elapsed=4.4s input=348/348 decode=33/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6092476739546730244 phase=prefill elapsed=0.0s input=0/357 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6092476739546730244 phase=decode elapsed=0.7s input=357/357 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6092476739546730244 phase=decode elapsed=4.6s input=357/357 decode=34/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7914258068898711446 phase=prefill elapsed=0.0s input=0/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7914258068898711446 phase=decode elapsed=1.0s input=356/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7914258068898711446 phase=decode elapsed=2.7s input=356/356 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1504507442207819565 phase=prefill elapsed=0.0s input=0/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1504507442207819565 phase=decode elapsed=0.7s input=361/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7321724501442330755 phase=decode elapsed=15.8s input=347/347 decode=134/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1750068862954404733 phase=prefill elapsed=0.0s input=0/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1750068862954404733 phase=decode elapsed=0.7s input=356/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1504507442207819565 phase=decode elapsed=7.3s input=361/361 decode=59/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2836955077332054162 phase=prefill elapsed=0.0s input=0/416 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2836955077332054162 phase=decode elapsed=1.0s input=416/416 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2836955077332054162 phase=decode elapsed=2.7s input=416/416 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6625670272031382701 phase=prefill elapsed=0.0s input=0/425 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6625670272031382701 phase=decode elapsed=0.7s input=425/425 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6625670272031382701 phase=decode elapsed=2.5s input=425/425 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7914258068898711446 phase=prefill elapsed=0.0s input=0/383 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7914258068898711446 phase=decode elapsed=1.0s input=383/383 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1750068862954404733 phase=decode elapsed=15.7s input=356/356 decode=135/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1750068862954404733 phase=decode elapsed=17.6s input=356/356 decode=153/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8994721194012826067 phase=prefill elapsed=0.0s input=0/388 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8994721194012826067 phase=decode elapsed=1.0s input=388/388 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8994721194012826067 phase=decode elapsed=5.0s input=388/388 decode=36/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=214198652916756762 phase=prefill elapsed=0.0s input=0/364 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=214198652916756762 phase=decode elapsed=0.7s input=364/364 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7914258068898711446 phase=decode elapsed=16.0s input=383/383 decode=133/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7914258068898711446 phase=decode elapsed=16.4s input=383/383 decode=137/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1504507442207819565 phase=prefill elapsed=0.0s input=0/499 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1504507442207819565 phase=decode elapsed=1.0s input=499/499 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1504507442207819565 phase=decode elapsed=6.2s input=499/499 decode=47/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1928374090232088953 phase=prefill elapsed=0.0s input=0/258 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1928374090232088953 phase=decode elapsed=0.7s input=258/258 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=214198652916756762 phase=decode elapsed=9.9s input=364/364 decode=82/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3800838350043971346 phase=prefill elapsed=0.0s input=0/468 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3800838350043971346 phase=decode elapsed=1.0s input=468/468 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1928374090232088953 phase=decode elapsed=2.4s input=258/258 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3800838350043971346 phase=decode elapsed=16.0s input=468/468 decode=137/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=3800838350043971346 phase=decode elapsed=23.2s input=468/468 decode=203/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8994721194012826067 phase=prefill elapsed=0.0s input=0/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8994721194012826067 phase=decode elapsed=0.8s input=361/361 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8994721194012826067 phase=decode elapsed=5.3s input=361/361 decode=42/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=214198652916756762 phase=prefill elapsed=0.0s input=0/383 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=214198652916756762 phase=decode elapsed=1.0s input=383/383 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=214198652916756762 phase=decode elapsed=5.4s input=383/383 decode=42/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8889708095582152789 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8889708095582152789 phase=decode elapsed=0.4s input=255/255 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8889708095582152789 phase=decode elapsed=2.1s input=255/255 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8228629113183717777 phase=prefill elapsed=0.0s input=0/335 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=8440419528886959979 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=8440419528886959979 phase=decode elapsed=0.7s input=338/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8228629113183717777 phase=decode elapsed=1.1s input=335/335 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8228629113183717777 phase=decode elapsed=2.8s input=335/335 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9107563587078734982 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9107563587078734982 phase=decode elapsed=0.7s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9107563587078734982 phase=decode elapsed=2.4s input=339/339 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8414519180560761855 phase=prefill elapsed=0.0s input=0/363 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8414519180560761855 phase=decode elapsed=1.0s input=363/363 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8414519180560761855 phase=decode elapsed=7.2s input=363/363 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1426073051744467116 phase=prefill elapsed=0.0s input=0/418 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1426073051744467116 phase=decode elapsed=1.0s input=418/418 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=8440419528886959979 phase=decode elapsed=15.8s input=338/338 decode=134/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=8440419528886959979 phase=decode elapsed=17.6s input=338/338 decode=151/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6065529762186739126 phase=prefill elapsed=0.0s input=0/336 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6065529762186739126 phase=decode elapsed=0.7s input=336/336 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6065529762186739126 phase=decode elapsed=2.3s input=336/336 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=84465805100603968 phase=prefill elapsed=0.0s input=0/347 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=84465805100603968 phase=decode elapsed=1.0s input=347/347 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1426073051744467116 phase=decode elapsed=10.0s input=418/418 decode=82/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8414519180560761855 phase=prefill elapsed=0.0s input=0/351 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8414519180560761855 phase=decode elapsed=1.0s input=351/351 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=84465805100603968 phase=decode elapsed=16.0s input=347/347 decode=137/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=84465805100603968 phase=decode elapsed=17.0s input=347/347 decode=147/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=941681735522333411 phase=prefill elapsed=0.0s input=0/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=941681735522333411 phase=decode elapsed=0.7s input=356/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8414519180560761855 phase=decode elapsed=16.0s input=351/351 decode=133/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8414519180560761855 phase=decode elapsed=18.6s input=351/351 decode=156/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1426073051744467116 phase=prefill elapsed=0.0s input=0/362 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1426073051744467116 phase=decode elapsed=1.0s input=362/362 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=941681735522333411 phase=decode elapsed=5.9s input=356/356 decode=48/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2369861748578623633 phase=prefill elapsed=0.0s input=0/354 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2369861748578623633 phase=decode elapsed=0.7s input=354/354 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1426073051744467116 phase=decode elapsed=3.1s input=362/362 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2417252706394484963 phase=prefill elapsed=0.0s input=0/360 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2417252706394484963 phase=decode elapsed=1.0s input=360/360 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2369861748578623633 phase=decode elapsed=4.3s input=354/354 decode=33/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7480473105748484397 phase=prefill elapsed=0.0s input=0/381 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7480473105748484397 phase=decode elapsed=1.0s input=381/381 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2417252706394484963 phase=decode elapsed=5.6s input=360/360 decode=42/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5151532955772563227 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5151532955772563227 phase=decode elapsed=0.4s input=255/255 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5151532955772563227 phase=decode elapsed=2.2s input=255/255 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7480473105748484397 phase=decode elapsed=5.4s input=381/381 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2369861748578623633 phase=prefill elapsed=0.0s input=0/381 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2369861748578623633 phase=decode elapsed=0.8s input=381/381 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2369861748578623633 phase=decode elapsed=4.2s input=381/381 decode=33/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7480473105748484397 phase=prefill elapsed=0.0s input=0/393 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7480473105748484397 phase=decode elapsed=1.0s input=393/393 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7480473105748484397 phase=decode elapsed=5.1s input=393/393 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1741964262489296062 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1741964262489296062 phase=decode elapsed=0.6s input=255/255 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1741964262489296062 phase=decode elapsed=2.3s input=255/255 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1257499277584708772 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6803160303860818703 phase=prefill elapsed=0.0s input=0/334 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1257499277584708772 phase=decode elapsed=0.8s input=338/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6803160303860818703 phase=decode elapsed=1.0s input=334/334 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6803160303860818703 phase=decode elapsed=2.7s input=334/334 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4685134624984108094 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4685134624984108094 phase=decode elapsed=0.7s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1257499277584708772 phase=decode elapsed=4.6s input=338/338 decode=35/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=192950164726274557 phase=prefill elapsed=0.0s input=0/336 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=192950164726274557 phase=decode elapsed=0.7s input=336/336 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=4685134624984108094 phase=decode elapsed=3.8s input=339/339 decode=29/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5169167145342257419 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5169167145342257419 phase=decode elapsed=0.7s input=348/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=192950164726274557 phase=decode elapsed=3.9s input=336/336 decode=30/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9193106247132483019 phase=prefill elapsed=0.0s input=0/369 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9193106247132483019 phase=decode elapsed=1.0s input=369/369 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9193106247132483019 phase=decode elapsed=5.2s input=369/369 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4774456550148206825 phase=prefill elapsed=0.0s input=0/391 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4774456550148206825 phase=decode elapsed=1.0s input=391/391 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4774456550148206825 phase=decode elapsed=5.5s input=391/391 decode=42/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9158899219688889798 phase=prefill elapsed=0.0s input=0/452 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9158899219688889798 phase=decode elapsed=1.0s input=452/452 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9158899219688889798 phase=decode elapsed=3.0s input=452/452 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6344436267273193217 phase=prefill elapsed=0.0s input=0/453 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5169167145342257419 phase=decode elapsed=15.7s input=348/348 decode=137/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6344436267273193217 phase=decode elapsed=1.1s input=453/453 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5169167145342257419 phase=decode elapsed=17.1s input=348/348 decode=150/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3643973146271904957 phase=prefill elapsed=0.0s input=0/357 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3643973146271904957 phase=decode elapsed=0.7s input=357/357 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6344436267273193217 phase=decode elapsed=3.0s input=453/453 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9158899219688889798 phase=prefill elapsed=0.0s input=0/354 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9158899219688889798 phase=decode elapsed=1.0s input=354/354 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=9158899219688889798 phase=decode elapsed=5.3s input=354/354 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6344436267273193217 phase=prefill elapsed=0.0s input=0/387 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6344436267273193217 phase=decode elapsed=1.0s input=387/387 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6344436267273193217 phase=decode elapsed=4.8s input=387/387 decode=34/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8453823791653888183 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8453823791653888183 phase=decode elapsed=0.4s input=255/255 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8453823791653888183 phase=decode elapsed=2.1s input=255/255 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3643973146271904957 phase=decode elapsed=15.8s input=357/357 decode=136/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3643973146271904957 phase=decode elapsed=16.9s input=357/357 decode=147/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7564060563883581650 phase=prefill elapsed=0.0s input=0/482 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7564060563883581650 phase=decode elapsed=1.1s input=482/482 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=7564060563883581650 phase=decode elapsed=5.7s input=482/482 decode=44/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=162423314457967112 phase=prefill elapsed=0.0s input=0/491 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=162423314457967112 phase=decode elapsed=1.0s input=491/491 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=162423314457967112 phase=decode elapsed=6.2s input=491/491 decode=49/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1010564286941044410 phase=prefill elapsed=0.0s input=0/350 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1010564286941044410 phase=decode elapsed=1.0s input=350/350 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1010564286941044410 phase=decode elapsed=5.4s input=350/350 decode=40/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=8023923800489086619 phase=prefill elapsed=0.0s input=0/392 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=8023923800489086619 phase=decode elapsed=1.0s input=392/392 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=8023923800489086619 phase=decode elapsed=5.3s input=392/392 decode=40/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1010564286941044410 phase=prefill elapsed=0.0s input=0/553 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1010564286941044410 phase=decode elapsed=1.4s input=553/553 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1010564286941044410 phase=decode elapsed=6.8s input=553/553 decode=49/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8023923800489086619 phase=prefill elapsed=0.0s input=0/600 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8023923800489086619 phase=decode elapsed=1.4s input=600/600 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8023923800489086619 phase=decode elapsed=3.4s input=600/600 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4628258382748303628 phase=prefill elapsed=0.0s input=0/254 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4628258382748303628 phase=decode elapsed=0.4s input=254/254 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4628258382748303628 phase=decode elapsed=2.0s input=254/254 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5661297641176745221 phase=prefill elapsed=0.0s input=0/340 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2699441716391527412 phase=prefill elapsed=0.0s input=0/337 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5661297641176745221 phase=decode elapsed=0.8s input=340/340 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2699441716391527412 phase=decode elapsed=0.8s input=337/337 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2699441716391527412 phase=decode elapsed=2.4s input=337/337 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5136283076468002978 phase=prefill elapsed=0.0s input=0/340 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5136283076468002978 phase=decode elapsed=1.0s input=340/340 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5136283076468002978 phase=decode elapsed=4.7s input=340/340 decode=34/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6319628260057940435 phase=prefill elapsed=0.0s input=0/349 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5661297641176745221 phase=decode elapsed=8.1s input=340/340 decode=68/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5965690742242668860 phase=prefill elapsed=0.0s input=0/394 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6319628260057940435 phase=decode elapsed=1.0s input=349/349 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5965690742242668860 phase=decode elapsed=1.0s input=394/394 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5965690742242668860 phase=decode elapsed=8.2s input=394/394 decode=65/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2416004198644876313 phase=prefill elapsed=0.0s input=0/403 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2416004198644876313 phase=decode elapsed=0.7s input=403/403 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2416004198644876313 phase=decode elapsed=6.0s input=403/403 decode=48/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4570728588175425658 phase=prefill elapsed=0.0s input=0/458 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6319628260057940435 phase=decode elapsed=16.1s input=349/349 decode=136/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4570728588175425658 phase=decode elapsed=1.1s input=458/458 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6319628260057940435 phase=decode elapsed=16.6s input=349/349 decode=141/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6577424467119165128 phase=prefill elapsed=0.0s input=0/358 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6577424467119165128 phase=decode elapsed=0.7s input=358/358 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4570728588175425658 phase=decode elapsed=7.1s input=458/458 decode=55/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7146153813596516521 phase=prefill elapsed=0.0s input=0/515 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6577424467119165128 phase=decode elapsed=6.8s input=358/358 decode=54/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3035259578590224976 phase=prefill elapsed=0.0s input=0/392 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7146153813596516521 phase=decode elapsed=1.4s input=515/515 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3035259578590224976 phase=decode elapsed=0.8s input=392/392 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7146153813596516521 phase=decode elapsed=3.4s input=515/515 decode=19/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4570728588175425658 phase=prefill elapsed=0.0s input=0/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4570728588175425658 phase=decode elapsed=0.7s input=356/356 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3035259578590224976 phase=decode elapsed=5.3s input=392/392 decode=42/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5721108965903856331 phase=prefill elapsed=0.0s input=0/353 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5721108965903856331 phase=decode elapsed=1.0s input=353/353 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4570728588175425658 phase=decode elapsed=4.1s input=356/356 decode=31/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7146153813596516521 phase=prefill elapsed=0.0s input=0/360 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7146153813596516521 phase=decode elapsed=0.7s input=360/360 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7146153813596516521 phase=decode elapsed=6.4s input=360/360 decode=52/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6630952362004802828 phase=prefill elapsed=0.0s input=0/406 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6630952362004802828 phase=decode elapsed=1.0s input=406/406 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6630952362004802828 phase=decode elapsed=6.5s input=406/406 decode=50/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6039937866577557379 phase=prefill elapsed=0.0s input=0/415 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=6039937866577557379 phase=decode elapsed=1.0s input=415/415 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5721108965903856331 phase=decode elapsed=15.6s input=353/353 decode=133/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2618425764677916156 phase=prefill elapsed=0.0s input=0/485 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2618425764677916156 phase=decode elapsed=1.0s input=485/485 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=6039937866577557379 phase=decode elapsed=7.7s input=415/415 decode=62/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8687626564131041381 phase=prefill elapsed=0.0s input=0/258 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2618425764677916156 phase=decode elapsed=6.7s input=485/485 decode=52/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5721108965903856331 phase=prefill elapsed=0.0s input=0/447 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8687626564131041381 phase=decode elapsed=0.7s input=258/258 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5721108965903856331 phase=decode elapsed=1.0s input=447/447 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8687626564131041381 phase=decode elapsed=2.2s input=258/258 decode=15/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5721108965903856331 phase=decode elapsed=5.5s input=447/447 decode=42/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2618425764677916156 phase=prefill elapsed=0.0s input=0/494 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2618425764677916156 phase=decode elapsed=1.1s input=494/494 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2618425764677916156 phase=decode elapsed=6.8s input=494/494 decode=54/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7011718913799078458 phase=prefill elapsed=0.0s input=0/258 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7011718913799078458 phase=decode elapsed=0.7s input=258/258 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7011718913799078458 phase=decode elapsed=2.3s input=258/258 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3979908319941421135 phase=prefill elapsed=0.0s input=0/337 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8067617777804797891 phase=prefill elapsed=0.0s input=0/335 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3979908319941421135 phase=decode elapsed=0.7s input=337/337 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8067617777804797891 phase=decode elapsed=0.7s input=335/335 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8067617777804797891 phase=decode elapsed=2.4s input=335/335 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8805643309456860035 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8805643309456860035 phase=decode elapsed=0.7s input=338/338 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3979908319941421135 phase=decode elapsed=4.9s input=337/337 decode=38/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8805643309456860035 phase=decode elapsed=2.4s input=338/338 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2998798001136738158 phase=prefill elapsed=0.0s input=0/364 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5987524421992088977 phase=prefill elapsed=0.0s input=0/363 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5987524421992088977 phase=decode elapsed=0.7s input=363/363 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2998798001136738158 phase=decode elapsed=1.0s input=364/364 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5987524421992088977 phase=decode elapsed=5.0s input=363/363 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1394962814262892434 phase=prefill elapsed=0.0s input=0/401 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2998798001136738158 phase=decode elapsed=5.2s input=364/364 decode=38/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2239360232027024199 phase=prefill elapsed=0.0s input=0/354 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2239360232027024199 phase=decode elapsed=0.7s input=354/354 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=1394962814262892434 phase=decode elapsed=1.0s input=401/401 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1394962814262892434 phase=decode elapsed=5.4s input=401/401 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5987524421992088977 phase=prefill elapsed=0.0s input=0/351 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5987524421992088977 phase=decode elapsed=0.7s input=351/351 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2239360232027024199 phase=decode elapsed=6.9s input=354/354 decode=56/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5771648798121642707 phase=prefill elapsed=0.0s input=0/406 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5771648798121642707 phase=decode elapsed=1.0s input=406/406 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5987524421992088977 phase=decode elapsed=5.0s input=351/351 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1394962814262892434 phase=prefill elapsed=0.0s input=0/389 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1394962814262892434 phase=decode elapsed=0.7s input=389/389 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5771648798121642707 phase=decode elapsed=6.5s input=406/406 decode=50/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2239360232027024199 phase=prefill elapsed=0.0s input=0/416 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2239360232027024199 phase=decode elapsed=0.8s input=416/416 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=1394962814262892434 phase=decode elapsed=5.1s input=389/389 decode=39/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4270835832855700703 phase=prefill elapsed=0.0s input=0/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4270835832855700703 phase=decode elapsed=0.4s input=254/254 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=4270835832855700703 phase=decode elapsed=2.1s input=254/254 decode=16/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=2239360232027024199 phase=decode elapsed=5.0s input=416/416 decode=38/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5771648798121642707 phase=prefill elapsed=0.0s input=0/450 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5771648798121642707 phase=decode elapsed=1.1s input=450/450 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5771648798121642707 phase=decode elapsed=5.1s input=450/450 decode=38/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2635468176680950715 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2635468176680950715 phase=decode elapsed=0.4s input=255/255 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2635468176680950715 phase=decode elapsed=2.1s input=255/255 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=2382279863713379274 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3863189380517531492 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=2382279863713379274 phase=decode elapsed=0.7s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=3863189380517531492 phase=decode elapsed=0.8s input=338/338 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3863189380517531492 phase=decode elapsed=6.0s input=338/338 decode=47/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8049316475296984749 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8049316475296984749 phase=decode elapsed=0.7s input=339/339 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8049316475296984749 phase=decode elapsed=5.6s input=339/339 decode=44/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9210302312644362371 phase=prefill elapsed=0.0s input=0/347 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9210302312644362371 phase=decode elapsed=0.7s input=347/347 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=2382279863713379274 phase=decode elapsed=15.8s input=339/339 decode=135/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=2382279863713379274 phase=decode elapsed=16.4s input=339/339 decode=141/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1974500441739583894 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=9210302312644362371 phase=decode elapsed=5.0s input=347/347 decode=39/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6651311606282137597 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=1974500441739583894 phase=decode elapsed=0.7s input=339/339 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6651311606282137597 phase=decode elapsed=0.7s input=348/348 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=1974500441739583894 phase=decode elapsed=15.7s input=339/339 decode=133/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6651311606282137597 phase=decode elapsed=15.7s input=348/348 decode=135/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=1974500441739583894 phase=decode elapsed=17.2s input=339/339 decode=147/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7221813534107381903 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7221813534107381903 phase=decode elapsed=0.7s input=348/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7221813534107381903 phase=decode elapsed=3.7s input=348/348 decode=28/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=7166617257048818533 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=6651311606282137597 phase=decode elapsed=21.2s input=348/348 decode=184/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5107330403958620136 phase=prefill elapsed=0.0s input=0/356 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7166617257048818533 phase=decode elapsed=0.7s input=348/348 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=5107330403958620136 phase=decode elapsed=0.7s input=356/356 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5107330403958620136 phase=decode elapsed=2.7s input=356/356 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2428136916549517310 phase=prefill elapsed=0.0s input=0/357 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2428136916549517310 phase=decode elapsed=0.7s input=357/357 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2428136916549517310 phase=decode elapsed=2.7s input=357/357 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1307808059499793038 phase=prefill elapsed=0.0s input=0/362 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1307808059499793038 phase=decode elapsed=1.0s input=362/362 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7166617257048818533 phase=decode elapsed=7.4s input=348/348 decode=60/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1830575940988971568 phase=prefill elapsed=0.0s input=0/406 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1830575940988971568 phase=decode elapsed=0.7s input=406/406 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=1830575940988971568 phase=decode elapsed=5.8s input=406/406 decode=47/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5734893163594118816 phase=prefill elapsed=0.0s input=0/431 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5734893163594118816 phase=decode elapsed=1.0s input=431/431 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=5734893163594118816 phase=decode elapsed=7.8s input=431/431 decode=61/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8148979525226795087 phase=prefill elapsed=0.0s input=0/481 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=365 device=1 seed=1307808059499793038 phase=decode elapsed=16.1s input=362/362 decode=136/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8148979525226795087 phase=decode elapsed=1.0s input=481/481 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8148979525226795087 phase=decode elapsed=8.7s input=481/481 decode=69/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8920205055925856671 phase=prefill elapsed=0.0s input=0/542 decode=0/512 peak_reserved_mib=7832.0
+Inference pid=351 device=0 seed=8920205055925856671 phase=decode elapsed=1.4s input=542/542 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1307808059499793038 phase=decode elapsed=29.9s input=362/362 decode=263/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8853190939237816913 phase=prefill elapsed=0.0s input=0/608 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8853190939237816913 phase=decode elapsed=1.4s input=608/608 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8920205055925856671 phase=decode elapsed=8.1s input=542/542 decode=61/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=2106084752359392235 phase=prefill elapsed=0.0s input=0/600 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=2106084752359392235 phase=decode elapsed=1.4s input=600/600 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=2106084752359392235 phase=decode elapsed=7.3s input=600/600 decode=54/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5734893163594118816 phase=prefill elapsed=0.0s input=0/355 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5734893163594118816 phase=decode elapsed=0.7s input=355/355 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8853190939237816913 phase=decode elapsed=16.5s input=608/608 decode=137/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5734893163594118816 phase=decode elapsed=15.8s input=355/355 decode=134/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5734893163594118816 phase=decode elapsed=17.6s input=355/355 decode=151/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8148979525226795087 phase=prefill elapsed=0.0s input=0/362 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8148979525226795087 phase=decode elapsed=0.7s input=362/362 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8853190939237816913 phase=decode elapsed=28.9s input=608/608 decode=250/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1307808059499793038 phase=prefill elapsed=0.0s input=0/395 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1307808059499793038 phase=decode elapsed=1.0s input=395/395 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8148979525226795087 phase=decode elapsed=4.6s input=362/362 decode=35/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8920205055925856671 phase=prefill elapsed=0.0s input=0/388 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1307808059499793038 phase=decode elapsed=3.1s input=395/395 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8853190939237816913 phase=prefill elapsed=0.0s input=0/389 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8920205055925856671 phase=decode elapsed=0.7s input=388/388 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8853190939237816913 phase=decode elapsed=1.0s input=389/389 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8920205055925856671 phase=decode elapsed=4.6s input=388/388 decode=35/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7921154408136709599 phase=prefill elapsed=0.0s input=0/259 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7921154408136709599 phase=decode elapsed=0.7s input=259/259 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8853190939237816913 phase=decode elapsed=6.6s input=389/389 decode=50/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4807181268986667867 phase=prefill elapsed=0.0s input=0/258 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7921154408136709599 phase=decode elapsed=2.4s input=259/259 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4807181268986667867 phase=decode elapsed=0.7s input=258/258 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4807181268986667867 phase=decode elapsed=2.4s input=258/258 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1558207476444573364 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=3149931738709346887 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=3149931738709346887 phase=decode elapsed=0.7s input=338/338 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1558207476444573364 phase=decode elapsed=0.8s input=338/338 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=3149931738709346887 phase=decode elapsed=15.7s input=338/338 decode=136/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1558207476444573364 phase=decode elapsed=15.8s input=338/338 decode=133/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1558207476444573364 phase=decode elapsed=17.1s input=338/338 decode=146/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7370203119696101683 phase=prefill elapsed=0.0s input=0/337 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=3149931738709346887 phase=decode elapsed=17.4s input=338/338 decode=152/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=9133351367866927780 phase=prefill elapsed=0.0s input=0/478 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7370203119696101683 phase=decode elapsed=0.7s input=337/337 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=9133351367866927780 phase=decode elapsed=1.0s input=478/478 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7370203119696101683 phase=decode elapsed=15.8s input=337/337 decode=136/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=9133351367866927780 phase=decode elapsed=16.1s input=478/478 decode=132/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7370203119696101683 phase=decode elapsed=16.8s input=337/337 decode=146/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3854852960831798470 phase=prefill elapsed=0.0s input=0/347 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3854852960831798470 phase=decode elapsed=0.8s input=347/347 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=9133351367866927780 phase=decode elapsed=18.1s input=478/478 decode=151/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8661375194255689629 phase=prefill elapsed=0.0s input=0/650 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8661375194255689629 phase=decode elapsed=1.2s input=650/650 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3854852960831798470 phase=decode elapsed=4.2s input=347/347 decode=32/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8676882964858688617 phase=prefill elapsed=0.0s input=0/367 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8676882964858688617 phase=decode elapsed=1.0s input=367/367 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=8676882964858688617 phase=decode elapsed=4.7s input=367/367 decode=32/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7007927364177320798 phase=prefill elapsed=0.0s input=0/360 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7007927364177320798 phase=decode elapsed=1.0s input=360/360 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8661375194255689629 phase=decode elapsed=16.2s input=650/650 decode=134/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8661375194255689629 phase=decode elapsed=18.2s input=650/650 decode=152/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8097089018640116083 phase=prefill elapsed=0.0s input=0/783 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8097089018640116083 phase=decode elapsed=1.8s input=783/783 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7007927364177320798 phase=decode elapsed=16.0s input=360/360 decode=134/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7007927364177320798 phase=decode elapsed=16.9s input=360/360 decode=142/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5749282179274952530 phase=prefill elapsed=0.0s input=0/485 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5749282179274952530 phase=decode elapsed=0.8s input=485/485 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5749282179274952530 phase=decode elapsed=6.7s input=485/485 decode=51/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7007927364177320798 phase=prefill elapsed=0.0s input=0/419 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7007927364177320798 phase=decode elapsed=1.0s input=419/419 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8097089018640116083 phase=decode elapsed=16.8s input=783/783 decode=134/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7007927364177320798 phase=decode elapsed=4.6s input=419/419 decode=32/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5749282179274952530 phase=prefill elapsed=0.0s input=0/434 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5749282179274952530 phase=decode elapsed=1.0s input=434/434 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8097089018640116083 phase=decode elapsed=18.7s input=783/783 decode=151/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8661375194255689629 phase=prefill elapsed=0.0s input=0/361 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8661375194255689629 phase=decode elapsed=0.7s input=361/361 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5749282179274952530 phase=decode elapsed=4.7s input=434/434 decode=32/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4019721016965024234 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4019721016965024234 phase=decode elapsed=0.4s input=255/255 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=4019721016965024234 phase=decode elapsed=2.2s input=255/255 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8661375194255689629 phase=decode elapsed=15.7s input=361/361 decode=133/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8661375194255689629 phase=decode elapsed=19.7s input=361/361 decode=170/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8097089018640116083 phase=prefill elapsed=0.0s input=0/512 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8097089018640116083 phase=decode elapsed=0.8s input=512/512 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8097089018640116083 phase=decode elapsed=15.9s input=512/512 decode=136/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=8097089018640116083 phase=decode elapsed=19.3s input=512/512 decode=168/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5319984730134778560 phase=prefill elapsed=0.0s input=0/256 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5319984730134778560 phase=decode elapsed=0.4s input=256/256 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=5319984730134778560 phase=decode elapsed=2.1s input=256/256 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=3316022409743939391 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6235676957750292586 phase=prefill elapsed=0.0s input=0/338 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6235676957750292586 phase=decode elapsed=0.8s input=338/338 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=3316022409743939391 phase=decode elapsed=0.8s input=339/339 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=3316022409743939391 phase=decode elapsed=4.8s input=339/339 decode=35/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7598135116584668381 phase=prefill elapsed=0.0s input=0/339 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7598135116584668381 phase=decode elapsed=0.7s input=339/339 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6235676957750292586 phase=decode elapsed=7.6s input=338/338 decode=60/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7887811878140492104 phase=prefill elapsed=0.0s input=0/336 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7887811878140492104 phase=decode elapsed=0.7s input=336/336 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=7887811878140492104 phase=decode elapsed=4.4s input=336/336 decode=33/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2326562108051485717 phase=prefill elapsed=0.0s input=0/347 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2326562108051485717 phase=decode elapsed=0.7s input=347/347 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=2326562108051485717 phase=decode elapsed=7.7s input=347/347 decode=61/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6255283482707103244 phase=prefill elapsed=0.0s input=0/345 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6255283482707103244 phase=decode elapsed=0.7s input=345/345 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7598135116584668381 phase=decode elapsed=15.8s input=339/339 decode=131/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=7598135116584668381 phase=decode elapsed=18.7s input=339/339 decode=156/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4027773770743399252 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4027773770743399252 phase=decode elapsed=0.8s input=348/348 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=6255283482707103244 phase=decode elapsed=4.7s input=345/345 decode=36/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5493582434092557490 phase=prefill elapsed=0.0s input=0/356 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5493582434092557490 phase=decode elapsed=0.7s input=356/356 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5493582434092557490 phase=decode elapsed=5.9s input=356/356 decode=47/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3632073470791873446 phase=prefill elapsed=0.0s input=0/354 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3632073470791873446 phase=decode elapsed=0.7s input=354/354 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=3632073470791873446 phase=decode elapsed=2.7s input=354/354 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5217546261940366333 phase=prefill elapsed=0.0s input=0/361 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5217546261940366333 phase=decode elapsed=0.7s input=361/361 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4027773770743399252 phase=decode elapsed=15.8s input=348/348 decode=131/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5217546261940366333 phase=decode elapsed=7.4s input=361/361 decode=60/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9092468552002419456 phase=prefill elapsed=0.0s input=0/352 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9092468552002419456 phase=decode elapsed=0.7s input=352/352 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4027773770743399252 phase=decode elapsed=18.4s input=348/348 decode=155/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=9146236957778840145 phase=prefill elapsed=0.0s input=0/348 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=9146236957778840145 phase=decode elapsed=0.7s input=348/348 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9092468552002419456 phase=decode elapsed=4.5s input=352/352 decode=31/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1178083047056805454 phase=prefill elapsed=0.0s input=0/370 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1178083047056805454 phase=decode elapsed=1.0s input=370/370 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=9146236957778840145 phase=decode elapsed=4.5s input=348/348 decode=34/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4930560188190906841 phase=prefill elapsed=0.0s input=0/357 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4930560188190906841 phase=decode elapsed=0.7s input=357/357 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4930560188190906841 phase=decode elapsed=2.7s input=357/357 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=114920852746157201 phase=prefill elapsed=0.0s input=0/357 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=114920852746157201 phase=decode elapsed=0.7s input=357/357 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=114920852746157201 phase=decode elapsed=2.7s input=357/357 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=307394048295980151 phase=prefill elapsed=0.0s input=0/396 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=307394048295980151 phase=decode elapsed=1.0s input=396/396 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=307394048295980151 phase=decode elapsed=3.1s input=396/396 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4118538573955015757 phase=prefill elapsed=0.0s input=0/389 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4118538573955015757 phase=decode elapsed=0.7s input=389/389 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4118538573955015757 phase=decode elapsed=2.7s input=389/389 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=307394048295980151 phase=prefill elapsed=0.0s input=0/363 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=307394048295980151 phase=decode elapsed=0.7s input=363/363 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1178083047056805454 phase=decode elapsed=16.1s input=370/370 decode=127/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=307394048295980151 phase=decode elapsed=5.3s input=363/363 decode=42/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4118538573955015757 phase=prefill elapsed=0.0s input=0/387 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4118538573955015757 phase=decode elapsed=0.7s input=387/387 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=1178083047056805454 phase=decode elapsed=19.7s input=370/370 decode=159/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9019583098529008256 phase=prefill elapsed=0.0s input=0/361 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9019583098529008256 phase=decode elapsed=0.7s input=361/361 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4118538573955015757 phase=decode elapsed=2.8s input=387/387 decode=19/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4928770713416526446 phase=prefill elapsed=0.0s input=0/259 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4928770713416526446 phase=decode elapsed=0.7s input=259/259 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=351 device=0 seed=4928770713416526446 phase=decode elapsed=2.3s input=259/259 decode=16/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9019583098529008256 phase=decode elapsed=15.8s input=361/361 decode=134/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9019583098529008256 phase=decode elapsed=16.0s input=361/361 decode=137/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=491617388332277490 phase=prefill elapsed=0.0s input=0/505 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=491617388332277490 phase=decode elapsed=0.9s input=505/505 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=491617388332277490 phase=decode elapsed=15.9s input=505/505 decode=135/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=491617388332277490 phase=decode elapsed=16.3s input=505/505 decode=140/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5217546261940366333 phase=prefill elapsed=0.0s input=0/388 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5217546261940366333 phase=decode elapsed=1.0s input=388/388 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=5217546261940366333 phase=decode elapsed=6.2s input=388/388 decode=48/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9092468552002419456 phase=prefill elapsed=0.0s input=0/422 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9092468552002419456 phase=decode elapsed=1.0s input=422/422 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=9092468552002419456 phase=decode elapsed=5.6s input=422/422 decode=42/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=245690049236384587 phase=prefill elapsed=0.0s input=0/255 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=245690049236384587 phase=decode elapsed=0.4s input=255/255 decode=0/512 peak_reserved_mib=7834.0
+Inference pid=365 device=1 seed=245690049236384587 phase=decode elapsed=2.1s input=255/255 decode=16/512 peak_reserved_mib=7834.0

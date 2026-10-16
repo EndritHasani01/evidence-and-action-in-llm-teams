@@ -1,0 +1,12 @@
+admission_blocking,committed_calls,group,json_valid,legal_actions,phase,recorded_calls,registered_calls,schema_valid,unknown_calls
+0,51,main,51,42,clear,51,51,51,0
+0,20,main,20,20,control-revised-direct,20,20,20,0
+0,82,main,82,40,prefix,82,82,82,0
+0,44,main,44,42,retain,44,44,44,0
+0,8,pilot,8,6,clear,8,8,8,0
+0,3,pilot,3,3,control-original-direct,3,3,3,0
+0,3,pilot,3,3,control-revised-direct,3,3,3,0
+0,12,pilot,12,8,prefix,12,12,12,0
+0,9,pilot,9,8,retain,9,9,9,0
+0,6,qualification,6,6,control-original-direct,6,6,6,0
+0,6,qualification,6,6,control-revised-direct,6,6,6,0
