@@ -1,0 +1,16 @@
+group,json_valid,legal_actions,phase,physical_attempts,schema_valid,unknown_outcomes
+main,85,81,clear,85,85,0
+main,20,20,control-revised-direct,20,20,0
+main,82,81,prefix,82,82,0
+main,91,90,retain,91,91,0
+pilot,17,17,clear,17,17,0
+pilot,4,4,control-original-direct,4,4,0
+pilot,4,4,control-revised-direct,4,4,0
+pilot,16,16,prefix,16,16,0
+pilot,17,17,retain,17,17,0
+qualification,4,4,control-original-direct,4,4,0
+qualification,4,4,control-revised-direct,4,4,0
+qualification,1,1,diagnostic-D00,1,1,0
+qualification,1,1,diagnostic-D01,1,1,0
+qualification,1,1,diagnostic-D02,1,1,0
+qualification,1,1,diagnostic-D03,1,1,0

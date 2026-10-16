@@ -1,0 +1,48 @@
+{
+  "passed": true,
+  "checkpoint_sha256": "e70724265ed35c5232b85fbc9e769b05fd7cde5972dd4f6d3e7e82b8f0f910c8",
+  "recorded_attempts": 32,
+  "pilot_calls": 12,
+  "json_valid": 12,
+  "legal_actions": 10,
+  "exact_errors": [
+    {
+      "call": "pilot-00/retain/agent-1/invocation-0",
+      "world": "pilot-00",
+      "group": "pilot",
+      "phase": "retain",
+      "agent": 1,
+      "recorded": true,
+      "committed": true,
+      "policy": "i01-whole-study-run-all-2026-10-15",
+      "json_valid": true,
+      "schema_valid": true,
+      "legal_action": false,
+      "error": "malformed_action",
+      "reason": "wait_requires_null_message_and_submit",
+      "runtime_safe": true,
+      "admission_blocking": true
+    },
+    {
+      "call": "pilot-00/clear/agent-0/invocation-0",
+      "world": "pilot-00",
+      "group": "pilot",
+      "phase": "clear",
+      "agent": 0,
+      "recorded": true,
+      "committed": true,
+      "policy": "i01-whole-study-run-all-2026-10-15",
+      "json_valid": true,
+      "schema_valid": true,
+      "legal_action": false,
+      "error": "malformed_action",
+      "reason": "wait_requires_null_message_and_submit",
+      "runtime_safe": true,
+      "admission_blocking": true
+    }
+  ],
+  "historical_pilot_passed": false,
+  "new_policy_retrospective_call_eligibility": true,
+  "checkpoint_transition_performed": false,
+  "model_attempts": 0
+}

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evidence-and-action-in-llm-teams"
+version = "0.1.0"
+description = "CPU protocol and durable execution for the distributed LLM recovery study"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2,<3",
+    "langgraph==1.2.12",
+    "langgraph-checkpoint==4.2.0",
+    "langgraph-checkpoint-sqlite==3.1.1",
+    "langchain-core==1.6.6",
+]
+
+[project.optional-dependencies]
+inference = ["torch", "transformers", "accelerate", "bitsandbytes"]
+report = ["matplotlib>=3.7,<4"]
+
+[project.scripts]
+i01-course = "recovery.i01.cli:main"
+
+[tool.setuptools]
+packages = ["recovery", "recovery.i01"]

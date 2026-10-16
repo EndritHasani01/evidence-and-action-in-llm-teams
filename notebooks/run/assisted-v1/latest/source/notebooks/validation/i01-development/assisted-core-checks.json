@@ -1,0 +1,18 @@
+{
+  "scope": "assisted I-01 core, admission and selected legacy regressions",
+  "environment": "Windows, Python 3.11, CPU only",
+  "tests_run": 12,
+  "tests_passed": 12,
+  "exit_code": 0,
+  "elapsed_seconds": 24.684,
+  "native_tokenizer": {
+    "conservative_input_bound": 7612,
+    "input_limit": 8192,
+    "direct_resident_bound": 8704,
+    "all_rejection_feedback_within_32_native_tokens": true
+  },
+  "model_loaded": false,
+  "model_inference_attempts": 0,
+  "whole_workflow_verified": false,
+  "gpu_verified": false
+}

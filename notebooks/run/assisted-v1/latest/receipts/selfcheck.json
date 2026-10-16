@@ -1,0 +1,4221 @@
+{
+  "passed": true,
+  "checks": [
+    "native fixture 827/revised 780; duplicates/negative/boundary",
+    "fixed strata/seeds; private views; finality/wait; literal siblings; invalid actions",
+    "raw-before-effects; idempotence; pre-persistence retry; 499/500; backup/ZIP/expanded restore; unknown vs zero",
+    "exact new-input separation from locally exposed Course-1..7 and saved fixtures"
+  ],
+  "native_tokenizer": true,
+  "tokenizer": {
+    "conservative_input_bound": 7634,
+    "input_limit": 8192,
+    "resident_direct": 8704,
+    "template": "{%- set image_count = namespace(value=0) %}\n{%- set video_count = namespace(value=0) %}\n{%- macro render_content(content, do_vision_count, is_system_content=false) %}\n    {%- if content is string %}\n        {{- content }}\n    {%- elif content is iterable and content is not mapping %}\n        {%- for item in content %}\n            {%- if 'image' in item or 'image_url' in item or item.type == 'image' %}\n                {%- if is_system_content %}\n                    {{- raise_exception('System message cannot contain images.') }}\n                {%- endif %}\n                {%- if do_vision_count %}\n                    {%- set image_count.value = image_count.value + 1 %}\n                {%- endif %}\n                {%- if add_vision_id %}\n                    {{- 'Picture ' ~ image_count.value ~ ': ' }}\n                {%- endif %}\n                {{- '<|vision_start|><|image_pad|><|vision_end|>' }}\n            {%- elif 'video' in item or item.type == 'video' %}\n                {%- if is_system_content %}\n                    {{- raise_exception('System message cannot contain videos.') }}\n                {%- endif %}\n                {%- if do_vision_count %}\n                    {%- set video_count.value = video_count.value + 1 %}\n                {%- endif %}\n                {%- if add_vision_id %}\n                    {{- 'Video ' ~ video_count.value ~ ': ' }}\n                {%- endif %}\n                {{- '<|vision_start|><|video_pad|><|vision_end|>' }}\n            {%- elif 'text' in item %}\n                {{- item.text }}\n            {%- else %}\n                {{- raise_exception('Unexpected item type in content.') }}\n            {%- endif %}\n        {%- endfor %}\n    {%- elif content is none or content is undefined %}\n        {{- '' }}\n    {%- else %}\n        {{- raise_exception('Unexpected content type.') }}\n    {%- endif %}\n{%- endmacro %}\n{%- if not messages %}\n    {{- raise_exception('No messages provided.') }}\n{%- endif %}\n{%- if tools and tools is iterable and tools is not mapping %}\n    {{- '<|im_start|>system\\n' }}\n    {{- \"# Tools\\n\\nYou have access to the following functions:\\n\\n<tools>\" }}\n    {%- for tool in tools %}\n        {{- \"\\n\" }}\n        {{- tool | tojson }}\n    {%- endfor %}\n    {{- \"\\n</tools>\" }}\n    {{- '\\n\\nIf you choose to call a function ONLY reply in the following format with NO suffix:\\n\\n<tool_call>\\n<function=example_function_name>\\n<parameter=example_parameter_1>\\nvalue_1\\n</parameter>\\n<parameter=example_parameter_2>\\nThis is the value for the second parameter\\nthat can span\\nmultiple lines\\n</parameter>\\n</function>\\n</tool_call>\\n\\n<IMPORTANT>\\nReminder:\\n- Function calls MUST follow the specified format: an inner <function=...></function> block must be nested within <tool_call></tool_call> XML tags\\n- Required parameters MUST be specified\\n- You may provide optional reasoning for your function call in natural language BEFORE the function call, but NOT after\\n- If there is no function call available, answer the question like normal with your current knowledge and do not tell the user about function calls\\n</IMPORTANT>' }}\n    {%- if messages[0].role == 'system' %}\n        {%- set content = render_content(messages[0].content, false, true)|trim %}\n        {%- if content %}\n            {{- '\\n\\n' + content }}\n        {%- endif %}\n    {%- endif %}\n    {{- '<|im_end|>\\n' }}\n{%- else %}\n    {%- if messages[0].role == 'system' %}\n        {%- set content = render_content(messages[0].content, false, true)|trim %}\n        {{- '<|im_start|>system\\n' + content + '<|im_end|>\\n' }}\n    {%- endif %}\n{%- endif %}\n{%- set ns = namespace(multi_step_tool=true, last_query_index=messages|length - 1) %}\n{%- for message in messages[::-1] %}\n    {%- set index = (messages|length - 1) - loop.index0 %}\n    {%- if ns.multi_step_tool and message.role == \"user\" %}\n        {%- set content = render_content(message.content, false)|trim %}\n        {%- if not(content.startswith('<tool_response>') and content.endswith('</tool_response>')) %}\n            {%- set ns.multi_step_tool = false %}\n            {%- set ns.last_query_index = index %}\n        {%- endif %}\n    {%- endif %}\n{%- endfor %}\n{%- if ns.multi_step_tool %}\n    {{- raise_exception('No user query found in messages.') }}\n{%- endif %}\n{%- for message in messages %}\n    {%- set content = render_content(message.content, true)|trim %}\n    {%- if message.role == \"system\" %}\n        {%- if not loop.first %}\n            {{- raise_exception('System message must be at the beginning.') }}\n        {%- endif %}\n    {%- elif message.role == \"user\" %}\n        {{- '<|im_start|>' + message.role + '\\n' + content + '<|im_end|>' + '\\n' }}\n    {%- elif message.role == \"assistant\" %}\n        {%- set reasoning_content = '' %}\n        {%- if message.reasoning_content is string %}\n            {%- set reasoning_content = message.reasoning_content %}\n        {%- else %}\n            {%- if '</think>' in content %}\n                {%- set reasoning_content = content.split('</think>')[0].rstrip('\\n').split('<think>')[-1].lstrip('\\n') %}\n                {%- set content = content.split('</think>')[-1].lstrip('\\n') %}\n            {%- endif %}\n        {%- endif %}\n        {%- set reasoning_content = reasoning_content|trim %}\n        {%- if loop.index0 > ns.last_query_index %}\n            {{- '<|im_start|>' + message.role + '\\n<think>\\n' + reasoning_content + '\\n</think>\\n\\n' + content }}\n        {%- else %}\n            {{- '<|im_start|>' + message.role + '\\n' + content }}\n        {%- endif %}\n        {%- if message.tool_calls and message.tool_calls is iterable and message.tool_calls is not mapping %}\n            {%- for tool_call in message.tool_calls %}\n                {%- if tool_call.function is defined %}\n                    {%- set tool_call = tool_call.function %}\n                {%- endif %}\n                {%- if loop.first %}\n                    {%- if content|trim %}\n                        {{- '\\n\\n<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                    {%- else %}\n                        {{- '<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                    {%- endif %}\n                {%- else %}\n                    {{- '\\n<tool_call>\\n<function=' + tool_call.name + '>\\n' }}\n                {%- endif %}\n                {%- if tool_call.arguments is defined %}\n                    {%- for args_name, args_value in tool_call.arguments|items %}\n                        {{- '<parameter=' + args_name + '>\\n' }}\n                        {%- set args_value = args_value | tojson | safe if args_value is mapping or (args_value is sequence and args_value is not string) else args_value | string %}\n                        {{- args_value }}\n                        {{- '\\n</parameter>\\n' }}\n                    {%- endfor %}\n                {%- endif %}\n                {{- '</function>\\n</tool_call>' }}\n            {%- endfor %}\n        {%- endif %}\n        {{- '<|im_end|>\\n' }}\n    {%- elif message.role == \"tool\" %}\n        {%- if loop.previtem and loop.previtem.role != \"tool\" %}\n            {{- '<|im_start|>user' }}\n        {%- endif %}\n        {{- '\\n<tool_response>\\n' }}\n        {{- content }}\n        {{- '\\n</tool_response>' }}\n        {%- if not loop.last and loop.nextitem.role != \"tool\" %}\n            {{- '<|im_end|>\\n' }}\n        {%- elif loop.last %}\n            {{- '<|im_end|>\\n' }}\n        {%- endif %}\n    {%- else %}\n        {{- raise_exception('Unexpected message role.') }}\n    {%- endif %}\n{%- endfor %}\n{%- if add_generation_prompt %}\n    {{- '<|im_start|>assistant\\n' }}\n    {%- if enable_thinking is defined and enable_thinking is false %}\n        {{- '<think>\\n\\n</think>\\n\\n' }}\n    {%- else %}\n        {{- '<think>\\n' }}\n    {%- endif %}\n{%- endif %}",
+    "framing": "native exact template; no truncation",
+    "feedback_native_tokens": {
+      "Call failed; no action was delivered.": 8,
+      "Invalid: output was truncated. Nothing was delivered.": 10,
+      "Invalid: output one JSON object with the required fields and types. Nothing was delivered.": 17,
+      "Invalid: wait requires null message and null submit. Nothing was delivered.": 14,
+      "Invalid: choose message, submit, both, or wait. Nothing was delivered.": 16
+    },
+    "adversarial_literal_inputs": {
+      "ascii": 7316,
+      "multiline": 7304,
+      "unicode": 7316,
+      "escapes": 5816,
+      "controls": 2828,
+      "headers": 7280,
+      "large_integer": 4040
+    }
+  },
+  "executed_at": "2026-10-16T14:19:40.442664+00:00",
+  "model_attempts": 0,
+  "environment": "scripted temporary DBs; no model loaded",
+  "input_separation": {
+    "passed": true,
+    "checked_new_inputs": 56,
+    "distinct_exposed_inputs": 60,
+    "config": {
+      "regime": "i01-course-assisted-v2",
+      "schema": 1,
+      "master_seed": 2026101601,
+      "model": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "input_tokens": 8192,
+      "direct_output_tokens": 512,
+      "thinking_output_tokens": 4096,
+      "visible_output_tokens": 512,
+      "feedback_tokens": 32,
+      "agents": 2,
+      "shard_size": 20,
+      "turns_per_agent": 3,
+      "qualification_worlds": 4,
+      "diagnostic_calls": 4,
+      "pilot_worlds": 4,
+      "main_worlds": 20,
+      "max_proposals": 1000,
+      "attempt_limit": 500,
+      "contingency_limit": 20,
+      "historical_attempts_separate": 45,
+      "load_timeout_seconds": 600,
+      "direct_timeout_seconds": 180,
+      "thinking_timeout_seconds": 900,
+      "termination_seconds": 5,
+      "export_reserve_seconds": 120,
+      "checkpoint_seconds": 300,
+      "headroom_bytes": 1610612736,
+      "bootstrap_draws": 10000,
+      "bootstrap_seed": 2026101602,
+      "bootstrap_confidence": 0.95,
+      "rubric": [
+        "wrong_submission",
+        "noncompletion",
+        "premature_finalization",
+        "obsolete_value_repeated",
+        "malformed_action",
+        "truncated_action",
+        "waiting_deadlock",
+        "horizon_exhausted",
+        "provider_failure",
+        "ambiguous"
+      ]
+    },
+    "new_worlds": [
+      {
+        "id": "qualification-00",
+        "group": "qualification",
+        "index": 0,
+        "original": [
+          [
+            -106,
+            937,
+            -749,
+            -309,
+            964,
+            555,
+            299,
+            654,
+            -111,
+            -698,
+            693,
+            593,
+            -728,
+            -344,
+            -322,
+            -133,
+            365,
+            -770,
+            549,
+            -979
+          ],
+          [
+            71,
+            375,
+            61,
+            191,
+            372,
+            -690,
+            -526,
+            -549,
+            302,
+            -540,
+            611,
+            -433,
+            316,
+            -584,
+            -454,
+            -195,
+            859,
+            -883,
+            795,
+            -671
+          ]
+        ],
+        "revised": [
+          [
+            -106,
+            937,
+            -749,
+            -309,
+            -828,
+            555,
+            299,
+            654,
+            -111,
+            -698,
+            693,
+            593,
+            -728,
+            -344,
+            -322,
+            -133,
+            365,
+            -770,
+            549,
+            -979
+          ],
+          [
+            71,
+            375,
+            61,
+            191,
+            372,
+            -690,
+            -526,
+            -549,
+            302,
+            -540,
+            611,
+            -433,
+            316,
+            -584,
+            -454,
+            -195,
+            859,
+            -883,
+            795,
+            -671
+          ]
+        ],
+        "owner": 0,
+        "row": 4,
+        "before": 964,
+        "after": -828,
+        "original_truth": 964,
+        "revised_truth": 937,
+        "proposals": 8,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 7
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [],
+        "seeds": {
+          "prefix": [
+            [
+              2904945867030487983,
+              5909210047946875054,
+              1159216923185629733
+            ],
+            [
+              2050313654463190044,
+              6148407945887339661,
+              6188875853434193493
+            ]
+          ],
+          "recovery": [
+            [
+              2393215127081682238,
+              5409862886914504794,
+              4070682824639389850
+            ],
+            [
+              150991063646850620,
+              5020278442521801801,
+              8036028139841187457
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 4893654000299852698,
+          "revised": 8577277759265240882
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "qualification-01",
+        "group": "qualification",
+        "index": 1,
+        "original": [
+          [
+            -967,
+            -934,
+            925,
+            -266,
+            760,
+            -876,
+            -351,
+            -650,
+            -415,
+            943,
+            -511,
+            -716,
+            156,
+            372,
+            -687,
+            233,
+            77,
+            403,
+            832,
+            -681
+          ],
+          [
+            -190,
+            -918,
+            -959,
+            -740,
+            124,
+            -552,
+            778,
+            81,
+            -198,
+            -829,
+            -645,
+            -476,
+            -606,
+            -907,
+            176,
+            -835,
+            734,
+            19,
+            -411,
+            -876
+          ]
+        ],
+        "revised": [
+          [
+            -967,
+            -934,
+            925,
+            -266,
+            760,
+            -876,
+            -351,
+            -650,
+            -415,
+            849,
+            -511,
+            -716,
+            156,
+            372,
+            -687,
+            233,
+            77,
+            403,
+            832,
+            -681
+          ],
+          [
+            -190,
+            -918,
+            -959,
+            -740,
+            124,
+            -552,
+            778,
+            81,
+            -198,
+            -829,
+            -645,
+            -476,
+            -606,
+            -907,
+            176,
+            -835,
+            734,
+            19,
+            -411,
+            -876
+          ]
+        ],
+        "owner": 0,
+        "row": 9,
+        "before": 943,
+        "after": 849,
+        "original_truth": 943,
+        "revised_truth": 925,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [],
+        "seeds": {
+          "prefix": [
+            [
+              2040593271578235269,
+              3804365096689325676,
+              5184562924007773832
+            ],
+            [
+              5392723043410078438,
+              5978315893786320686,
+              7315286095084914621
+            ]
+          ],
+          "recovery": [
+            [
+              213737746536922650,
+              6344296208478692639,
+              810339586793085969
+            ],
+            [
+              7898488032472012329,
+              4365003660993111665,
+              469910311072849596
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 5682703086286084387,
+          "revised": 5455430921669314419
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "qualification-02",
+        "group": "qualification",
+        "index": 2,
+        "original": [
+          [
+            56,
+            -11,
+            -728,
+            -97,
+            757,
+            -413,
+            434,
+            244,
+            -553,
+            6,
+            -148,
+            541,
+            823,
+            924,
+            107,
+            746,
+            -447,
+            516,
+            817,
+            986
+          ],
+          [
+            454,
+            868,
+            987,
+            -277,
+            484,
+            595,
+            -493,
+            -387,
+            387,
+            -419,
+            -997,
+            833,
+            -660,
+            -370,
+            139,
+            -496,
+            -949,
+            -233,
+            826,
+            -788
+          ]
+        ],
+        "revised": [
+          [
+            56,
+            -11,
+            -728,
+            -97,
+            757,
+            -413,
+            434,
+            244,
+            -553,
+            6,
+            -148,
+            541,
+            823,
+            924,
+            107,
+            746,
+            -447,
+            516,
+            817,
+            986
+          ],
+          [
+            454,
+            868,
+            -813,
+            -277,
+            484,
+            595,
+            -493,
+            -387,
+            387,
+            -419,
+            -997,
+            833,
+            -660,
+            -370,
+            139,
+            -496,
+            -949,
+            -233,
+            826,
+            -788
+          ]
+        ],
+        "owner": 1,
+        "row": 2,
+        "before": 987,
+        "after": -813,
+        "original_truth": 987,
+        "revised_truth": 986,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [],
+        "seeds": {
+          "prefix": [
+            [
+              363358348218351049,
+              7164420759906200851,
+              3868705260029838187
+            ],
+            [
+              2544317957623984620,
+              8815777859750450617,
+              2176583239128467825
+            ]
+          ],
+          "recovery": [
+            [
+              6822625918616324551,
+              9049311292662063182,
+              2131509823434927548
+            ],
+            [
+              2235330201554613470,
+              3874936766675422420,
+              3419510711408773928
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 5334781428681966921,
+          "revised": 4425588314301138478
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "qualification-03",
+        "group": "qualification",
+        "index": 3,
+        "original": [
+          [
+            153,
+            907,
+            -645,
+            799,
+            -864,
+            -169,
+            -57,
+            -46,
+            882,
+            474,
+            -475,
+            154,
+            -231,
+            -692,
+            622,
+            762,
+            -640,
+            -90,
+            195,
+            -275
+          ],
+          [
+            -584,
+            447,
+            -987,
+            -405,
+            -949,
+            -904,
+            -562,
+            148,
+            -984,
+            -278,
+            621,
+            -380,
+            -270,
+            -618,
+            -872,
+            -109,
+            929,
+            -225,
+            559,
+            829
+          ]
+        ],
+        "revised": [
+          [
+            153,
+            907,
+            -645,
+            799,
+            -864,
+            -169,
+            -57,
+            -46,
+            882,
+            474,
+            -475,
+            154,
+            -231,
+            -692,
+            622,
+            762,
+            -640,
+            -90,
+            195,
+            -275
+          ],
+          [
+            -584,
+            447,
+            -987,
+            -405,
+            -949,
+            -904,
+            -562,
+            148,
+            -984,
+            -278,
+            621,
+            -380,
+            -270,
+            -618,
+            -872,
+            -109,
+            -517,
+            -225,
+            559,
+            829
+          ]
+        ],
+        "owner": 1,
+        "row": 16,
+        "before": 929,
+        "after": -517,
+        "original_truth": 929,
+        "revised_truth": 907,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [],
+        "seeds": {
+          "prefix": [
+            [
+              351591817137397673,
+              833767845132414277,
+              2257571819654810820
+            ],
+            [
+              8044730897595605653,
+              7671594473580617217,
+              3649446591371214173
+            ]
+          ],
+          "recovery": [
+            [
+              413630361305176914,
+              1730232569203097818,
+              2515986716920460184
+            ],
+            [
+              2106023120363182821,
+              2268181042296512813,
+              2720316135613007019
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 973186761802613262,
+          "revised": 6767027248448252341
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "pilot-00",
+        "group": "pilot",
+        "index": 0,
+        "original": [
+          [
+            -332,
+            -319,
+            215,
+            -830,
+            -455,
+            -908,
+            -29,
+            -992,
+            -122,
+            353,
+            663,
+            -841,
+            -148,
+            -515,
+            -923,
+            72,
+            -137,
+            883,
+            938,
+            898
+          ],
+          [
+            -535,
+            -923,
+            716,
+            -965,
+            -20,
+            476,
+            -222,
+            -392,
+            -274,
+            611,
+            623,
+            -813,
+            -157,
+            -869,
+            -367,
+            -77,
+            -702,
+            -781,
+            137,
+            648
+          ]
+        ],
+        "revised": [
+          [
+            -332,
+            -319,
+            215,
+            -830,
+            -455,
+            -908,
+            -29,
+            -992,
+            -122,
+            353,
+            663,
+            -841,
+            -148,
+            -515,
+            -923,
+            72,
+            -137,
+            883,
+            -378,
+            898
+          ],
+          [
+            -535,
+            -923,
+            716,
+            -965,
+            -20,
+            476,
+            -222,
+            -392,
+            -274,
+            611,
+            623,
+            -813,
+            -157,
+            -869,
+            -367,
+            -77,
+            -702,
+            -781,
+            137,
+            648
+          ]
+        ],
+        "owner": 0,
+        "row": 18,
+        "before": 938,
+        "after": -378,
+        "original_truth": 938,
+        "revised_truth": 898,
+        "proposals": 3,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 2
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              3400577303557856734,
+              5870019698890949593,
+              1692766297259052625
+            ],
+            [
+              839966378695927564,
+              5357517915501548582,
+              8365330437650981148
+            ]
+          ],
+          "recovery": [
+            [
+              2190752357160136485,
+              4152027090062417771,
+              5663896320688038112
+            ],
+            [
+              3915285689094068188,
+              4803097181368967654,
+              2403775973479634577
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 5468543999550555002,
+          "revised": 5110496821271917419
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "pilot-01",
+        "group": "pilot",
+        "index": 1,
+        "original": [
+          [
+            808,
+            13,
+            -286,
+            -89,
+            339,
+            -876,
+            952,
+            984,
+            -654,
+            -582,
+            332,
+            -4,
+            -639,
+            878,
+            -45,
+            -935,
+            210,
+            727,
+            -725,
+            810
+          ],
+          [
+            -600,
+            511,
+            -705,
+            -505,
+            -161,
+            -935,
+            466,
+            409,
+            389,
+            755,
+            -217,
+            307,
+            -153,
+            -624,
+            -386,
+            132,
+            -860,
+            346,
+            326,
+            130
+          ]
+        ],
+        "revised": [
+          [
+            808,
+            13,
+            -286,
+            -89,
+            339,
+            -876,
+            952,
+            -477,
+            -654,
+            -582,
+            332,
+            -4,
+            -639,
+            878,
+            -45,
+            -935,
+            210,
+            727,
+            -725,
+            810
+          ],
+          [
+            -600,
+            511,
+            -705,
+            -505,
+            -161,
+            -935,
+            466,
+            409,
+            389,
+            755,
+            -217,
+            307,
+            -153,
+            -624,
+            -386,
+            132,
+            -860,
+            346,
+            326,
+            130
+          ]
+        ],
+        "owner": 0,
+        "row": 7,
+        "before": 984,
+        "after": -477,
+        "original_truth": 984,
+        "revised_truth": 952,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              305595778465793404,
+              1205093012722625627,
+              4171521510557285313
+            ],
+            [
+              9046648086333038422,
+              2403528900455291898,
+              1775245538737692421
+            ]
+          ],
+          "recovery": [
+            [
+              3108071872006650810,
+              3878590045228917545,
+              5754899444880448095
+            ],
+            [
+              5879201726443898631,
+              3252474224282280232,
+              7199257257755563958
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 8805081399643805617,
+          "revised": 7521242427864636889
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "pilot-02",
+        "group": "pilot",
+        "index": 2,
+        "original": [
+          [
+            378,
+            117,
+            -336,
+            1,
+            382,
+            60,
+            -87,
+            23,
+            593,
+            345,
+            203,
+            -84,
+            685,
+            560,
+            -30,
+            369,
+            -6,
+            580,
+            -307,
+            -600
+          ],
+          [
+            500,
+            -57,
+            -825,
+            805,
+            944,
+            40,
+            75,
+            -345,
+            -912,
+            978,
+            -10,
+            -75,
+            -153,
+            615,
+            -236,
+            -271,
+            -847,
+            841,
+            246,
+            -2
+          ]
+        ],
+        "revised": [
+          [
+            378,
+            117,
+            -336,
+            1,
+            382,
+            60,
+            -87,
+            23,
+            593,
+            345,
+            203,
+            -84,
+            685,
+            560,
+            -30,
+            369,
+            -6,
+            580,
+            -307,
+            -600
+          ],
+          [
+            500,
+            -57,
+            -825,
+            805,
+            944,
+            40,
+            75,
+            -345,
+            -912,
+            -744,
+            -10,
+            -75,
+            -153,
+            615,
+            -236,
+            -271,
+            -847,
+            841,
+            246,
+            -2
+          ]
+        ],
+        "owner": 1,
+        "row": 9,
+        "before": 978,
+        "after": -744,
+        "original_truth": 978,
+        "revised_truth": 944,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              6812275708192262204,
+              8424722932638687103,
+              6699476728069019770
+            ],
+            [
+              1436685212728603227,
+              344850956180539037,
+              2649572651678085845
+            ]
+          ],
+          "recovery": [
+            [
+              7956444442589857942,
+              5664630238834111035,
+              4156334948652105148
+            ],
+            [
+              6161846598807607341,
+              7585428222834886961,
+              248349001174475965
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 8095635837332759256,
+          "revised": 4215906223020791987
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "pilot-03",
+        "group": "pilot",
+        "index": 3,
+        "original": [
+          [
+            -888,
+            784,
+            106,
+            169,
+            272,
+            -289,
+            94,
+            530,
+            -632,
+            150,
+            -490,
+            -822,
+            400,
+            -154,
+            -841,
+            289,
+            287,
+            -12,
+            -362,
+            -525
+          ],
+          [
+            -220,
+            403,
+            95,
+            -167,
+            -562,
+            -264,
+            -993,
+            173,
+            337,
+            527,
+            876,
+            -582,
+            -978,
+            334,
+            -277,
+            199,
+            660,
+            -31,
+            30,
+            -400
+          ]
+        ],
+        "revised": [
+          [
+            -888,
+            784,
+            106,
+            169,
+            272,
+            -289,
+            94,
+            530,
+            -632,
+            150,
+            -490,
+            -822,
+            400,
+            -154,
+            -841,
+            289,
+            287,
+            -12,
+            -362,
+            -525
+          ],
+          [
+            -220,
+            403,
+            95,
+            -167,
+            -562,
+            -264,
+            -993,
+            173,
+            337,
+            527,
+            -776,
+            -582,
+            -978,
+            334,
+            -277,
+            199,
+            660,
+            -31,
+            30,
+            -400
+          ]
+        ],
+        "owner": 1,
+        "row": 10,
+        "before": 876,
+        "after": -776,
+        "original_truth": 876,
+        "revised_truth": 784,
+        "proposals": 3,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 2
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              3546947677864714118,
+              2251445839545485305,
+              8303109625607768663
+            ],
+            [
+              4590106740159953575,
+              2570275941322761326,
+              4752202247954811581
+            ]
+          ],
+          "recovery": [
+            [
+              2156063040647352964,
+              551613368693127927,
+              2875295523638272621
+            ],
+            [
+              8592699805659048186,
+              3684504176986319152,
+              8923896347660160177
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 3808472298961998491,
+          "revised": 3006839073156258819
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-00",
+        "group": "main",
+        "index": 0,
+        "original": [
+          [
+            -462,
+            -869,
+            268,
+            -794,
+            -910,
+            330,
+            837,
+            -515,
+            -696,
+            -968,
+            900,
+            730,
+            -582,
+            -458,
+            24,
+            -498,
+            109,
+            577,
+            -283,
+            943
+          ],
+          [
+            300,
+            677,
+            -592,
+            -241,
+            233,
+            342,
+            922,
+            124,
+            316,
+            -479,
+            -698,
+            438,
+            720,
+            -954,
+            397,
+            -410,
+            785,
+            -955,
+            364,
+            -992
+          ]
+        ],
+        "revised": [
+          [
+            -462,
+            -869,
+            268,
+            -794,
+            -910,
+            330,
+            837,
+            -515,
+            -696,
+            -968,
+            900,
+            730,
+            -582,
+            -458,
+            24,
+            -498,
+            109,
+            577,
+            -283,
+            229
+          ],
+          [
+            300,
+            677,
+            -592,
+            -241,
+            233,
+            342,
+            922,
+            124,
+            316,
+            -479,
+            -698,
+            438,
+            720,
+            -954,
+            397,
+            -410,
+            785,
+            -955,
+            364,
+            -992
+          ]
+        ],
+        "owner": 0,
+        "row": 19,
+        "before": 943,
+        "after": 229,
+        "original_truth": 943,
+        "revised_truth": 922,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              8103836076145641657,
+              3808604907088921823,
+              6269948148987337103
+            ],
+            [
+              1334306243093468764,
+              2315940745900930548,
+              5397423668254528035
+            ]
+          ],
+          "recovery": [
+            [
+              5370624018585069614,
+              2208961863997638108,
+              3625069537797953957
+            ],
+            [
+              7688324100675235336,
+              395669852237396474,
+              684408368787935064
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 3070109947611228649,
+          "revised": 1925369860775628366
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-01",
+        "group": "main",
+        "index": 1,
+        "original": [
+          [
+            -296,
+            -687,
+            956,
+            -959,
+            635,
+            -632,
+            106,
+            -845,
+            -148,
+            -143,
+            328,
+            693,
+            916,
+            -213,
+            849,
+            -844,
+            931,
+            -478,
+            -712,
+            682
+          ],
+          [
+            390,
+            639,
+            -888,
+            -577,
+            -132,
+            -947,
+            469,
+            -563,
+            239,
+            -511,
+            -374,
+            -464,
+            -292,
+            41,
+            -766,
+            -287,
+            271,
+            151,
+            926,
+            -850
+          ]
+        ],
+        "revised": [
+          [
+            -296,
+            -687,
+            -9,
+            -959,
+            635,
+            -632,
+            106,
+            -845,
+            -148,
+            -143,
+            328,
+            693,
+            916,
+            -213,
+            849,
+            -844,
+            931,
+            -478,
+            -712,
+            682
+          ],
+          [
+            390,
+            639,
+            -888,
+            -577,
+            -132,
+            -947,
+            469,
+            -563,
+            239,
+            -511,
+            -374,
+            -464,
+            -292,
+            41,
+            -766,
+            -287,
+            271,
+            151,
+            926,
+            -850
+          ]
+        ],
+        "owner": 0,
+        "row": 2,
+        "before": 956,
+        "after": -9,
+        "original_truth": 956,
+        "revised_truth": 931,
+        "proposals": 3,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 2
+        },
+        "first": 1,
+        "device": 0,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              1653175445796821543,
+              2623529577662649229,
+              4091133035296515871
+            ],
+            [
+              7588448051489484551,
+              4405283779593970193,
+              8608431729175245236
+            ]
+          ],
+          "recovery": [
+            [
+              1569083255078121354,
+              8254845281380502435,
+              8713691498868964095
+            ],
+            [
+              4559802418571168002,
+              495424908469719424,
+              5513384466911689613
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 743508931813320093,
+          "revised": 5898790849099995842
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-02",
+        "group": "main",
+        "index": 2,
+        "original": [
+          [
+            -913,
+            524,
+            -15,
+            -742,
+            138,
+            939,
+            -174,
+            522,
+            -491,
+            964,
+            -809,
+            60,
+            -983,
+            940,
+            -555,
+            897,
+            337,
+            -586,
+            -157,
+            -43
+          ],
+          [
+            103,
+            290,
+            261,
+            279,
+            -823,
+            -941,
+            1,
+            45,
+            -12,
+            913,
+            688,
+            514,
+            760,
+            304,
+            807,
+            -170,
+            -341,
+            313,
+            0,
+            976
+          ]
+        ],
+        "revised": [
+          [
+            -913,
+            524,
+            -15,
+            -742,
+            138,
+            939,
+            -174,
+            522,
+            -491,
+            964,
+            -809,
+            60,
+            -983,
+            940,
+            -555,
+            897,
+            337,
+            -586,
+            -157,
+            -43
+          ],
+          [
+            103,
+            290,
+            261,
+            279,
+            -823,
+            -941,
+            1,
+            45,
+            -12,
+            913,
+            688,
+            514,
+            760,
+            304,
+            807,
+            -170,
+            -341,
+            313,
+            0,
+            -739
+          ]
+        ],
+        "owner": 1,
+        "row": 19,
+        "before": 976,
+        "after": -739,
+        "original_truth": 976,
+        "revised_truth": 964,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 1,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              1783703187260415162,
+              7139312931564563644,
+              8655455333703674760
+            ],
+            [
+              6431326746366522416,
+              8453739846363156661,
+              5544287856871452846
+            ]
+          ],
+          "recovery": [
+            [
+              8995745404311677238,
+              4291057202482415538,
+              7052566735870729935
+            ],
+            [
+              2088329212370952184,
+              7528751120319075704,
+              9057942491496476500
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 6114146870147893158,
+          "revised": 6013445204808409915
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-03",
+        "group": "main",
+        "index": 3,
+        "original": [
+          [
+            876,
+            -2,
+            -348,
+            59,
+            -914,
+            793,
+            -605,
+            -833,
+            -427,
+            -94,
+            -804,
+            170,
+            -914,
+            -178,
+            -551,
+            632,
+            810,
+            788,
+            653,
+            -984
+          ],
+          [
+            -587,
+            -420,
+            -612,
+            -725,
+            -562,
+            946,
+            -848,
+            -219,
+            537,
+            -944,
+            -164,
+            -917,
+            141,
+            893,
+            -457,
+            1,
+            -828,
+            -55,
+            0,
+            -901
+          ]
+        ],
+        "revised": [
+          [
+            876,
+            -2,
+            -348,
+            59,
+            -914,
+            793,
+            -605,
+            -833,
+            -427,
+            -94,
+            -804,
+            170,
+            -914,
+            -178,
+            -551,
+            632,
+            810,
+            788,
+            653,
+            -984
+          ],
+          [
+            -587,
+            -420,
+            -612,
+            -725,
+            -562,
+            253,
+            -848,
+            -219,
+            537,
+            -944,
+            -164,
+            -917,
+            141,
+            893,
+            -457,
+            1,
+            -828,
+            -55,
+            0,
+            -901
+          ]
+        ],
+        "owner": 1,
+        "row": 5,
+        "before": 946,
+        "after": 253,
+        "original_truth": 946,
+        "revised_truth": 893,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 0,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              6451226365177105011,
+              5077733698828765553,
+              6287105987711434282
+            ],
+            [
+              550877479727275268,
+              1372936276419495456,
+              5129301751684413984
+            ]
+          ],
+          "recovery": [
+            [
+              8889676979250129639,
+              8193426882394716326,
+              9113576193438417917
+            ],
+            [
+              5533336667643650290,
+              7056202812457370291,
+              3477522630104803191
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 1280467341086226835,
+          "revised": 4800026755519205069
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-04",
+        "group": "main",
+        "index": 4,
+        "original": [
+          [
+            46,
+            -589,
+            954,
+            -421,
+            -436,
+            -168,
+            -332,
+            -972,
+            972,
+            -989,
+            -817,
+            73,
+            -980,
+            -314,
+            -281,
+            -933,
+            366,
+            601,
+            -862,
+            417
+          ],
+          [
+            345,
+            120,
+            -735,
+            -240,
+            839,
+            659,
+            -838,
+            -33,
+            -100,
+            152,
+            754,
+            -811,
+            776,
+            821,
+            103,
+            343,
+            -505,
+            56,
+            -409,
+            241
+          ]
+        ],
+        "revised": [
+          [
+            46,
+            -589,
+            954,
+            -421,
+            -436,
+            -168,
+            -332,
+            -972,
+            -452,
+            -989,
+            -817,
+            73,
+            -980,
+            -314,
+            -281,
+            -933,
+            366,
+            601,
+            -862,
+            417
+          ],
+          [
+            345,
+            120,
+            -735,
+            -240,
+            839,
+            659,
+            -838,
+            -33,
+            -100,
+            152,
+            754,
+            -811,
+            776,
+            821,
+            103,
+            343,
+            -505,
+            56,
+            -409,
+            241
+          ]
+        ],
+        "owner": 0,
+        "row": 8,
+        "before": 972,
+        "after": -452,
+        "original_truth": 972,
+        "revised_truth": 954,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 1,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              1036383788411528069,
+              3111888969209422515,
+              5401960086551484244
+            ],
+            [
+              3837583744095608078,
+              6552890600452055091,
+              6802610452315456249
+            ]
+          ],
+          "recovery": [
+            [
+              4935832027111887972,
+              4558848811465291710,
+              1123863666516745884
+            ],
+            [
+              9153326687837542269,
+              9074481556073412021,
+              2987520622427462970
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 6216824270220939015,
+          "revised": 1955408414194344715
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-05",
+        "group": "main",
+        "index": 5,
+        "original": [
+          [
+            261,
+            -181,
+            884,
+            747,
+            952,
+            694,
+            -464,
+            -124,
+            832,
+            -183,
+            38,
+            -238,
+            469,
+            492,
+            -950,
+            -47,
+            -539,
+            -815,
+            -318,
+            229
+          ],
+          [
+            -6,
+            -287,
+            254,
+            482,
+            -555,
+            -273,
+            361,
+            -202,
+            686,
+            -708,
+            -450,
+            -110,
+            -689,
+            -967,
+            -777,
+            137,
+            -185,
+            -9,
+            868,
+            4
+          ]
+        ],
+        "revised": [
+          [
+            261,
+            -181,
+            884,
+            747,
+            512,
+            694,
+            -464,
+            -124,
+            832,
+            -183,
+            38,
+            -238,
+            469,
+            492,
+            -950,
+            -47,
+            -539,
+            -815,
+            -318,
+            229
+          ],
+          [
+            -6,
+            -287,
+            254,
+            482,
+            -555,
+            -273,
+            361,
+            -202,
+            686,
+            -708,
+            -450,
+            -110,
+            -689,
+            -967,
+            -777,
+            137,
+            -185,
+            -9,
+            868,
+            4
+          ]
+        ],
+        "owner": 0,
+        "row": 4,
+        "before": 952,
+        "after": 512,
+        "original_truth": 952,
+        "revised_truth": 884,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 0,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              8624081969527109630,
+              9097216785312924073,
+              8419523451309734249
+            ],
+            [
+              5855928780301657511,
+              6860462448721216060,
+              5835796440356480910
+            ]
+          ],
+          "recovery": [
+            [
+              5725029695302394259,
+              6456649891822469336,
+              3542692563000232771
+            ],
+            [
+              1167102577982370182,
+              2383887415932139790,
+              5518476984073084761
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 1125098066005103671,
+          "revised": 3787827339133064029
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-06",
+        "group": "main",
+        "index": 6,
+        "original": [
+          [
+            397,
+            -819,
+            -57,
+            309,
+            -327,
+            -26,
+            273,
+            -119,
+            -242,
+            -825,
+            -137,
+            -625,
+            660,
+            358,
+            766,
+            -582,
+            -88,
+            -182,
+            666,
+            -833
+          ],
+          [
+            -318,
+            -278,
+            755,
+            627,
+            532,
+            -848,
+            -296,
+            -600,
+            -775,
+            -52,
+            941,
+            -683,
+            917,
+            100,
+            403,
+            592,
+            437,
+            -625,
+            -976,
+            393
+          ]
+        ],
+        "revised": [
+          [
+            397,
+            -819,
+            -57,
+            309,
+            -327,
+            -26,
+            273,
+            -119,
+            -242,
+            -825,
+            -137,
+            -625,
+            660,
+            358,
+            766,
+            -582,
+            -88,
+            -182,
+            666,
+            -833
+          ],
+          [
+            -318,
+            -278,
+            755,
+            627,
+            532,
+            -848,
+            -296,
+            -600,
+            -775,
+            -52,
+            -835,
+            -683,
+            917,
+            100,
+            403,
+            592,
+            437,
+            -625,
+            -976,
+            393
+          ]
+        ],
+        "owner": 1,
+        "row": 10,
+        "before": 941,
+        "after": -835,
+        "original_truth": 941,
+        "revised_truth": 917,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 1,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              4443375365698064776,
+              403207236873028672,
+              2874197626340926660
+            ],
+            [
+              6907090214075286243,
+              5602210831360481976,
+              8553279386457029717
+            ]
+          ],
+          "recovery": [
+            [
+              5655783284996840107,
+              332938565515805138,
+              4356814617177007837
+            ],
+            [
+              6857928960968427974,
+              1180427956507302625,
+              4276074722970137270
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 3222001079265489296,
+          "revised": 878157956577677206
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-07",
+        "group": "main",
+        "index": 7,
+        "original": [
+          [
+            980,
+            137,
+            585,
+            -713,
+            935,
+            272,
+            130,
+            -176,
+            294,
+            -272,
+            647,
+            -393,
+            27,
+            883,
+            -951,
+            -279,
+            -580,
+            817,
+            -155,
+            -646
+          ],
+          [
+            938,
+            -644,
+            785,
+            -758,
+            -290,
+            -994,
+            -404,
+            335,
+            -64,
+            -772,
+            642,
+            -241,
+            -773,
+            625,
+            335,
+            524,
+            991,
+            -675,
+            -838,
+            -80
+          ]
+        ],
+        "revised": [
+          [
+            980,
+            137,
+            585,
+            -713,
+            935,
+            272,
+            130,
+            -176,
+            294,
+            -272,
+            647,
+            -393,
+            27,
+            883,
+            -951,
+            -279,
+            -580,
+            817,
+            -155,
+            -646
+          ],
+          [
+            938,
+            -644,
+            785,
+            -758,
+            -290,
+            -994,
+            -404,
+            335,
+            -64,
+            -772,
+            642,
+            -241,
+            -773,
+            625,
+            335,
+            524,
+            -709,
+            -675,
+            -838,
+            -80
+          ]
+        ],
+        "owner": 1,
+        "row": 16,
+        "before": 991,
+        "after": -709,
+        "original_truth": 991,
+        "revised_truth": 980,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 0,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              8027866350249706900,
+              8795700992255403156,
+              659962504323415310
+            ],
+            [
+              6338363659464968330,
+              1834048780034528894,
+              7334260740201355133
+            ]
+          ],
+          "recovery": [
+            [
+              4797149252694640000,
+              7614473756387992677,
+              8993706328779247542
+            ],
+            [
+              6743217369469740563,
+              2909329230306843583,
+              5655618206529273088
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 4667362112037660465,
+          "revised": 8455226391885727089
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-08",
+        "group": "main",
+        "index": 8,
+        "original": [
+          [
+            67,
+            -210,
+            -166,
+            211,
+            -806,
+            -320,
+            462,
+            -191,
+            151,
+            -667,
+            54,
+            594,
+            -690,
+            -20,
+            -741,
+            -65,
+            445,
+            -860,
+            -541,
+            874
+          ],
+          [
+            -718,
+            -795,
+            -317,
+            220,
+            -156,
+            -166,
+            635,
+            -34,
+            344,
+            426,
+            168,
+            720,
+            857,
+            681,
+            178,
+            786,
+            262,
+            18,
+            764,
+            274
+          ]
+        ],
+        "revised": [
+          [
+            67,
+            -210,
+            -166,
+            211,
+            -806,
+            -320,
+            462,
+            -191,
+            151,
+            -667,
+            54,
+            594,
+            -690,
+            -20,
+            -741,
+            -65,
+            445,
+            -860,
+            -541,
+            758
+          ],
+          [
+            -718,
+            -795,
+            -317,
+            220,
+            -156,
+            -166,
+            635,
+            -34,
+            344,
+            426,
+            168,
+            720,
+            857,
+            681,
+            178,
+            786,
+            262,
+            18,
+            764,
+            274
+          ]
+        ],
+        "owner": 0,
+        "row": 19,
+        "before": 874,
+        "after": 758,
+        "original_truth": 874,
+        "revised_truth": 857,
+        "proposals": 3,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 2
+        },
+        "first": 0,
+        "device": 1,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              4302317736803073813,
+              5224742085747757637,
+              3744454612102147321
+            ],
+            [
+              813202346181748772,
+              1361592466841777515,
+              5296890700342709630
+            ]
+          ],
+          "recovery": [
+            [
+              5660611958936633094,
+              5733326164071465640,
+              8067480068672098396
+            ],
+            [
+              750253733408616847,
+              722554483147230920,
+              2949284188594557292
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 4780862684055014525,
+          "revised": 2867031733468415072
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-09",
+        "group": "main",
+        "index": 9,
+        "original": [
+          [
+            520,
+            -171,
+            908,
+            -971,
+            -569,
+            -109,
+            459,
+            94,
+            769,
+            447,
+            669,
+            -361,
+            661,
+            979,
+            279,
+            -933,
+            949,
+            -173,
+            813,
+            -50
+          ],
+          [
+            -933,
+            -424,
+            305,
+            -952,
+            -736,
+            836,
+            -609,
+            54,
+            -965,
+            233,
+            211,
+            476,
+            460,
+            695,
+            122,
+            666,
+            -500,
+            -218,
+            528,
+            -227
+          ]
+        ],
+        "revised": [
+          [
+            520,
+            -171,
+            908,
+            -971,
+            -569,
+            -109,
+            459,
+            94,
+            769,
+            447,
+            669,
+            -361,
+            661,
+            618,
+            279,
+            -933,
+            949,
+            -173,
+            813,
+            -50
+          ],
+          [
+            -933,
+            -424,
+            305,
+            -952,
+            -736,
+            836,
+            -609,
+            54,
+            -965,
+            233,
+            211,
+            476,
+            460,
+            695,
+            122,
+            666,
+            -500,
+            -218,
+            528,
+            -227
+          ]
+        ],
+        "owner": 0,
+        "row": 13,
+        "before": 979,
+        "after": 618,
+        "original_truth": 979,
+        "revised_truth": 949,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 0,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              6457383984320119988,
+              8903787460662674513,
+              515709982607462109
+            ],
+            [
+              2270563888760170979,
+              5037241408865479887,
+              770865693779561748
+            ]
+          ],
+          "recovery": [
+            [
+              407043301095429117,
+              6210845611147223772,
+              5111277782789453032
+            ],
+            [
+              6826459702997504067,
+              5117105575182601218,
+              1621329918297816694
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 8190363675116407673,
+          "revised": 4137954343653610032
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-10",
+        "group": "main",
+        "index": 10,
+        "original": [
+          [
+            534,
+            878,
+            -25,
+            -443,
+            182,
+            529,
+            385,
+            -685,
+            855,
+            -153,
+            -736,
+            178,
+            -225,
+            -831,
+            36,
+            431,
+            -253,
+            -896,
+            175,
+            820
+          ],
+          [
+            -27,
+            156,
+            757,
+            -588,
+            -226,
+            987,
+            234,
+            -951,
+            139,
+            -614,
+            144,
+            991,
+            310,
+            127,
+            589,
+            684,
+            855,
+            986,
+            459,
+            964
+          ]
+        ],
+        "revised": [
+          [
+            534,
+            878,
+            -25,
+            -443,
+            182,
+            529,
+            385,
+            -685,
+            855,
+            -153,
+            -736,
+            178,
+            -225,
+            -831,
+            36,
+            431,
+            -253,
+            -896,
+            175,
+            820
+          ],
+          [
+            -27,
+            156,
+            757,
+            -588,
+            -226,
+            987,
+            234,
+            -951,
+            139,
+            -614,
+            144,
+            911,
+            310,
+            127,
+            589,
+            684,
+            855,
+            986,
+            459,
+            964
+          ]
+        ],
+        "owner": 1,
+        "row": 11,
+        "before": 991,
+        "after": 911,
+        "original_truth": 991,
+        "revised_truth": 987,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              7320231004114610672,
+              3217502460542406979,
+              5871555718384629661
+            ],
+            [
+              7658761929655871115,
+              222213523310879234,
+              7034820499493073181
+            ]
+          ],
+          "recovery": [
+            [
+              300714625817127710,
+              2392896219710003691,
+              3029130329141618451
+            ],
+            [
+              3114348751232051799,
+              7677737633457645981,
+              2556553725324416463
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 9135358001230476592,
+          "revised": 1522959672446881824
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-11",
+        "group": "main",
+        "index": 11,
+        "original": [
+          [
+            -180,
+            -847,
+            -487,
+            521,
+            470,
+            -289,
+            -509,
+            233,
+            -839,
+            -490,
+            99,
+            68,
+            308,
+            -251,
+            533,
+            774,
+            794,
+            586,
+            521,
+            392
+          ],
+          [
+            176,
+            950,
+            -738,
+            -545,
+            984,
+            9,
+            -157,
+            44,
+            578,
+            932,
+            707,
+            -130,
+            583,
+            -581,
+            832,
+            -359,
+            -778,
+            594,
+            -857,
+            241
+          ]
+        ],
+        "revised": [
+          [
+            -180,
+            -847,
+            -487,
+            521,
+            470,
+            -289,
+            -509,
+            233,
+            -839,
+            -490,
+            99,
+            68,
+            308,
+            -251,
+            533,
+            774,
+            794,
+            586,
+            521,
+            392
+          ],
+          [
+            176,
+            950,
+            -738,
+            -545,
+            61,
+            9,
+            -157,
+            44,
+            578,
+            932,
+            707,
+            -130,
+            583,
+            -581,
+            832,
+            -359,
+            -778,
+            594,
+            -857,
+            241
+          ]
+        ],
+        "owner": 1,
+        "row": 4,
+        "before": 984,
+        "after": 61,
+        "original_truth": 984,
+        "revised_truth": 950,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              7260211348988444408,
+              3459655731586445397,
+              2549661138237254903
+            ],
+            [
+              1651278372547084436,
+              3047813415882220562,
+              2096597279486979301
+            ]
+          ],
+          "recovery": [
+            [
+              3568788055410293367,
+              5599756402610049002,
+              2691824876687491334
+            ],
+            [
+              6324535812366499849,
+              3339145909907567113,
+              7255488726267168549
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 6050693026226546915,
+          "revised": 2163090111239607789
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-12",
+        "group": "main",
+        "index": 12,
+        "original": [
+          [
+            -846,
+            -125,
+            -850,
+            -632,
+            -557,
+            -580,
+            963,
+            860,
+            20,
+            260,
+            -130,
+            600,
+            104,
+            -128,
+            328,
+            -834,
+            905,
+            778,
+            541,
+            -187
+          ],
+          [
+            765,
+            114,
+            -568,
+            -782,
+            343,
+            117,
+            92,
+            702,
+            -979,
+            -451,
+            -776,
+            -258,
+            851,
+            175,
+            -970,
+            115,
+            -243,
+            506,
+            -791,
+            224
+          ]
+        ],
+        "revised": [
+          [
+            -846,
+            -125,
+            -850,
+            -632,
+            -557,
+            -580,
+            486,
+            860,
+            20,
+            260,
+            -130,
+            600,
+            104,
+            -128,
+            328,
+            -834,
+            905,
+            778,
+            541,
+            -187
+          ],
+          [
+            765,
+            114,
+            -568,
+            -782,
+            343,
+            117,
+            92,
+            702,
+            -979,
+            -451,
+            -776,
+            -258,
+            851,
+            175,
+            -970,
+            115,
+            -243,
+            506,
+            -791,
+            224
+          ]
+        ],
+        "owner": 0,
+        "row": 6,
+        "before": 963,
+        "after": 486,
+        "original_truth": 963,
+        "revised_truth": 905,
+        "proposals": 4,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 3
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              5477743984722105163,
+              5631675774648352461,
+              4472875883009050461
+            ],
+            [
+              7475803139744996714,
+              6234818043334187688,
+              1094686403720881487
+            ]
+          ],
+          "recovery": [
+            [
+              2743612794722972633,
+              3136829567463183221,
+              2876252156313199475
+            ],
+            [
+              1234737115954755039,
+              6318187042329076083,
+              7995115427053988776
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 3491207463950272929,
+          "revised": 7965105038755675028
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-13",
+        "group": "main",
+        "index": 13,
+        "original": [
+          [
+            -393,
+            789,
+            865,
+            -241,
+            -305,
+            -240,
+            -72,
+            -841,
+            548,
+            992,
+            -583,
+            -658,
+            78,
+            134,
+            820,
+            -300,
+            -207,
+            -16,
+            -698,
+            873
+          ],
+          [
+            220,
+            262,
+            331,
+            864,
+            -578,
+            171,
+            -748,
+            296,
+            170,
+            397,
+            91,
+            834,
+            413,
+            -874,
+            -720,
+            -123,
+            285,
+            732,
+            -564,
+            -773
+          ]
+        ],
+        "revised": [
+          [
+            -393,
+            789,
+            865,
+            -241,
+            -305,
+            -240,
+            -72,
+            -841,
+            548,
+            -509,
+            -583,
+            -658,
+            78,
+            134,
+            820,
+            -300,
+            -207,
+            -16,
+            -698,
+            873
+          ],
+          [
+            220,
+            262,
+            331,
+            864,
+            -578,
+            171,
+            -748,
+            296,
+            170,
+            397,
+            91,
+            834,
+            413,
+            -874,
+            -720,
+            -123,
+            285,
+            732,
+            -564,
+            -773
+          ]
+        ],
+        "owner": 0,
+        "row": 9,
+        "before": 992,
+        "after": -509,
+        "original_truth": 992,
+        "revised_truth": 873,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              3687911531239326021,
+              5472671243034028718,
+              8609622040606645230
+            ],
+            [
+              4118052789191511542,
+              2509662467309118724,
+              3612505709565876760
+            ]
+          ],
+          "recovery": [
+            [
+              2840920490694408732,
+              8258373027181240310,
+              6354669961190483846
+            ],
+            [
+              8232721564271764165,
+              1063504552131294123,
+              2545780687361098312
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 6759176607367886385,
+          "revised": 5180086200304225920
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-14",
+        "group": "main",
+        "index": 14,
+        "original": [
+          [
+            -753,
+            825,
+            -795,
+            173,
+            642,
+            65,
+            -437,
+            224,
+            -231,
+            -100,
+            -444,
+            -91,
+            360,
+            -859,
+            170,
+            733,
+            539,
+            -209,
+            975,
+            858
+          ],
+          [
+            -744,
+            309,
+            980,
+            943,
+            -413,
+            -450,
+            174,
+            260,
+            887,
+            -805,
+            -690,
+            927,
+            499,
+            -769,
+            667,
+            524,
+            -240,
+            -392,
+            -64,
+            470
+          ]
+        ],
+        "revised": [
+          [
+            -753,
+            825,
+            -795,
+            173,
+            642,
+            65,
+            -437,
+            224,
+            -231,
+            -100,
+            -444,
+            -91,
+            360,
+            -859,
+            170,
+            733,
+            539,
+            -209,
+            975,
+            858
+          ],
+          [
+            -744,
+            309,
+            -783,
+            943,
+            -413,
+            -450,
+            174,
+            260,
+            887,
+            -805,
+            -690,
+            927,
+            499,
+            -769,
+            667,
+            524,
+            -240,
+            -392,
+            -64,
+            470
+          ]
+        ],
+        "owner": 1,
+        "row": 2,
+        "before": 980,
+        "after": -783,
+        "original_truth": 980,
+        "revised_truth": 975,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 1,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              3189017895255860037,
+              6436051091367820733,
+              5948125518259327809
+            ],
+            [
+              718683555328131954,
+              2021746274816980212,
+              6824739198738057801
+            ]
+          ],
+          "recovery": [
+            [
+              496964559045077511,
+              5788254274766051201,
+              4787332581102566116
+            ],
+            [
+              4707989650415872912,
+              6616259111156735962,
+              3161720786134861094
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 6906627758219236191,
+          "revised": 4203802228938872870
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-15",
+        "group": "main",
+        "index": 15,
+        "original": [
+          [
+            88,
+            -881,
+            -758,
+            -459,
+            -795,
+            -685,
+            -282,
+            815,
+            234,
+            423,
+            -678,
+            362,
+            -336,
+            478,
+            211,
+            -855,
+            -342,
+            242,
+            569,
+            150
+          ],
+          [
+            -746,
+            214,
+            369,
+            -952,
+            549,
+            -355,
+            637,
+            79,
+            -785,
+            -571,
+            -571,
+            -550,
+            470,
+            618,
+            -366,
+            917,
+            450,
+            -581,
+            -553,
+            -84
+          ]
+        ],
+        "revised": [
+          [
+            88,
+            -881,
+            -758,
+            -459,
+            -795,
+            -685,
+            -282,
+            815,
+            234,
+            423,
+            -678,
+            362,
+            -336,
+            478,
+            211,
+            -855,
+            -342,
+            242,
+            569,
+            150
+          ],
+          [
+            -746,
+            214,
+            369,
+            -952,
+            549,
+            -355,
+            637,
+            79,
+            -785,
+            -571,
+            -571,
+            -550,
+            470,
+            618,
+            -366,
+            -233,
+            450,
+            -581,
+            -553,
+            -84
+          ]
+        ],
+        "owner": 1,
+        "row": 15,
+        "before": 917,
+        "after": -233,
+        "original_truth": 917,
+        "revised_truth": 815,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              1902956623385930623,
+              4916106138233231675,
+              6078737825924977574
+            ],
+            [
+              779155858978740889,
+              5198962025364545555,
+              2108697534175850658
+            ]
+          ],
+          "recovery": [
+            [
+              6598110015221664823,
+              2997929407016828263,
+              1444923101447011897
+            ],
+            [
+              9040458041684502798,
+              2494635798920113734,
+              8391999091119783019
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 1465403772918229233,
+          "revised": 4432335345288427173
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-16",
+        "group": "main",
+        "index": 16,
+        "original": [
+          [
+            -380,
+            186,
+            585,
+            -603,
+            -775,
+            -73,
+            142,
+            -409,
+            702,
+            -902,
+            298,
+            206,
+            -667,
+            467,
+            285,
+            -70,
+            -41,
+            601,
+            180,
+            -647
+          ],
+          [
+            393,
+            267,
+            -284,
+            -74,
+            500,
+            -657,
+            -72,
+            -184,
+            -877,
+            -935,
+            -909,
+            -353,
+            -909,
+            -393,
+            -22,
+            -321,
+            -527,
+            11,
+            426,
+            152
+          ]
+        ],
+        "revised": [
+          [
+            -380,
+            186,
+            585,
+            -603,
+            -775,
+            -73,
+            142,
+            -409,
+            223,
+            -902,
+            298,
+            206,
+            -667,
+            467,
+            285,
+            -70,
+            -41,
+            601,
+            180,
+            -647
+          ],
+          [
+            393,
+            267,
+            -284,
+            -74,
+            500,
+            -657,
+            -72,
+            -184,
+            -877,
+            -935,
+            -909,
+            -353,
+            -909,
+            -393,
+            -22,
+            -321,
+            -527,
+            11,
+            426,
+            152
+          ]
+        ],
+        "owner": 0,
+        "row": 8,
+        "before": 702,
+        "after": 223,
+        "original_truth": 702,
+        "revised_truth": 601,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              3525824171274912523,
+              2754380357574624475,
+              3284743122142584063
+            ],
+            [
+              2762899117442607523,
+              968336676028561428,
+              8888442108351177869
+            ]
+          ],
+          "recovery": [
+            [
+              790320112131600572,
+              4173861043618292332,
+              3772499662896211623
+            ],
+            [
+              4421336844149292021,
+              7180164956262379184,
+              6793228924112768609
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 3625808510178304550,
+          "revised": 8238573807699300424
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-17",
+        "group": "main",
+        "index": 17,
+        "original": [
+          [
+            -753,
+            504,
+            -433,
+            -617,
+            -494,
+            -567,
+            -961,
+            -843,
+            -433,
+            -661,
+            527,
+            -281,
+            819,
+            636,
+            368,
+            -920,
+            -875,
+            663,
+            -591,
+            974
+          ],
+          [
+            -849,
+            -317,
+            -474,
+            -869,
+            57,
+            -823,
+            236,
+            -196,
+            -945,
+            575,
+            -953,
+            -732,
+            -657,
+            -910,
+            -996,
+            -920,
+            532,
+            -563,
+            313,
+            955
+          ]
+        ],
+        "revised": [
+          [
+            -753,
+            504,
+            -433,
+            -617,
+            -494,
+            -567,
+            -961,
+            -843,
+            -433,
+            -661,
+            527,
+            -281,
+            819,
+            636,
+            368,
+            -920,
+            -875,
+            663,
+            -591,
+            -232
+          ],
+          [
+            -849,
+            -317,
+            -474,
+            -869,
+            57,
+            -823,
+            236,
+            -196,
+            -945,
+            575,
+            -953,
+            -732,
+            -657,
+            -910,
+            -996,
+            -920,
+            532,
+            -563,
+            313,
+            955
+          ]
+        ],
+        "owner": 0,
+        "row": 19,
+        "before": 974,
+        "after": -232,
+        "original_truth": 974,
+        "revised_truth": 955,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [
+          "retain",
+          "clear"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              800805333071943264,
+              167792694831842848,
+              7597192933260802564
+            ],
+            [
+              5430806944077818016,
+              6725718311437964825,
+              988333560401579867
+            ]
+          ],
+          "recovery": [
+            [
+              4012012432534797402,
+              7218594506061706750,
+              2653935006362364321
+            ],
+            [
+              4143900953050891361,
+              7644170133203092341,
+              1187597541884695867
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 199745882390620293,
+          "revised": 8436139665433030263
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-18",
+        "group": "main",
+        "index": 18,
+        "original": [
+          [
+            -903,
+            -662,
+            617,
+            702,
+            199,
+            -794,
+            611,
+            -344,
+            453,
+            -279,
+            -418,
+            -892,
+            -643,
+            -203,
+            -246,
+            639,
+            466,
+            -74,
+            201,
+            764
+          ],
+          [
+            -493,
+            -911,
+            -755,
+            78,
+            961,
+            -609,
+            778,
+            -664,
+            -818,
+            285,
+            566,
+            -303,
+            -192,
+            912,
+            283,
+            180,
+            500,
+            388,
+            805,
+            636
+          ]
+        ],
+        "revised": [
+          [
+            -903,
+            -662,
+            617,
+            702,
+            199,
+            -794,
+            611,
+            -344,
+            453,
+            -279,
+            -418,
+            -892,
+            -643,
+            -203,
+            -246,
+            639,
+            466,
+            -74,
+            201,
+            764
+          ],
+          [
+            -493,
+            -911,
+            -755,
+            78,
+            -473,
+            -609,
+            778,
+            -664,
+            -818,
+            285,
+            566,
+            -303,
+            -192,
+            912,
+            283,
+            180,
+            500,
+            388,
+            805,
+            636
+          ]
+        ],
+        "owner": 1,
+        "row": 4,
+        "before": 961,
+        "after": -473,
+        "original_truth": 961,
+        "revised_truth": 912,
+        "proposals": 1,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 0
+        },
+        "first": 0,
+        "device": 0,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              3746832027693357437,
+              2857251163455212863,
+              8361326251341336637
+            ],
+            [
+              4770086935633667655,
+              257543326423350225,
+              4941281483291015323
+            ]
+          ],
+          "recovery": [
+            [
+              6566872721703754738,
+              8548203267052920078,
+              4537125439675398832
+            ],
+            [
+              1595670909606827205,
+              6123531660765845351,
+              1860222997655334026
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 5377096982479069598,
+          "revised": 804505197553268693
+        },
+        "regime": "i01-course-assisted-v2"
+      },
+      {
+        "id": "main-19",
+        "group": "main",
+        "index": 19,
+        "original": [
+          [
+            626,
+            290,
+            -696,
+            860,
+            8,
+            687,
+            -344,
+            -773,
+            -48,
+            -585,
+            157,
+            -861,
+            -835,
+            -960,
+            -578,
+            -834,
+            -275,
+            -681,
+            -227,
+            -648
+          ],
+          [
+            931,
+            -926,
+            250,
+            -189,
+            -918,
+            186,
+            319,
+            -226,
+            80,
+            -794,
+            -348,
+            -959,
+            417,
+            271,
+            1,
+            896,
+            -210,
+            552,
+            -755,
+            639
+          ]
+        ],
+        "revised": [
+          [
+            626,
+            290,
+            -696,
+            860,
+            8,
+            687,
+            -344,
+            -773,
+            -48,
+            -585,
+            157,
+            -861,
+            -835,
+            -960,
+            -578,
+            -834,
+            -275,
+            -681,
+            -227,
+            -648
+          ],
+          [
+            -562,
+            -926,
+            250,
+            -189,
+            -918,
+            186,
+            319,
+            -226,
+            80,
+            -794,
+            -348,
+            -959,
+            417,
+            271,
+            1,
+            896,
+            -210,
+            552,
+            -755,
+            639
+          ]
+        ],
+        "owner": 1,
+        "row": 0,
+        "before": 931,
+        "after": -562,
+        "original_truth": 931,
+        "revised_truth": 896,
+        "proposals": 3,
+        "rejections": {
+          "nonunique_maximum": 0,
+          "remaining_at_floor": 0,
+          "owner_block": 2
+        },
+        "first": 1,
+        "device": 1,
+        "treatments": [
+          "clear",
+          "retain"
+        ],
+        "seeds": {
+          "prefix": [
+            [
+              379434476350426980,
+              3351204169594849179,
+              2549913338292014413
+            ],
+            [
+              4413987904529229227,
+              1125793171469618410,
+              5684971011558537389
+            ]
+          ],
+          "recovery": [
+            [
+              7237024353733970388,
+              4727421665600995465,
+              4035401048979723352
+            ],
+            [
+              7276726502446892466,
+              7732751061769951493,
+              603837760294716651
+            ]
+          ]
+        },
+        "control_seeds": {
+          "original": 1870008352216569470,
+          "revised": 4581285155719943068
+        },
+        "regime": "i01-course-assisted-v2"
+      }
+    ],
+    "historical_courses": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "checked_sources": [
+      {
+        "path": "notebooks/run/course-1/latest.zip",
+        "sha256": "b5d2df95fcb1238dfac849af0795a691a36307937691914bf36a6bde92b3f68c",
+        "worlds": 29
+      },
+      {
+        "path": "notebooks/run/course-2/latest.zip",
+        "sha256": "3dc4040b82d75325cbce1103db04326c8af5cd2e635bb8f87549deeba6add782",
+        "worlds": 29
+      },
+      {
+        "path": "notebooks/run/course-3/latest.zip",
+        "sha256": "7524c6a553a76ab2dd218fbeb45a5160db7de9b5661c1da395fa11d03168e739",
+        "worlds": 29
+      },
+      {
+        "path": "notebooks/run/course-4/latest.zip",
+        "sha256": "2622779267ab656710d9e245d2946a0399afd4beb4e5adf36f94f1144ca3a459",
+        "worlds": 29
+      },
+      {
+        "path": "notebooks/run/course-5/latest.zip",
+        "sha256": "e70724265ed35c5232b85fbc9e769b05fd7cde5972dd4f6d3e7e82b8f0f910c8",
+        "worlds": 29
+      },
+      {
+        "path": "notebooks/run/course-6/latest.zip",
+        "sha256": "8b48977d6389940f92eb694d67a636362de0f5ee27127b8223d452ff57b19c79",
+        "worlds": 29
+      },
+      {
+        "path": "notebooks/run/course-7-working/latest/run.json",
+        "sha256": "4c84fb593003098146a26a2c9f9ac740d5fb9b106e753409f93492ac211f11ba",
+        "worlds": 29
+      },
+      {
+        "path": "notebooks/run/course-7-working/latest.zip",
+        "sha256": "e4e2ce613dc8949ed6d5224e09bff19b96ee97f5d53065a80437e68b42cc4aca",
+        "worlds": 29
+      },
+      {
+        "path": "recovery/i01/checks.py:NATIVE",
+        "sha256": "eec39e76668cd9c1db98c1933b6737bed83de44ca37308be9e4c0f7f7a998e5e",
+        "worlds": 1
+      }
+    ],
+    "scope": "Locally available Course-1..7 manifests/archives, saved JSON development fixtures and the native example; exact ordered original/revised inputs separately; diagnostic reuse intentional"
+  }
+}
