@@ -2,6 +2,21 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
+Literature research update (16 October 2026): the
+[targeted scientific review](implementation-research/i01-course-7-targeted-scientific-literature-review.md)
+examines fifteen full-text papers against the Course-7 evidence. Its separate
+[literature-informed recommendations](proposals/i01-course-7-literature-informed-recommendations.md)
+retain a bounded common-interface competence check but prioritize a distinct
+controlled-history feasibility regime for mechanism claims: fixed historical
+source evidence, old-conclusion exposure and actual-edit/no-change continuations.
+This differs from the earlier proposal's default natural-policy follow-up and
+is not adopted. Source preservation, paired recovery and correction/preservation
+measurement are prior art; any contribution requires a narrowly supported
+distributed actual-change extension. Research PDFs remain outside the repository.
+This update changes documentation only; no scientific contract, executable,
+prompt, configuration, original artifact or result is changed, and no model or
+GPU is used. Implementation and new execution remain separately authorized work.
+
 Independent scientific review (16 October 2026): the
 [complete forensic analysis](validation/i01-course-7-independent-scientific-audit.md)
 independently confirms the raw twenty-pair result, action legality, conversation
