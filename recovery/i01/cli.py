@@ -87,7 +87,7 @@ def serve(run, source):
                 elif op=="lost_spending":
                     if busy: raise ValueError("pause before evidence-gap reconciliation")
                     gap=req["gap"]
-                    if gap.get("resolved") and (type(gap.get("upper")) is not int or not 0<=gap["upper"]<=28 or not gap.get("evidence")):
+                    if gap.get("resolved") and (type(gap.get("upper")) is not int or not 0<=gap["upper"]<=session.config['contingency_limit'] or not gap.get("evidence")):
                         raise ValueError("bounded missing attempts and evidence required; unknown is not zero")
                     affected=req.get("affected_worlds",[])
                     world_ids={w["id"] for w in session.manifest["worlds"]}

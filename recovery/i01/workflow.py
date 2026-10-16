@@ -13,6 +13,7 @@ import uuid
 import tempfile
 import traceback
 
+from . import assisted, config_name
 from .archive import atomic_json, digest, export, extract_selected, inventory
 from .core import (apply_outcome, canonical, initial_episode, manifests, messages,
                    next_agent, permitted_view, seed_for, validate_action)
@@ -24,7 +25,8 @@ from .policy import (PROTOCOL_POLICY, RECOVERY_POLICY, OUTCOME_POLICY, AUTOMATIC
 def source_files(root):
     root = Path(root)
     files = list((root/"recovery").rglob("*.py"))
-    files += [root/"configs/i01-course.json", root/"configs/i01-runtime.lock", root/"pyproject.toml"]
+    files += [root/"configs/i01-course.json", root/"configs/i01-course-assisted.json",
+              root/"configs/i01-runtime.lock", root/"pyproject.toml"]
     return {p.relative_to(root).as_posix():digest(p) for p in sorted(files) if p.is_file()}
 
 
@@ -43,6 +45,8 @@ def initialize(run, source, config, *, independent=False):
             finally:store.close()
         return manifest
     if run.exists() and any(run.iterdir()): raise ValueError('fresh run directory required')
+    if assisted(config) and not independent:
+        raise ValueError('Assisted I-01 requires explicitly independent fresh initialization; no prior outcomes imported')
     run.parent.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='i01-initialize-',dir=run.parent) as name:
         staging=Path(name)/'study'
@@ -54,7 +58,7 @@ def initialize(run, source, config, *, independent=False):
 
 def _initialize(run, source, config, *, independent=False):
     run, source = Path(run), Path(source)
-    if config != json.loads((source/"configs/i01-course.json").read_text()):
+    if config != json.loads((source/"configs"/config_name(config)).read_text()):
         raise ValueError("configuration differs from adopted release")
     if (run/"run.json").exists():
         old = json.loads((run/"run.json").read_text())
@@ -366,7 +370,9 @@ class Session:
             try:
                 outcome = self.call(slot,call_id,identity,request,world["group"])
                 action,error = outcome_action(outcome)
-                state = apply_outcome(state,agent,action,error,call_id)
+                from .policy import outcome_feedback
+                state = apply_outcome(state,agent,action,error,call_id,
+                                      feedback=outcome_feedback(outcome) if assisted(self.config) and action is None else None)
                 store.effects(call_id,identity,state)
             finally:
                 self.settled(call_id)

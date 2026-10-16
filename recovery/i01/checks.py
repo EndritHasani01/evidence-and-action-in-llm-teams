@@ -9,6 +9,7 @@ from .archive import atomic_json, extract_selected, export
 from .core import (apply_outcome, eligible, initial_episode, manifests, oracle,
                    permitted_view, validate_action, canonical, messages)
 from .store import Admission, Store, utc
+from . import assisted
 
 NATIVE = [[309,-772,-949,518,-437,-499,-543,-715,508,-791,385,516,827,116,-822,209,-136,-935,-939,-809],
           [-553,-524,34,232,-946,149,-593,466,330,436,116,-141,-549,-81,206,-431,657,780,-987,554]]
@@ -25,7 +26,7 @@ def check_math():
 
 def check_views_lifecycle(config):
     manifest=manifests(config)
-    assert len(manifest["worlds"])==29
+    assert len(manifest["worlds"])==(28 if assisted(config) else 29)
     strata={}
     for w in manifest["worlds"]:
         assert w["original_truth"]>w["revised_truth"]>w["after"]
@@ -89,22 +90,26 @@ def check_storage(config, manifest):
             assert store.state(episode)["turns"]==[1,0]
             assert budget.usage()["attempts"]==2 and budget.usage()["contingency"]==1
             # 499 is derived from the canonical inventory, not a notebook counter.
-            for i in range(497):
+            fill = ([(stage,0) for stage,count in budget.first_limits.items()
+                     for _ in range(count-(1 if stage=='pilot' else 0))] + [('hardware',1)]*18
+                    if assisted(config) else [('main',0)]*497)
+            for i,(stage,reserve) in enumerate(fill):
                 cid=f"spent/{i}"
                 store.register(cid,episode,req)
                 with store.transaction():
-                    store.db.execute("INSERT INTO attempts(call_id,number,stage,contingency,admitted_at,status) VALUES (?,1,'main',0,?,'completed')",(cid,utc()))
+                    store.db.execute("INSERT INTO attempts(call_id,number,stage,contingency,admitted_at,status) VALUES (?,1,?,?,?,'completed')",(cid,stage,reserve,utc()))
             assert budget.usage()["attempts"]==499
             from concurrent.futures import ThreadPoolExecutor
-            for i in range(2): stores[i].register(f"last-{i}",episode,req)
+            last = [f"hardware/state-{i}-A1/reload-check-final" if assisted(config) else f"last-{i}" for i in range(2)]
+            for i in range(2): stores[i].register(last[i],episode,req)
             def final_admission(i):
-                try: return i,budget.admit(stores[i],f"last-{i}","hardware")
+                try: return i,budget.admit(stores[i],last[i],"hardware",contingency=assisted(config))
                 except ValueError: return i,None
             with ThreadPoolExecutor(max_workers=2) as pool:
                 admitted=list(pool.map(final_admission,range(2)))
             assert sum(a is not None for _,a in admitted)==1
             for i,a in admitted:
-                if a is not None: stores[i].raw(f"last-{i}",a,outcome)
+                if a is not None: stores[i].raw(last[i],a,outcome)
             stores[1].register("over",episode,req)
             try:
                 budget.admit(stores[1],"over","hardware")
@@ -152,7 +157,11 @@ def check_tokenizer(path, config, manifest):
     if bound>8192:
         raise ValueError(f"conservative tokenizer envelope {bound} exceeds input cap")
     assert len(tok.encode("Previous action invalid; no action delivered.",add_special_tokens=False))<=32
-    for mode in ("direct","thinking"):
+    if assisted(config):
+        from .core import REJECTION_FEEDBACK
+        for text in REJECTION_FEEDBACK.values():
+            assert len(tok.encode(text,add_special_tokens=False))<=32
+    for mode in (("direct",) if assisted(config) else ("direct","thinking")):
         req=prepare(dict(complete_input=[0,1]),0,config,mode,tok,control=True,envelope=True)
         assert len(req["input_ids"])==8192
     return dict(conservative_input_bound=bound,input_limit=8192,resident_direct=8704,resident_thinking=12288,

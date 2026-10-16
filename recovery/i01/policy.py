@@ -1,12 +1,13 @@
 """Qualification derived from canonical outcomes, with historical gates retained."""
 import json
 
-from .core import validate_action
+from .core import validate_action, rejection_feedback
 
 PROTOCOL_POLICY = "i01-direct-protocol-2026-10-15"
 AUTOMATIC_POLICY = "i01-whole-study-run-all-2026-10-15"
 RECOVERY_POLICY = "i01-recovery-admission-run-all-2026-10-15"
 OUTCOME_POLICY = "i01-recorded-outcomes-run-all-2026-10-15"
+ASSISTED_POLICY = "i01-assisted-feasibility-2026-10-16"
 AUTOMATIC_POLICIES = (AUTOMATIC_POLICY, RECOVERY_POLICY, OUTCOME_POLICY)
 FAILURE_CLEANUP_POLICIES = (RECOVERY_POLICY, OUTCOME_POLICY)
 LEGACY_POLICY = "i01-competence-11-of-12"
@@ -54,6 +55,14 @@ def validation_detail(outcome, *, control=False):
     elif outcome.get('framing_error'):reason='output_framing_error'
     return dict(json_valid=syntax,schema_valid=schema,legal_action=action is not None and error is None,
                 error=error,reason=reason)
+
+
+def outcome_feedback(outcome):
+    if outcome.get("failure"):
+        return rejection_feedback("provider_failure")
+    if outcome.get("truncated"):
+        return rejection_feedback("truncated_action")
+    return rejection_feedback(validation_detail(outcome)["reason"])
 
 
 def runtime_safe(outcome, termination=None):

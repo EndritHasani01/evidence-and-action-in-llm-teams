@@ -10,20 +10,20 @@ and evidence; it changes no scientific requirement.
 
 | ID | Required deliverable / invariant | Current evidence |
 |---|---|---|
-| A01 | Scoped adoption, explicit new configuration, legacy authority retained | Adopted in §12.1; new config added; implementation pending |
-| A02 | 28 saved disjoint worlds, owner counters, fixed assignment/seeds | Pending |
-| A03 | Exact common/control text, source-last renderer, private views, native bound | Pending |
-| A04 | Literal history boundary, isolated siblings, strict effects/finality/wait | Pending |
-| A05 | Exact ≤32-token rejection feedback and raw reason preservation | Pending |
-| A06 | Four reachable diagnostic fixtures, predicates and physical accounting | Pending |
+| A01 | Scoped adoption, explicit new configuration, legacy authority retained | Adoption commit `7a71783` |
+| A02 | 28 saved disjoint worlds, owner counters, fixed assignment/seeds | Core generation/assignment/overlap checks pass; exposed-input release inventory pending |
+| A03 | Exact common/control text, source-last renderer, private views, native bound | Core/native checks pass (7,612/8,192 conservative bound); full release checks pending |
+| A04 | Literal history boundary, isolated siblings, strict effects/finality/wait | Core checks pass; workflow lifecycle verification pending |
+| A05 | Exact ≤32-token rejection feedback and raw reason preservation | Core priority/native checks pass; integrated trace checks pending |
+| A06 | Four reachable diagnostic fixtures, predicates and physical accounting | Pure constructors/predicates verified; workflow/report delivery pending |
 | A07 | Four complete pilots and exact 3/4 + 7/8 objective decision | Pending |
-| A08 | 480 ordinary /20 reserve /500 total; retry/reload/resume/unknown safeguards | Pending |
+| A08 | 480 ordinary /20 reserve /500 total; retry/reload/resume/unknown safeguards | Admission checks pass; new-load and full workflow verification pending |
 | A09 | Exact conservative forecast, fixed session clock, per-call export guards | Pending |
 | A10 | Primary/effort/unknown bounds/paired bootstrap/degeneracy and casebook | Pending |
 | A11 | Honest qualification/diagnostic/pilot/main coverage and full raw UI | Pending |
 | A12 | Thin full notebook/CLI/source wheel, finite cells, source-bound restore/cleanup | Pending |
 | A13 | Legacy/thesis behavior and historical Course-7 evidence preserved | Baseline recorded externally; final comparison pending |
-| A14 | Focused CPU checks, native tokenizer, scripted full-bound/resume/portable evidence | Pending |
+| A14 | Focused CPU checks, native tokenizer, scripted full-bound/resume/portable evidence | First 12 focused checks and native bound pass; full workflow/installed checks pending |
 | A15 | Documentation, installed delivery, final requirement-by-requirement audit | Pending |
 
 ## Checkpoints
@@ -32,6 +32,8 @@ and evidence; it changes no scientific requirement.
 2. Core data/presentation/protocol and focused deterministic verification.
 3. Diagnostics, workflow/admission/accounting and scripted lifecycle verification.
 4. Reporting, UI/notebook/source delivery, installed checks and final evidence.
+
+Core checkpoint evidence: [implementation evidence](../validation/i01-assisted-implementation.md).
 
 ## Preservation and pending gates
 

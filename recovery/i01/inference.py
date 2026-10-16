@@ -6,9 +6,12 @@ from time import monotonic
 from types import SimpleNamespace
 
 from .core import canonical, messages
+from . import assisted
 
 
 def settings(config, mode, tokenizer):
+    if assisted(config) and mode != "direct":
+        raise ValueError("The assisted I-01 condition is direct only")
     if mode not in ("direct", "thinking"):
         raise ValueError("only declared modes")
     from recovery.inference import EOS_IDS, PAD_ID, TRANSPORT_ID
@@ -29,7 +32,7 @@ def settings(config, mode, tokenizer):
 
 def prepare(view, seed, config, mode, tokenizer, *, control=False, envelope=False):
     cfg = settings(config, mode, tokenizer)
-    msgs = messages(view, control=control)
+    msgs = messages(view, control=control, regime=config["regime"])
     rendered = tokenizer.apply_chat_template(msgs, tokenize=False, add_generation_prompt=True,
                                              enable_thinking=mode == "thinking")
     ids = tokenizer.encode(rendered, add_special_tokens=False)

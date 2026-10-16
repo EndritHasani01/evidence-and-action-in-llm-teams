@@ -12,6 +12,7 @@ import sqlite3
 import threading
 
 from .core import canonical
+from . import assisted
 
 SCHEMA = "i01-episodes-v2"
 LEGACY_SCHEMA = "i01-episodes-v1"
@@ -89,7 +90,8 @@ def restore_tail(store, tail, evidence, *, boundary):
 def resolve_restore_tail(store, upper, evidence, affected_worlds):
     """Bound only the additional tail; the checkpoint's older gap stays charged."""
     pending=store.meta('lost_spending',{})
-    if (pending.get('additional_tail')!='unknown' or type(upper) is not int or not 0<=upper<=28 or
+    cap = store.meta('binding',{}).get('manifest',{}).get('config',{}).get('contingency_limit',28)
+    if (pending.get('additional_tail')!='unknown' or type(upper) is not int or not 0<=upper<=cap or
         not isinstance(evidence,str) or not evidence.strip()):
         raise ValueError('An unknown restore tail, bounded additional attempts and actual evidence are required')
     prior=pending['prior_gap']
@@ -259,8 +261,16 @@ class Store:
 
 class Admission:
     """One controller lock serializes admission across both canonical writers."""
-    def __init__(self, stores, limit=500, contingency=28):
-        self.stores, self.limit, self.contingency = stores, limit, contingency
+    def __init__(self, stores, limit=None, contingency=None):
+        config = stores[0].meta('binding',{}).get('manifest',{}).get('config',{})
+        self.assisted = assisted(config)
+        if assisted(config) and (limit not in (None,500) or contingency not in (None,20)):
+            raise ValueError('Assisted I-01 admission must preserve 500 total and 20 contingency')
+        self.stores = stores
+        self.limit = limit if limit is not None else config.get('attempt_limit',500)
+        self.contingency = contingency if contingency is not None else config.get('contingency_limit',28)
+        self.first_limits = (dict(hardware=8,direct=8,diagnostic=4,pilot=80,main=380) if assisted(config)
+                             else dict(main=380,pilot=60,direct=12,thinking=12,hardware=8))
         self.lock = threading.RLock()
 
     def usage(self):
@@ -283,11 +293,15 @@ class Admission:
             if rows and (len(rows) >= 2 or rows[-1]["status"] != "interrupted_confirmed"):
                 raise ValueError("unresolved attempt or retry allowance exhausted")
             contingency = bool(contingency or rows)
+            if self.assisted and rows and rows[0]['stage'] != stage:
+                raise ValueError('Retry must preserve its admitted stage')
+            if self.assisted and contingency and not rows and not (stage=='hardware' and call_id.startswith('hardware/') and '/reload-' in call_id):
+                raise ValueError('Contingency is for identical interruptions or current-load requalification, not ordinary scope')
             if contingency and usage["contingency"] >= self.contingency:
-                raise ValueError("28-attempt contingency exhausted")
-            ceilings = {"main": 380, "pilot": 60, "direct": 12, "thinking": 12, "hardware": 8}
+                raise ValueError(f"{self.contingency}-attempt contingency exhausted")
+            ceilings = self.first_limits
             first = sum(r["stage"] == stage and not r["contingency"] for s in self.stores for r in s.rows("attempts"))
-            if not contingency and (stage not in ceilings or first >= ceilings[stage]):
+            if (self.assisted and stage not in ceilings) or not contingency and (stage not in ceilings or first >= ceilings[stage]):
                 raise ValueError("stage first-attempt ceiling exhausted")
             with store.transaction():
                 cur = store.db.execute("INSERT INTO attempts(call_id,number,stage,contingency,admitted_at,status) VALUES (?,?,?,?,?,?)",
