@@ -43,12 +43,46 @@ preparation fixture. This is input-framing evidence, not T4 loading/headroom or
 behavioral qualification. Receipt:
 [assisted-core-checks.json](../../notebooks/validation/i01-development/assisted-core-checks.json).
 
+## Workflow, resource and reporting checkpoint
+
+Eleven additional distinct checks pass:
+
+```powershell
+python -m unittest tests.test_i01_assisted_report tests.test_i01_assisted_workflow -v
+```
+
+The first nine tests passed in 82.134 seconds. After adding the precommit/fixed
+clock and pending-raw capacity guards, those two new tests passed in 4.026
+seconds. The full-bound fixture uses a declared CPU oracle, not model responses:
+480 ordinary attempts settle, all 288 pilot/main recovery actions are rejected
+without delivery, and all twenty main pairs remain included. Exact 3/4 and 7/8
+pilot usefulness passes despite those recovery failures and a diagnostic nonpass.
+Either one fewer original/control fails. All four pilots are collected before
+an unsuccessful feasibility decision, and main remains wholly unknown.
+
+Two new-load cycles each consume six state checks and two envelopes, using
+16 reserve attempts without regenerating accepted controls/diagnostics. A third
+eight-call cycle is rejected. Completed stages replay with zero new attempts;
+quiescent ZIP/extracted restore reproduces exact read-only analysis and spending.
+A restored controller cannot reuse an old session's export-time measurement.
+Known pending raw replay is excluded from new generation/first-slot capacity;
+new attempts require precommitment, and a repeated session-window call cannot
+extend its deadline.
+
+Hand-scored saved-data cases verify paired coverage/bounds, unknown effort,
+locally refutable/obsolete values, completion/wrong agreement, deterministic
+six-category case selection, bootstrap ordering/degeneracy and intended-slot
+denominators. Physical interrupted attempts retain unknown validity and are
+distinguished from logical raw-call denominators. One complete report renders
+all eight SVG/PNG figure pairs with an eight-control qualification scope.
+The existing Course-7 analyzer output still equals its preserved saved
+`analysis.json` exactly. A baseline comparison finds zero protected-file changes;
+only authorized specification/plan and I-01 package changes differ so far.
+Receipt: [assisted-workflow-report-checks.json](../../notebooks/validation/i01-development/assisted-workflow-report-checks.json).
+
 ## Remaining work
 
-Connect eight-control qualification and four diagnostics to the live workflow;
-implement four-pilot objective admission, current-load requalification and the
-exact forecast; complete all read-only statistics/process/casebook displays,
-UI/CLI/notebook/release delivery and exposed-input audit. Verify the scripted
-full workflow, exact portable resume, installed source/wheel and legacy analysis
-before the requirement-by-requirement completion audit. Actual-host/model gates
-remain separately authorized future work.
+Complete UI/CLI/notebook/release delivery and the exposed-input audit, then
+verify installed source/wheel, remaining affected legacy paths and the final
+requirement-by-requirement completion audit. Actual-host/model gates remain
+separately authorized future work.

@@ -12,10 +12,14 @@ from pathlib import Path
 import random
 import sqlite3
 
-from .core import canonical, success
+from .core import canonical, success, diagnostic_fixture, diagnostic_pass
+from . import assisted
 from .store import connection, Store, validate_call_slots, usage
 from .policy import (qualification, AUTOMATIC_POLICIES, validation_detail,
-                     runtime_safe, admission_blocks)
+                     runtime_safe, admission_blocks, pilot_usefulness, outcome_action)
+
+DEGENERATE_WARNING = ('Degenerate empirical bootstrap interval; it does not establish population\n'
+                      'equivalence or absence of an effect. Only the observed cohort contrast is known.')
 
 
 def read_run(run):
@@ -44,18 +48,27 @@ def bootstrap(rows, config):
     if not rows or any(r["retain"] is None or r["clear"] is None for r in rows):
         return None
     strata = {}
+    if assisted(config):
+        rows=sorted(rows,key=lambda r:(r['owner'],r['first'],r.get('world',r.get('id',''))))
     for r in rows:
         strata.setdefault((r["owner"], r["first"]), []).append(r["clear"]-r["retain"])
+    if assisted(config) and (len(rows)!=20 or set(strata)!={(0,0),(0,1),(1,0),(1,1)} or any(len(v)!=5 for v in strata.values())):
+        raise ValueError('Assisted primary bootstrap requires all twenty pairs and five per fixed stratum')
     rng = random.Random(config["bootstrap_seed"])
     draws = sorted(sum(rng.choice(values) for values in strata.values() for _ in values)/len(rows)
                    for _ in range(config["bootstrap_draws"]))
     lo, hi = draws[int(len(draws)*.025)], draws[min(len(draws)-1, int(len(draws)*.975))]
-    return dict(low=lo, high=hi, confidence=.95, draws=len(draws), strata="owner/first-speaker",
+    value=dict(low=lo, high=hi, confidence=.95, draws=len(draws), strata="owner/first-speaker",
                 caveat="Exploratory small-sample interval; zero width does not establish equivalence." if lo == hi else "Exploratory small-sample interval.")
+    if assisted(config):
+        value.update(constant_strata=[list(key) for key,values in strata.items() if len(set(values))==1],
+                     caveat=DEGENERATE_WARNING if lo==hi else 'Exploratory world-resampling interval; small-sample coverage is unestablished.')
+    return value
 
 
 def analysis(run):
     manifest, tables, meta = read_run(run)
+    selected_assisted=assisted(manifest['config'])
     episodes = {r["id"]:json.loads(r["state"]) for r in tables["episodes"]}
     calls = {r["id"]:r for r in tables["calls"]}
     attempts = []
@@ -71,6 +84,9 @@ def analysis(run):
     world_rows, cost_rows = [], []
     for w in manifest["worlds"]:
         r = {k:w[k] for k in ("id", "group", "owner", "first", "original_truth", "revised_truth")}
+        if selected_assisted:
+            r.update(team_phases_planned=w['group']!='qualification',
+                     planned_controls=['revised'] if w['group']=='main' else ['original','revised'])
         for phase in ("prefix", "retain", "clear"):
             e = episodes.get(w["id"]+"/"+phase)
             r[phase] = success(e, w["original_truth"] if phase == "prefix" else w["revised_truth"])
@@ -85,13 +101,18 @@ def analysis(run):
                      messages=sum(ev.get("action", {}).get("message") is not None for ev in (e or {}).get("events", []) if ev.get("action")))
             if e is None:
                 c.update(ready_seconds=None, generated_tokens=None)
-            cost_rows.append(c)
+            if selected_assisted:
+                c.update(attempts_unknown_ready_seconds=sum(v['ready_seconds'] is None for v in a),
+                         attempts_unknown_observed_seconds=sum(v['observed_seconds'] is None for v in a))
+                if any(v['observed_seconds'] is None for v in a):c['observed_seconds']=None
+            if not selected_assisted or w['group']!='qualification':cost_rows.append(c)
         for mode in ("direct", "thinking"):
             for input_phase in ("original", "revised"):
                 cid = f"{w['id']}/control-{input_phase}-{mode}"
                 row = calls.get(cid)
                 o = json.loads(row["outcome"]) if row and row["outcome"] else None
-                if o is not None:
+                committed = row and row['effect_committed'] and episodes.get(cid,{}).get('terminal')
+                if o is not None and (not selected_assisted or committed):
                     from .core import validate_action
                     act, error = validate_action(o.get("visible_text", ""), truncated=o.get("truncated", False), control=True)
                     r[f"control_{input_phase}_{mode}"] = int(not error and not o.get("framing_error") and not o.get("failure") and act["submit"] == w[input_phase+"_truth"])
@@ -115,7 +136,7 @@ def analysis(run):
                    complete_case_descriptive_mean=sum(r["clear"]-r["retain"] for r in known)/len(known) if known else None,
                    missingness_bounds=[lower, upper], interval=bootstrap(main, manifest["config"]),
                    correct_prefix_denominator=len(correct_prefix), unknown_prefixes=sum(r["prefix"] is None for r in main),
-                   correct_prefix_interval=bootstrap(correct_prefix, manifest["config"]),
+                   correct_prefix_interval=None if selected_assisted else bootstrap(correct_prefix, manifest["config"]),
                    correct_prefix_mean=(sum(r["clear"]-r["retain"] for r in correct_prefix)/len(correct_prefix)
                        if correct_prefix and all(r["clear"] is not None and r["retain"] is not None for r in correct_prefix) else None),
                    attempts=len(attempts), contingency=contingency, hard_limit=500, historical_attempts_separate=45,
@@ -130,6 +151,7 @@ def analysis(run):
     policy_costs=[]
     by_cost={(r["world"],r["phase"]):r for r in cost_rows}
     for w in world_rows:
+        if selected_assisted and w['group']=='qualification':continue
         for phase in ("retain","clear"):
             prefix, recovery=by_cost[(w["id"],"prefix")],by_cost[(w["id"],phase)]
             policy_costs.append(dict(world=w["id"],group=w["group"],policy=phase,success=w[phase],
@@ -164,7 +186,7 @@ def analysis(run):
             row["retain_"+key]=rv; row["clear_"+key]=cv
             row["clear_minus_retain_"+key]=cv-rv if rv is not None and cv is not None else None
         paired_costs.append(row)
-    timing=[dict(owner=r["owner"],first=r["first"],retain=r["retain_ready_seconds"],clear=r["clear_ready_seconds"]) for r in paired_costs]
+    timing=[dict(world=r['world'],owner=r["owner"],first=r["first"],retain=r["retain_ready_seconds"],clear=r["clear_ready_seconds"]) for r in paired_costs]
     summary["principal_effort_clear_minus_retain_seconds"]=(sum(r["clear"]-r["retain"] for r in timing)/20 if all(r["retain"] is not None and r["clear"] is not None for r in timing) else None)
     summary["principal_effort_interval"]=bootstrap(timing,manifest["config"])
     summary["cost_complete_pairs"]=sum(r["retain"] is not None and r["clear"] is not None for r in timing)
@@ -175,6 +197,7 @@ def analysis(run):
         world=world_by_id.get(ep["id"].split("/")[0])
         if not world or not state.get("terminal"): continue
         phase=ep["id"].split("/")[-1]
+        if selected_assisted and phase.startswith('diagnostic-'):continue
         if phase=='prefix' or phase in ('control-original-direct','control-original-thinking'):
             truth=world['original_truth']
         elif phase in ('retain','clear','control-revised-direct','control-revised-thinking'):
@@ -248,13 +271,134 @@ def analysis(run):
                        original_team_completed=meta.get(f'automatic/pilot-{n}',{}).get('original_team_completed'),
                        original_messages=meta.get(f'automatic/pilot-{n}',{}).get('original_messages'),
                        useful_communication=meta.get(f'review/pilot-{n}',{}).get('useful_communication'),
-                       human_review=meta.get(f'automatic/pilot-{n}',{}).get('human_review','not_recorded')) for n in (1,2,3)]
-    return dict(summary=summary, worlds=world_rows, costs=cost_rows, policy_costs=policy_costs, attempts=attempts,
+                       human_review=meta.get(f'automatic/pilot-{n}',{}).get('human_review','not_recorded')) for n in range(1,manifest['config']['pilot_worlds']+1)]
+    result=dict(summary=summary, worlds=world_rows, costs=cost_rows, policy_costs=policy_costs, attempts=attempts,
                 pilot_checks=pilot_checks,validation_details=validation,protocol_compliance=compliance,
                 qualification=screens,qualification_controls=[r for mode in screens.values() for r in mode['controls']],
                 prior_spending=meta.get('prior_spending',[]),
                 paired_costs=paired_costs,failure_analysis=failure_rows,
                 episodes=tables["episodes"],traces=tables["calls"], annotations=tables["annotations"], sessions=tables["sessions"], manifest=manifest)
+    if selected_assisted:
+        diagnostics=[]
+        for label in ('D00','D01','D02','D03'):
+            fixture=diagnostic_fixture(manifest,label);identity=fixture['id'];call=calls.get(identity)
+            outcome=json.loads(call['outcome']) if call and call['outcome'] else None
+            committed=bool(call and call['effect_committed'] and episodes.get(identity,{}).get('terminal'))
+            action,error=outcome_action(outcome) if outcome else (None,None)
+            diagnostics.append(dict(call=identity,label=label,world=fixture['world']['id'],expected=fixture['expected'],
+                recorded=outcome is not None,committed=committed,action=action,error=error,
+                passed=diagnostic_pass(fixture,action) if committed else None,
+                legal_action=bool(action and not error) if outcome else None,
+                ready_seconds=(outcome or {}).get('ready_seconds'),generated_tokens=(outcome or {}).get('generated_tokens'),
+                interpretation='Single supplied-view action; nonpass is not proof of inability and does not gate main.'))
+        usefulness=pilot_usefulness(manifest,tables)
+        if usefulness['checks']['complete_pilot_evidence'] and not usefulness['passed']:
+            blocked.append('Assisted feasibility: require 3/4 correct original teams and 7/8 pilot scalar controls')
+        complete &= screens['direct']['passed'] and all(r['committed'] for r in diagnostics) and usefulness['passed']
+        summary.update(status='complete' if complete and not gap.get('upper') and gap.get('resolved') else 'partial',
+                       scientific_gate_status='blocked' if blocked else 'complete' if complete else 'pending',
+                       blocking_reasons=blocked,assisted_feasibility=usefulness,
+                       diagnostic_recorded=sum(r['recorded'] for r in diagnostics),
+                       diagnostic_committed=sum(r['committed'] for r in diagnostics),diagnostic_planned=4,
+                       contingency_limit=20,ordinary_first_attempt_limit=480,
+                       uncertainty_scope='Observed cohort contrast is exact when complete; exploratory bootstrap resamples worlds, not repeated generations or all model seeds.')
+        result['diagnostics']=diagnostics
+        feasibility_complete=(usefulness['checks']['complete_pilot_evidence'] and not usefulness['passed'] and
+                              screens['direct']['passed'] and all(r['committed'] for r in diagnostics) and
+                              not budget['in_flight'] and budget['remaining'] is not None and not meta.get('model_defect') and
+                              len(known)==0)
+        if feasibility_complete:summary['status']='feasibility_complete'
+        summary['study_endpoint']=('main_complete' if summary['status']=='complete' else 'feasibility_failed' if feasibility_complete else 'incomplete')
+        result.update(assisted_process(manifest,tables,episodes,calls,world_rows))
+    return result
+
+
+def assisted_process(manifest,tables,episodes,calls,world_rows):
+    """Exact observables and deterministic case selection; no inferred mechanisms."""
+    main=sorted((w for w in manifest['worlds'] if w['group']=='main'),key=lambda w:w['index'])
+    outcomes={w['id']:w for w in world_rows}
+    process=[]
+    for phase in ('prefix','retain','clear'):
+        row=dict(phase=phase,intended_episodes=20,intended_agent_slots=40,terminal_episodes=0,
+                 unknown_episodes=0,both_submitted=0,agreement=0,wrong_agreement=0,
+                 present_submissions=0,known_absent_submissions=0,locally_refutable_submissions=0,
+                 episodes_with_illegal_model_action=0,episodes_with_failed_call=0,
+                 obsolete_submissions=0,obsolete_worlds=0,terminal_reasons={})
+        reasons=Counter()
+        for world in main:
+            state=episodes.get(world['id']+'/'+phase)
+            if not state or not state.get('terminal'):row['unknown_episodes']+=1
+            else:
+                row['terminal_episodes']+=1;reasons[state['terminal']]+=1
+            submissions=(state or {}).get('submissions',[None,None])
+            events=(state or {}).get('events',[])
+            row['episodes_with_illegal_model_action']+=any(e.get('error') in ('malformed_action','truncated_action') for e in events)
+            row['episodes_with_failed_call']+=any(e.get('error')=='provider_failure' for e in events)
+            present=[v for v in submissions if v is not None]
+            row['present_submissions']+=len(present)
+            if state and state.get('terminal'):row['known_absent_submissions']+=2-len(present)
+            truth=world['original_truth'] if phase=='prefix' else world['revised_truth']
+            if len(present)==2:
+                row['both_submitted']+=1
+                if present[0]==present[1]:
+                    row['agreement']+=1
+                    row['wrong_agreement']+=present[0]!=truth
+            shards=world['original'] if phase=='prefix' else world['revised']
+            row['locally_refutable_submissions']+=sum(v is not None and v<max(shards[a]) for a,v in enumerate(submissions))
+            obsolete=sum(v==world['before'] for v in present) if phase!='prefix' else 0
+            row['obsolete_submissions']+=obsolete;row['obsolete_worlds']+=obsolete>0
+        row['unknown_submission_slots']=40-row['present_submissions']-row['known_absent_submissions']
+        row['terminal_reasons']=dict(reasons)
+        row['old_value_availability_note']='Clear removes the withdrawn unique value from current sources and old visible history; this metric does not identify anchoring.'
+        process.append(row)
+    attempt_validation=[]
+    worlds={w['id']:w for w in manifest['worlds']}
+    for attempt in tables['attempts']:
+        call=calls[attempt['call_id']];world=worlds.get(call['episode'].split('/')[0])
+        if world is None:continue
+        outcome=json.loads(attempt['evidence']) if attempt['evidence'] else None
+        known=attempt['status']=='completed' and outcome is not None
+        detail=validation_detail(outcome,control='/control-' in call['episode']) if known else dict(
+            json_valid=None,schema_valid=None,legal_action=None,error=None,reason='No durable outcome for this physical attempt')
+        attempt_validation.append(dict(call=call['id'],attempt=attempt['number'],slot=attempt['slot'],
+            group=world['group'],phase=call['episode'].split('/')[1],status=attempt['status'],
+            recorded=known,**detail))
+    attempt_compliance=[]
+    for group,phase in sorted({(r['group'],r['phase']) for r in attempt_validation}):
+        rows=[r for r in attempt_validation if (r['group'],r['phase'])==(group,phase)]
+        attempt_compliance.append(dict(group=group,phase=phase,physical_attempts=len(rows),
+            unknown_outcomes=sum(not r['recorded'] for r in rows),
+            json_valid=sum(r['json_valid'] is True for r in rows),schema_valid=sum(r['schema_valid'] is True for r in rows),
+            legal_actions=sum(r['legal_action'] is True for r in rows)))
+    categories=('illegal_action','locally_refutable_recovery_submission','retained_obsolete_answer',
+                'clear_only_success','retain_only_success','both_success')
+    casebook=[]
+    for category in categories:
+        selected=None
+        for world in main:
+            r=outcomes[world['id']]
+            ordered=[(phase,e) for phase in ('prefix','retain','clear')
+                     for e in episodes.get(world['id']+'/'+phase,{}).get('events',[])]
+            matching=[]
+            for phase,e in ordered:
+                action=e.get('action');submit=action.get('submit') if action else None
+                if ((category=='illegal_action' and e.get('error') in ('malformed_action','truncated_action')) or
+                    (category=='locally_refutable_recovery_submission' and phase in ('retain','clear') and submit is not None and submit<max(world['revised'][e['agent']])) or
+                    (category=='retained_obsolete_answer' and phase=='retain' and submit==world['before'])):
+                    matching.append(e['call'])
+            pair_match=((category=='clear_only_success' and r['clear']==1 and r['retain']==0) or
+                        (category=='retain_only_success' and r['retain']==1 and r['clear']==0) or
+                        (category=='both_success' and r['retain']==r['clear']==1))
+            if matching or pair_match:
+                selected=dict(world=world['id'],selected_call=matching[0] if matching else (ordered[0][1]['call'] if ordered else None),
+                              calls=[e['call'] for _,e in ordered])
+                break
+        casebook.append(dict(category=category,present=selected is not None,
+                             **(selected or dict(world=None,selected_call=None,calls=[])),
+                             human_review='pending',reviewer=None,
+                             note='Deterministic lowest-index case; descriptive human review is not causal attribution.'))
+    return dict(process_outcomes=process,attempt_validation=attempt_validation,
+                attempt_compliance=attempt_compliance,casebook=casebook)
 
 
 def csv_file(path, rows):
@@ -277,16 +421,16 @@ def figures(result, out):
     costs = {(r["world"], r["phase"]):r for r in result["costs"]}
     plots = []
     fig, ax = plt.subplots(figsize=(8,3.8),layout='constrained')
-    modes=list(result['qualification']);bottom=[0,0]
+    modes=list(result['qualification']);bottom=[0]*len(modes)
     for label,key,color in (('Correct final','correct','#297c71'),('Wrong scalar','wrong_scalar','#a26635'),('Invalid output','protocol_errors','#b84b50'),('Pending / unexecuted',None,'#999999')):
-        values=[q[key] if key else 12-q['correct']-q['wrong_scalar']-q['protocol_errors'] for q in result['qualification'].values()]
+        values=[q[key] if key else q['planned']-q['correct']-q['wrong_scalar']-q['protocol_errors'] for q in result['qualification'].values()]
         ax.bar(modes,values,bottom=bottom,label=label,color=color)
         bottom=[a+b for a,b in zip(bottom,values)]
     ax.set(ylabel='Fixed planned controls per mode',title='Qualification coverage and exact outputs; not a main result',ylim=(0,15))
     ax.yaxis.set_major_locator(MaxNLocator(integer=True));ax.legend(fontsize=8,ncol=2,loc='upper center')
     plots.append(('qualification-outcomes',fig))
     fig,axes=plt.subplots(1,2,figsize=(9,3.8),layout='constrained')
-    labels=[f"{mode}\n{q['recorded']}/12 raw outcomes" for mode,q in result['qualification'].items()]
+    labels=[f"{mode}\n{q['recorded']}/{q['planned']} raw outcomes" for mode,q in result['qualification'].items()]
     for axis,key,label in zip(axes,('ready_seconds_observed','generated_tokens_observed'),('Ready-model seconds','Generated tokens')):
         axis.bar(labels,[q[key] for q in result['qualification'].values()],color=['#297c71','#596dce'])
         axis.set(ylabel=label)
@@ -339,11 +483,15 @@ def figures(result, out):
 
 def write_report(run, out, *, plot=True):
     result = analysis(run)
+    selected_assisted=assisted(result['manifest']['config'])
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     (out/"analysis.json").write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf-8")
     for name in ("worlds", "costs", "policy_costs", "paired_costs", "failure_analysis", "attempts", "annotations", "sessions", "qualification_controls", "prior_spending", "pilot_checks", "validation_details", "protocol_compliance"):
         csv_file(out/(name+".csv"), result[name])
+    if selected_assisted:
+        for name in ('diagnostics','process_outcomes','attempt_validation','attempt_compliance','casebook'):
+            csv_file(out/(name+'.csv'),result[name])
     csv_file(out/"plotting-data.csv", result["costs"])
     csv_file(out/"plotting-outcomes.csv", result["worlds"])
     (out/"paired-results.csv").write_text("category,worlds\n" + "".join(f"{k},{v}\n" for k,v in result["summary"]["paired_counts"].items()), encoding="utf-8")
@@ -368,11 +516,16 @@ def write_report(run, out, *, plot=True):
     (out/"conversations.html").write_text("\n".join(body),encoding="utf-8")
     (out/"conversations.txt").write_text("\n\n".join(text),encoding="utf-8")
     s = result["summary"]
-    progress=[('Scalar interface qualification',str(result['qualification']['direct']['committed'])+'/12 committed; eligible '+str(result['qualification']['direct']['passed'])),
+    planned=result['qualification']['direct']['planned']
+    progress=[('Scalar interface qualification',str(result['qualification']['direct']['committed'])+f'/{planned} committed; eligible '+str(result['qualification']['direct']['passed'])),
               *[(f"Pilot {p['pilot']} admission",'Pending' if p['passed'] is None else 'Admitted recorded outcomes' if p['passed'] else 'Blocked') for p in result['pilot_checks']],
               ('Main paired coverage',str(s['known_pairs'])+'/20'),
               ('Failure worker closure',str((s['failure_cleanup'] or {}).get('termination_confirmed','No failure cleanup recorded'))),
               ('Provider release','Unknown unless established separately')]
+    if selected_assisted:
+        decision=s['assisted_feasibility']
+        progress.insert(1,('Supplied-view diagnostics',f"{s['diagnostic_committed']}/4 committed; success is diagnostic"))
+        progress.append(('Assisted main usefulness',f"{decision['correct_originals']}/4 correct originals; {decision['correct_controls']}/8 correct pilot controls; passed {decision['passed']}"))
     diagnostics_html=['<h2>Admission and protocol diagnostics</h2><p>Scientific gate: <b>'+escape(s['scientific_gate_status'])+'</b>. '+escape('; '.join(s['blocking_reasons']))+'</p>',
         '<p>A successful snapshot preserves evidence; it does not clear a blocked gate. Policy: '+escape(s['execution_policy'])+'. Human review: '+escape(s['human_review_status'])+'.</p>',
         '<p><a href="validation_details.csv">Every scientific action</a> · <a href="protocol_compliance.csv">Phase denominators</a> · <a href="pilot_checks.csv">Pilot admission checks</a></p>',
@@ -383,17 +536,20 @@ def write_report(run, out, *, plot=True):
         diagnostics_html.append('<tr>'+''.join('<td>'+escape(str(row[key]))+'</td>' for key in ('call','reason','admission_blocking'))+'</tr>')
     diagnostics_html.append('</table>')
     qualification_text='## Qualification and protocol admission\n\nMathematical accuracy is reported separately from protocol eligibility. Historical decisions retain their original rule. Thinking completion is not inferred from a missing aggregate.\n\n'
+    if selected_assisted:
+        qualification_text='## Qualification and assisted feasibility\n\nOnly direct mode is selected. Eight scalar qualification controls screen legality; their accuracy is diagnostic. The separate four-pilot main decision requires 3/4 correct original teams and 7/8 correct pilot scalar controls, with intact evidence/health/resources. These are course-usefulness thresholds, not reliability certification.\n\n'
     qualification_text+='| Mode | Committed / planned | Correct | Wrong scalar | Invalid | Unexecuted | Current eligible | Ready seconds | Tokens | Historical passed |\n|---|---:|---:|---:|---:|---:|---|---:|---:|---|\n'
     for mode,q in result['qualification'].items():
-        qualification_text+=f"| {mode} | {q['committed']}/12 | {q['correct']} | {q['wrong_scalar']} | {q['protocol_errors']} | {q['unexecuted']} | {q['passed']} | {q['ready_seconds_observed']:.3f} | {q['generated_tokens_observed']} | {(q['historical_gate'] or {}).get('passed', 'not recorded')} |\n"
+        qualification_text+=f"| {mode} | {q['committed']}/{q['planned']} | {q['correct']} | {q['wrong_scalar']} | {q['protocol_errors']} | {q['unexecuted']} | {q['passed']} | {q['ready_seconds_observed']:.3f} | {q['generated_tokens_observed']} | {(q['historical_gate'] or {}).get('passed', 'not recorded')} |\n"
     qualification_text+='\nSee qualification_controls.csv and conversations.html for every planned control, exact answer/truth, validity, effort and call reference. Unresolved attempts and raw-but-uncommitted calls are pending, not unexecuted.\n\n'
     narrative = (f"# I-01 course recovery report — {s['status']}\n\n"
                  f"Execution policy: {s['execution_policy']}. Human communication/mechanism review: {s['human_review_status']}. "
-                 "Automatic pilot checks establish protocol/evidence/resource eligibility, not useful communication or human approval. "
+                 + ("Four pilot scopes and the separate fixed main-usefulness decision are reported explicitly; no human approval is inferred. " if selected_assisted else
+                    "Automatic pilot checks establish protocol/evidence/resource eligibility, not useful communication or human approval. ") +
                  "See pilot_checks.csv and the complete conversations.\n\n"
                  f"Intended main population: 20 independent worlds; known paired outcomes: {s['known_pairs']}/20. "
                  f"Budget scope: {s['attempt_scope']}. Current-study physical attempts: {s['attempts']}; prior-study charges: {s['prior_attempts']}; campaign total: {s['campaign_attempts']}/500. "
-                 f"Shared contingency used: {s['contingency']}/28; historical 45 recorded separately.\n\n"+qualification_text+
+                 f"Shared contingency used: {s['contingency']}/{result['manifest']['config']['contingency_limit']}; historical 45 recorded separately.\n\n"+qualification_text+
                  f"Known prior studies still requiring reconciliation: {s['missing_prior_studies']}. Remaining allowance: {s['remaining_attempt_allowance']} (unknown blocks admission).\n\n"+
                  f"Clear-minus-retain mean: {s['clear_minus_retain']}; unknown bounds: {s['missingness_bounds']}. "
                  f"Correct-prefix descriptive denominator: {s['correct_prefix_denominator']}; unknown prefixes: {s['unknown_prefixes']}.\n\n"
@@ -405,6 +561,19 @@ def write_report(run, out, *, plot=True):
                  "Review every trace using the frozen rubric; human labels require call references. Ambiguous mechanisms remain ambiguous. "
                  "Save the executed notebook separately and download the latest portable archive off session.\n\n"
                  "```json\n"+json.dumps(s,indent=2)+"\n```\n")
+    if selected_assisted:
+        process_text='\n## Exact main process observables\n\nCalls are dependent and their counts depend on behavior. Physical attempt-level validity is in attempt_compliance.csv; logical registered-call validity is in protocol_compliance.csv. No independent-binomial or causal failure-percentage interpretation is selected.\n\n'
+        process_text+='| Phase | Terminal /20 | Both submitted | Agreement | Wrong agreement | Locally refutable /40 slots | Present submissions /40 | Unknown submission slots | Obsolete submissions |\n|---|---:|---:|---:|---:|---:|---:|---:|---:|\n'
+        for r in result['process_outcomes']:
+            process_text+='| '+' | '.join(str(r[key]) for key in ('phase','terminal_episodes','both_submitted','agreement','wrong_agreement','locally_refutable_submissions','present_submissions','unknown_submission_slots','obsolete_submissions'))+' |\n'
+        process_text+='\nClear lacks the withdrawn unique value through its current input and erased history. Old-answer repetition alone does not identify anchoring or successful correction. Correct-prefix results are descriptive counts only; no subgroup interval/test is supplied. Unknown effort stays unknown; observed sums have their own recorded coverage.\n\n'
+        process_text+='## Deterministically selected casebook\n\nOne lowest-index main world per category; overlaps are allowed. Fixed phase/event order determines call references. Absent means no observed qualifying case in the recorded main evidence; unknown coverage remains visible. Human descriptions/reviewer identity remain pending unless actually supplied.\n\n'
+        for r in result['casebook']:
+            process_text+=f"- {r['category']}: {r['world'] or 'absent among recorded main traces'}; selected call {r['selected_call'] or 'none'}; human review {r['human_review']}.\n"
+        process_text+='\n'+s['uncertainty_scope']+'\n'
+        for key in ('interval','principal_effort_interval'):
+            if s[key]:process_text+=f"\n{key}: {s[key]['caveat']} Constant empirical strata: {s[key].get('constant_strata',[])}.\n"
+        narrative+=process_text
     (out/"overview.md").write_text(narrative,encoding="utf-8")
     html=['<!doctype html><meta charset="utf-8"><title>I-01 research report</title><style>body{font:16px system-ui;line-height:1.5;max-width:1200px;margin:2rem auto;padding:0 1rem;color:#243345}header{border-bottom:3px solid #297c71;padding-bottom:1rem}.cards{display:flex;gap:1rem;flex-wrap:wrap}.card{background:#edf3f5;padding:1rem;border-radius:8px;min-width:180px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:.5rem;border-bottom:1px solid #dae1e5;text-align:left}pre{white-space:pre-wrap;overflow-wrap:anywhere}img{max-width:100%}</style>',
           f'<header><h1>I-01 distributed-team recovery</h1><p>Controlled recovery extension of SILO-BENCH I-01 · {escape(s["status"])} evidence</p><a href="conversations.html">Browse every prompt, action and raw audit outcome</a></header>',
@@ -415,7 +584,7 @@ def write_report(run, out, *, plot=True):
     from urllib.parse import quote
     qualification_html=['<h2>Qualification and partial progress</h2><p>Mathematical accuracy is a diagnostic. Current eligibility and original gate decisions remain distinct; physical completion alone does not establish valid output.</p><table><tr><th>Mode</th><th>Committed / planned</th><th>Correct</th><th>Wrong scalar</th><th>Invalid</th><th>Unexecuted</th><th>Current eligible</th><th>Historical passed</th></tr>']
     for mode,q in result['qualification'].items():
-        values=(mode,str(q['committed'])+'/12',q['correct'],q['wrong_scalar'],q['protocol_errors'],q['unexecuted'],q['passed'],(q['historical_gate'] or {}).get('passed','not recorded'))
+        values=(mode,str(q['committed'])+f"/{q['planned']}",q['correct'],q['wrong_scalar'],q['protocol_errors'],q['unexecuted'],q['passed'],(q['historical_gate'] or {}).get('passed','not recorded'))
         qualification_html.append('<tr>'+''.join('<td>'+escape(str(v))+'</td>' for v in values)+'</tr>')
     qualification_html.append('</table><h3>Every planned control</h3><table><tr><th>Call / trace</th><th>Truth</th><th>Submission</th><th>Committed</th><th>Valid</th><th>Correct</th><th>Error</th><th>Tokens</th><th>Seconds</th></tr>')
     for r in result['qualification_controls']:
@@ -424,10 +593,21 @@ def write_report(run, out, *, plot=True):
             label='<a href="conversations.html#'+escape(quote(r['call'],safe='/'),quote=True)+'">'+label+'</a>'
         qualification_html.append('<tr><td>'+label+'</td>'+''.join('<td>'+escape(str(r[k]) if r[k] is not None else 'unknown')+'</td>' for k in ('truth','submission','committed','valid','correct','error','generated_tokens','ready_seconds'))+'</tr>')
     qualification_html.append('</table><p><a href="qualification_controls.csv">Download qualification controls</a></p>')
+    if 'diagnostics' in result:
+        qualification_html.append('<h3>Four supplied-view diagnostics</h3><p>Single-call probe nonpasses do not establish inability or veto main. Natural live pilots determine the separate usefulness decision.</p><p><a href="diagnostics.csv">Every diagnostic and private expected value</a></p><table><tr><th>Call</th><th>Recorded</th><th>Committed</th><th>Legal</th><th>Target action occurred</th></tr>')
+        for row in result['diagnostics']:
+            qualification_html.append('<tr>'+''.join('<td>'+escape(str(row[key]) if row[key] is not None else 'unknown')+'</td>' for key in ('call','recorded','committed','legal_action','passed'))+'</tr>')
+        qualification_html.append('</table><h3>Assisted feasibility decision</h3><pre>'+escape(json.dumps(s['assisted_feasibility'],indent=2))+'</pre>')
     html.insert(-1, '\n'.join(diagnostics_html+qualification_html))
     for w in result["worlds"]:
         html.append('<tr>'+''.join('<td>'+escape(str(w[k]) if w[k] is not None else 'unknown')+'</td>' for k in ("id","group","original_truth","revised_truth","prefix","retain","clear"))+'</tr>')
     html.append('</table><h2>Paired results and costs</h2><p><a href="paired-results.csv">Paired outcomes</a> · <a href="paired_costs.csv">Paired costs</a> · <a href="attempts.csv">Local attempt ledger</a> · <a href="prior_spending.csv">Prior-study spending/proof</a> · <a href="failure_analysis.csv">Observable failure audit</a> · <a href="analysis.json">Complete reconstruction</a></p>')
+    if selected_assisted:
+        html.append('<h2>Exact process and fixed casebook</h2><p><a href="process_outcomes.csv">Intended-slot process coverage</a> · <a href="attempt_validation.csv">Every physical attempt</a> · <a href="attempt_compliance.csv">Attempt denominators</a> · <a href="casebook.csv">Case selection</a></p><table><tr><th>Category</th><th>World</th><th>Selected trace</th><th>Human review</th></tr>')
+        for r in result['casebook']:
+            ref=('<a href="conversations.html#'+escape(quote(r['selected_call'],safe='/'),quote=True)+'">'+escape(r['selected_call'])+'</a>') if r['selected_call'] else 'No observed case; see coverage'
+            html.append('<tr><td>'+escape(r['category'])+'</td><td>'+escape(r['world'] or 'absent')+'</td><td>'+ref+'</td><td>'+escape(r['human_review'])+'</td></tr>')
+        html.append('</table>')
     if plot:
         html.extend(f'<h3>{name}</h3><img src="figures/{name}.svg" alt="{name}">' for name in ('qualification-outcomes','qualification-effort',"paired-outcomes","recovery-ready_seconds","recovery-calls","recovery-generated_tokens","failure-labels","termination-coverage"))
     html.append('<h2>Interpretation, gates and limitations</h2><pre>'+escape(narrative)+'</pre>')

@@ -16,10 +16,12 @@ import traceback
 from . import assisted, config_name
 from .archive import atomic_json, digest, export, extract_selected, inventory
 from .core import (apply_outcome, canonical, initial_episode, manifests, messages,
-                   next_agent, permitted_view, seed_for, validate_action)
+                   next_agent, permitted_view, seed_for, validate_action,
+                   diagnostic_fixture, diagnostic_pass)
 from .store import Admission, Store, utc
-from .policy import (PROTOCOL_POLICY, RECOVERY_POLICY, OUTCOME_POLICY, AUTOMATIC_POLICIES, FAILURE_CLEANUP_POLICIES,
-                     CAMPAIGN_STUDIES, outcome_action, validation_detail, runtime_safe, admission_blocks)
+from .policy import (PROTOCOL_POLICY, RECOVERY_POLICY, OUTCOME_POLICY, ASSISTED_POLICY,
+                     AUTOMATIC_POLICIES, FAILURE_CLEANUP_POLICIES, CAMPAIGN_STUDIES,
+                     outcome_action, validation_detail, runtime_safe, admission_blocks, pilot_usefulness)
 
 
 def source_files(root):
@@ -187,6 +189,8 @@ class Session:
         if value.tzinfo is None or value <= datetime.now(timezone.utc) or not evidence.strip():
             raise ValueError("actual future session deadline and operator allowance evidence required")
         previous=self.meta.meta("window",{})
+        if assisted(self.config) and previous.get('session')==self.session_id and value>datetime.fromisoformat(previous['deadline']):
+            raise ValueError('The assisted session deadline is fixed; rerunning cannot extend it')
         observed_start=previous.get("observed_start") if previous.get("session")==self.session_id else utc()
         observation = previous.get('observation') if previous.get('session')==self.session_id and previous.get('deadline')==deadline else (observation or dict(at=utc(),remaining_minutes=observed_minutes,basis='operator_observed' if observed_minutes is not None else 'absolute_deadline'))
         self.meta.put_meta("window", dict(deadline=deadline, evidence=evidence, observed_start=observed_start, session=self.session_id, observation=observation))
@@ -222,6 +226,14 @@ class Session:
         budget=self.admission.usage()
         if budget['remaining'] is None or budget['remaining']<=0 or budget['contingency']>self.config['contingency_limit']:
             raise ValueError('Reconcile campaign/restore spending before loading; no model has been loaded')
+        if assisted(self.config) and self.meta.meta('readiness') and any(
+                worker is None or not getattr(worker,'process',None) or not worker.process.is_alive()
+                for worker in self.workers):
+            if budget['remaining']<8 or self.config['contingency_limit']-budget['contingency']<8:
+                raise ValueError('A new assisted load needs eight reserved current-load state/envelope attempts')
+            if self.remaining_time() is None or self.remaining_time() < (2*self.config['load_timeout_seconds']+
+                    8*self.config['direct_timeout_seconds']+2*self.config['termination_seconds']+self.config['export_reserve_seconds']):
+                raise ValueError('Insufficient separate worst-deadline allowance for reload and eight current-load checks')
         from .setup import runtime_inventory
         runtime_inventory(self.source)
         if any(r["status"]=="admitted" for s in self.stores for r in s.rows("attempts")):
@@ -300,6 +312,10 @@ class Session:
             if row["outcome"] is not None:
                 returned=True
                 return json.loads(row["outcome"])
+            if assisted(self.config):
+                self.automatic_plan()
+                if stage!='hardware':self.require_current_state()
+                if stage=='main':self.require('freeze')
             if self.pause.is_set():
                 raise Paused("pause requested before new admission")
             if self.meta.meta("model_defect"):
@@ -405,15 +421,33 @@ class Session:
         self.periodic_checkpoint()
         return result
 
-    def readiness(self):
+    def readiness(self, *, reload=False):
         self.require("loaded_session")
+        selected_assisted = assisted(self.config)
+        loads = self.load_references() if selected_assisted else None
+        prior = self.meta.meta('readiness',{})
+        if selected_assisted:
+            same = prior.get('session')==self.session_id and prior.get('loads')==loads
+            if same and prior.get('passed'):
+                return prior
+            if prior and not same and not reload:
+                raise ValueError('New assisted loads require explicit eight-call contingency requalification (reload=True)')
+            if same:
+                reload=prior.get('reload',False)
+            elif reload:
+                budget=self.admission.usage()
+                if budget['remaining'] is None or budget['remaining']<8 or self.config['contingency_limit']-budget['contingency']<8:
+                    raise ValueError('Eight reserve attempts required for assisted current-load state/envelope checks')
+            if reload and not prior:
+                raise ValueError('Initial assisted state checks use ordinary hardware capacity')
+            self.meta.put_meta('readiness',dict(passed=False,session=self.session_id,loads=loads,reload=reload,results=[]))
         results = []
         for slot in range(2):
             for label,values in (("A1",[-7,3]),("B",[100,-9]),("A2",[-7,3])):
                 request = self.request(dict(complete_input=values),seed_for(self.config["master_seed"],"state",slot,"A" if label != "B" else "B"),"direct",control=True)
-                identity = f"hardware/state-{slot}-{label}"
+                identity = f"hardware/state-{slot}-{label}" + ("/reload-"+'+'.join(loads) if selected_assisted and reload else "")
                 try:
-                    outcome = self.call(slot,identity,identity,request,"hardware")
+                    outcome = self.call(slot,identity,identity,request,"hardware",contingency=bool(selected_assisted and reload))
                 finally:
                     self.settled(identity)
                 self.periodic_checkpoint()
@@ -424,12 +458,14 @@ class Session:
         equal=[results[s*3]['outcome'].get('token_ids')==results[s*3+2]['outcome'].get('token_ids') for s in range(2)]
         receipt = dict(passed=passed,results=results, ABA_equal=equal,needs_review=not all(equal),
                        equality_policy='Diagnostic: unexpected differences require explicit state-isolation review before qualification; no extra samples or decoding changes.')
+        if selected_assisted:receipt.update(session=self.session_id,loads=loads,reload=reload)
         self.meta.put_meta("readiness",receipt)
         if not passed:
             raise ValueError("readiness cache/finite-output gate failed")
         return receipt
 
     def screen(self, mode, reason=""):
+        if assisted(self.config):self.require_current_state()
         if not self.meta.meta("readiness",{}).get("passed"):
             raise ValueError("passing readiness required")
         if self.meta.meta('readiness',{}).get('needs_review') and not self.meta.meta('review/readiness'):
@@ -441,10 +477,10 @@ class Session:
             if not direct or direct["passed"] or direct["protocol_errors"] or not reason.strip():
                 raise ValueError("thinking needs documented direct competence failure without protocol defects")
         existing = self.screen_result(mode)
-        if existing['committed']==12:
+        if existing['committed']==existing['planned']:
             return existing
         rows = [self.control(w,p,mode,mode) for w in self.manifest["worlds"] if w["group"]=="qualification" for p in ("original","revised")]
-        receipt = dict(correct=sum(r["correct"] for r in rows),total=12,protocol_errors=sum(bool(r["error"]) for r in rows),reason=reason)
+        receipt = dict(correct=sum(r["correct"] for r in rows),total=existing['planned'],protocol_errors=sum(bool(r["error"]) for r in rows),reason=reason)
         receipt['policy'] = self.meta.meta('qualification_policy', 'i01-competence-11-of-12')
         receipt["passed"] = receipt['protocol_errors']==0 and (mode=='direct' if receipt['policy']==PROTOCOL_POLICY else receipt['correct']>=11)
         if self.meta.meta('screen/'+mode) is None:
@@ -464,6 +500,10 @@ class Session:
             raise ValueError("selected frozen mode cannot change")
         prior=self.meta.meta("envelope",{})
         loads=self.load_references()
+        if assisted(self.config):
+            if reload:
+                self.readiness(reload=True)
+            self.require_current_state()
         if prior and (prior.get("session")!=self.session_id or prior.get('loads')!=loads or self.meta.meta("reload_required")) and not reload:
             raise ValueError("new/reloaded session requires explicit two contingency-charged reload probes")
         # If this pair has already passed, both ordinary/reload reruns reuse it.
@@ -498,6 +538,7 @@ class Session:
         return receipt
 
     def qualified(self):
+        if assisted(self.config):self.require_current_state()
         receipt = self.meta.meta("envelope",{})
         if not receipt.get("passed") or receipt.get("session") != self.session_id or self.meta.meta("reload_required"):
             raise ValueError("selected envelope required in current session; restored sessions need two budgeted reload probes")
@@ -507,6 +548,51 @@ class Session:
         if not self.screen_result(mode)['passed'] or self.meta.meta('model_defect'):
             raise ValueError('Current qualification or runtime integrity is not accepted')
         return mode
+
+    def require_current_state(self):
+        value=self.meta.meta('readiness',{})
+        if not value.get('passed') or value.get('session')!=self.session_id or value.get('loads')!=self.load_references():
+            raise ValueError('Six passing current-load assisted state checks are required')
+        if value.get('needs_review') and self.meta.meta('review/readiness',{}).get('loads')!=value.get('loads'):
+            raise ValueError('Current-load A/B/A differences require explicit state-isolation review')
+        return value
+
+    def diagnostics(self):
+        self.automatic_plan()
+        self.qualified()
+        if not assisted(self.config):raise ValueError('Four diagnostics belong only to assisted I-01')
+        results=[]
+        for label in ('D00','D01','D02','D03'):
+            fixture=diagnostic_fixture(self.manifest,label)
+            identity=fixture['id'];world=fixture['world'];store=self.stores[world['device']]
+            request=self.request(fixture['view'],fixture['seed'],'direct')
+            store.start(identity,dict(terminal=None,diagnostic=label,scripted_fixture=True))
+            try:
+                outcome=self.call(world['device'],identity,identity,request,'diagnostic')
+                action,error=outcome_action(outcome)
+                result=dict(terminal='diagnostic_completed',diagnostic=label,scripted_fixture=True,
+                            expected=fixture['expected'],action=action,error=error,
+                            passed=diagnostic_pass(fixture,action),submissions=[action['submit']] if action else [])
+                store.effects(identity,identity,result)
+            finally:self.settled(identity)
+            if not runtime_safe(outcome,store.meta('timeout_termination/'+identity)) or self.meta.meta('model_defect'):
+                raise ValueError('Diagnostic runtime/termination integrity blocks further admission')
+            results.append(dict(call=identity,**result))
+            self.periodic_checkpoint()
+        receipt=dict(complete=True,results=results,policy=ASSISTED_POLICY,
+                     note='Single-call supplied-view diagnostics; no aggregate success gate or live-competence claim')
+        self.meta.put_meta('diagnostics',receipt)
+        return receipt
+
+    def diagnostic_evidence(self):
+        for label in ('D00','D01','D02','D03'):
+            fixture=diagnostic_fixture(self.manifest,label);identity=fixture['id']
+            store=self.stores[fixture['world']['device']];row=store.call(identity)
+            if not row or not row['outcome'] or not row['effect_committed'] or not store.state(identity) or not store.state(identity).get('terminal'):
+                return False
+            if not runtime_safe(json.loads(row['outcome']),store.meta('timeout_termination/'+identity)):
+                return False
+        return True
 
     def load_references(self):
         if any(w is None or hasattr(w,'process') and (w.process is None or not w.process.is_alive() or w.unconfirmed) for w in self.workers):
@@ -526,8 +612,13 @@ class Session:
 
     def pilot(self, number):
         mode = self.qualified()
-        if type(number) is not int or number not in (1,2,3):
-            raise ValueError("one pilot number 1..3 required")
+        count=self.config['pilot_worlds']
+        if type(number) is not int or number not in range(1,count+1):
+            raise ValueError(f"one pilot number 1..{count} required")
+        if assisted(self.config):
+            if not self.meta.meta('diagnostics',{}).get('complete') or not self.diagnostic_evidence():
+                raise ValueError('Four settled assisted diagnostics required before pilots')
+            self.require_resources()
         if number>1:
             if self.meta.meta('execution_plan',{}).get('policy') in AUTOMATIC_POLICIES:
                 self.automatic_plan()
@@ -546,12 +637,16 @@ class Session:
             self.meta.meta('qualification_policy')!=PROTOCOL_POLICY or
             self.admission.usage()['attempts'] or self.meta.meta('freeze')):
             raise ValueError('Run All plan requires a new independent direct study before its first model call')
-        value=dict(policy=OUTCOME_POLICY,at=utc(),mode='direct',manifest=self.manifest,
+        value=dict(policy=ASSISTED_POLICY if assisted(self.config) else OUTCOME_POLICY,at=utc(),mode='direct',manifest=self.manifest,
                    settings=self.request(dict(complete_input=[0]),0,'direct',control=True)['settings'],
                    pilot_admission='fixed scalar qualification; terminal committed pilot phases/controls and intact runtime/resources; ordinary model errors and original completion diagnostic',
                    main_admission='three objective pilot passes and adequate measured resources; no settings tuning',
                    main_batches=10,worlds_per_batch=2,human_review='retrospective_pending',
                    useful_communication=None,human_understanding_verified=False,external_download_verified=False)
+        if assisted(self.config):
+            value.update(pilot_admission='all four terminal pilot scopes; ordinary mistakes retained',
+                         main_admission='four complete pilots; original teams >=3/4; pilot scalar controls >=7/8; intact current health/resources; no recovery-effect gate',
+                         prompt_system=messages(permitted_view(self.manifest['worlds'][0],initial_episode(self.manifest['worlds'][0],'prefix'),0),regime=self.config['regime'])[0])
         self.meta.bind('execution_plan',value)
         return value
 
@@ -560,6 +655,8 @@ class Session:
         if (plan.get('policy') not in AUTOMATIC_POLICIES or plan.get('manifest')!=self.manifest or
             plan.get('mode')!='direct' or plan.get('settings')!=self.request(dict(complete_input=[0]),0,'direct',control=True)['settings']):
             raise ValueError('Exact precommitted Run All plan/settings required; no automatic configuration change')
+        if assisted(self.config) and plan['policy']!=ASSISTED_POLICY:
+            raise ValueError('Assisted condition requires its own precommitted usefulness policy')
         return plan
 
     def scope_evidence(self, world, *, pilot=False):
@@ -586,7 +683,7 @@ class Session:
                     committed_calls=bool(rows) and all(r['outcome'] and r['effect_committed'] for r in rows),
                     every_episode_has_calls=all(any(r['episode']==key for r in rows) for key in required))
         original_completed=len(prefix.get('submissions',[]))==2 and all(v is not None for v in prefix['submissions'])
-        if pilot and policy!=OUTCOME_POLICY:
+        if pilot and policy not in (OUTCOME_POLICY,ASSISTED_POLICY):
             checks.update(original_team_completed=original_completed,
                           valid_protocol=not any(d['admission_blocking'] for d in diagnostics))
             if policy!=RECOVERY_POLICY:
@@ -607,7 +704,7 @@ class Session:
     def check_pilot(self, number):
         self.automatic_plan()
         self.qualified()
-        if type(number) is not int or number not in (1,2,3):raise ValueError('Pilot number 1..3 required')
+        if type(number) is not int or number not in range(1,self.config['pilot_worlds']+1):raise ValueError('Pilot number outside the fixed scope')
         if number>1 and not self.meta.meta('automatic/pilot-'+str(number-1),{}).get('passed'):
             raise ValueError('Previous automatic pilot check must pass first')
         world=next(w for w in self.manifest['worlds'] if w['id']==f'pilot-{number-1:02d}')
@@ -649,6 +746,7 @@ class Session:
         value = dict(notes=notes,at=utc(),useful_communication=useful_communication,usable=usable,
                      archive_sha256=digest(self.run/"exports/latest.zip"),human_understanding_verified=False,
                      external_download_verified=False)
+        if scope=='readiness' and assisted(self.config):value['loads']=self.load_references()
         self.meta.put_meta("review/"+scope,value)
         return value
 
@@ -656,7 +754,8 @@ class Session:
         from .report import analysis
         result = analysis(self.run)
         mode = self.meta.meta("selected_mode","direct")
-        observed = [a["ready_seconds"] for a in result["attempts"] if a["ready_seconds"] is not None and a["status"]=="completed" and a["stage"] in ("pilot",mode)]
+        stages=('direct','diagnostic','pilot','main') if assisted(self.config) else ('pilot',mode)
+        observed = [a["ready_seconds"] for a in result["attempts"] if a["ready_seconds"] is not None and a["status"]=="completed" and a["stage"] in stages]
         remaining=0
         for w in self.manifest["worlds"]:
             if w["group"]!="main": continue
@@ -679,19 +778,34 @@ class Session:
                                  not store.state(f"{w['id']}/control-{phase}-{mode}").get('terminal') for phase in ('original','revised'))
         pending_main=sum(w['group']=='main' and (any(w[p] is None for p in ('prefix','retain','clear')) or w.get('control_revised_'+mode) is None) for w in result['worlds'])
         pending_pilots=sum(w['group']=='pilot' and (any(w[p] is None for p in ('prefix','retain','clear')) or any(w.get('control_'+p+'_'+mode) is None for p in ('original','revised'))) for w in result['worlds'])
-        work_seconds=(remaining+pilot_remaining)*(max(observed)*1.25+5) if observed else None
-        checkpoint_max=getattr(self,'checkpoint_timing',self.meta.meta('checkpoint_timing',{})).get('max_seconds')
+        first_slots=dict(main=remaining,pilot=pilot_remaining)
+        pending_raw=0;pending_retry=0
+        if assisted(self.config):
+            for store in self.stores:
+                attempts=store.rows('attempts')
+                for row in store.rows('calls'):
+                    if row['effect_committed']:continue
+                    used=[a for a in attempts if a['call_id']==row['id']]
+                    if not used or used[0]['stage'] not in first_slots:continue
+                    first_slots[used[0]['stage']]-=1
+                    if row['outcome']:pending_raw+=1
+                    elif used[-1]['status']=='interrupted_confirmed':pending_retry+=1
+        new_calls=remaining+pilot_remaining-pending_raw
+        work_seconds=new_calls*(max(observed)*1.25+5) if observed else None
+        checkpoint_observations=(getattr(self,'checkpoint_timing',{}) if assisted(self.config)
+                                 else getattr(self,'checkpoint_timing',self.meta.meta('checkpoint_timing',{})))
+        checkpoint_max=checkpoint_observations.get('max_seconds')
         export_count=pending_main+ceil(pending_main/2)+2*pending_pilots+4
         if work_seconds is not None:export_count+=ceil(work_seconds/self.config['checkpoint_seconds'])
         overhead=export_count*checkpoint_max if checkpoint_max is not None else None
         usage = self.admission.usage()
-        return dict(worst_remaining_first_attempts=remaining,remaining_attempt_allowance=usage["remaining"],
+        value=dict(worst_remaining_first_attempts=remaining,remaining_attempt_allowance=usage["remaining"],
                     remaining_pilot_first_attempts=pilot_remaining,
                     estimated_remaining_exports=export_count,estimated_checkpoint_overhead_seconds=overhead,
                     whole_remaining_wall_seconds=(work_seconds+overhead+self.config['export_reserve_seconds'] if work_seconds is not None and overhead is not None else None),
                     whole_forecast_basis='remaining pilot/main calls, observed maximum +25% and 5s/call, observed export maximum; heuristic, excludes setup/load and abnormal tails',
                     forecast_scope='main_only; not a whole-session completion guarantee',
-                    remaining_pilots=sum(not self.meta.meta('automatic/pilot-'+str(n),{}).get('passed') for n in (1,2,3)),
+                    remaining_pilots=sum(not self.meta.meta('automatic/pilot-'+str(n),{}).get('passed') for n in range(1,self.config['pilot_worlds']+1)),
                     session_observation=self.meta.meta('window',{}).get('observation'),
                     measured_checkpoint_seconds=checkpoint_max,
                     observed_max_ready_seconds=max(observed) if observed else None,
@@ -699,6 +813,28 @@ class Session:
                     timeout_worst_case_seconds=remaining*self.config[mode+"_timeout_seconds"]+self.config["export_reserve_seconds"],
                     remaining_session_seconds=self.remaining_time(), includes_idle_inspection=False,
                     caveat="Observed maximum with 25% margin is a forecast, not a runtime guarantee; two allocated GPUs also consume idle time.")
+        if assisted(self.config):
+            value.update(forecast_scope='remaining fixed pilot/main model calls; serial conservative estimate',
+                         remaining_new_model_attempts=new_calls,remaining_first_stage_slots=first_slots,
+                         pending_raw_replays=pending_raw,pending_interruption_retries=pending_retry,
+                         whole_forecast_basis='Remaining pilot/main slots, known raw replay excluded; maximum completed scalar/diagnostic/pilot/main ready seconds +25% and 5s/call; current-session measured export maximum')
+        return value
+
+    def require_resources(self):
+        forecast=self.forecast();budget=self.admission.usage()
+        c=forecast['observed_max_ready_seconds']
+        enough=(budget['remaining'] is not None and budget['in_flight']==0 and
+                c is not None and 1.25*c+5<=self.config['direct_timeout_seconds'] and
+                forecast['whole_remaining_wall_seconds'] is not None and self.remaining_time() is not None and
+                self.remaining_time()>=forecast['whole_remaining_wall_seconds'] and
+                budget['remaining']>=forecast['remaining_new_model_attempts'] and
+                self.config['contingency_limit']-budget['contingency']>=forecast['pending_interruption_retries'])
+        for stage,needed in forecast['remaining_first_stage_slots'].items():
+            spent=sum(r['stage']==stage and not r['contingency'] for s in self.stores for r in s.rows('attempts'))
+            enough &= self.admission.first_limits[stage]-spent>=needed
+        if not enough:
+            raise ValueError('Assisted remaining fixed scope does not fit measured call/export/deadline or stage/reserve allowance')
+        return forecast
 
     def freeze(self, notes):
         mode = self.qualified()
@@ -707,10 +843,10 @@ class Session:
         policy=self.meta.meta('execution_plan',{}).get('policy')
         automatic=policy in AUTOMATIC_POLICIES
         if automatic:self.automatic_plan()
-        for number in (1,2,3):
+        for number in range(1,self.config['pilot_worlds']+1):
             if automatic:
                 if not self.meta.meta('automatic/pilot-'+str(number),{}).get('passed'):
-                    raise ValueError('Three passing objective pilot checks required for automatic main admission')
+                    raise ValueError(f"{self.config['pilot_worlds']} passing objective pilot checks required for automatic main admission")
                 # Reconstruct actual evidence too; metadata is not a substitute.
                 if not self.scope_evidence(next(w for w in self.manifest['worlds'] if w['id']==f'pilot-{number-1:02d}'),pilot=True)['passed']:
                     raise ValueError('Automatic pilot evidence no longer satisfies the precommitted checks')
@@ -722,10 +858,18 @@ class Session:
                 not review.get("useful_communication") or not review.get("usable")):
                 raise ValueError("three complete original teams/controls and documented communication/usability reviews required")
         pilot_calls = [t for t in result["traces"] if t["episode"].startswith("pilot-")]
-        if policy not in (RECOVERY_POLICY,OUTCOME_POLICY) and any(any(json.loads(t["outcome"]).get(k) for k in ('truncated','failure','framing_error')) for t in pilot_calls if t["outcome"]):
+        if policy not in (RECOVERY_POLICY,OUTCOME_POLICY,ASSISTED_POLICY) and any(any(json.loads(t["outcome"]).get(k) for k in ('truncated','failure','framing_error')) for t in pilot_calls if t["outcome"]):
             raise ValueError("pilot truncation/provider defects not accepted")
-        if policy not in (RECOVERY_POLICY,OUTCOME_POLICY) and any(ev.get("error") for s in self.stores for ep in s.rows("episodes") if ep["id"].startswith("pilot-") for ev in json.loads(ep["state"]).get("events",[])):
+        if policy not in (RECOVERY_POLICY,OUTCOME_POLICY,ASSISTED_POLICY) and any(ev.get("error") for s in self.stores for ep in s.rows("episodes") if ep["id"].startswith("pilot-") for ev in json.loads(ep["state"]).get("events",[])):
             raise ValueError("pilot malformed actions not accepted")
+        if policy==ASSISTED_POLICY:
+            from .report import read_run
+            manifest,tables,_=read_run(self.run)
+            decision=pilot_usefulness(manifest,tables)
+            self.meta.put_meta('assisted_feasibility',decision)
+            if not decision['passed']:
+                raise ValueError('Assisted feasibility fails: original teams require 3/4 and scalar controls require 7/8; main stays unexecuted')
+            self.require_resources()
         forecast = self.forecast()
         if policy==OUTCOME_POLICY and (forecast['whole_remaining_wall_seconds'] is None or self.remaining_time()<forecast['whole_remaining_wall_seconds']):
             raise ValueError('documented adequate attempt/time forecast including remaining work and checkpoint overhead required')
@@ -743,7 +887,7 @@ class Session:
                      qualification_policy=self.meta.meta('qualification_policy'),prior_spending=self.meta.meta('prior_spending',[]),
                      implementation_transition=self.meta.meta('implementation_transition'),
                      settings=self.request(dict(complete_input=[0]),0,mode,control=True)["settings"],
-                     rubric=self.config["rubric"],prompt_system=messages(permitted_view(self.manifest["worlds"][0],initial_episode(self.manifest["worlds"][0],"prefix"),0))[0],
+                     rubric=self.config["rubric"],prompt_system=messages(permitted_view(self.manifest["worlds"][0],initial_episode(self.manifest["worlds"][0],"prefix"),0),regime=self.config['regime'])[0],
                      sessions=[s.rows("sessions") for s in self.stores])
         self.meta.bind("freeze",value)
         return value
@@ -769,7 +913,8 @@ class Session:
             value=dict(complete=True,worlds=[],id='main-complete')
             self.meta.put_meta('batch',value)
             return value
-        # A two-world action uses opposite logical slots; fixed parity guarantees it.
+        if assisted(self.config):self.require_resources()
+        # Assisted assignment may place both worlds on one slot; main serializes it.
         value = dict(id="batch/"+"+".join(ids),worlds=ids,complete=False,first_ceiling=19*len(ids),
                      eligible_retry_allowance=self.config["contingency_limit"]-self.admission.usage()["contingency"],
                      forecast=self.forecast(),prepared_at=utc())
@@ -810,8 +955,15 @@ class Session:
         batch = self.meta.meta("batch")
         if batch["complete"]:
             return batch
-        with ThreadPoolExecutor(max_workers=len(batch["worlds"])) as pool:
-            futures=[pool.submit(self.world,next(w for w in self.manifest["worlds"] if w["id"]==identity),mode) for identity in batch["worlds"]]
+        if assisted(self.config):self.require_resources()
+        assigned={}
+        for identity in batch['worlds']:
+            world=next(w for w in self.manifest['worlds'] if w['id']==identity)
+            assigned.setdefault(world['device'],[]).append(world)
+        def run_slot(worlds):
+            for world in worlds:self.world(world,mode)
+        with ThreadPoolExecutor(max_workers=len(assigned)) as pool:
+            futures=[pool.submit(run_slot,worlds) for worlds in assigned.values()]
             failures=[]
             for future in as_completed(futures):
                 try: future.result()
@@ -858,6 +1010,7 @@ class Session:
             result, error = None, None
             try:
                 methods = {"readiness":self.readiness,"screen":self.screen,"envelope":self.envelope,
+                           "diagnostics":self.diagnostics,
                            "plan_execution":self.plan_execution,"check_pilot":self.check_pilot,
                            "admit_main":self.admit_main,"automatic_main":self.automatic_main,
                            "pilot":self.pilot,"freeze":self.freeze,"prepare_batch":self.prepare_batch,
