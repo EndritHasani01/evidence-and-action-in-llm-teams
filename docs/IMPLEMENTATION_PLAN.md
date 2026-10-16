@@ -1,5 +1,18 @@
 # Implementation plan
 
+## Assisted I-01 implementation (16 October 2026)
+
+The user approves end-to-end implementation of the final
+[design](plans/i01-course-final-experimental-design.md) and
+[protocol/acceptance annex](plans/i01-course-final-design-protocol-and-acceptance.md).
+[Specification §12.1](../PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026)
+adopts the separately scoped assisted-v2 condition. The
+[implementation checklist](plans/i01-assisted-implementation-progress.md) records
+the active work and evidence. Adoption/configuration are prepared; implementation
+and CPU verification are in progress. No GPU inference or experimental execution
+is authorized. Course-7, legacy I-01 and thesis semantics remain preserved.
+The dated handoffs below retain their historical meaning.
+
 ## I-01 implementation handoff (15 October 2026)
 
 Literature research update (16 October 2026): the

@@ -969,3 +969,98 @@ Final executed notebook and off-session downloads are operator responsibilities.
 No native-benchmark score, correction-specific, pure-anchoring, broad
 generalization or multi-agent-superiority claim is licensed. Publication remains
 separately authorized.
+
+### 12.1 Assisted I-01 course regime (16 October 2026)
+
+The user explicitly approves implementation of the
+[final experimental design](docs/plans/i01-course-final-experimental-design.md)
+and its [exact protocol/acceptance annex](docs/plans/i01-course-final-design-protocol-and-acceptance.md).
+This prospective amendment adopts `i01-course-assisted-v2`, execution policy
+`i01-assisted-feasibility-2026-10-16`. It applies only to new studies explicitly
+initialized with `configs/i01-course-assisted.json`. All earlier §12 regimes,
+Course-7 records and §§1–11 retain their own semantics. Implementation and CPU
+verification are authorized; GPU inference and experimental execution are not.
+
+The selected question is the total practical retain/clear contrast after the
+specified winning-record withdrawal under one fixed assisted environment. The
+annex §§1–3 are incorporated as the exact common system/control instructions,
+renderer, literal phase-history boundary and public-rule rejection feedback.
+Both agents receive the same assistance from the initial phase onward, including
+a short coordination strategy and the public sole-record-change rule. Hidden
+winning-record/replacement eligibility remains outside peer views. Strict
+actions, turn consumption, private finality, source privacy, literal history
+transformations, isolated siblings, fresh hidden state and exact scoring remain.
+No host computation/certification/repair, forced exchange, extra turns or decoder
+constraint is introduced. Unsuccessful natural main prefixes remain included.
+
+Save four qualification, four pilot and twenty main worlds before inference,
+with master seed 2026101601 and the annex §4 world/assignment/invocation-seed
+algorithms. Uniform proposals are conditioned on mathematical eligibility and
+the scheduled original-winner owner, with separate rejection counters and the
+unchanged 1,000-proposal cap. Check actual input disjointness from exposed
+historical/development data before release. Preserve the four balanced main
+owner/first-speaker strata, five worlds each. Decouple device and physical sibling
+order as specified, keep siblings on one device, interleave strata and serialize
+same-device worlds within the ten fixed two-world batches.
+
+Pin the same Qwen3.5-9B revision, NF4/FP16 T4 runtime and direct decoding/settings
+as §12. Use 8,192 input/512 output tokens, load/direct deadlines 600/180 seconds,
+five-second termination, 300-second checkpoints, 120-second export reserve and
+at least 1.5 GiB measured free headroom. No model/thinking/backend fallback or
+within-campaign candidate search is selected. Lock source/runtime, presentation,
+inputs, schedule, scoring, limits and gates before the first call.
+
+Ordinary first-attempt stage ceilings are hardware/state 8, direct scalar
+qualification 8, diagnostics 4, pilots 80 and main 380: total 480. Contingency is
+20 and the whole independent-campaign hard ceiling is 500. Unused stage capacity
+adds no scope. Retain the single admission owner, two canonical stores,
+persist-before-effects, exact resume and unknown-spending block. One identical
+infrastructure retry requires no durable outcome and confirmed termination;
+recorded wrong/invalid/truncated/timeout outcomes never retry. Each new load of
+the unchanged frozen runtime requires six state checks and two envelopes charged
+to contingency; accepted scalar/diagnostic/pilot outcomes do not regenerate.
+An independent campaign needs explicit execution authorization; restores and
+renaming never reset its spending. Prior campaigns remain separately preserved.
+
+After source/native checks and six state checks, all eight qualification scalar
+controls must be legal and durably committed; accuracy is diagnostic. Require
+two current-load full envelopes, then exactly the four annex §5 single-call
+diagnostics with settled durable evidence and a verified preparation checkpoint.
+Diagnostic nonpasses have no extra numerical admission threshold. Run all four
+complete natural pilots once despite ordinary mistakes unless a genuine health,
+integrity, unresolved-spending or resource fault stops admission.
+
+Main eligibility requires exactly: complete terminal/committed evidence for all
+four pilots and their controls, reconciled spending/exports; at least 3/4 correct
+original teams; at least 7/8 correct pilot scalar controls; valid current health
+and measured resources sufficient for the remaining fixed scope. These are
+course-usefulness choices, not reliability certification. No recovery-success,
+effect-direction, all-actions-legal or qualitative-message veto applies. On
+failure, preserve a full feasibility report and leave main unexecuted/unknown;
+do not tune, resample, relax thresholds or substitute worlds. On passing and
+separate execution authorization, complete all twenty intended main worlds;
+ordinary main failures never select subsequent worlds. Use annex §4.3's exact
+conservative forecast and the existing per-dispatch deadline/export safeguards.
+Keep finite idempotent stage cells, resident workers, quiescent checkpoints,
+settled-error export and bounded cleanup. Run All is supported only for its
+separately authorized fixed stages; eligibility is not execution authorization.
+
+The primary endpoint is mean clear-minus-retain exact both-agent revised success
+over all twenty intended worlds, with four paired categories and unknown
+coverage/completion bounds. Principal secondary effort is paired post-revision
+ready-model seconds including all attempts and failures. Unknown effort never
+becomes zero. The cohort point/interval requires all intended pairs; observed
+coverage summaries remain separately labelled. Use annex §6's exact ordering,
+10,000-draw stratified paired bootstrap with seed 2026101602 and sorted zero-based
+indices 250/9750. Disclose constant/degenerate empirical variation; no equivalence,
+power or repeated-seed reliability claim is licensed. Correct-prefix recovery
+has descriptive counts only. Preserve historical intervals unchanged. Report
+syntax/schema/action legality separately, completion/wrong agreement, locally
+refutable and obsolete submissions, effort coverage and the fixed six-category
+trace casebook. No LLM judge, causal failure-percentage decomposition, pure-memory,
+anchoring, revision-specific or cross-campaign prompt-efficacy claim is selected.
+
+The annex §7 acceptance requirements govern implementation verification. Actual
+T4/model/latency/headroom gates remain unrun until separately authorized. Reuse
+the existing implementation and durable evidence infrastructure; introduce no
+new outcome store, runtime framework or scientific registry.
