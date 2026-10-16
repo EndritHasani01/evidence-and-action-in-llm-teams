@@ -757,6 +757,15 @@ The plan does not promise recovery from missing bytes, current Kaggle quota, sma
 
 ## 14. Living implementation handoff
 
+16 October 2026, independent analysis-only checkpoint: see the
+[complete course-7 scientific audit](../validation/i01-course-7-independent-scientific-audit.md)
+and separate [quality improvement proposal](../proposals/i01-course-7-experimental-quality-improvement.md).
+The raw counts, exact conversations, historical repetitions and paired effort
+reproduce. The review identifies weak original-team competence, mixed history
+effects and device/order coupling as scientific limitations. No implementation,
+new empirical stage, annotation-database update or scientific amendment is
+performed or adopted; the recommendations remain prospective.
+
 14 October 2026: explicit user approval adopts Section 3's reviewed I-01 design,
 including phase-final submissions, new-value-only notices and three pilots.
 Existing thesis and earlier course artifacts remain protected. No GPU/model,

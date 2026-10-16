@@ -2,6 +2,19 @@
 
 ## I-01 implementation handoff (15 October 2026)
 
+Independent scientific review (16 October 2026): the
+[complete forensic analysis](validation/i01-course-7-independent-scientific-audit.md)
+independently confirms the raw twenty-pair result, action legality, conversation
+exports, historical repeated requests and paired effort calculations. It adds
+explicit limitations concerning device/order coupling, old-value availability,
+private finality and the three-world correct-prefix subset. The separate
+[experimental quality proposal](proposals/i01-course-7-experimental-quality-improvement.md)
+prioritizes bounded collaborative-interface development and distinguishes a
+future natural-policy study from a controlled-prefix regime. This is documentation
+and read-only verification only: no proposal is adopted, no scientific or
+executable behavior changes, and no inference is run. Original artifacts and
+historical human-review status remain unchanged.
+
 Latest empirical update: the supplied **course-7** run completes all 33 notebook
 code cells and all **20/20 intended main pairs** under the recorded-outcome
 policy. The [report-ready analysis](validation/i01-course-7-results-analysis.md)
