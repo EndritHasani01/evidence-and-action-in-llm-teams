@@ -5,7 +5,10 @@ Assisted follow-up (16 October 2026): approved implementation of the final
 [annex](i01-course-final-design-protocol-and-acceptance.md) is scoped by
 [specification §12.1](../../PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026).
 The [active checklist](i01-assisted-implementation-progress.md) records the new
-four-pilot/37-cell delivery and CPU evidence; final installed review is pending.
+four-pilot/37-cell delivery, CPU evidence and completed installed/final audit.
+Verified assisted source checkpoint is `d95bb01`; source-only upload is
+`dist/i01-course-assisted/kaggle-input/i01-source.zip`. Software verification
+does not establish new model capability or actual-host feasibility.
 No new GPU inference or experimental execution is authorized. Historical
 Course-7, legacy I-01 and the original WBS evidence below remain preserved.
 

@@ -12,7 +12,7 @@ and evidence; it changes no scientific requirement.
 |---|---|---|
 | A01 | Scoped adoption, explicit new configuration, legacy authority retained | Adoption commit `7a71783` |
 | A02 | 28 saved disjoint worlds, owner counters, fixed assignment/seeds | Core and actual exposed-input inventory pass: 56 new inputs versus 60 distinct exposed inputs, nine checked sources; exact packet/regeneration binding verified |
-| A03 | Exact common/control text, source-last renderer, private views, native bound | Final native check passes (7,634/8,192 conservative bound), including seven adversarial literal families; installed delivery pending |
+| A03 | Exact common/control text, source-last renderer, private views, native bound | Final native check passes (7,634/8,192 conservative bound), including seven adversarial literal families; installed source identity verified |
 | A04 | Literal history boundary, isolated siblings, strict effects/finality/wait | Core and full scripted workflow/portable replay pass |
 | A05 | Exact ≤32-token rejection feedback and raw reason preservation | Core/native and full scripted invalid-action traces pass |
 | A06 | Four reachable diagnostic fixtures, predicates and physical accounting | Core/workflow/report verified; legal diagnostic nonpass does not veto main |
@@ -21,10 +21,10 @@ and evidence; it changes no scientific requirement.
 | A09 | Exact conservative forecast, fixed session clock, per-call export guards | Implemented; current-session export reset, raw replay capacity and deadline/precommit guards verified |
 | A10 | Primary/effort/unknown bounds/paired bootstrap/degeneracy and casebook | Hand-scored cases, physical/logical denominators, eight figure pairs and fixed case selection verified |
 | A11 | Honest qualification/diagnostic/pilot/main coverage and full raw UI | Source tests pass: eight qualification rows, four diagnostics, intended arm/stratum coverage, unknown effort and real zero-model operator inspection/export |
-| A12 | Thin full notebook/CLI/source wheel, finite cells, source-bound restore/cleanup | Source delivery checks pass: 37 assisted /33 legacy finite cells, explicit regime selection and real operator checkpoint; installed release pending |
-| A13 | Legacy/thesis behavior and historical Course-7 evidence preserved | Baseline recorded externally; final comparison pending |
-| A14 | Focused CPU checks, native tokenizer, scripted full-bound/resume/portable evidence | 108 affected source tests exercised; one legacy wording regression corrected and rerun with four delivery/report checks (five pass); final native checks pass; installed/final audit pending |
-| A15 | Documentation, installed delivery, final requirement-by-requirement audit | Pending |
+| A12 | Thin full notebook/CLI/source wheel, finite cells, source-bound restore/cleanup | Verified source-only release at `d95bb01`: 37 finite cells, isolated installed CLI/report/self-check, exact source/wheel, ZIP/extracted bootstrap and exact installed restore; model attempts zero |
+| A13 | Legacy/thesis behavior and historical Course-7 evidence preserved | All 2,293 initial files outside the 22 explicit task-owned changes remain byte-identical; Course-7 read-only analysis equals saved analysis exactly; legacy affected tests and reviewed migration guards verified |
+| A14 | Focused CPU checks, native tokenizer, scripted full-bound/resume/portable evidence | 108 affected source tests exercised; one legacy wording regression corrected and rerun with four delivery/report checks (five pass); final native and installed checks pass; no claim that full suite was rerun green |
+| A15 | Documentation, installed delivery, final requirement-by-requirement audit | Complete for software/CPU scope: [final audit](../validation/i01-assisted-implementation.md#installed-release-and-final-requirement-audit), [installed receipt](../../notebooks/validation/i01-development/assisted-release-review.json), [preservation/source binding](../../notebooks/validation/i01-development/assisted-final-audit.json) |
 
 ## Checkpoints
 
@@ -34,8 +34,11 @@ and evidence; it changes no scientific requirement.
 4. Reporting, UI/notebook/source delivery, installed checks and final evidence.
 
 Core checkpoint evidence: [implementation evidence](../validation/i01-assisted-implementation.md).
-Core implementation commit: `4bf4020`. Workflow/report verification adds eleven
-distinct checks without repeating unrelated thesis/GPU tests.
+Core implementation commit: `4bf4020`; workflow/report checkpoint: `b1d3364`;
+final code/delivery checkpoint: `d95bb01`. The documentation/evidence handoff
+follows that verified source packet. All A01–A15 software requirements are
+implemented and supported by the linked evidence. Actual-host/model gates
+below are intentionally unrun, outside this implementation authorization.
 
 ## Preservation and pending gates
 

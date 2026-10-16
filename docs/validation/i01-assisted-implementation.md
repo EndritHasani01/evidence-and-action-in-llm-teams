@@ -1,9 +1,9 @@
 # Assisted I-01 implementation evidence
 
-16 October 2026. Implementation in progress under
+16 October 2026. Software implementation and CPU/installed verification complete under
 [specification §12.1](../../PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026).
 The [requirement checklist](../plans/i01-assisted-implementation-progress.md)
-distinguishes completed checks from remaining work. No model is loaded and no
+distinguishes completed software checks from unrun actual-host gates. No model is loaded and no
 GPU inference, qualification, pilot or main experiment is executed.
 
 ## Adoption and first core checkpoint
@@ -125,8 +125,70 @@ intentionally reuse qualification inputs. No binary research/model material is
 added. Receipt:
 [assisted-final-source-checks.json](../../notebooks/validation/i01-development/assisted-final-source-checks.json).
 
-## Remaining work
+## Installed release and final requirement audit
 
-Build and verify the source-only installed release, then complete preservation
-and the requirement-by-requirement audit. Actual-host/model gates remain
-separately authorized future work.
+Executed successfully after code/delivery commit
+`d95bb01223590bb889d4612199662266ce78968d`:
+
+```powershell
+python scripts/build_i01_course_release.py --assisted --output dist/i01-course-assisted
+python scripts/verify_i01_course_release.py --assisted
+```
+
+The source-only ZIP is **896,376 bytes**, SHA-256
+`35cce02abbbf8c8b2e91675c605f047f5d291eaabc8d81a9ec8e5beb10252d13`.
+It has 111 inventoried source members, one matching wheel, both identical
+unexecuted 37-cell notebooks and the checked 28-world input proof. The upload
+directory contains only `i01-source.zip`. Weights, dependency binaries and
+research PDFs are excluded. The packet's source/progress snapshots precede
+this installed receipt; this final evidence/handoff does not rebuild it.
+
+The [installed receipt](../../notebooks/validation/i01-development/assisted-release-review.json)
+passes: archive/member integrity, deterministic notebook contents, ZIP/extracted
+bootstrap and finite reruns, wrong-packet/stale-import rejection, all installed
+package bytes matching the source, isolated outside-checkout CLI initialization,
+status, CPU self-check and no-plot report without optional dependencies, exact
+installed portable export/restore and complete source capture. The installed
+restore explicitly confirms neither `torch` nor `transformers` was imported.
+Notebook stage execution in this verifier uses a recording stub; the separate
+source workflow tests use CPU scripted workers. Neither is model inference.
+
+The final audit inspected the actual implementation, named checks and delivered
+artifacts against the design, annex §§1–8 and adopted specification §12.1:
+
+| Requirement | Implemented surfaces | Evidence inspected / result |
+|---|---|---|
+| A01: scoped adoption and legacy boundaries | Specification §12.1; new explicit config/regime | `7a71783`; specification diff is a 95-line addition, with no removals; earlier regimes/default config preserved |
+| A02: population, 28 inputs, owner counters, seeds and joint assignment | `core.manifests`, `make_world`, `check_disjoint_inputs`; `checks.input_separation`; initialization/release | Core truth/regeneration/balance/overlap tests; actual nine-source audit, exact packet regeneration and tamper rejection; release contains all 28 checked worlds |
+| A03: exact instructions, renderer, privacy, native limits | `core.messages`, `permitted_view`; explicit `inference.prepare` regime | Exact-annex text and literal/private-view tests; final native conservative bound 7,634 plus seven adversarial literal families; installed bytes match |
+| A04: strict action effects, source boundary and independent siblings | Existing validator/scheduler with assisted history lengths | Legal three-call exchange, rejected message-plus-wait/empty actions, finality, waiting and literal-history checks; full scripted workflow and exact portable replay |
+| A05: public-only feedback | `policy.outcome_feedback`, `core.rejection_feedback` | Priority/public-rule tests and exact five strings; actual native lengths 8–17, all ≤32; ordinary invalid actions remain charged with no delivery |
+| A06: four declared diagnostic requests | Fixture/predicate constructors and finite workflow/report rows | Reachable private views and expected-value privacy tests; scripted history has no fabricated model attempts; nonpasses do not veto main |
+| A07: complete pilots, exact gate, fixed candidate | `policy.pilot_usefulness`; plan, pilot, scope evidence and main admission | Full 480-call fixture passes at 3/4 originals and 7/8 controls despite 288 rejected recovery actions; 2/4 or 6/8 fails; failed usefulness collects all pilots and leaves main unknown |
+| A08: 480/20/500, retries/reloads/resume/unknowns | Existing admission owner/stores and workflow | Joint-cap tests reach exactly 480 ordinary +20 reserve and reject excess; unknown-tail block; two eight-call reload cycles, no scientific regeneration; zero-call saved-stage replay and exact ZIP/extracted restore |
+| A09: exact forecast and finite clock/export behavior | Forecast, resource admission, current-load checks and finite actions | Formula inspected against annex §4.3; maximum ordinary-call cost/current-session export accounting; precommit/fixed-clock and pending-raw tests; exactly two pilot exports; per-dispatch guards retained |
+| A10: exact cohort analysis, unknowns, costs, bootstrap and cases | Read-only report, process tables and deterministic casebook | Hand-scored pairs/bounds/coverage; missing costs stay unknown; paired whole-world seeded order/indices, degeneracy and counts-only subgroup; exact six-category selection and eight figure pairs |
+| A11: honest UI/trace/qualification displays | Existing operator/Study and report inspection | Real zero-model operator opens, inspects eight controls/four diagnostics, verifies export and closes; full raw conversation rendering and explicit intended/unknown coverage remain |
+| A12: complete thin delivery | Explicit CLI flag; 37 finite cells; source builder/verifier | Both legacy 33/new 37 recording-stub scopes pass; installed source/wheel/CLI/report/self-check, source-bound bootstrap and exact portable restore pass |
+| A13: historical/thesis/legacy preservation | Explicit new regime, unchanged defaults and preserved artifacts | Final baseline comparison: 2,293 protected initial files unchanged; only 22 named task-owned initial files differ; current legacy Course-7 analysis exactly equals saved JSON; reviewed migration and negative source guards pass |
+| A14: proportionate verification | Existing unittest/native/self-check/delivery paths | The source run's single wording failure and focused correction are recorded above; all 24 assisted test cases are covered within the affected suite; native and installed checks pass; unrelated thesis/GPU checks not repeated |
+| A15: documentation, release evidence and final audit | README, runbook, living handoff/WBS, this evidence/checklist | Named packet/receipts, local-link and consistency checks, final preservation/source binding receipt and logical checkpoint commits; no software requirement left pending |
+
+Machine-readable preservation and packet binding:
+[assisted-final-audit.json](../../notebooks/validation/i01-development/assisted-final-audit.json).
+All current scientific source files and both notebooks were compared directly
+with the verified ZIP. The initial preservation inventory covers 2,315 tracked
+or visible untracked files; ignored caches/builds are outside it. The changed
+initial files are the explicit authorized specification/handoff, I-01 package,
+current notebook and delivery surfaces. Course-7, older releases, thesis source,
+legacy config and the original design/research documents remain byte-identical.
+The separate untracked approval-decision document from the intervening design
+review is preserved and not staged in this implementation handoff.
+
+**Software completion does not imply experimental completion.** Actual T4
+loading, current-load A/B/A/headroom/finite-score/latency evidence, eight real
+scalar controls, four diagnostics, four pilots and twenty main worlds remain
+unrun for this new condition. They require separate execution authorization and
+their own actual-host gates. Provider allocation/release, GPU utilization and
+external download completion remain unknown until actually observed. No agent
+performance improvement or retain/clear effect is claimed.

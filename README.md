@@ -3,9 +3,11 @@
 Current course development: the approved assisted I-01 design is adopted in
 [specification §12.1](PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026).
 The [current runbook](docs/I01_KAGGLE.md) describes its 37 finite cells, four
-pilots, twenty fixed main worlds and 480+20 physical-attempt ceiling. Core,
-workflow and reporting CPU checks pass; final delivery/installed verification
-is in progress in the [implementation checklist](docs/plans/i01-assisted-implementation-progress.md).
+pilots, twenty fixed main worlds and 480+20 physical-attempt ceiling. Software
+implementation and CPU/installed delivery verification are complete; the
+[implementation checklist](docs/plans/i01-assisted-implementation-progress.md)
+links the requirement audit and exact evidence. The verified source-only packet
+is `dist/i01-course-assisted/kaggle-input/i01-source.zip` (source `d95bb01`).
 No new model inference or GPU execution is authorized or performed. Course-7
 remains the separate completed historical result. The legacy summaries below
 retain their condition-specific meaning.

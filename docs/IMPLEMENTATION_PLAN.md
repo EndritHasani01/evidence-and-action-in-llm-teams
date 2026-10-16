@@ -8,9 +8,16 @@ The user approves end-to-end implementation of the final
 [Specification §12.1](../PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026)
 adopts the separately scoped assisted-v2 condition. The
 [implementation checklist](plans/i01-assisted-implementation-progress.md) records
-the active work and evidence. Adoption/configuration are prepared; implementation
-and CPU verification are in progress. No GPU inference or experimental execution
-is authorized. Course-7, legacy I-01 and thesis semantics remain preserved.
+the completed software requirements and evidence. Adoption, implementation,
+native tokenizer checks and isolated installed delivery verification are complete.
+Verified source checkpoint: `d95bb01223590bb889d4612199662266ce78968d`;
+source-only upload: `dist/i01-course-assisted/kaggle-input/i01-source.zip`.
+The [final evidence](validation/i01-assisted-implementation.md#installed-release-and-final-requirement-audit)
+records the one corrected legacy wording regression rather than claiming the
+108-test run was wholly green. Documentation/evidence handoff follows the
+verified code checkpoint without rebuilding its packet. No GPU inference or
+experimental execution is authorized. Course-7, legacy I-01 and thesis semantics
+remain preserved; all actual-host/model gates remain unrun.
 The dated handoffs below retain their historical meaning.
 
 ## I-01 implementation handoff (15 October 2026)

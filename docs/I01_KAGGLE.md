@@ -13,6 +13,14 @@ names contain the same complete **37 finite code cells**. The legacy builder
 default still generates the original 33-cell recorded-outcome flow; its
 configuration, reports and historical release/run directories remain separate.
 
+The packet at source `d95bb01223590bb889d4612199662266ce78968d` passes the
+[installed review](../notebooks/validation/i01-development/assisted-release-review.json):
+896,376 bytes, SHA-256
+`35cce02abbbf8c8b2e91675c605f047f5d291eaabc8d81a9ec8e5beb10252d13`.
+Its bundled progress documents are snapshots taken before installed verification;
+the [final evidence and audit](validation/i01-assisted-implementation.md#installed-release-and-final-requirement-audit)
+record completion afterward without changing the verified source packet.
+
 ## Build and verify on CPU
 
 ```powershell
