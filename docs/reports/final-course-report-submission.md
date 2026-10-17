@@ -1,6 +1,5 @@
 # Recovering Distributed LLM Teams After Information Changes
 
-**University course research report**\
 17 October 2026
 
 ## 1. Abstract
