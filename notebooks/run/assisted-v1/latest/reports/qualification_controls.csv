@@ -1,0 +1,9 @@
+attempts,call,committed,correct,error,framing_error,generated_tokens,mode,phase,provider_failure,ready_seconds,recorded,slot,submission,termination,truth,unresolved,valid,world
+1,qualification-00/control-original-direct,True,1,,,16,direct,original,,2.9311222970000017,True,0,964,eos,964,0,True,qualification-00
+1,qualification-00/control-revised-direct,True,1,,,16,direct,revised,,2.293269384999917,True,0,937,eos,937,0,True,qualification-00
+1,qualification-01/control-original-direct,True,1,,,16,direct,original,,2.5999971439999854,True,1,943,eos,943,0,True,qualification-01
+1,qualification-01/control-revised-direct,True,1,,,16,direct,revised,,2.319183356999929,True,1,925,eos,925,0,True,qualification-01
+1,qualification-02/control-original-direct,True,1,,,16,direct,original,,2.0767657110000073,True,0,987,eos,987,0,True,qualification-02
+1,qualification-02/control-revised-direct,True,1,,,16,direct,revised,,2.037454188999959,True,0,986,eos,986,0,True,qualification-02
+1,qualification-03/control-original-direct,True,1,,,16,direct,original,,2.322305416000063,True,1,929,eos,929,0,True,qualification-03
+1,qualification-03/control-revised-direct,True,1,,,16,direct,revised,,2.258319840000013,True,1,907,eos,907,0,True,qualification-03

@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "tests": 37,
+  "seconds": 49.562,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "modules_and_selected_checks": [
+    "tests.test_i01_repairs",
+    "tests.test_i01_integration",
+    "tests.test_i01_client_startup",
+    "tests.test_i01_notebook_ui",
+    "tests.test_i01_runtime",
+    "tests.test_i01_setup",
+    "tests.test_inference_preparation.InferencePreparationTests.test_loader_sets_visibility_before_any_cuda_call_and_requests_native_nf4",
+    "tests.course_inference_checks.CourseInferencePreparationTests.test_course_loader_keeps_pinned_language_tie_nf4_visibility_and_limits"
+  ],
+  "model_attempts": 0,
+  "gpu_inference_executed": false,
+  "scientific_pins_changed": false,
+  "kaggle_verified": false,
+  "initial_full_invocation": {
+    "tests": 37,
+    "seconds": 49.562,
+    "errors": 2,
+    "failures": 0,
+    "reason": "Editable development import route removed by disabled .pth processing; resolved by explicit checkout-only source path."
+  },
+  "unresolved_checks": 0,
+  "targeted_resolution": {
+    "real_controller_checks": 2,
+    "real_controller_seconds": 26.161,
+    "entry_setup_startup_checks": 10,
+    "entry_setup_startup_seconds": 16.876,
+    "all_passed": true
+  },
+  "verification_note": "37 distinct checks passed: 35 in the full invocation, both failed development-controller checks on targeted rerun; ten entry/setup checks passed again after the fix. Packaged isolated venv uses the installed wheel."
+}

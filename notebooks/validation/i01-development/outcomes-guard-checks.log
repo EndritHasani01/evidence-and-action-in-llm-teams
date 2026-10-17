@@ -1,0 +1,7 @@
+test_output_error_classes_diagnostic_but_real_faults_and_qualification_strict (tests.test_i01_outcome_admission.Classification.test_output_error_classes_diagnostic_but_real_faults_and_qualification_strict) ... ok
+test_invalid_fixed_qualification_still_blocks_before_any_new_call (tests.test_i01_outcome_admission.OutcomeAdmission.test_invalid_fixed_qualification_still_blocks_before_any_new_call) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.936s
+
+OK

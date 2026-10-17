@@ -1,0 +1,9 @@
+test_pilot_protocol_failure_is_recorded_and_blocks_next_pilot_and_main (tests.test_i01_run_all.RunAll.test_pilot_protocol_failure_is_recorded_and_blocks_next_pilot_and_main) ... ok
+test_no_message_quality_gate_but_original_team_must_finish (tests.test_i01_run_all.RunAll.test_no_message_quality_gate_but_original_team_must_finish) ... ok
+test_main_invalid_actions_are_outcomes_and_numbered_scopes_do_not_skip (tests.test_i01_run_all.RunAll.test_main_invalid_actions_are_outcomes_and_numbered_scopes_do_not_skip) ... ok
+test_precommitted_settings_and_tight_time_cannot_be_waived (tests.test_i01_run_all.RunAll.test_precommitted_settings_and_tight_time_cannot_be_waived) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 27.184s
+
+OK

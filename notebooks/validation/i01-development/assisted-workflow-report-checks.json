@@ -1,0 +1,20 @@
+{
+  "scope": "scripted assisted workflow, resource guards and hand-scored reports",
+  "environment": "Windows, Python 3.11, CPU only",
+  "distinct_tests_passed": 11,
+  "workflow_report_batch": {"tests": 9, "exit_code": 0, "elapsed_seconds": 82.134},
+  "added_guard_batch": {"tests": 2, "exit_code": 0, "elapsed_seconds": 4.026},
+  "full_scripted_ordinary_attempts": 480,
+  "ordinary_rejected_recovery_actions": 288,
+  "successful_reload_cycles": 2,
+  "attempts_per_reload_cycle": 8,
+  "completed_stage_replay_new_attempts": 0,
+  "portable_restored_analysis_exact": true,
+  "legacy_course7_analysis_exact": true,
+  "svg_png_figure_pairs_verified": 8,
+  "protected_file_changes": 0,
+  "model_loaded": false,
+  "model_inference_attempts": 0,
+  "installed_delivery_verified": false,
+  "gpu_verified": false
+}

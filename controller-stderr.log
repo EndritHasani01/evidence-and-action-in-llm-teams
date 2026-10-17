@@ -1,0 +1,19 @@
+Error in sitecustomize; set PYTHONVERBOSE for traceback:
+ModuleNotFoundError: No module named 'wrapt'
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/kaggle/temp/i01/i01-venv/lib/python3.13/site-packages/recovery/i01/cli.py", line 190, in <module>
+    main()
+    ~~~~^^
+  File "/kaggle/temp/i01/i01-venv/lib/python3.13/site-packages/recovery/i01/cli.py", line 175, in main
+    serve(args.run,args.source); return
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/kaggle/temp/i01/i01-venv/lib/python3.13/site-packages/recovery/i01/cli.py", line 18, in serve
+    import matplotlib
+  File "/kaggle/temp/i01/i01-venv/lib/python3.13/site-packages/matplotlib/__init__.py", line 1299, in <module>
+    rcParams['backend'] = os.environ.get('MPLBACKEND')
+    ~~~~~~~~^^^^^^^^^^^
+  File "/kaggle/temp/i01/i01-venv/lib/python3.13/site-packages/matplotlib/__init__.py", line 774, in __setitem__
+    raise ValueError(f"Key {key}: {ve}") from None
+ValueError: Key backend: 'module://matplotlib_inline.backend_inline' is not a valid value for backend; supported values are ['gtk3agg', 'gtk3cairo', 'gtk4agg', 'gtk4cairo', 'macosx', 'nbagg', 'notebook', 'qtagg', 'qtcairo', 'qt5agg', 'qt5cairo', 'tkagg', 'tkcairo', 'webagg', 'wx', 'wxagg', 'wxcairo', 'agg', 'cairo', 'pdf', 'pgf', 'ps', 'svg', 'template']

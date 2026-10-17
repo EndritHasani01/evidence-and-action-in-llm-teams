@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "checks": [
+    "native fixture 827/revised 780; duplicates/negative/boundary",
+    "fixed strata/seeds; private views; finality/wait; literal siblings; invalid actions",
+    "raw-before-effects; idempotence; pre-persistence retry; 499/500; backup/ZIP/expanded restore; unknown vs zero"
+  ],
+  "native_tokenizer": false,
+  "tokenizer": null,
+  "executed_at": "2026-10-14T12:58:52.901698+00:00",
+  "model_attempts": 0,
+  "environment": "scripted temporary DBs; no model loaded"
+}

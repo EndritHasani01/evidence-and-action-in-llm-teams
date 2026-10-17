@@ -1,5 +1,28 @@
 # Recovery in distributed LLM teams
 
+Current course development: the approved assisted I-01 design is adopted in
+[specification §12.1](PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026).
+The [current runbook](docs/I01_KAGGLE.md) describes its 37 finite cells, four
+pilots, twenty fixed main worlds and 480+20 physical-attempt ceiling. Software
+implementation and CPU/installed delivery verification are complete; the
+[implementation checklist](docs/plans/i01-assisted-implementation-progress.md)
+links the requirement audit and exact evidence. The verified source-only packet
+is `dist/i01-course-assisted/kaggle-input/i01-source.zip` (source `d95bb01`).
+No new model inference or GPU execution is authorized or performed. Course-7
+remains the separate completed historical result. The legacy summaries below
+retain their condition-specific meaning.
+
+The current I-01 course experiment is a separate, explicitly adopted study:
+see the [I-01 Kaggle runbook](docs/I01_KAGGLE.md) and
+[implementation WBS](docs/plans/i01-course-implementation-wbs.md).
+Its 33 ordinary cells support a fresh whole-experiment Run All: preparation,
+three objectively checked pilots, ten fixed batches covering twenty paired
+worlds, reports and verified export. The hard ceiling is 500 attempts; human
+conversation review is retrospective. Source-only upload is under
+`dist/i01-course-run-all/`. Course-4 verifies the earlier preparation runtime;
+new pilot/main behavior remains Kaggle-unverified. Historical flows below remain
+independently scoped.
+
 The complete course Kaggle interface is in the [Kaggle runbook](docs/KAGGLE_COURSE.md).
 The Run All delivery contains `course_kaggle.ipynb`, `course-kaggle-dataset.zip`
 and `START_HERE.md`. Its small online-first dataset contains research code and

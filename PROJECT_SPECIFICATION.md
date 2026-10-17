@@ -692,3 +692,375 @@ regime with fixed two-family/eight-world scopes and conditional continuation
 repeatability. Keep uncertainty, inactive treatments, failures and unfavorable
 results visible. Do not pool course/development/thesis outcomes, claim a universal
 best policy or replace outstanding thesis admission and execution obligations.
+
+## 12. Adopted I-01 course regime
+
+Adopted 14 October 2026 by the user's explicit approval of the reviewed
+[I-01 WBS](docs/plans/i01-course-implementation-wbs.md). This is a separately
+identified controlled recovery extension of native SILO-BENCH I-01. Sections
+1–11 and their historical artifacts retain their own meaning; their schedules,
+Run All policy, fallback models, gates and hour ceilings do not govern I-01.
+Implementation approval authorizes no inference, qualification, pilot or main run.
+
+Amended 15 October 2026 by the user's instruction to fully repair the reviewed
+[course-3 solution](docs/proposals/i01-course-3-direct-mode-solution.md): use
+direct-only protocol-first admission, consistent pilot accuracy treatment and
+reconciled campaign spending as specified below. This is data-informed after
+two 10/12 direct screens and five thinking attempts, before every pilot/main
+outcome. Preserve the original 11/12 failures and the incomplete thinking screen;
+new eligibility is not a rewritten historical pass. No further execution is
+authorized by this software-repair instruction.
+
+The question is the practical effect of retaining versus clearing a short
+distributed conversation after withdrawing its previously winning value. Use
+two agents with twenty independent uniform integers each in −1000…1000. An
+eligible world has a unique global maximum at record r and remaining maximum
+M2 > −1000. Replace r uniformly in [−1000, M2−1]. Reject mathematical
+ineligibility only, at most 1,000 proposals per saved world. Save actual inputs,
+edit, rejection count, independent seeds, orders and placement before inference.
+Six qualification, three pilot and twenty main worlds are disjoint. Never
+select or replace a world using model outcomes. Each main world has one realized
+prefix, retain and clear siblings, and one revised full-information control.
+Each pilot also has original and revised controls. Qualification evaluates both
+inputs of each of six worlds. Controls use one scalar action with no messaging.
+
+Current private shards are authoritative. Retain keeps each agent's own
+previously visible messages and explicit submissions literally; clear erases
+those. No private reasoning is retained. Both agents receive the changed
+owner/record identity; only the owner sees its new value/current shard. Before
+values, truth, partner private shards/submissions, future edits, treatment labels
+and eligibility rules stay outside prompts. Messages are ordinary bounded text,
+with no host certification. Submission values are private unless messaged.
+
+An action is one JSON object with exactly `message` (string or null), `submit`
+(strict integer or null), and `wait` (boolean). Waiting excludes other actions;
+an empty non-wait action is invalid. Submission is final within a phase.
+Send-and-submit delivers the explicit message then finishes the sender. Later
+messages remain archived without invalidation. The revision alone reopens both
+agents. At most three invocations per agent/six per phase, with no transferred
+turns. Waiting wakes on a delivered message. Stop on both submissions, exhausted
+opportunities or inability of unfinished agents to progress, irrespective of
+correctness. Invalid/truncated replies deliver nothing and consume their turn;
+at most 32 native tokens of nonsemantic feedback may appear on a later legal
+turn. Known terminal timeouts consume attempt and turn and never inherit an
+answer. Unresolved calls stop admission until reconciled.
+
+Five main worlds occupy each changed-owner/recovery-first-speaker combination.
+Prefix first speaker equals recovery first speaker. Match sibling per-agent
+invocation seeds and recovery order; balance physical treatment order and keep
+sibling episodes on one logical GPU slot. Share only the prefix; never replay
+continuation answers across treatments. Exact resume reuses recorded raw output.
+
+Use pinned Qwen3.5-9B revision c202236235762e1c871ad0ccb60c8ee5ba337b9a,
+text-only NF4 double quantization, FP16 and the reviewed T4 attention runtime.
+The primary condition is direct/nonthinking: temperature 0.7/top-p 0.8/top-k 20,
+repetition penalty 1, presence penalty 0, maximum 512 output tokens and 8,192
+input tokens (resident bound 8,704). Under the original 14 October rule, thinking
+was conditionally available at 1.0/0.95/20, maximum 4,096 total output tokens and
+512 visible final tokens (resident bound 12,288). Preserve the observed partial
+thinking qualification, raw tokens and latency as diagnostic history; do not
+complete it, use it as an automatic fallback, or select it for this primary
+study. Never carry private thinking forward.
+Use fresh call-owned KV/recurrent state and finite-score checks. Provisional
+load/direct/thinking deadlines are 600/180/900 seconds with bounded cleanup;
+freeze observed adequate selected bounds before main. No extra model candidate.
+
+Hard admission is 500 new physical attempts: at most 380 main, 60 pilot,
+24 qualification, eight hardware/state and 28 contingency. Direct-only planned
+first attempts are 460, conditional-thinking maximum 472. Unused capacity adds
+no worlds. Keep the prior 45 attempts separate. All warmups/diagnostics, failures
+and retries count; loads/downloads do not. One identical infrastructure retry is
+permitted only without a durable outcome and with confirmed prior termination.
+Wrong/malformed/truncated answers and recorded timeouts never retry. Persist
+admission before dispatch, raw outcome before effects, and atomically checkpoint
+effects. A single controller admits across two explicitly named WAL/FULL worker
+databases. No unbounded lost-session spending is assumed zero.
+
+The 500 limit covers the I-01 campaign, not each newly named directory. Preserve
+known prior-study spending as explicit checkpoint-linked charges in the same
+admission owner. For the supplied course-3 continuation, its 23 physical attempts
+and course-2's 18 separate repeated preparation attempts total 41. This amendment
+charges those earlier 18 to the existing 28-attempt reserve as known repeated
+preparation, leaving ten reserve attempts; their original stage rows are not
+rewritten or described as retries, lost calls or the historical 45. The five
+thinking attempts remain spent and seven thinking controls remain unexecuted.
+At most 442 further ordinary envelope/pilot/main attempts would bring this known
+campaign to 483, before any additional exposure/reload/retry. Unused seven
+thinking slots do not expand the ten remaining reserve or add worlds. Restores
+must preserve prior-study charges and all earlier lost-spending uncertainty.
+
+Fresh-rerun amendment (15 October 2026, subsequent user instruction): the user
+explicitly requests a new run from the beginning, with no previous checkpoint
+or result reuse, using Run All to check the repaired workflow. This independently
+identified study starts at zero with its own 500-attempt ceiling and unchanged
+stage/reserve limits. The prior 41 I-01 executions remain separate historical
+preparation evidence, as do the earlier 45; they are not deleted, imported,
+pooled as new outcomes or presented as unspent calls within their old campaign.
+Only explicit independent initialization grants this scope. Renaming, reopening
+or restoring an existing study never resets its attempts, charges or unknown
+exposure. This exception supersedes the shared-campaign requirement above only
+for the newly authorized independent rerun.
+
+Run All is supported for this new study's bounded preparation: setup, source/
+native checks, model loading, six readiness calls, twelve direct controls, two
+full-envelope calls, reporting and verified checkpoint export. It makes at most
+20 first attempts plus eligible charged infrastructure retries. Current provider
+facts are observed before preparation; setup/download time consumes the same
+fixed session window. Thinking inference is not selected. A failed protocol,
+isolation, resource or evidence prerequisite blocks further inference; no automatic
+waiver is permitted. Pilot reviews, explicit freeze and bounded main execution
+remain individually operated in the complete research workflow. All model,
+runtime, task, population, scoring and uncertainty settings remain unchanged.
+
+Recorded-outcome amendment (15 October 2026, course-6 follow-up): the user
+approved full implementation of the course-6 proposal's recommended policy and
+explicitly selected another fresh complete Run All. New independent studies
+precommit `i01-recorded-outcomes-run-all-2026-10-15` before any model call. This
+supersedes the pilot prefix/completion/control admission requirements below only
+for that new policy. Preserve historical stricter plans and failed decisions.
+The fresh study starts empty with its own unchanged 500-attempt hard allocation,
+28-attempt contingency ceiling and fixed three-pilot/twenty-main-world schedule;
+no earlier outcomes or checkpoint spending are imported or erased.
+
+The fixed twelve direct qualification controls must still be legal and committed;
+mathematical accuracy remains diagnostic. After qualification, all ordinary
+sampled pilot behavior is measured: original-prefix, retain/clear and later
+pilot-control wrong/invalid/malformed/truncated/framing replies and terminal
+noncompletion do not veto admission. Original submissions, protocol compliance
+and communication remain diagnostics. Every scheduled phase/control must still
+have terminal durable evidence with committed raw outcomes/effects. Unknown or
+unexecuted evidence is never converted into a recorded failure. Confirmed
+timeouts may be failed outcomes, but current-load health and confirmed termination
+are required before further dispatch. Genuine provider/cache/numerical defects,
+source/privacy/storage faults, unresolved spending/death, inadequate headroom or
+measured resources still stop. Pilot checks and main admission use the same rule.
+
+Strict action validation, turn consumption, delivery, source views, prompts and
+feedback, model/runtime, decoding, inputs, seeds, limits, scoring and uncertainty
+remain unchanged. Invalid messages are never delivered or repaired. Prompt/
+feedback clarification and new models/action spaces remain deferred. Keep all
+twenty intended main worlds and correct-prefix descriptive analysis; disclose
+floor effects, ordinary failures and retrospective human review. Preserve the
+existing clock, checkpoints, replay, restore and truthful failure cleanup.
+Implementation authorizes no new GPU inference or actual research execution here.
+
+Recovery-admission amendment (15 October 2026, course-5 follow-up): the user
+approved implementation of the course-5 repair proposal and explicitly chose
+a fresh beginning with complete Run All. New independent studies precommit
+`i01-recovery-admission-run-all-2026-10-15` before any model call. This supersedes
+only the all-phase pilot protocol requirement below for that policy; historical
+plans and failed gates keep their original meaning. No course-5 continuation or
+result import is selected. The existing independent 500-attempt allocation and
+fixed three-pilot/twenty-world schedule apply without expansion.
+
+Qualification still requires twelve legal, committed direct controls. Each
+pilot requires legal original-prefix actions, both original-team submissions,
+legal original/revised controls, terminal states and committed raw/effects for
+every phase, reconciled spending, current hardware/isolation evidence and an
+adequate measured resource forecast. Accuracy remains diagnostic. Ordinary
+post-revision retain/clear invalid, malformed, truncated, framing, wrong and
+noncompletion outcomes are measured failures and do not veto admission. A
+recorded recovery timeout is eligible only with confirmed process termination.
+Unresolved termination/spending, genuine provider/cache/numerical faults,
+source/storage/headroom and resource failures still block. Use the same rule at
+pilot checks and main admission. Strict action validation, turn consumption,
+delivery, views, prompts, seeds, inference settings and scoring are unchanged;
+never repair a model reply. Prompt/protocol/model redesign remains deferred.
+
+On unattended failure, stop admission, preserve a settled partial export before
+bounded worker cleanup, and record actual closure acknowledgements or failure;
+never claim provider release. Keep the last valid archive if export fails.
+Derive persistent blocked status from saved gate/stage receipts. Preserve the
+original session observation timestamp, duration and estimate/observed basis
+through initialization; repeated cells never extend its deadline. Diagnostics
+distinguish syntax, schema and illegal action, phase and admission consequence.
+Human communication/mechanism review remains retrospective and pending.
+
+Whole-experiment Run All amendment (15 October 2026): the user explicitly
+approved replacing the blocking pilot-review procedure with predefined objective
+checks and retrospective human review, then requested the complete end-to-end
+notebook. This supersedes the preparation-only Run All boundary and manual
+pilot/freeze/batch acknowledgements for the new independent study. It changes
+the admission procedure, not the model, task, conditions, scoring or population.
+No new inference is authorized during implementation; the operator's later
+Run All explicitly requests the fixed qualification, three pilots and all
+twenty main worlds through these gates.
+
+Before the first model call, bind a Run All execution plan to the existing
+immutable input/configuration/source manifest, direct decoding/settings, prompt
+implementation, limits, evaluation and rubric. Do not choose settings using
+pilot answers. All three pilots run in order. Automatic pilot admission requires
+terminal prefix/retain/clear episodes and both controls, both original-team
+submissions (irrespective of correctness), legal protocol for every attempted
+pilot action/control, committed durable effects, reconciled attempts, valid
+current-load qualification/headroom, and an inspectable checkpoint. All three
+must pass before main admission. A wrong scalar, wrong team answer, recovery
+failure, effect direction or message-quality judgment never selects admission.
+Message counts and full conversations are diagnostic. Useful task-relevant
+communication, usability and mechanisms remain unreviewed until genuine later
+human inspection; never synthesize human approval or an LLM judge.
+
+After the pilots, automatically record main admission only when the unchanged
+plan matches the active settings and the measured attempt/time/deadline forecast
+is adequate. This admission record does not refreeze or tune the precommitted
+configuration. Execute all ten fixed two-world batches in order without operator
+acknowledgements. Each batch must have complete durable terminal evidence before
+advancing; invalid/wrong recorded main outcomes remain measured failures and do
+not select worlds or stop the main run. Real provider/cache/numerical, protocol
+qualification/pilot, unresolved spending, source, storage and resource failures
+still stop dispatch and retain a truthful partial report/checkpoint. No automatic
+fallback, resampling of recorded outcomes, replacement world or sample expansion.
+
+Keep ordinary independently executable stage cells, progress and complete trace
+inspection. A rerun of a numbered completed pilot/batch never advances another
+scope or spends again. Export after each pilot, each main batch and settled
+error; final reports/figures and verified portable export conclude the run.
+Existing resident replicas stay loaded between stages; close them after final
+export. Automatic local checkpoints remain enabled even when restore controls
+are not used. Do not promise survival of a provider hard shutdown or external
+download verification. Retrospective review remains visibly pending in exports.
+
+The user reports an approximately twelve-hour Kaggle session maximum. A fresh
+session may use a clearly labelled conservative 700-minute planning window,
+leaving twenty minutes against that approximate maximum, starting before setup.
+This is an operator-reported estimate, not verified provider allowance/assignment
+evidence. Reduce it to actual remaining time if already elapsed, and check the
+account's GPU allowance. Never extend the fixed deadline on cell rerun. Provider
+shutdown can occur earlier; existing call/termination/export margins and durable
+accounting remain mandatory. No completion-time guarantee is licensed.
+
+Actual-host prerequisites are source/dependency/restore/self-check acceptance,
+two distinct T4s, six short state checks, twelve completed direct full-information
+controls with zero malformed/truncated/illegal final actions, and two direct full
+envelopes with ≥1.5 GiB measured free headroom on each device. Force output
+reserve only in envelope diagnostics. Mathematical qualification accuracy is
+reported completely as a diagnostic, with no accuracy admission threshold.
+Three separately executed pilots require complete original teams and six
+complete controls, useful task-relevant original communication,
+valid protocol, inspectable exports and an adequate measured attempt/time
+forecast. Mathematical errors in any phase/control and effect direction alone
+do not fail a gate. Ordinary malformed/truncated model replies remain recorded
+invalid actions, not global backend defects; runtime/cache/numerical faults
+continue to block dispatch. Pilot protocol checks remain strict.
+Freeze configuration, inputs, schedule, prompts, runtime, bounds, endpoints and
+rubric explicitly before main. Main scopes are fixed one/two-world actions;
+success never automatically authorizes a next stage. Preserve session deadline
+margin for calls, termination and export; actual Kaggle allowance is operator
+evidence, not an invented quota. Reports and inspection keep resident weights.
+
+Team success means both exact revised submissions within bounds. Recorded
+terminal failures score zero; unexecuted/unresolved episodes are unknown.
+Include all twenty intended worlds and a separate correct-prefix descriptive
+stratum. Show paired counts and clear-minus-retain contrast, unknown bounds and
+10,000 seeded 95% exploratory world-bootstrap draws within the four fixed
+schedule strata, preserving siblings; qualify degeneracy and small sample.
+Principal effort is post-revision ready-model inference seconds. Report calls,
+tokens/messages and accuracy jointly, loading/setup/observed allocation/unknown
+costs separately. Charge the prefix once physically and to both hypothetical
+end-to-end policies logically. Freeze the trace rubric listed in
+`configs/i01-course.json`; human annotations need trace references and ambiguous
+mechanisms stay ambiguous. No LLM judge or arbitrary accuracy/cost score.
+
+Deliver full prompt/output/token/conversation evidence, tables, SVG/PNG figures,
+partial/final reports, exact source/runtime/input identities and portable
+quiescent SQLite backups with safe ZIP/extracted-directory restoration. Missing
+bytes or unbounded lost spending block continuation, not read-only reporting.
+Final executed notebook and off-session downloads are operator responsibilities.
+No native-benchmark score, correction-specific, pure-anchoring, broad
+generalization or multi-agent-superiority claim is licensed. Publication remains
+separately authorized.
+
+### 12.1 Assisted I-01 course regime (16 October 2026)
+
+The user explicitly approves implementation of the
+[final experimental design](docs/plans/i01-course-final-experimental-design.md)
+and its [exact protocol/acceptance annex](docs/plans/i01-course-final-design-protocol-and-acceptance.md).
+This prospective amendment adopts `i01-course-assisted-v2`, execution policy
+`i01-assisted-feasibility-2026-10-16`. It applies only to new studies explicitly
+initialized with `configs/i01-course-assisted.json`. All earlier §12 regimes,
+Course-7 records and §§1–11 retain their own semantics. Implementation and CPU
+verification are authorized; GPU inference and experimental execution are not.
+
+The selected question is the total practical retain/clear contrast after the
+specified winning-record withdrawal under one fixed assisted environment. The
+annex §§1–3 are incorporated as the exact common system/control instructions,
+renderer, literal phase-history boundary and public-rule rejection feedback.
+Both agents receive the same assistance from the initial phase onward, including
+a short coordination strategy and the public sole-record-change rule. Hidden
+winning-record/replacement eligibility remains outside peer views. Strict
+actions, turn consumption, private finality, source privacy, literal history
+transformations, isolated siblings, fresh hidden state and exact scoring remain.
+No host computation/certification/repair, forced exchange, extra turns or decoder
+constraint is introduced. Unsuccessful natural main prefixes remain included.
+
+Save four qualification, four pilot and twenty main worlds before inference,
+with master seed 2026101601 and the annex §4 world/assignment/invocation-seed
+algorithms. Uniform proposals are conditioned on mathematical eligibility and
+the scheduled original-winner owner, with separate rejection counters and the
+unchanged 1,000-proposal cap. Check actual input disjointness from exposed
+historical/development data before release. Preserve the four balanced main
+owner/first-speaker strata, five worlds each. Decouple device and physical sibling
+order as specified, keep siblings on one device, interleave strata and serialize
+same-device worlds within the ten fixed two-world batches.
+
+Pin the same Qwen3.5-9B revision, NF4/FP16 T4 runtime and direct decoding/settings
+as §12. Use 8,192 input/512 output tokens, load/direct deadlines 600/180 seconds,
+five-second termination, 300-second checkpoints, 120-second export reserve and
+at least 1.5 GiB measured free headroom. No model/thinking/backend fallback or
+within-campaign candidate search is selected. Lock source/runtime, presentation,
+inputs, schedule, scoring, limits and gates before the first call.
+
+Ordinary first-attempt stage ceilings are hardware/state 8, direct scalar
+qualification 8, diagnostics 4, pilots 80 and main 380: total 480. Contingency is
+20 and the whole independent-campaign hard ceiling is 500. Unused stage capacity
+adds no scope. Retain the single admission owner, two canonical stores,
+persist-before-effects, exact resume and unknown-spending block. One identical
+infrastructure retry requires no durable outcome and confirmed termination;
+recorded wrong/invalid/truncated/timeout outcomes never retry. Each new load of
+the unchanged frozen runtime requires six state checks and two envelopes charged
+to contingency; accepted scalar/diagnostic/pilot outcomes do not regenerate.
+An independent campaign needs explicit execution authorization; restores and
+renaming never reset its spending. Prior campaigns remain separately preserved.
+
+After source/native checks and six state checks, all eight qualification scalar
+controls must be legal and durably committed; accuracy is diagnostic. Require
+two current-load full envelopes, then exactly the four annex §5 single-call
+diagnostics with settled durable evidence and a verified preparation checkpoint.
+Diagnostic nonpasses have no extra numerical admission threshold. Run all four
+complete natural pilots once despite ordinary mistakes unless a genuine health,
+integrity, unresolved-spending or resource fault stops admission.
+
+Main eligibility requires exactly: complete terminal/committed evidence for all
+four pilots and their controls, reconciled spending/exports; at least 3/4 correct
+original teams; at least 7/8 correct pilot scalar controls; valid current health
+and measured resources sufficient for the remaining fixed scope. These are
+course-usefulness choices, not reliability certification. No recovery-success,
+effect-direction, all-actions-legal or qualitative-message veto applies. On
+failure, preserve a full feasibility report and leave main unexecuted/unknown;
+do not tune, resample, relax thresholds or substitute worlds. On passing and
+separate execution authorization, complete all twenty intended main worlds;
+ordinary main failures never select subsequent worlds. Use annex §4.3's exact
+conservative forecast and the existing per-dispatch deadline/export safeguards.
+Keep finite idempotent stage cells, resident workers, quiescent checkpoints,
+settled-error export and bounded cleanup. Run All is supported only for its
+separately authorized fixed stages; eligibility is not execution authorization.
+
+The primary endpoint is mean clear-minus-retain exact both-agent revised success
+over all twenty intended worlds, with four paired categories and unknown
+coverage/completion bounds. Principal secondary effort is paired post-revision
+ready-model seconds including all attempts and failures. Unknown effort never
+becomes zero. The cohort point/interval requires all intended pairs; observed
+coverage summaries remain separately labelled. Use annex §6's exact ordering,
+10,000-draw stratified paired bootstrap with seed 2026101602 and sorted zero-based
+indices 250/9750. Disclose constant/degenerate empirical variation; no equivalence,
+power or repeated-seed reliability claim is licensed. Correct-prefix recovery
+has descriptive counts only. Preserve historical intervals unchanged. Report
+syntax/schema/action legality separately, completion/wrong agreement, locally
+refutable and obsolete submissions, effort coverage and the fixed six-category
+trace casebook. No LLM judge, causal failure-percentage decomposition, pure-memory,
+anchoring, revision-specific or cross-campaign prompt-efficacy claim is selected.
+
+The annex §7 acceptance requirements govern implementation verification. Actual
+T4/model/latency/headroom gates remain unrun until separately authorized. Reuse
+the existing implementation and durable evidence infrastructure; introduce no
+new outcome store, runtime framework or scientific registry.

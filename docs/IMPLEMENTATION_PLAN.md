@@ -1,5 +1,380 @@
 # Implementation plan
 
+## Assisted I-01 implementation (16 October 2026)
+
+The user approves end-to-end implementation of the final
+[design](plans/i01-course-final-experimental-design.md) and
+[protocol/acceptance annex](plans/i01-course-final-design-protocol-and-acceptance.md).
+[Specification §12.1](../PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026)
+adopts the separately scoped assisted-v2 condition. The
+[implementation checklist](plans/i01-assisted-implementation-progress.md) records
+the completed software requirements and evidence. Adoption, implementation,
+native tokenizer checks and isolated installed delivery verification are complete.
+Verified source checkpoint: `d95bb01223590bb889d4612199662266ce78968d`;
+source-only upload: `dist/i01-course-assisted/kaggle-input/i01-source.zip`.
+The [final evidence](validation/i01-assisted-implementation.md#installed-release-and-final-requirement-audit)
+records the one corrected legacy wording regression rather than claiming the
+108-test run was wholly green. Documentation/evidence handoff follows the
+verified code checkpoint without rebuilding its packet. No GPU inference or
+experimental execution is authorized. Course-7, legacy I-01 and thesis semantics
+remain preserved; all actual-host/model gates remain unrun.
+The dated handoffs below retain their historical meaning.
+
+## I-01 implementation handoff (15 October 2026)
+
+Literature research update (16 October 2026): the
+[targeted scientific review](implementation-research/i01-course-7-targeted-scientific-literature-review.md)
+examines fifteen full-text papers against the Course-7 evidence. Its separate
+[literature-informed recommendations](proposals/i01-course-7-literature-informed-recommendations.md)
+retain a bounded common-interface competence check but prioritize a distinct
+controlled-history feasibility regime for mechanism claims: fixed historical
+source evidence, old-conclusion exposure and actual-edit/no-change continuations.
+This differs from the earlier proposal's default natural-policy follow-up and
+is not adopted. Source preservation, paired recovery and correction/preservation
+measurement are prior art; any contribution requires a narrowly supported
+distributed actual-change extension. Research PDFs remain outside the repository.
+This update changes documentation only; no scientific contract, executable,
+prompt, configuration, original artifact or result is changed, and no model or
+GPU is used. Implementation and new execution remain separately authorized work.
+
+Independent scientific review (16 October 2026): the
+[complete forensic analysis](validation/i01-course-7-independent-scientific-audit.md)
+independently confirms the raw twenty-pair result, action legality, conversation
+exports, historical repeated requests and paired effort calculations. It adds
+explicit limitations concerning device/order coupling, old-value availability,
+private finality and the three-world correct-prefix subset. The separate
+[experimental quality proposal](proposals/i01-course-7-experimental-quality-improvement.md)
+prioritizes bounded collaborative-interface development and distinguishes a
+future natural-policy study from a controlled-prefix regime. This is documentation
+and read-only verification only: no proposal is adopted, no scientific or
+executable behavior changes, and no inference is run. Original artifacts and
+historical human-review status remain unchanged.
+
+Latest empirical update: the supplied **course-7** run completes all 33 notebook
+code cells and all **20/20 intended main pairs** under the recorded-outcome
+policy. The [report-ready analysis](validation/i01-course-7-results-analysis.md)
+and [read-only audit](../notebooks/validation/i01-course7-analysis/README.md)
+verify archive/source/wheel identity, all 29 worlds, 206 team-call and 38 control
+replays, exact report reconstruction and the paired bootstrap intervals.
+Audit checkpoint: `7d8f854`. Both policies succeed on 2/20 worlds; clear minus
+retain is 0 pp (exploratory 95% interval -10 to +10 pp). Retain repeats the
+obsolete maximum in ten worlds and uses less recovery time; that is not a
+general policy-superiority claim. Actual native preparation, three pilots,
+freeze, ten main batches, reporting/export and worker closure are now evidenced
+for source `65462e1`. There are 252 physical attempts, zero contingency/retries
+or missing main outcomes. Earlier unrun statements below describe their dated
+implementation checkpoints. Human annotation, independently verified GPU
+utilization/provider release and cross-session GPU restoration remain unverified.
+No inference, scientific change or original-evidence mutation occurs in this
+analysis; historical runs, source packets and thesis semantics are preserved.
+
+Latest course-6 implementation: the user approves the proposal's recommended
+post-qualification recorded-outcome policy and chooses fresh complete Run All.
+Adoption `a31be4d` binds new plans to
+`i01-recorded-outcomes-run-all-2026-10-15`: twelve scalar qualification controls
+remain strict; ordinary pilot prefix/recovery/later-control mistakes and terminal
+noncompletion remain measured outcomes. Both pilot/main gates share that rule.
+Historical policies/data are preserved. No prompt, feedback, model, inference,
+core semantics or scoring change; no course-6 migration or old-result import.
+Both notebook names remain identical 33-cell complete workflows, now using
+`/kaggle/working/i01-outcomes-study` and source-only packet
+`dist/i01-course-outcomes-run-all/kaggle-input/`. Exact diagnostics, progress,
+failure references, empty-main notices and resource/export forecasts are improved;
+clock, durability, replay/restore and safe cleanup remain. See
+[implementation evidence](validation/i01-course-6-repair.md) and
+[first-execution instructions](I01_KAGGLE.md). GPU research stages are unrun here.
+Thirty-seven distinct focused checks now pass, including a full 460-call scripted
+study with 440 ordinary invalid scientific actions, zero-call numbered replay,
+exact export/restore and closure. A first-export forecast lookup was corrected
+and its case plus the time guard retested. Eight saved-data figure pairs render
+with the new empty-main notice. Source-only installed delivery review follows
+the implementation checkpoint; empirical amended Kaggle stages remain unrun.
+Final current implementation/source checkpoint is
+`65462e1e5fc687e1107d80a152e7d6c638ed93b7`. The
+[installed review](../notebooks/validation/i01-development/outcomes-run-all-release-review.json)
+and [preservation audit](../notebooks/validation/i01-development/outcomes-delivery-review.json)
+pass. Source ZIP: 790,170 bytes, SHA256
+`3ebc8a3b0c5cc354ac711677b65fb4c18e5bc4dabd2ce8e410ac10844e87f92a`.
+All checked earlier inputs/releases and unrelated source hashes are preserved.
+The final receipts/handoff commit leaves this verified source packet unchanged.
+
+Latest course-6 evidence review is documentation only:
+[complete analysis](validation/i01-course-6-results-analysis.md) and
+[repair/improvement proposal](proposals/i01-course-6-fix-and-improvement-proposal.md).
+The supplied b92cdbf run completes 43 attempts: eight hardware, twelve direct
+qualification and 23 calls across two pilots. Pilot 1 passes the recovery-only
+amendment. Pilot 2 completes but fails the still-strict original-prefix rule on
+one legal-JSON/illegal message-plus-wait action; its other recovery error is
+diagnostic. Main remains 0/20 and pilot 3 is unknown. Source/wheel identities,
+exact report reconstruction, all 29 regenerated worlds and 19 team-call replays
+match. Both worker terminations and preserved clock-estimate provenance are now
+observed on Kaggle; provider release is unknown. The new proposal evaluates a
+broader post-qualification outcome policy and separate prompt clarifications;
+neither is adopted or implemented. Current specification/code remain unchanged.
+
+Latest course-5 repair: the user approves the proposed phase-sensitive admission
+and chooses a fresh complete Run All, with no previous-result/checkpoint import.
+Adoption is `56a8fc8`; [specification §12](../PROJECT_SPECIFICATION.md#12-adopted-i-01-course-regime)
+binds new plans to `i01-recovery-admission-run-all-2026-10-15`. Strict original
+prefix/control admission remains; ordinary recovery action errors are measured
+failures. Pilot and main admission share reconstructed evidence. Historical
+strict plans and course-5's failed gate retain their meaning. No prompt, model,
+action, scoring or accounting changes, and no new course-5 migration.
+
+The implementation includes exact validation diagnostics/phase denominators,
+failure-first raw inspection, persistent blocked status, safe unattended export/
+worker cleanup and original session-clock provenance. Both notebook names are
+identical complete 33-cell workflows using `/kaggle/working/i01-recovery-study`.
+The new source-only packet is `dist/i01-course-recovery-run-all/kaggle-input/`;
+previous release directories remain historical. Focused check and installed-
+package evidence is in [course-5 repair](validation/i01-course-5-repair.md).
+Actual GPU stages and whole-run Kaggle feasibility remain operator validation.
+Thirty distinct focused checks pass across the three linked receipts, including
+a 368-call scripted complete study with 276 invalid recovery actions, zero-call
+replay, exact portable reconstruction, historical strict rejection, genuine fault
+guards, fixed clock evidence and export/receipt/closure failure handling. The
+saved course-5 ZIP is analyzed read-only; its historical failed gate is preserved.
+The earlier strict Run All handoff below is preserved for its historical packet.
+
+Final current source checkpoint: `b92cdbfcc9084e873dc231a4a27fe9114aed5725`.
+The [installed review](../notebooks/validation/i01-development/recovery-run-all-release-review.json)
+and [preservation/delivery audit](../notebooks/validation/i01-development/recovery-delivery-review.json)
+pass. Current source ZIP is 740,438 bytes, SHA256
+`9a678685249d2d9c68ad4f5393767015bfde08107dae1a8625f19bb179264826`.
+Both source-matched notebook names are complete; use the new source-only packet
+and the [fresh-run instructions](I01_KAGGLE.md). Historical course inputs/releases
+and unrelated scientific source hashes remain exact. This final receipt-only
+handoff does not regenerate the verified source checkpoint's packet.
+
+Current whole-study request supersedes the preparation-only handoff below. The
+user approved objective pilot checks and retrospective human review and requested
+one end-to-end Run All. Specification §12 records that procedural amendment.
+The 33-cell notebook locks the unchanged plan before inference, checks three
+pilots, admits main automatically on measured resources, executes all ten fixed
+batches, reports, verifies export and closes workers. Both notebook filenames
+contain the same complete flow. No actual model inference runs during this work.
+
+Course-4 executes all previous fourteen preparation cells successfully: twenty
+attempts, direct twelve valid/ten correct, both 8,192/512 headroom probes passing,
+and no pilots/main. The scope boundary, rather than a qualification error, ended
+that notebook. Exact saved analysis reconstruction passed; source and original
+artifacts remain preserved. The session's `lorem` allowance note is not provider
+evidence. The new default transparently estimates 700 fresh-session minutes
+against the user's approximate twelve-hour maximum; reduce for elapsed time.
+Source-only delivery will be `dist/i01-course-run-all/kaggle-input/`. See
+[course-4 and Run All evidence](validation/i01-course-4-run-all.md) and the
+[current runbook](I01_KAGGLE.md). Earlier releases remain historical, unchanged.
+
+Whole-study adoption checkpoint `509ce6b`; implementation/source checkpoint
+`39ad71bf6b00aebade13c443ff3c693128945add`. Nineteen focused checks pass,
+including a scripted complete twenty-world run through actual stage interfaces,
+zero-call replay, strict pilot/resource failures and exact report/archive restore.
+The [installed release review](../notebooks/validation/i01-development/run-all-release-review.json)
+passes both identical 33-cell notebooks, source/wheel matching, bootstrap/source
+guards, fresh 0/500 CLI setup and CPU reporting. The source ZIP is 692,262 bytes,
+SHA256 `a6f7c177de97876d4b58c9930aee624f0034e98bdaae46fa14fc3f2b1499e71b`.
+No GPU inference ran here; current full Run All, collaboration/main outcomes and
+actual twelve-hour feasibility remain Kaggle-only. Human communication review
+is retrospective, not automatically approved. Final receipt-only updates do not
+regenerate the source checkpoint's packet.
+
+Latest steering: the user explicitly requests a fresh beginning with Run All and
+no course-3 continuation or imported old results. Specification §12 records the
+independent-study exception: zero initial attempts, own 500 ceiling and unchanged
+stage/reserve limits. Existing studies and unknown-tail accounting never reset.
+The new default is fourteen ordinary preparation cells; the complete twenty-six
+research cells remain in a separate notebook with explicit pilot/freeze/main
+reviews. Source-only upload: `dist/i01-course-fresh/kaggle-input/`. See the
+[fresh-run evidence](validation/i01-fresh-run.md) and updated
+[first-execution instructions](I01_KAGGLE.md). Five focused fresh-start checks
+pass, including a scripted twenty-call preparation, zero-call replay, archive
+reconstruction, old-campaign conversion refusal and fixed-window forwarding.
+No actual model/native GPU stage is executed here. The completed continuation
+packet is preserved byte-for-byte at `dist/i01-course-0f600584dc10/`; the prior
+handoff below records that historical delivery, not the current default.
+
+Fresh source/operator commit `e17868e`; ZIP 681,217 bytes, SHA256
+`9b9c3be5fea9ac1449ad85e85aa3d73547bd95ca5840fe5ff69caefd78afe0a3`.
+The [fresh release review](../notebooks/validation/i01-development/fresh-release-review.json)
+passes 14/26 scopes, 78 source entries, installed wheel/CLI independent init,
+fresh report without Matplotlib, source/bootstrap checks and optional historical
+continuation compatibility. Sixteen focused checks pass (plus an overlapping
+notebook scope recheck); the final delivery audit preserves old evidence and
+confirms 232 document links. Both notebook outputs are empty. Actual Kaggle
+installation/inference/headroom and all new empirical stages remain unverified.
+The source-only upload and precise first execution are ready in the runbook.
+
+The user has now authorized full repair of the reviewed course-3 solution.
+Specification section 12 explicitly adopts direct-only protocol qualification,
+consistent pilot mathematical-outcome treatment and campaign reserve accounting.
+Original direct 10/12 failed competence decisions and partial thinking evidence
+remain intact; current eligibility is derived from all twelve saved valid direct
+controls. No model inference or empirical study stage runs during repair.
+
+Implementation checkpoints: `ea0c8a0` policy/adoption and `552f577` canonical,
+continuation, reserve, envelope and partial-report fixes. Forty initial affected
+checks passed, followed by the extended 46-check ordinary-cell/integration run.
+The final source/format/package receipts under
+`notebooks/validation/i01-development/` identify their exact scope and limits.
+See [complete repair evidence](validation/i01-course-3-repair.md),
+[operator instructions](I01_KAGGLE.md), the preserved
+[results analysis](validation/i01-course-3-results-analysis.md) and
+[reviewed proposal](proposals/i01-course-3-direct-mode-solution.md).
+
+The explicit pre-main continuation preserves course-3's study ID, manifest,
+original source and all 23 calls/attempts/effects. Current spending includes the
+verified eighteen-call course-2 reserve charge: 41 campaign attempts, eighteen
+of 28 reserve used, 459 arithmetic remaining before other exposure. Ten reserve
+attempts remain; seven unexecuted thinking slots add no reserve or worlds. A new
+study cannot silently reset known campaign spending. Earlier gap charges and
+world blocks survive latest/unknown/bounded-tail restoration. Original source,
+new active source, failed gates and the narrow normal-cap adjudication remain
+portable; old runtime writes are blocked by an explicit persistence-version tag.
+
+Python and the 26 ordinary notebook cells implement the full direct workflow:
+zero-call reuse/inspection, current-load full envelopes, each pilot/review/export,
+freeze, fixed main batches and final report/archive/restore. Reports include both
+mode scopes, trace-linked control failures, prior-study spending and qualification
+figures; unknown main results/costs remain unknown. Runtime/model, world/view,
+seed/schedule, prompt/decoding, turn-limit, scoring and uncertainty semantics are
+preserved outside the explicit admission amendment. New-release Kaggle envelope,
+collaboration, interruption/download and all twenty main pairs remain unverified.
+Earlier statements below are historical and are superseded only to the extent
+established by the linked evidence. Supplied runs and the verbatim evaluation
+remain unchanged; the original 8f5bcdb delivery is preserved locally.
+
+Final operator/source checkpoint: `0f60058`. Source ZIP is 665,937 bytes, SHA256
+`b0ef474a1bd21ac3d84820846e16b3e2fd483b9a66e8734b7dfe3752e21f6a81`.
+Release review passes 26 ordinary scopes, 74 inventoried source entries, complete
+wheel/source identity, actual installed course-3 continuation and CPU-only
+reporting without Matplotlib. The 46-check extended run and eleven format/source
+checks pass; the latter also reuses the 499/500 backup/restore check. Eight figure
+pairs are generated, with qualification/effort/failure figures visually reviewed.
+Final [delivery evidence](../notebooks/validation/i01-development/course3-delivery-review.json)
+records hashes, protected semantics, 220 resolved local links and the three-file
+private Kaggle input folder. Receipt-only updates do not regenerate this packet.
+
+The user explicitly adopted the reviewed I-01 scientific regime in specification
+§12. Its single task/status reference is the
+[I-01 implementation WBS](plans/i01-course-implementation-wbs.md#14-living-implementation-handoff).
+Implement the entire Python workflow before constructing the staged Kaggle
+notebook. Use focused lightweight checks; no GPU inference, qualification,
+pilots, freeze or main execution during preparation. Earlier thesis/course
+handoffs below remain historical and independently scoped.
+
+Python completion now implements all I-01 scientific, inference, durable stage,
+accounting, reporting, archive and restore responsibilities in `recovery/i01/`.
+The [operator runbook](I01_KAGGLE.md) documents finite APIs and exact recovery.
+Seven focused scripted integration checks and the packaged scripted self-check
+passed on Windows Python 3.11.9; these are implementation evidence only.
+The staged notebook/release is delivered, with operator-only Kaggle validation
+remaining. No old automatic course execution policy is inherited.
+
+The initial staged notebook and small online source attachment were implemented:
+`notebooks/i01_course_kaggle.ipynb` and `dist/i01-course/` (reproducible builders).
+Notebook/release checks confirm 24 staged code cells, rendering-only Run All,
+35 explicit controls, empty research outputs, complete installed wheel/source
+identity and read-only population reconstruction. M0–M5 implementation is
+complete. M6–M7 execution paths are delivered; actual Kaggle validation and all
+research outcomes remain pending. See the WBS delivery checkpoint and runbook
+for precise operation; generated artifacts do not establish model qualification.
+
+14 October 2026 usability follow-up: the user authorized full implementation
+after finding widget forms/buttons unnatural and selecting ordinary cells. The
+[natural workflow plan](plans/i01-notebook-natural-workflow.md) records the
+requested direct execution sequence, concise results, per-pilot review/download,
+fixed main loop and recovery appendix. UX-01–UX-04 are implemented: 25 ordinary
+code cells, zero panels, readable results, automatic conversation/download,
+explicit human pilot findings, derived mode/batch identity and stopped-action
+cell errors. Sixteen focused scripted tests pass in 26.115 seconds; cell scopes
+are reviewed without model calls. The regenerated package review records exact
+source/wheel/bootstrap/reconstruction evidence. Rendering-only Run All is
+deliberately replaced: Run All can execute inference and is unsupported for study
+execution. Scientific settings, gates and attempt limits are unchanged. Actual
+Kaggle output/interrupt/download and empirical acceptance remain pending. Active
+checkout: `E:\Github\recovery_blueprint\recovery_blueprint`.
+
+The subsequent Kaggle setup incident exposed an `ensurepip` failure inside venv
+creation. The repaired bootstrap uses `--without-pip` and the same verified
+pip 26.2.1 wheel as the accepted earlier Kaggle preparation, recovers an
+incomplete isolated environment without clearing files, preserves prior logs,
+and shows real log tails on failure. Notebook cells now use the named `Study`
+steps in `recovery/i01/notebook.py`; no `ui.` or generic action-dispatch calls
+remain in the delivered notebook. A commit-labelled source cache and stale-import
+guard prevent reusing an older release in an active kernel. Four focused setup
+checks and one actual named-step/controller/snapshot check pass locally; full
+Kaggle installation remains unverified. See `setup-repair-checks.json` and the
+runbook's exact replacement/restart instructions.
+
+The operator subsequently reported successful Kaggle setup (177.780 seconds,
+zero model attempts), followed by controller failure from inherited inline
+MPLBACKEND and Python startup-hook settings. Child-process environments now
+isolate those settings and choose Agg before import; startup failures show
+stderr and clean up the child. Opening/inspection no longer requires a window;
+the ordinary load cell records actual session facts and backend resource gates
+remain unchanged. Fourteen focused checks pass in 22.269 seconds, including
+real contaminated-host startup, bounded failure cleanup, window refusal before
+admission and checkpoint reconstruction. See controller-startup-checks.json
+and the runbook's same-source recovery cell. Target-host controller acceptance
+and every model/experiment stage remain pending.
+
+Course-1 executed-evidence follow-up: the preserved
+`notebooks/run/course-1/` notebook demonstrates successful pinned setup,
+controller attachment, native self-check and weight retrieval, followed by
+refusal of unset session facts before model loading. Its self-check archive
+passes CRC, all 112 inventory entries and exact read-only reconstruction;
+both canonical DBs contain zero calls/attempts. The startup-hook warning remains.
+The [complete fix proposal](proposals/i01-course-1-complete-fix-proposal.md)
+records seven focused scripted reproductions, including missing-DB recreation,
+stale same-controller reload probes, false original-control failure labels,
+delayed cross-slot pause and unavailable saved inspection after controller exit.
+These newly identified repairs are pending; earlier checks do not establish
+their correctness. Audit evidence is `validation/course-1-audit-probes.json`.
+All supplied run files remain unchanged; no GPU/model execution occurred in
+this audit. Model gates, pilots, freeze and twenty main outcomes remain unknown.
+
+Course-1 repair checkpoint C2: canonical stores now refuse missing/incomplete
+DBs, fresh initialization publishes complete stores atomically, replica envelope
+evidence binds both successful load records, either main-slot failure requests
+pause promptly, and periodic exports follow settled controls/diagnostics.
+Original-control audit truth and empty conversation output are corrected.
+Seven focused scripted counterexamples pass; runtime isolation, operator flow
+and complete-package integration are the next repair checkpoint. A/B/A remains
+a diagnostic with explicit review of unexpected differences before qualification;
+no extra samples or scientific decoding changes are introduced.
+
+Course-1 runtime/operator repair C1/C3: I-01 now uses a stdlib-only `-I -S`
+entry point, explicitly restores isolated venv package paths/prefixes and does
+not process host sitecustomize/.pth hooks. Real tiny-venv/spawn checks pass.
+Setup receipts and environments use existing source-release commit labels,
+preserving earlier environments while reusing pinned HF/download caches. Cached
+setup rechecks inventory. The loader uses the verified local snapshot; thesis
+and prior course defaults are preserved by an optional local-directory argument.
+Named session configuration computes a fixed deadline from actual observed
+minutes, preserves it on rerun and requires explicit fresh observation to extend.
+Saved inspection survives controller loss; operational errors and successful
+setup/download changes have durable receipts/checkpoints. Notebook/release
+integration is the remaining delivery checkpoint; no GPU/model work occurred.
+
+Course-1 delivery C4: all fourteen audit items have implemented responses;
+[repair evidence](validation/i01-course-1-repair.md) maps them to focused checks.
+The notebook has 26 ordinary code cells, a separate actual-window stage, a fresh
+explicit repaired-study destination and complete recovery/report/export paths.
+Thirty-seven distinct focused checks pass with the development-entry failure
+resolved; package receipt records isolated installed-wheel/source/bootstrap
+verification. Current [runbook](I01_KAGGLE.md) gives the first execution sequence.
+Source/model/runtime pins and scientific semantics remain preserved; no GPU
+inference or experiment occurred. Actual target-host/model acceptance remains
+pending. The supplied course-1 evidence and matching old packet are unchanged.
+
+Final repaired upload source: `8f5bcdb661a177ebf7e0ca320889612ba448c64b`.
+Its 614,560-byte source ZIP has SHA256
+`2510f0f0dca4b5289c6e40a83f96c6ba9508e7221086b1fe764384e67f6deeef`.
+The regenerated `release-review.json` passes all 26 scopes and isolated installed
+entry/source checks with zero model attempts. Six input files, two root logs and
+both historical source archives retain their original hashes; 214 local document
+links resolve. The following receipt-only commit preserves this delivery identity.
+
 **Authority:** [PROJECT_SPECIFICATION.md](../PROJECT_SPECIFICATION.md), dated 4 October 2026 with the authorized pre-main capacity revision of 5 October 2026. Section references below refer to that document. This plan specifies engineering work and acceptance evidence; it does not change the experiment.
 
 **Planning baseline:** repository commit `11979117fe868b825b98ac597085af5d9203509b`. The [README](../README.md), vendored source, and all four [implementation-research documents](implementation-research/SYNTHESIS.md) were inspected. The working tree was clean before this file was added.

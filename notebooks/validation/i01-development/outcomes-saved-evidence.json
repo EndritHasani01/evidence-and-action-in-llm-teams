@@ -1,0 +1,67 @@
+{
+  "passed": true,
+  "checkpoint_sha256": "8b48977d6389940f92eb694d67a636362de0f5ee27127b8223d452ff57b19c79",
+  "recorded_attempts": 43,
+  "policy": "i01-recorded-outcomes-run-all-2026-10-15",
+  "retrospective_comparison_only": true,
+  "checkpoint_transition_performed": false,
+  "model_attempts": 0,
+  "pilots": [
+    {
+      "world": "pilot-00",
+      "recorded_calls": 12,
+      "new_policy_ordinary_call_eligibility": true,
+      "historical_passed": true,
+      "errors": [
+        {
+          "call": "pilot-00/retain/agent-1/invocation-0",
+          "phase": "retain",
+          "json_valid": true,
+          "schema_valid": true,
+          "legal_action": false,
+          "error": "malformed_action",
+          "reason": "wait_requires_null_message_and_submit",
+          "admission_blocking": false
+        },
+        {
+          "call": "pilot-00/clear/agent-0/invocation-0",
+          "phase": "clear",
+          "json_valid": true,
+          "schema_valid": true,
+          "legal_action": false,
+          "error": "malformed_action",
+          "reason": "wait_requires_null_message_and_submit",
+          "admission_blocking": false
+        }
+      ]
+    },
+    {
+      "world": "pilot-01",
+      "recorded_calls": 11,
+      "new_policy_ordinary_call_eligibility": true,
+      "historical_passed": false,
+      "errors": [
+        {
+          "call": "pilot-01/prefix/agent-1/invocation-0",
+          "phase": "prefix",
+          "json_valid": true,
+          "schema_valid": true,
+          "legal_action": false,
+          "error": "malformed_action",
+          "reason": "wait_requires_null_message_and_submit",
+          "admission_blocking": false
+        },
+        {
+          "call": "pilot-01/clear/agent-0/invocation-0",
+          "phase": "clear",
+          "json_valid": true,
+          "schema_valid": true,
+          "legal_action": false,
+          "error": "malformed_action",
+          "reason": "wait_requires_null_message_and_submit",
+          "admission_blocking": false
+        }
+      ]
+    }
+  ]
+}

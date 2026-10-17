@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "at": "2026-10-15T13:14:15.853202+00:00",
+  "source_head": "0f600584dc10156f3cddf18386e5cb81ab3a3349",
+  "source_zip_bytes": 665937,
+  "source_zip_sha256": "b0ef474a1bd21ac3d84820846e16b3e2fd483b9a66e8734b7dfe3752e21f6a81",
+  "source_members": 74,
+  "ordinary_code_cells": 26,
+  "widget_panels": 0,
+  "installed_actual_checkpoint_continuation": true,
+  "installed_cpu_only_reporting_without_matplotlib": true,
+  "phase_tests": {
+    "core": 40,
+    "extended": 46,
+    "format_compatibility": 11,
+    "overlapping_checks": true
+  },
+  "reused_499_500_backup_restore": true,
+  "report_figure_pairs": 8,
+  "visually_reviewed": [
+    "qualification-outcomes",
+    "qualification-effort",
+    "failure-labels"
+  ],
+  "local_links": 220,
+  "original_inputs_and_verbatim_evaluation_preserved": true,
+  "old_source_packet_preserved": true,
+  "model_runtime_prompt_world_pins_preserved": true,
+  "protected_specification_sections_1_to_11_preserved": true,
+  "kaggle_input_files": [
+    "course-2-latest.zip",
+    "course-3-latest.zip",
+    "i01-source.zip"
+  ],
+  "real_model_attempts": 0,
+  "gpu_inference_executed": false,
+  "kaggle_host_verified": false,
+  "pilot_main_outcomes": "All 20 main pairs remain unknown; pilot/headroom/freeze unexecuted"
+}

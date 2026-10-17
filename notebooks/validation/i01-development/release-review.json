@@ -1,0 +1,240 @@
+{
+  "passed": true,
+  "code_cells": 26,
+  "widget_panels": 0,
+  "independent_cell_scopes": {
+    "setup": [
+      {
+        "method": "install_runtime",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "open-study": [
+      {
+        "method": "open",
+        "args": [
+          "new"
+        ],
+        "kwargs": {
+          "selected": null,
+          "tail": null,
+          "evidence": "",
+          "prior_checkpoints": null
+        }
+      }
+    ],
+    "selfcheck": [
+      {
+        "method": "check_implementation",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "weights": [
+      {
+        "method": "download_weights",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "session-window": [
+      {
+        "method": "configure_session",
+        "args": [],
+        "kwargs": {
+          "remaining_minutes": null,
+          "evidence": ""
+        }
+      }
+    ],
+    "load": [
+      {
+        "method": "load_models",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "readiness": [
+      {
+        "method": "check_readiness",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "direct-screen": [
+      {
+        "method": "qualify_direct",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "qualification": [
+      {
+        "method": "inspect_qualification",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "thinking-history": [
+      {
+        "method": "inspect_thinking",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "envelope": [
+      {
+        "method": "check_headroom",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "pilot-1": [
+      {
+        "method": "run_pilot",
+        "args": [
+          1
+        ],
+        "kwargs": {}
+      }
+    ],
+    "review-pilot-1": [
+      {
+        "method": "record_pilot_review",
+        "args": [
+          1
+        ],
+        "kwargs": {
+          "useful_communication": null,
+          "usable": null,
+          "notes": ""
+        }
+      }
+    ],
+    "pilot-2": [
+      {
+        "method": "run_pilot",
+        "args": [
+          2
+        ],
+        "kwargs": {}
+      }
+    ],
+    "review-pilot-2": [
+      {
+        "method": "record_pilot_review",
+        "args": [
+          2
+        ],
+        "kwargs": {
+          "useful_communication": null,
+          "usable": null,
+          "notes": ""
+        }
+      }
+    ],
+    "pilot-3": [
+      {
+        "method": "run_pilot",
+        "args": [
+          3
+        ],
+        "kwargs": {}
+      }
+    ],
+    "review-pilot-3": [
+      {
+        "method": "record_pilot_review",
+        "args": [
+          3
+        ],
+        "kwargs": {
+          "useful_communication": null,
+          "usable": null,
+          "notes": ""
+        }
+      }
+    ],
+    "pre-freeze": [
+      {
+        "method": "review_configuration",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "freeze": [
+      {
+        "method": "freeze_configuration",
+        "args": [
+          ""
+        ],
+        "kwargs": {}
+      }
+    ],
+    "prepare-batch": [
+      {
+        "method": "prepare_main_batch",
+        "args": [],
+        "kwargs": {
+          "count": 2
+        }
+      }
+    ],
+    "main-batch": [
+      {
+        "method": "run_main_batch",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "review-batch": [
+      {
+        "method": "record_batch_review",
+        "args": [],
+        "kwargs": {
+          "notes": ""
+        }
+      }
+    ],
+    "report": [
+      {
+        "method": "build_report",
+        "args": [],
+        "kwargs": {}
+      }
+    ],
+    "archive": [
+      {
+        "method": "save_checkpoint",
+        "args": [],
+        "kwargs": {
+          "verify": true
+        }
+      }
+    ],
+    "close": [
+      {
+        "method": "finish_session",
+        "args": [],
+        "kwargs": {}
+      }
+    ]
+  },
+  "run_all_can_execute_inference": true,
+  "model_attempts": 0,
+  "source_head": "0f600584dc10156f3cddf18386e5cb81ab3a3349",
+  "source_members": 74,
+  "source_zip_bytes": 665937,
+  "source_zip_sha256": "b0ef474a1bd21ac3d84820846e16b3e2fd483b9a66e8734b7dfe3752e21f6a81",
+  "installed_wheel_source_matches": true,
+  "installed_outside_checkout_cli": true,
+  "installed_venv_isolated_entry": true,
+  "installed_actual_course3_continuation": true,
+  "installed_cpu_only_report_without_matplotlib": true,
+  "zip_expanded_source_bootstrap_and_rerun": true,
+  "complete_source_preserved_in_checkpoints": true,
+  "notebook_execution_outputs_empty": true,
+  "kaggle_host_verified": false,
+  "qualification_pilot_main_executed": false
+}

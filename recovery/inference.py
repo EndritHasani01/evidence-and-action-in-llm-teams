@@ -199,6 +199,7 @@ class ModelFactory:
     candidate: Candidate = QWEN_9B
     cuda_visible_devices: str = "0"
     limits: ProtocolLimits = THESIS_LIMITS
+    local_directory: str | None = None
 
     def __call__(self):
         if (type(self.cuda_visible_devices) is not str or not self.cuda_visible_devices
@@ -221,14 +222,15 @@ class ModelFactory:
             from .t4_attention import register_t4_attention
             register_t4_attention()
         from transformers import AutoModelForCausalLM, BitsAndBytesConfig
-        tokenizer = TokenizerFactory(self.candidate, limits=self.limits)()
+        tokenizer = TokenizerFactory(self.candidate,local_directory=self.local_directory,limits=self.limits)()
         quantization = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4",
             bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=torch.float16)
         print("Model load: pinned weights on physical device "+self.cuda_visible_devices, flush=True)
-        model, info = AutoModelForCausalLM.from_pretrained(self.candidate.model,
+        local_options={'local_files_only':True} if self.local_directory is not None else {}
+        model, info = AutoModelForCausalLM.from_pretrained(self.local_directory or self.candidate.model,
             revision=self.candidate.revision, trust_remote_code=False,
             quantization_config=quantization, dtype=torch.float16,
-            device_map={"": 0}, attn_implementation=self.candidate.attention, output_loading_info=True)
+            device_map={"": 0}, attn_implementation=self.candidate.attention, output_loading_info=True,**local_options)
         model.eval()
         if (self.candidate.attention == T4_ATTENTION
                 and getattr(model.config, "_attn_implementation", None) != T4_ATTENTION):

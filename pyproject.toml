@@ -19,5 +19,8 @@ dependencies = [
 inference = ["torch", "transformers", "accelerate", "bitsandbytes"]
 report = ["matplotlib>=3.7,<4"]
 
+[project.scripts]
+i01-course = "recovery.i01.cli:main"
+
 [tool.setuptools]
-packages = ["recovery"]
+packages = ["recovery", "recovery.i01"]
