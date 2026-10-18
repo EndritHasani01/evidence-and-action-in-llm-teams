@@ -1,5 +1,27 @@
 # Implementation plan
 
+## Thesis-extension design review (18 October 2026)
+
+The [thesis proposal](proposals/thesis-extension-2026-10-18.md) recommends a
+separately scoped controlled historical-source/conclusion study with Qwen3.5-9B
+and Granite 4.2-8B, revision/no-change controls, repeated trials, and bounded
+natural-history and answer-preserving checks. The [evidence review](analysis/thesis-extension-evidence-review.md)
+distinguishes the original thesis's CPU verification from completed course model
+evidence; the [prospective roadmap](plans/thesis-extension-roadmap.md) specifies
+reuse, amendments, acceptance gates, and resource/authorization boundaries.
+This is a proposal only: no scientific adoption, executable/configuration change,
+GPU inference, experiment, or new freeze occurs in this session.
+
+Current empirical evidence includes the completed assisted-v2 campaign stored
+under `notebooks/run/assisted-v1/`, after the dated software handoffs below.
+Its [final submission report](reports/final-course-report-submission.md) records
+retain 2/20, clear 3/20, exploratory difference +5 pp with interval [-15,+25] pp.
+This review independently rechecked the canonical outcomes/effort and the
+report's large-integer prose seed-label caveat. Course-7, all original thesis
+evidence/defaults, and the historical handoffs remain separately preserved.
+Approval of a future design/implementation does not authorize GPU development,
+main execution, paid resources, or publication.
+
 ## Assisted I-01 implementation (16 October 2026)
 
 The user approves end-to-end implementation of the final
