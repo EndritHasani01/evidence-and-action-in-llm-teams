@@ -4,7 +4,7 @@
 
 Mentors: Prof. Sonja Gievska, Ph.D.; Martina Toshevska, M.Sc.
 
-**[Read the final report (PDF)](report/recovering-distributed-llm-teams-revised.pdf)** for the complete methodology, results, discussion and references. The [previous report](report/recovering-distributed-llm-teams.pdf) is preserved for reference.
+**[Read the final report (PDF)](report/recovering-distributed-llm-teams.pdf)** for the complete methodology, results, discussion and references.
 
 ## Study overview
 
