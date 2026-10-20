@@ -1,0 +1,166 @@
+{
+  "preliminary-experiment": {
+    "study_id": "b709c9bd-8d95-40c6-a19e-62a5f5e3c587",
+    "main_worlds": 20,
+    "physical_attempts": 252,
+    "statistics": {
+      "prefix": {
+        "success": 3,
+        "both_submitted": 11,
+        "calls": 82,
+        "illegal": 42,
+        "legal_failed_episodes": 4,
+        "correct": 15,
+        "messages": 21,
+        "duplicates": 0,
+        "triple_repeat_agents": 0,
+        "ready": 648.1452052949983,
+        "input": 29609,
+        "generated": 5246,
+        "absent": 16,
+        "wrong": 9
+      },
+      "retain": {
+        "success": 2,
+        "both_submitted": 20,
+        "calls": 44,
+        "illegal": 2,
+        "legal_failed_episodes": 16,
+        "wrong": 28,
+        "messages": 33,
+        "duplicates": 1,
+        "triple_repeat_agents": 0,
+        "ready": 314.6636515250002,
+        "input": 20319,
+        "generated": 2434,
+        "correct": 12
+      },
+      "clear": {
+        "success": 2,
+        "both_submitted": 19,
+        "calls": 51,
+        "illegal": 9,
+        "legal_failed_episodes": 13,
+        "wrong": 23,
+        "correct": 16,
+        "messages": 37,
+        "duplicates": 0,
+        "triple_repeat_agents": 0,
+        "ready": 497.8029737859988,
+        "input": 20350,
+        "generated": 4077,
+        "absent": 1
+      }
+    },
+    "intervals": {
+      "success": {
+        "mean": 0.0,
+        "low": -0.1,
+        "high": 0.1,
+        "seed": 2026101402,
+        "draws": 10000
+      },
+      "ready": {
+        "mean": 9.15696611304993,
+        "low": 1.9643914256499215,
+        "high": 17.123815258149968,
+        "seed": 2026101402,
+        "draws": 10000
+      }
+    },
+    "paired_outcomes": {
+      "both": 1,
+      "retain_only": 1,
+      "clear_only": 1,
+      "neither": 17
+    },
+    "physical_totals": {
+      "ready_seconds": 1943.1056445999966,
+      "input_tokens": 109201,
+      "generated_tokens": 15472
+    }
+  },
+  "assisted-experiment": {
+    "study_id": "cbbe6590-00e7-477a-88fc-f6449ea6797c",
+    "main_worlds": 20,
+    "physical_attempts": 356,
+    "statistics": {
+      "prefix": {
+        "success": 10,
+        "both_submitted": 16,
+        "calls": 82,
+        "illegal": 1,
+        "legal_failed_episodes": 9,
+        "correct": 30,
+        "messages": 70,
+        "duplicates": 3,
+        "triple_repeat_agents": 0,
+        "ready": 493.77546217400186,
+        "input": 74291,
+        "generated": 3148,
+        "absent": 4,
+        "wrong": 6
+      },
+      "retain": {
+        "success": 2,
+        "both_submitted": 8,
+        "calls": 91,
+        "illegal": 1,
+        "legal_failed_episodes": 17,
+        "absent": 18,
+        "messages": 85,
+        "duplicates": 31,
+        "triple_repeat_agents": 13,
+        "ready": 588.7778166869971,
+        "input": 102922,
+        "generated": 3411,
+        "correct": 14,
+        "wrong": 8
+      },
+      "clear": {
+        "success": 3,
+        "both_submitted": 10,
+        "calls": 85,
+        "illegal": 4,
+        "legal_failed_episodes": 15,
+        "correct": 18,
+        "messages": 77,
+        "duplicates": 18,
+        "triple_repeat_agents": 4,
+        "ready": 513.1149106220003,
+        "input": 80352,
+        "generated": 3194,
+        "absent": 11,
+        "wrong": 11
+      }
+    },
+    "intervals": {
+      "success": {
+        "mean": 0.05,
+        "low": -0.15,
+        "high": 0.25,
+        "seed": 2026101602,
+        "draws": 10000
+      },
+      "ready": {
+        "mean": -3.7831453032498414,
+        "low": -8.240556760349955,
+        "high": 0.5888601996001853,
+        "seed": 2026101602,
+        "draws": 10000
+      }
+    },
+    "paired_outcomes": {
+      "both": 0,
+      "retain_only": 2,
+      "clear_only": 3,
+      "neither": 15
+    },
+    "physical_totals": {
+      "ready_seconds": 2174.3327566330004,
+      "input_tokens": 337397,
+      "generated_tokens": 13692
+    },
+    "prose_ledger_seed_discrepancies": 354
+  }
+}

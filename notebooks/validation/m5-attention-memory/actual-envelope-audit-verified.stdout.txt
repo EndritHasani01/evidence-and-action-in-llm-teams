@@ -1,1 +1,0 @@
-Offline audit passed; model/GPU/full-envelope acceptance remains unknown: notebooks\validation\m5-attention-memory\memory-audit.json

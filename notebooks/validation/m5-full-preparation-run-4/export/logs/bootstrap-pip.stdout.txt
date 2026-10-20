@@ -1,4 +1,0 @@
-Looking in links: /tmp/recovery-m5/20261008T211102264915Z-c5a493f7/pip-bootstrap
-Processing ./pip-bootstrap/pip-26.2.1-py3-none-any.whl (from -r /tmp/recovery-m5/20261008T211102264915Z-c5a493f7/pip-bootstrap.lock (line 1))
-Installing collected packages: pip
-Successfully installed pip-26.2.1

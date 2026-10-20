@@ -1,9 +1,0 @@
-test_actual_template_and_renderer_inputs_are_saved_without_modification (__main__.NativeInferenceTests.test_actual_template_and_renderer_inputs_are_saved_without_modification) ... ok
-test_fresh_generation_config_has_no_inherited_penalties_or_extra_stops (__main__.NativeInferenceTests.test_fresh_generation_config_has_no_inherited_penalties_or_extra_stops) ... ok
-test_native_hybrid_cache_instances_start_without_kv_or_recurrent_state (__main__.NativeInferenceTests.test_native_hybrid_cache_instances_start_without_kv_or_recurrent_state) ... ok
-test_saved_native_ids_preserve_raw_internal_invalid_and_cap_ending_suffixes (__main__.NativeInferenceTests.test_saved_native_ids_preserve_raw_internal_invalid_and_cap_ending_suffixes) ... ok
-
-----------------------------------------------------------------------
-Ran 4 tests in 0.232s
-
-OK

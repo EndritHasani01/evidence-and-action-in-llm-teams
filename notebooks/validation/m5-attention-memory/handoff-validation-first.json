@@ -1,6 +1,0 @@
-{
-  "status": "failed",
-  "previous_checkpoint": "c8680c2",
-  "implementation_checkpoint": "8528105",
-  "error": "NameError: name 'EOS_IDS' is not defined"
-}

@@ -1,9 +1,0 @@
-{
-  "filename": "evidence_and_action_in_llm_teams-0.1.0-py3-none-any.whl",
-  "bytes": 156922,
-  "sha256": "49836e5741b832c2ac9542305a21ccc39505c162cd7b3773727c728a8ca3c2dd",
-  "build_tools": {
-    "setuptools": "84.0.0",
-    "wheel": "0.48.0"
-  }
-}

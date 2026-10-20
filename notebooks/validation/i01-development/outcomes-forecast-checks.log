@@ -1,7 +1,0 @@
-test_remaining_work_forecast_and_precise_failure_references (tests.test_i01_outcome_admission.OutcomeAdmission.test_remaining_work_forecast_and_precise_failure_references) ... ok
-test_precommitted_settings_and_tight_time_cannot_be_waived (tests.test_i01_run_all.RunAll.test_precommitted_settings_and_tight_time_cannot_be_waived) ... ok
-
-----------------------------------------------------------------------
-Ran 2 tests in 8.315s
-
-OK

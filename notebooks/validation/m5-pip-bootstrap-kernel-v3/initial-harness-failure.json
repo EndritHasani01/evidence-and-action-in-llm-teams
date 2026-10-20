@@ -1,8 +1,0 @@
-{
-  "status": "failed",
-  "kind": "local-review-harness-error",
-  "error": "KeyError: members",
-  "reason": "Source receipt field is verified_members; the actual notebook/source stages succeeded as expected before the reviewer assertion.",
-  "retained_case": "valid-source",
-  "notebook_changed": false
-}

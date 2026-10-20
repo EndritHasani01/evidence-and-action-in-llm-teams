@@ -1,4 +1,0 @@
-phase,calls_total,calls_mean,calls_median,input_tokens_total,input_tokens_mean,input_tokens_median,generated_tokens_total,generated_tokens_mean,generated_tokens_median,ready_seconds_total,ready_seconds_mean,ready_seconds_median,messages_total,messages_mean,messages_median
-prefix,82,4.1,4.0,29609,1480.45,1386.0,5246,262.3,271.5,648.1452052949983,32.407260264749915,34.26478478499985,21,1.05,0.5
-retain,44,2.2,2.0,20319,1015.95,893.5,2434,121.7,81.0,314.6636515250002,15.73318257625001,11.152140850000023,33,1.65,2.0
-clear,51,2.55,2.0,20350,1017.5,841.5,4077,203.85,146.5,497.8029737859988,24.89014868929994,18.701236863499844,37,1.85,2.0

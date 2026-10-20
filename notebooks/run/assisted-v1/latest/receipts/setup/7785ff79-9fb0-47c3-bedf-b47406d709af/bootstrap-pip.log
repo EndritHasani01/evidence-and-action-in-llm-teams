@@ -1,6 +1,0 @@
-
-Starting bootstrap-pip
-Looking in links: /kaggle/temp/i01/pip-bootstrap
-Processing /kaggle/temp/i01/pip-bootstrap/pip-26.2.1-py3-none-any.whl (from -r /kaggle/temp/i01/pip-bootstrap.lock (line 1))
-Installing collected packages: pip
-Successfully installed pip-26.2.1

@@ -1,9 +1,0 @@
-{
-  "status": "passed",
-  "changed_documents": 12,
-  "existing_user_edit_links_also_checked": true,
-  "local_references_checked": 402,
-  "markdown_fragments_checked": 125,
-  "other_document_inbound_links_checked": 57,
-  "scope": "Changed handoffs, existing user edit, and inbound links to changed handoffs; no remote links or GPU execution."
-}

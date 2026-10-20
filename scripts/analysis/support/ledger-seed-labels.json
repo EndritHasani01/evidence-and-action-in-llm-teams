@@ -1,0 +1,1432 @@
+{
+  "source_repository": "https://github.com/EndritHasani01/evidence-and-action-in-llm-teams",
+  "source_commit": "005a456cda4cba54cff36084a125dc883bb5ba8a",
+  "source_path": "docs/analysis/assisted-v1/exhaustive-trace-ledger.md",
+  "source_sha256": "28e72b31a32cd52d84bc16cc58c917fbfab8f653e79addbe868d0ec198138dbd",
+  "labels": [
+    {
+      "call_id": "hardware/state-0-A1",
+      "printed_seed": "5709976857183414000"
+    },
+    {
+      "call_id": "hardware/state-0-B",
+      "printed_seed": "4115471025384827000"
+    },
+    {
+      "call_id": "hardware/state-0-A2",
+      "printed_seed": "5709976857183414000"
+    },
+    {
+      "call_id": "hardware/envelope-direct-0",
+      "printed_seed": "8319311398067554000"
+    },
+    {
+      "call_id": "hardware/state-1-A1",
+      "printed_seed": "6249057545533737000"
+    },
+    {
+      "call_id": "hardware/state-1-B",
+      "printed_seed": "2352855063496751000"
+    },
+    {
+      "call_id": "hardware/state-1-A2",
+      "printed_seed": "6249057545533737000"
+    },
+    {
+      "call_id": "hardware/envelope-direct-1",
+      "printed_seed": "4135206465507834400"
+    },
+    {
+      "call_id": "qualification-00/control-original-direct",
+      "printed_seed": "4893654000299853000"
+    },
+    {
+      "call_id": "qualification-00/control-revised-direct",
+      "printed_seed": "8577277759265241000"
+    },
+    {
+      "call_id": "qualification-00/diagnostic-D00",
+      "printed_seed": "1518793629575115000"
+    },
+    {
+      "call_id": "qualification-01/control-original-direct",
+      "printed_seed": "5682703086286084000"
+    },
+    {
+      "call_id": "qualification-01/control-revised-direct",
+      "printed_seed": "5455430921669315000"
+    },
+    {
+      "call_id": "qualification-01/diagnostic-D01",
+      "printed_seed": "7305758622257457000"
+    },
+    {
+      "call_id": "qualification-02/control-original-direct",
+      "printed_seed": "5334781428681967000"
+    },
+    {
+      "call_id": "qualification-02/control-revised-direct",
+      "printed_seed": "4425588314301138400"
+    },
+    {
+      "call_id": "qualification-02/diagnostic-D03",
+      "printed_seed": "1787637417038793500"
+    },
+    {
+      "call_id": "qualification-03/control-original-direct",
+      "printed_seed": "973186761802613200"
+    },
+    {
+      "call_id": "qualification-03/control-revised-direct",
+      "printed_seed": "6767027248448252000"
+    },
+    {
+      "call_id": "qualification-03/diagnostic-D02",
+      "printed_seed": "880885341704431200"
+    },
+    {
+      "call_id": "pilot-00/prefix/agent-0/invocation-0",
+      "printed_seed": "3400577303557857000"
+    },
+    {
+      "call_id": "pilot-00/prefix/agent-1/invocation-0",
+      "printed_seed": "839966378695927600"
+    },
+    {
+      "call_id": "pilot-00/prefix/agent-0/invocation-1",
+      "printed_seed": "5870019698890950000"
+    },
+    {
+      "call_id": "pilot-00/prefix/agent-1/invocation-1",
+      "printed_seed": "5357517915501549000"
+    },
+    {
+      "call_id": "pilot-00/retain/agent-0/invocation-0",
+      "printed_seed": "2190752357160136400"
+    },
+    {
+      "call_id": "pilot-00/retain/agent-1/invocation-0",
+      "printed_seed": "3915285689094068000"
+    },
+    {
+      "call_id": "pilot-00/retain/agent-0/invocation-1",
+      "printed_seed": "4152027090062418000"
+    },
+    {
+      "call_id": "pilot-00/retain/agent-1/invocation-1",
+      "printed_seed": "4803097181368967000"
+    },
+    {
+      "call_id": "pilot-00/retain/agent-0/invocation-2",
+      "printed_seed": "5663896320688038000"
+    },
+    {
+      "call_id": "pilot-00/retain/agent-1/invocation-2",
+      "printed_seed": "2403775973479634400"
+    },
+    {
+      "call_id": "pilot-00/clear/agent-0/invocation-0",
+      "printed_seed": "2190752357160136400"
+    },
+    {
+      "call_id": "pilot-00/clear/agent-1/invocation-0",
+      "printed_seed": "3915285689094068000"
+    },
+    {
+      "call_id": "pilot-00/clear/agent-0/invocation-1",
+      "printed_seed": "4152027090062418000"
+    },
+    {
+      "call_id": "pilot-00/clear/agent-1/invocation-1",
+      "printed_seed": "4803097181368967000"
+    },
+    {
+      "call_id": "pilot-00/clear/agent-1/invocation-2",
+      "printed_seed": "2403775973479634400"
+    },
+    {
+      "call_id": "pilot-00/control-original-direct",
+      "printed_seed": "5468543999550555000"
+    },
+    {
+      "call_id": "pilot-00/control-revised-direct",
+      "printed_seed": "5110496821271918000"
+    },
+    {
+      "call_id": "pilot-01/prefix/agent-1/invocation-0",
+      "printed_seed": "9046648086333039000"
+    },
+    {
+      "call_id": "pilot-01/prefix/agent-0/invocation-0",
+      "printed_seed": "305595778465793400"
+    },
+    {
+      "call_id": "pilot-01/prefix/agent-1/invocation-1",
+      "printed_seed": "2403528900455292000"
+    },
+    {
+      "call_id": "pilot-01/prefix/agent-0/invocation-1",
+      "printed_seed": "1205093012722625500"
+    },
+    {
+      "call_id": "pilot-01/retain/agent-1/invocation-0",
+      "printed_seed": "5879201726443899000"
+    },
+    {
+      "call_id": "pilot-01/retain/agent-0/invocation-0",
+      "printed_seed": "3108071872006651000"
+    },
+    {
+      "call_id": "pilot-01/retain/agent-0/invocation-1",
+      "printed_seed": "3878590045228918000"
+    },
+    {
+      "call_id": "pilot-01/retain/agent-0/invocation-2",
+      "printed_seed": "5754899444880449000"
+    },
+    {
+      "call_id": "pilot-01/clear/agent-1/invocation-0",
+      "printed_seed": "5879201726443899000"
+    },
+    {
+      "call_id": "pilot-01/clear/agent-0/invocation-0",
+      "printed_seed": "3108071872006651000"
+    },
+    {
+      "call_id": "pilot-01/clear/agent-1/invocation-1",
+      "printed_seed": "3252474224282280400"
+    },
+    {
+      "call_id": "pilot-01/clear/agent-1/invocation-2",
+      "printed_seed": "7199257257755564000"
+    },
+    {
+      "call_id": "pilot-01/control-original-direct",
+      "printed_seed": "8805081399643806000"
+    },
+    {
+      "call_id": "pilot-01/control-revised-direct",
+      "printed_seed": "7521242427864636000"
+    },
+    {
+      "call_id": "pilot-02/prefix/agent-0/invocation-0",
+      "printed_seed": "6812275708192262000"
+    },
+    {
+      "call_id": "pilot-02/prefix/agent-1/invocation-0",
+      "printed_seed": "1436685212728603100"
+    },
+    {
+      "call_id": "pilot-02/prefix/agent-0/invocation-1",
+      "printed_seed": "8424722932638687000"
+    },
+    {
+      "call_id": "pilot-02/prefix/agent-1/invocation-1",
+      "printed_seed": "344850956180539000"
+    },
+    {
+      "call_id": "pilot-02/clear/agent-0/invocation-0",
+      "printed_seed": "7956444442589858000"
+    },
+    {
+      "call_id": "pilot-02/clear/agent-1/invocation-0",
+      "printed_seed": "6161846598807607000"
+    },
+    {
+      "call_id": "pilot-02/clear/agent-0/invocation-1",
+      "printed_seed": "5664630238834111000"
+    },
+    {
+      "call_id": "pilot-02/clear/agent-1/invocation-1",
+      "printed_seed": "7585428222834887000"
+    },
+    {
+      "call_id": "pilot-02/clear/agent-1/invocation-2",
+      "printed_seed": "248349001174475970"
+    },
+    {
+      "call_id": "pilot-02/retain/agent-0/invocation-0",
+      "printed_seed": "7956444442589858000"
+    },
+    {
+      "call_id": "pilot-02/retain/agent-1/invocation-0",
+      "printed_seed": "6161846598807607000"
+    },
+    {
+      "call_id": "pilot-02/control-original-direct",
+      "printed_seed": "8095635837332760000"
+    },
+    {
+      "call_id": "pilot-02/control-revised-direct",
+      "printed_seed": "4215906223020792000"
+    },
+    {
+      "call_id": "pilot-03/prefix/agent-1/invocation-0",
+      "printed_seed": "4590106740159953400"
+    },
+    {
+      "call_id": "pilot-03/prefix/agent-0/invocation-0",
+      "printed_seed": "3546947677864714000"
+    },
+    {
+      "call_id": "pilot-03/prefix/agent-1/invocation-1",
+      "printed_seed": "2570275941322761000"
+    },
+    {
+      "call_id": "pilot-03/prefix/agent-0/invocation-1",
+      "printed_seed": "2251445839545485300"
+    },
+    {
+      "call_id": "pilot-03/clear/agent-1/invocation-0",
+      "printed_seed": "8592699805659048000"
+    },
+    {
+      "call_id": "pilot-03/clear/agent-0/invocation-0",
+      "printed_seed": "2156063040647353000"
+    },
+    {
+      "call_id": "pilot-03/clear/agent-1/invocation-1",
+      "printed_seed": "3684504176986319400"
+    },
+    {
+      "call_id": "pilot-03/retain/agent-1/invocation-0",
+      "printed_seed": "8592699805659048000"
+    },
+    {
+      "call_id": "pilot-03/retain/agent-0/invocation-0",
+      "printed_seed": "2156063040647353000"
+    },
+    {
+      "call_id": "pilot-03/retain/agent-1/invocation-1",
+      "printed_seed": "3684504176986319400"
+    },
+    {
+      "call_id": "pilot-03/retain/agent-0/invocation-1",
+      "printed_seed": "551613368693127940"
+    },
+    {
+      "call_id": "pilot-03/retain/agent-0/invocation-2",
+      "printed_seed": "2875295523638272500"
+    },
+    {
+      "call_id": "pilot-03/control-original-direct",
+      "printed_seed": "3808472298961998300"
+    },
+    {
+      "call_id": "pilot-03/control-revised-direct",
+      "printed_seed": "3006839073156259000"
+    },
+    {
+      "call_id": "main-00/prefix/agent-0/invocation-0",
+      "printed_seed": "8103836076145641000"
+    },
+    {
+      "call_id": "main-00/prefix/agent-1/invocation-0",
+      "printed_seed": "1334306243093468700"
+    },
+    {
+      "call_id": "main-00/prefix/agent-0/invocation-1",
+      "printed_seed": "3808604907088921600"
+    },
+    {
+      "call_id": "main-00/prefix/agent-1/invocation-1",
+      "printed_seed": "2315940745900930600"
+    },
+    {
+      "call_id": "main-00/clear/agent-0/invocation-0",
+      "printed_seed": "5370624018585070000"
+    },
+    {
+      "call_id": "main-00/clear/agent-1/invocation-0",
+      "printed_seed": "7688324100675236000"
+    },
+    {
+      "call_id": "main-00/clear/agent-0/invocation-1",
+      "printed_seed": "2208961863997638100"
+    },
+    {
+      "call_id": "main-00/clear/agent-1/invocation-1",
+      "printed_seed": "395669852237396500"
+    },
+    {
+      "call_id": "main-00/retain/agent-0/invocation-0",
+      "printed_seed": "5370624018585070000"
+    },
+    {
+      "call_id": "main-00/retain/agent-1/invocation-0",
+      "printed_seed": "7688324100675236000"
+    },
+    {
+      "call_id": "main-00/retain/agent-0/invocation-1",
+      "printed_seed": "2208961863997638100"
+    },
+    {
+      "call_id": "main-00/retain/agent-1/invocation-1",
+      "printed_seed": "395669852237396500"
+    },
+    {
+      "call_id": "main-00/retain/agent-0/invocation-2",
+      "printed_seed": "3625069537797954000"
+    },
+    {
+      "call_id": "main-00/retain/agent-1/invocation-2",
+      "printed_seed": "684408368787935100"
+    },
+    {
+      "call_id": "main-00/control-revised-direct",
+      "printed_seed": "1925369860775628300"
+    },
+    {
+      "call_id": "main-01/prefix/agent-1/invocation-0",
+      "printed_seed": "7588448051489485000"
+    },
+    {
+      "call_id": "main-01/prefix/agent-0/invocation-0",
+      "printed_seed": "1653175445796821500"
+    },
+    {
+      "call_id": "main-01/prefix/agent-1/invocation-1",
+      "printed_seed": "4405283779593970000"
+    },
+    {
+      "call_id": "main-01/clear/agent-1/invocation-0",
+      "printed_seed": "4559802418571168300"
+    },
+    {
+      "call_id": "main-01/clear/agent-0/invocation-0",
+      "printed_seed": "1569083255078121500"
+    },
+    {
+      "call_id": "main-01/clear/agent-1/invocation-1",
+      "printed_seed": "495424908469719400"
+    },
+    {
+      "call_id": "main-01/clear/agent-0/invocation-1",
+      "printed_seed": "8254845281380503000"
+    },
+    {
+      "call_id": "main-01/clear/agent-0/invocation-2",
+      "printed_seed": "8713691498868964000"
+    },
+    {
+      "call_id": "main-01/retain/agent-1/invocation-0",
+      "printed_seed": "4559802418571168300"
+    },
+    {
+      "call_id": "main-01/retain/agent-0/invocation-0",
+      "printed_seed": "1569083255078121500"
+    },
+    {
+      "call_id": "main-01/retain/agent-1/invocation-1",
+      "printed_seed": "495424908469719400"
+    },
+    {
+      "call_id": "main-01/control-revised-direct",
+      "printed_seed": "5898790849099996000"
+    },
+    {
+      "call_id": "main-02/prefix/agent-0/invocation-0",
+      "printed_seed": "1783703187260415200"
+    },
+    {
+      "call_id": "main-02/prefix/agent-1/invocation-0",
+      "printed_seed": "6431326746366522000"
+    },
+    {
+      "call_id": "main-02/prefix/agent-0/invocation-1",
+      "printed_seed": "7139312931564563000"
+    },
+    {
+      "call_id": "main-02/prefix/agent-1/invocation-1",
+      "printed_seed": "8453739846363156000"
+    },
+    {
+      "call_id": "main-02/clear/agent-0/invocation-0",
+      "printed_seed": "8995745404311677000"
+    },
+    {
+      "call_id": "main-02/clear/agent-1/invocation-0",
+      "printed_seed": "2088329212370952200"
+    },
+    {
+      "call_id": "main-02/clear/agent-0/invocation-1",
+      "printed_seed": "4291057202482415600"
+    },
+    {
+      "call_id": "main-02/clear/agent-1/invocation-1",
+      "printed_seed": "7528751120319075000"
+    },
+    {
+      "call_id": "main-02/clear/agent-1/invocation-2",
+      "printed_seed": "9057942491496477000"
+    },
+    {
+      "call_id": "main-02/retain/agent-0/invocation-0",
+      "printed_seed": "8995745404311677000"
+    },
+    {
+      "call_id": "main-02/retain/agent-1/invocation-0",
+      "printed_seed": "2088329212370952200"
+    },
+    {
+      "call_id": "main-02/retain/agent-0/invocation-1",
+      "printed_seed": "4291057202482415600"
+    },
+    {
+      "call_id": "main-02/control-revised-direct",
+      "printed_seed": "6013445204808410000"
+    },
+    {
+      "call_id": "main-03/prefix/agent-1/invocation-0",
+      "printed_seed": "550877479727275260"
+    },
+    {
+      "call_id": "main-03/prefix/agent-0/invocation-0",
+      "printed_seed": "6451226365177105000"
+    },
+    {
+      "call_id": "main-03/prefix/agent-1/invocation-1",
+      "printed_seed": "1372936276419495400"
+    },
+    {
+      "call_id": "main-03/prefix/agent-0/invocation-1",
+      "printed_seed": "5077733698828765000"
+    },
+    {
+      "call_id": "main-03/retain/agent-1/invocation-0",
+      "printed_seed": "5533336667643650000"
+    },
+    {
+      "call_id": "main-03/retain/agent-0/invocation-0",
+      "printed_seed": "8889676979250130000"
+    },
+    {
+      "call_id": "main-03/retain/agent-1/invocation-1",
+      "printed_seed": "7056202812457371000"
+    },
+    {
+      "call_id": "main-03/retain/agent-0/invocation-1",
+      "printed_seed": "8193426882394716000"
+    },
+    {
+      "call_id": "main-03/clear/agent-1/invocation-0",
+      "printed_seed": "5533336667643650000"
+    },
+    {
+      "call_id": "main-03/clear/agent-0/invocation-0",
+      "printed_seed": "8889676979250130000"
+    },
+    {
+      "call_id": "main-03/clear/agent-1/invocation-1",
+      "printed_seed": "7056202812457371000"
+    },
+    {
+      "call_id": "main-03/clear/agent-0/invocation-1",
+      "printed_seed": "8193426882394716000"
+    },
+    {
+      "call_id": "main-03/clear/agent-1/invocation-2",
+      "printed_seed": "3477522630104803300"
+    },
+    {
+      "call_id": "main-03/clear/agent-0/invocation-2",
+      "printed_seed": "9113576193438418000"
+    },
+    {
+      "call_id": "main-03/control-revised-direct",
+      "printed_seed": "4800026755519205000"
+    },
+    {
+      "call_id": "main-04/prefix/agent-0/invocation-0",
+      "printed_seed": "1036383788411528100"
+    },
+    {
+      "call_id": "main-04/prefix/agent-1/invocation-0",
+      "printed_seed": "3837583744095608300"
+    },
+    {
+      "call_id": "main-04/prefix/agent-0/invocation-1",
+      "printed_seed": "3111888969209422300"
+    },
+    {
+      "call_id": "main-04/prefix/agent-1/invocation-1",
+      "printed_seed": "6552890600452055000"
+    },
+    {
+      "call_id": "main-04/clear/agent-0/invocation-0",
+      "printed_seed": "4935832027111888000"
+    },
+    {
+      "call_id": "main-04/clear/agent-1/invocation-0",
+      "printed_seed": "9153326687837542000"
+    },
+    {
+      "call_id": "main-04/clear/agent-0/invocation-1",
+      "printed_seed": "4558848811465292000"
+    },
+    {
+      "call_id": "main-04/clear/agent-1/invocation-1",
+      "printed_seed": "9074481556073412000"
+    },
+    {
+      "call_id": "main-04/clear/agent-1/invocation-2",
+      "printed_seed": "2987520622427463000"
+    },
+    {
+      "call_id": "main-04/retain/agent-0/invocation-0",
+      "printed_seed": "4935832027111888000"
+    },
+    {
+      "call_id": "main-04/retain/agent-1/invocation-0",
+      "printed_seed": "9153326687837542000"
+    },
+    {
+      "call_id": "main-04/retain/agent-0/invocation-1",
+      "printed_seed": "4558848811465292000"
+    },
+    {
+      "call_id": "main-04/retain/agent-0/invocation-2",
+      "printed_seed": "1123863666516745900"
+    },
+    {
+      "call_id": "main-04/control-revised-direct",
+      "printed_seed": "1955408414194344700"
+    },
+    {
+      "call_id": "main-05/prefix/agent-1/invocation-0",
+      "printed_seed": "5855928780301657000"
+    },
+    {
+      "call_id": "main-05/prefix/agent-0/invocation-0",
+      "printed_seed": "8624081969527110000"
+    },
+    {
+      "call_id": "main-05/prefix/agent-1/invocation-1",
+      "printed_seed": "6860462448721217000"
+    },
+    {
+      "call_id": "main-05/prefix/agent-0/invocation-1",
+      "printed_seed": "9097216785312924000"
+    },
+    {
+      "call_id": "main-05/prefix/agent-1/invocation-2",
+      "printed_seed": "5835796440356481000"
+    },
+    {
+      "call_id": "main-05/retain/agent-1/invocation-0",
+      "printed_seed": "1167102577982370300"
+    },
+    {
+      "call_id": "main-05/retain/agent-0/invocation-0",
+      "printed_seed": "5725029695302394000"
+    },
+    {
+      "call_id": "main-05/retain/agent-1/invocation-1",
+      "printed_seed": "2383887415932140000"
+    },
+    {
+      "call_id": "main-05/retain/agent-1/invocation-2",
+      "printed_seed": "5518476984073085000"
+    },
+    {
+      "call_id": "main-05/clear/agent-1/invocation-0",
+      "printed_seed": "1167102577982370300"
+    },
+    {
+      "call_id": "main-05/clear/agent-0/invocation-0",
+      "printed_seed": "5725029695302394000"
+    },
+    {
+      "call_id": "main-05/clear/agent-1/invocation-1",
+      "printed_seed": "2383887415932140000"
+    },
+    {
+      "call_id": "main-05/control-revised-direct",
+      "printed_seed": "3787827339133064000"
+    },
+    {
+      "call_id": "main-06/prefix/agent-0/invocation-0",
+      "printed_seed": "4443375365698065000"
+    },
+    {
+      "call_id": "main-06/prefix/agent-1/invocation-0",
+      "printed_seed": "6907090214075287000"
+    },
+    {
+      "call_id": "main-06/prefix/agent-0/invocation-1",
+      "printed_seed": "403207236873028700"
+    },
+    {
+      "call_id": "main-06/prefix/agent-1/invocation-1",
+      "printed_seed": "5602210831360482000"
+    },
+    {
+      "call_id": "main-06/retain/agent-0/invocation-0",
+      "printed_seed": "5655783284996840000"
+    },
+    {
+      "call_id": "main-06/retain/agent-1/invocation-0",
+      "printed_seed": "6857928960968428000"
+    },
+    {
+      "call_id": "main-06/retain/agent-0/invocation-1",
+      "printed_seed": "332938565515805100"
+    },
+    {
+      "call_id": "main-06/retain/agent-1/invocation-1",
+      "printed_seed": "1180427956507302700"
+    },
+    {
+      "call_id": "main-06/retain/agent-0/invocation-2",
+      "printed_seed": "4356814617177007600"
+    },
+    {
+      "call_id": "main-06/retain/agent-1/invocation-2",
+      "printed_seed": "4276074722970137000"
+    },
+    {
+      "call_id": "main-06/clear/agent-0/invocation-0",
+      "printed_seed": "5655783284996840000"
+    },
+    {
+      "call_id": "main-06/clear/agent-1/invocation-0",
+      "printed_seed": "6857928960968428000"
+    },
+    {
+      "call_id": "main-06/clear/agent-0/invocation-1",
+      "printed_seed": "332938565515805100"
+    },
+    {
+      "call_id": "main-06/clear/agent-1/invocation-1",
+      "printed_seed": "1180427956507302700"
+    },
+    {
+      "call_id": "main-06/clear/agent-1/invocation-2",
+      "printed_seed": "4276074722970137000"
+    },
+    {
+      "call_id": "main-06/control-revised-direct",
+      "printed_seed": "878157956577677200"
+    },
+    {
+      "call_id": "main-07/prefix/agent-1/invocation-0",
+      "printed_seed": "6338363659464968000"
+    },
+    {
+      "call_id": "main-07/prefix/agent-0/invocation-0",
+      "printed_seed": "8027866350249706000"
+    },
+    {
+      "call_id": "main-07/prefix/agent-1/invocation-1",
+      "printed_seed": "1834048780034528800"
+    },
+    {
+      "call_id": "main-07/prefix/agent-0/invocation-1",
+      "printed_seed": "8795700992255403000"
+    },
+    {
+      "call_id": "main-07/clear/agent-1/invocation-0",
+      "printed_seed": "6743217369469741000"
+    },
+    {
+      "call_id": "main-07/clear/agent-0/invocation-0",
+      "printed_seed": "4797149252694640000"
+    },
+    {
+      "call_id": "main-07/clear/agent-1/invocation-1",
+      "printed_seed": "2909329230306843600"
+    },
+    {
+      "call_id": "main-07/clear/agent-0/invocation-1",
+      "printed_seed": "7614473756387993000"
+    },
+    {
+      "call_id": "main-07/clear/agent-1/invocation-2",
+      "printed_seed": "5655618206529273000"
+    },
+    {
+      "call_id": "main-07/clear/agent-0/invocation-2",
+      "printed_seed": "8993706328779248000"
+    },
+    {
+      "call_id": "main-07/retain/agent-1/invocation-0",
+      "printed_seed": "6743217369469741000"
+    },
+    {
+      "call_id": "main-07/retain/agent-0/invocation-0",
+      "printed_seed": "4797149252694640000"
+    },
+    {
+      "call_id": "main-07/retain/agent-1/invocation-1",
+      "printed_seed": "2909329230306843600"
+    },
+    {
+      "call_id": "main-07/retain/agent-0/invocation-1",
+      "printed_seed": "7614473756387993000"
+    },
+    {
+      "call_id": "main-07/retain/agent-1/invocation-2",
+      "printed_seed": "5655618206529273000"
+    },
+    {
+      "call_id": "main-07/retain/agent-0/invocation-2",
+      "printed_seed": "8993706328779248000"
+    },
+    {
+      "call_id": "main-07/control-revised-direct",
+      "printed_seed": "8455226391885727000"
+    },
+    {
+      "call_id": "main-08/prefix/agent-0/invocation-0",
+      "printed_seed": "4302317736803074000"
+    },
+    {
+      "call_id": "main-08/prefix/agent-1/invocation-0",
+      "printed_seed": "813202346181748700"
+    },
+    {
+      "call_id": "main-08/prefix/agent-0/invocation-1",
+      "printed_seed": "5224742085747758000"
+    },
+    {
+      "call_id": "main-08/prefix/agent-1/invocation-1",
+      "printed_seed": "1361592466841777400"
+    },
+    {
+      "call_id": "main-08/retain/agent-0/invocation-0",
+      "printed_seed": "5660611958936633000"
+    },
+    {
+      "call_id": "main-08/retain/agent-1/invocation-0",
+      "printed_seed": "750253733408616800"
+    },
+    {
+      "call_id": "main-08/retain/agent-0/invocation-1",
+      "printed_seed": "5733326164071466000"
+    },
+    {
+      "call_id": "main-08/retain/agent-1/invocation-1",
+      "printed_seed": "722554483147231000"
+    },
+    {
+      "call_id": "main-08/retain/agent-0/invocation-2",
+      "printed_seed": "8067480068672098000"
+    },
+    {
+      "call_id": "main-08/retain/agent-1/invocation-2",
+      "printed_seed": "2949284188594557400"
+    },
+    {
+      "call_id": "main-08/clear/agent-0/invocation-0",
+      "printed_seed": "5660611958936633000"
+    },
+    {
+      "call_id": "main-08/clear/agent-1/invocation-0",
+      "printed_seed": "750253733408616800"
+    },
+    {
+      "call_id": "main-08/clear/agent-0/invocation-1",
+      "printed_seed": "5733326164071466000"
+    },
+    {
+      "call_id": "main-08/clear/agent-1/invocation-1",
+      "printed_seed": "722554483147231000"
+    },
+    {
+      "call_id": "main-08/control-revised-direct",
+      "printed_seed": "2867031733468415000"
+    },
+    {
+      "call_id": "main-09/prefix/agent-1/invocation-0",
+      "printed_seed": "2270563888760171000"
+    },
+    {
+      "call_id": "main-09/prefix/agent-0/invocation-0",
+      "printed_seed": "6457383984320120000"
+    },
+    {
+      "call_id": "main-09/prefix/agent-1/invocation-1",
+      "printed_seed": "5037241408865480000"
+    },
+    {
+      "call_id": "main-09/prefix/agent-0/invocation-1",
+      "printed_seed": "8903787460662674000"
+    },
+    {
+      "call_id": "main-09/prefix/agent-0/invocation-2",
+      "printed_seed": "515709982607462100"
+    },
+    {
+      "call_id": "main-09/clear/agent-1/invocation-0",
+      "printed_seed": "6826459702997504000"
+    },
+    {
+      "call_id": "main-09/clear/agent-0/invocation-0",
+      "printed_seed": "407043301095429100"
+    },
+    {
+      "call_id": "main-09/clear/agent-1/invocation-1",
+      "printed_seed": "5117105575182601000"
+    },
+    {
+      "call_id": "main-09/clear/agent-0/invocation-1",
+      "printed_seed": "6210845611147224000"
+    },
+    {
+      "call_id": "main-09/retain/agent-1/invocation-0",
+      "printed_seed": "6826459702997504000"
+    },
+    {
+      "call_id": "main-09/retain/agent-0/invocation-0",
+      "printed_seed": "407043301095429100"
+    },
+    {
+      "call_id": "main-09/retain/agent-1/invocation-1",
+      "printed_seed": "5117105575182601000"
+    },
+    {
+      "call_id": "main-09/control-revised-direct",
+      "printed_seed": "4137954343653610000"
+    },
+    {
+      "call_id": "main-10/prefix/agent-0/invocation-0",
+      "printed_seed": "7320231004114610000"
+    },
+    {
+      "call_id": "main-10/prefix/agent-1/invocation-0",
+      "printed_seed": "7658761929655871000"
+    },
+    {
+      "call_id": "main-10/prefix/agent-0/invocation-1",
+      "printed_seed": "3217502460542407000"
+    },
+    {
+      "call_id": "main-10/prefix/agent-1/invocation-1",
+      "printed_seed": "222213523310879230"
+    },
+    {
+      "call_id": "main-10/prefix/agent-0/invocation-2",
+      "printed_seed": "5871555718384630000"
+    },
+    {
+      "call_id": "main-10/retain/agent-0/invocation-0",
+      "printed_seed": "300714625817127700"
+    },
+    {
+      "call_id": "main-10/retain/agent-1/invocation-0",
+      "printed_seed": "3114348751232051700"
+    },
+    {
+      "call_id": "main-10/retain/agent-0/invocation-1",
+      "printed_seed": "2392896219710003700"
+    },
+    {
+      "call_id": "main-10/retain/agent-1/invocation-1",
+      "printed_seed": "7677737633457646000"
+    },
+    {
+      "call_id": "main-10/retain/agent-0/invocation-2",
+      "printed_seed": "3029130329141618700"
+    },
+    {
+      "call_id": "main-10/retain/agent-1/invocation-2",
+      "printed_seed": "2556553725324416500"
+    },
+    {
+      "call_id": "main-10/clear/agent-0/invocation-0",
+      "printed_seed": "300714625817127700"
+    },
+    {
+      "call_id": "main-10/clear/agent-1/invocation-0",
+      "printed_seed": "3114348751232051700"
+    },
+    {
+      "call_id": "main-10/clear/agent-0/invocation-1",
+      "printed_seed": "2392896219710003700"
+    },
+    {
+      "call_id": "main-10/control-revised-direct",
+      "printed_seed": "1522959672446881800"
+    },
+    {
+      "call_id": "main-11/prefix/agent-1/invocation-0",
+      "printed_seed": "1651278372547084500"
+    },
+    {
+      "call_id": "main-11/prefix/agent-0/invocation-0",
+      "printed_seed": "7260211348988445000"
+    },
+    {
+      "call_id": "main-11/prefix/agent-1/invocation-1",
+      "printed_seed": "3047813415882220500"
+    },
+    {
+      "call_id": "main-11/prefix/agent-0/invocation-1",
+      "printed_seed": "3459655731586445300"
+    },
+    {
+      "call_id": "main-11/clear/agent-1/invocation-0",
+      "printed_seed": "6324535812366500000"
+    },
+    {
+      "call_id": "main-11/clear/agent-0/invocation-0",
+      "printed_seed": "3568788055410293000"
+    },
+    {
+      "call_id": "main-11/clear/agent-1/invocation-1",
+      "printed_seed": "3339145909907567000"
+    },
+    {
+      "call_id": "main-11/clear/agent-0/invocation-1",
+      "printed_seed": "5599756402610049000"
+    },
+    {
+      "call_id": "main-11/clear/agent-1/invocation-2",
+      "printed_seed": "7255488726267169000"
+    },
+    {
+      "call_id": "main-11/clear/agent-0/invocation-2",
+      "printed_seed": "2691824876687491600"
+    },
+    {
+      "call_id": "main-11/retain/agent-1/invocation-0",
+      "printed_seed": "6324535812366500000"
+    },
+    {
+      "call_id": "main-11/retain/agent-0/invocation-0",
+      "printed_seed": "3568788055410293000"
+    },
+    {
+      "call_id": "main-11/retain/agent-0/invocation-1",
+      "printed_seed": "5599756402610049000"
+    },
+    {
+      "call_id": "main-11/control-revised-direct",
+      "printed_seed": "2163090111239607800"
+    },
+    {
+      "call_id": "main-12/prefix/agent-0/invocation-0",
+      "printed_seed": "5477743984722105000"
+    },
+    {
+      "call_id": "main-12/prefix/agent-1/invocation-0",
+      "printed_seed": "7475803139744996000"
+    },
+    {
+      "call_id": "main-12/prefix/agent-0/invocation-1",
+      "printed_seed": "5631675774648353000"
+    },
+    {
+      "call_id": "main-12/prefix/agent-1/invocation-1",
+      "printed_seed": "6234818043334188000"
+    },
+    {
+      "call_id": "main-12/prefix/agent-0/invocation-2",
+      "printed_seed": "4472875883009050600"
+    },
+    {
+      "call_id": "main-12/prefix/agent-1/invocation-2",
+      "printed_seed": "1094686403720881500"
+    },
+    {
+      "call_id": "main-12/retain/agent-0/invocation-0",
+      "printed_seed": "2743612794722972700"
+    },
+    {
+      "call_id": "main-12/retain/agent-1/invocation-0",
+      "printed_seed": "1234737115954755000"
+    },
+    {
+      "call_id": "main-12/retain/agent-0/invocation-1",
+      "printed_seed": "3136829567463183400"
+    },
+    {
+      "call_id": "main-12/retain/agent-1/invocation-1",
+      "printed_seed": "6318187042329076000"
+    },
+    {
+      "call_id": "main-12/retain/agent-0/invocation-2",
+      "printed_seed": "2876252156313199600"
+    },
+    {
+      "call_id": "main-12/retain/agent-1/invocation-2",
+      "printed_seed": "7995115427053989000"
+    },
+    {
+      "call_id": "main-12/clear/agent-0/invocation-0",
+      "printed_seed": "2743612794722972700"
+    },
+    {
+      "call_id": "main-12/clear/agent-1/invocation-0",
+      "printed_seed": "1234737115954755000"
+    },
+    {
+      "call_id": "main-12/clear/agent-0/invocation-1",
+      "printed_seed": "3136829567463183400"
+    },
+    {
+      "call_id": "main-12/clear/agent-1/invocation-1",
+      "printed_seed": "6318187042329076000"
+    },
+    {
+      "call_id": "main-12/clear/agent-0/invocation-2",
+      "printed_seed": "2876252156313199600"
+    },
+    {
+      "call_id": "main-12/clear/agent-1/invocation-2",
+      "printed_seed": "7995115427053989000"
+    },
+    {
+      "call_id": "main-12/control-revised-direct",
+      "printed_seed": "7965105038755675000"
+    },
+    {
+      "call_id": "main-13/prefix/agent-1/invocation-0",
+      "printed_seed": "4118052789191511600"
+    },
+    {
+      "call_id": "main-13/prefix/agent-0/invocation-0",
+      "printed_seed": "3687911531239326000"
+    },
+    {
+      "call_id": "main-13/prefix/agent-1/invocation-1",
+      "printed_seed": "2509662467309119000"
+    },
+    {
+      "call_id": "main-13/prefix/agent-0/invocation-1",
+      "printed_seed": "5472671243034029000"
+    },
+    {
+      "call_id": "main-13/clear/agent-1/invocation-0",
+      "printed_seed": "8232721564271764000"
+    },
+    {
+      "call_id": "main-13/clear/agent-0/invocation-0",
+      "printed_seed": "2840920490694408700"
+    },
+    {
+      "call_id": "main-13/retain/agent-1/invocation-0",
+      "printed_seed": "8232721564271764000"
+    },
+    {
+      "call_id": "main-13/retain/agent-0/invocation-0",
+      "printed_seed": "2840920490694408700"
+    },
+    {
+      "call_id": "main-13/retain/agent-1/invocation-1",
+      "printed_seed": "1063504552131294100"
+    },
+    {
+      "call_id": "main-13/retain/agent-0/invocation-1",
+      "printed_seed": "8258373027181240000"
+    },
+    {
+      "call_id": "main-13/control-revised-direct",
+      "printed_seed": "5180086200304226000"
+    },
+    {
+      "call_id": "main-14/prefix/agent-0/invocation-0",
+      "printed_seed": "3189017895255860000"
+    },
+    {
+      "call_id": "main-14/prefix/agent-1/invocation-0",
+      "printed_seed": "718683555328132000"
+    },
+    {
+      "call_id": "main-14/prefix/agent-0/invocation-1",
+      "printed_seed": "6436051091367820000"
+    },
+    {
+      "call_id": "main-14/prefix/agent-1/invocation-1",
+      "printed_seed": "2021746274816980200"
+    },
+    {
+      "call_id": "main-14/retain/agent-0/invocation-0",
+      "printed_seed": "496964559045077500"
+    },
+    {
+      "call_id": "main-14/retain/agent-1/invocation-0",
+      "printed_seed": "4707989650415873000"
+    },
+    {
+      "call_id": "main-14/retain/agent-1/invocation-1",
+      "printed_seed": "6616259111156736000"
+    },
+    {
+      "call_id": "main-14/retain/agent-1/invocation-2",
+      "printed_seed": "3161720786134861300"
+    },
+    {
+      "call_id": "main-14/clear/agent-0/invocation-0",
+      "printed_seed": "496964559045077500"
+    },
+    {
+      "call_id": "main-14/clear/agent-1/invocation-0",
+      "printed_seed": "4707989650415873000"
+    },
+    {
+      "call_id": "main-14/clear/agent-0/invocation-1",
+      "printed_seed": "5788254274766051000"
+    },
+    {
+      "call_id": "main-14/clear/agent-1/invocation-1",
+      "printed_seed": "6616259111156736000"
+    },
+    {
+      "call_id": "main-14/clear/agent-1/invocation-2",
+      "printed_seed": "3161720786134861300"
+    },
+    {
+      "call_id": "main-14/control-revised-direct",
+      "printed_seed": "4203802228938873000"
+    },
+    {
+      "call_id": "main-15/prefix/agent-1/invocation-0",
+      "printed_seed": "779155858978740900"
+    },
+    {
+      "call_id": "main-15/prefix/agent-0/invocation-0",
+      "printed_seed": "1902956623385930500"
+    },
+    {
+      "call_id": "main-15/prefix/agent-1/invocation-1",
+      "printed_seed": "5198962025364546000"
+    },
+    {
+      "call_id": "main-15/prefix/agent-0/invocation-1",
+      "printed_seed": "4916106138233231000"
+    },
+    {
+      "call_id": "main-15/retain/agent-1/invocation-0",
+      "printed_seed": "9040458041684503000"
+    },
+    {
+      "call_id": "main-15/retain/agent-0/invocation-0",
+      "printed_seed": "6598110015221665000"
+    },
+    {
+      "call_id": "main-15/retain/agent-1/invocation-1",
+      "printed_seed": "2494635798920113700"
+    },
+    {
+      "call_id": "main-15/retain/agent-0/invocation-1",
+      "printed_seed": "2997929407016828400"
+    },
+    {
+      "call_id": "main-15/retain/agent-1/invocation-2",
+      "printed_seed": "8391999091119783000"
+    },
+    {
+      "call_id": "main-15/retain/agent-0/invocation-2",
+      "printed_seed": "1444923101447011800"
+    },
+    {
+      "call_id": "main-15/clear/agent-1/invocation-0",
+      "printed_seed": "9040458041684503000"
+    },
+    {
+      "call_id": "main-15/clear/agent-0/invocation-0",
+      "printed_seed": "6598110015221665000"
+    },
+    {
+      "call_id": "main-15/clear/agent-1/invocation-1",
+      "printed_seed": "2494635798920113700"
+    },
+    {
+      "call_id": "main-15/clear/agent-0/invocation-1",
+      "printed_seed": "2997929407016828400"
+    },
+    {
+      "call_id": "main-15/control-revised-direct",
+      "printed_seed": "4432335345288427000"
+    },
+    {
+      "call_id": "main-16/prefix/agent-0/invocation-0",
+      "printed_seed": "3525824171274913000"
+    },
+    {
+      "call_id": "main-16/prefix/agent-1/invocation-0",
+      "printed_seed": "2762899117442607600"
+    },
+    {
+      "call_id": "main-16/prefix/agent-0/invocation-1",
+      "printed_seed": "2754380357574624000"
+    },
+    {
+      "call_id": "main-16/prefix/agent-1/invocation-1",
+      "printed_seed": "968336676028561400"
+    },
+    {
+      "call_id": "main-16/retain/agent-0/invocation-0",
+      "printed_seed": "790320112131600500"
+    },
+    {
+      "call_id": "main-16/retain/agent-1/invocation-0",
+      "printed_seed": "4421336844149292000"
+    },
+    {
+      "call_id": "main-16/retain/agent-0/invocation-1",
+      "printed_seed": "4173861043618292000"
+    },
+    {
+      "call_id": "main-16/retain/agent-1/invocation-1",
+      "printed_seed": "7180164956262380000"
+    },
+    {
+      "call_id": "main-16/retain/agent-1/invocation-2",
+      "printed_seed": "6793228924112769000"
+    },
+    {
+      "call_id": "main-16/clear/agent-0/invocation-0",
+      "printed_seed": "790320112131600500"
+    },
+    {
+      "call_id": "main-16/clear/agent-1/invocation-0",
+      "printed_seed": "4421336844149292000"
+    },
+    {
+      "call_id": "main-16/control-revised-direct",
+      "printed_seed": "8238573807699300000"
+    },
+    {
+      "call_id": "main-17/prefix/agent-1/invocation-0",
+      "printed_seed": "5430806944077818000"
+    },
+    {
+      "call_id": "main-17/prefix/agent-0/invocation-0",
+      "printed_seed": "800805333071943300"
+    },
+    {
+      "call_id": "main-17/prefix/agent-1/invocation-1",
+      "printed_seed": "6725718311437965000"
+    },
+    {
+      "call_id": "main-17/retain/agent-1/invocation-0",
+      "printed_seed": "4143900953050891300"
+    },
+    {
+      "call_id": "main-17/retain/agent-0/invocation-0",
+      "printed_seed": "4012012432534797300"
+    },
+    {
+      "call_id": "main-17/retain/agent-1/invocation-1",
+      "printed_seed": "7644170133203092000"
+    },
+    {
+      "call_id": "main-17/clear/agent-1/invocation-0",
+      "printed_seed": "4143900953050891300"
+    },
+    {
+      "call_id": "main-17/clear/agent-0/invocation-0",
+      "printed_seed": "4012012432534797300"
+    },
+    {
+      "call_id": "main-17/clear/agent-0/invocation-1",
+      "printed_seed": "7218594506061706000"
+    },
+    {
+      "call_id": "main-17/clear/agent-0/invocation-2",
+      "printed_seed": "2653935006362364400"
+    },
+    {
+      "call_id": "main-17/control-revised-direct",
+      "printed_seed": "8436139665433031000"
+    },
+    {
+      "call_id": "main-18/prefix/agent-0/invocation-0",
+      "printed_seed": "3746832027693357600"
+    },
+    {
+      "call_id": "main-18/prefix/agent-1/invocation-0",
+      "printed_seed": "4770086935633668000"
+    },
+    {
+      "call_id": "main-18/prefix/agent-0/invocation-1",
+      "printed_seed": "2857251163455213000"
+    },
+    {
+      "call_id": "main-18/clear/agent-0/invocation-0",
+      "printed_seed": "6566872721703755000"
+    },
+    {
+      "call_id": "main-18/clear/agent-1/invocation-0",
+      "printed_seed": "1595670909606827300"
+    },
+    {
+      "call_id": "main-18/clear/agent-0/invocation-1",
+      "printed_seed": "8548203267052920000"
+    },
+    {
+      "call_id": "main-18/clear/agent-1/invocation-1",
+      "printed_seed": "6123531660765846000"
+    },
+    {
+      "call_id": "main-18/retain/agent-0/invocation-0",
+      "printed_seed": "6566872721703755000"
+    },
+    {
+      "call_id": "main-18/retain/agent-1/invocation-0",
+      "printed_seed": "1595670909606827300"
+    },
+    {
+      "call_id": "main-18/retain/agent-0/invocation-1",
+      "printed_seed": "8548203267052920000"
+    },
+    {
+      "call_id": "main-18/control-revised-direct",
+      "printed_seed": "804505197553268700"
+    },
+    {
+      "call_id": "main-19/prefix/agent-1/invocation-0",
+      "printed_seed": "4413987904529229300"
+    },
+    {
+      "call_id": "main-19/prefix/agent-0/invocation-0",
+      "printed_seed": "379434476350427000"
+    },
+    {
+      "call_id": "main-19/prefix/agent-1/invocation-1",
+      "printed_seed": "1125793171469618400"
+    },
+    {
+      "call_id": "main-19/prefix/agent-0/invocation-1",
+      "printed_seed": "3351204169594849300"
+    },
+    {
+      "call_id": "main-19/clear/agent-1/invocation-0",
+      "printed_seed": "7276726502446892000"
+    },
+    {
+      "call_id": "main-19/clear/agent-0/invocation-0",
+      "printed_seed": "7237024353733970000"
+    },
+    {
+      "call_id": "main-19/retain/agent-1/invocation-0",
+      "printed_seed": "7276726502446892000"
+    },
+    {
+      "call_id": "main-19/retain/agent-0/invocation-0",
+      "printed_seed": "7237024353733970000"
+    },
+    {
+      "call_id": "main-19/retain/agent-1/invocation-1",
+      "printed_seed": "7732751061769951000"
+    },
+    {
+      "call_id": "main-19/retain/agent-0/invocation-1",
+      "printed_seed": "4727421665600995000"
+    },
+    {
+      "call_id": "main-19/retain/agent-1/invocation-2",
+      "printed_seed": "603837760294716700"
+    },
+    {
+      "call_id": "main-19/retain/agent-0/invocation-2",
+      "printed_seed": "4035401048979723300"
+    },
+    {
+      "call_id": "main-19/control-revised-direct",
+      "printed_seed": "4581285155719943000"
+    }
+  ]
+}

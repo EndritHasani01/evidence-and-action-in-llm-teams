@@ -1,8 +1,0 @@
-{
-  "action": "run_all",
-  "status": "blocked_or_safely_stopped",
-  "reason": "RuntimeError: Bootstrap failed; its receipt and logs are retained",
-  "gates_bypassed": false,
-  "assignment_clock": "2026-10-13T17:15:21+00:00",
-  "provider_release_confirmed": false
-}

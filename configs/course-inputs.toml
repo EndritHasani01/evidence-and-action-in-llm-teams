@@ -1,3 +1,0 @@
-# Course M1 input preparation only; use prepare/validate --regime course.
-# Inference limits/model, runtime admission and freeze belong to later gates.
-size = "fallback"

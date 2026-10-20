@@ -1,8 +1,0 @@
-Running prefill-gqa
-Running prefill-expanded
-Running prefill-expanded-efficient
-Running prefill-mask-expanded
-Running decode-gqa
-Running decode-expanded
-Running decode-expanded-efficient
-Running NF4 double-quantized FP16 operations
