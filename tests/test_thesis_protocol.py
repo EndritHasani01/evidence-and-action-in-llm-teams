@@ -24,7 +24,7 @@ class Protocol(unittest.TestCase):
         cls.world = cls.worlds["main-000"]
 
     def test_runtime_self_checks(self):
-        self.assertEqual(len(check_protocol({"worlds": list(self.worlds.values())})), 6)
+        self.assertEqual(len(check_protocol({"worlds": list(self.worlds.values())})), 7)
 
     def test_both_correct_scores_one_and_other_terminals_score_zero(self):
         w = self.world
@@ -129,6 +129,67 @@ class Protocol(unittest.TestCase):
         self.assertNotIn("Replacement value", text)
         self.assertIn(f"Changed record: agent {owner} record {w['row']}", text)
         self.assertIn(f"agent {other} record 19: {w['original'][other][19]}", text)
+
+    def test_answer_preserving_cells(self):
+        w = self.world
+        prefix = scripted_prefix(w)
+        owner, other = w["owner"], 1 - w["owner"]
+        rp, cp = protocol.start(w, "qwen", "RP", prefix), protocol.start(w, "qwen", "CP", prefix)
+        self.assertEqual(rp["history"], prefix["history"])
+        self.assertEqual(cp["history"], [[], []])
+        own, non = protocol.view(w, rp, owner), protocol.view(w, rp, other)
+        self.assertEqual(own["notice"], dict(kind="change", owner=owner, record=w["preserving_row"],
+                                             value=w["preserving_after"]))
+        self.assertEqual(non["notice"], dict(kind="change", owner=owner, record=w["preserving_row"]))
+        self.assertEqual(own["shard"], w["preserving"][owner])
+        self.assertEqual(non["shard"], w["original"][other])
+        text = protocol.messages(own)[1]["content"]
+        self.assertIn(protocol.NOTICE_CHANGE + f"\nChanged record: agent {owner} record {w['preserving_row']}", text)
+        self.assertIn(f"Replacement value for your record agent {owner} record {w['preserving_row']}: "
+                      f"{w['preserving_after']}", text)
+        # The answer is unchanged: resubmitting the original maximum succeeds.
+        first, second = w["first"], 1 - w["first"]
+        state = act(cp, first, submit=w["original_truth"])
+        state = act(state, second, submit=w["original_truth"])
+        self.assertEqual((state["terminal"], protocol.score(w, state)), ("both_submitted", 1))
+        changed = act(act(rp, first, submit=w["runner_up"]), second, submit=w["runner_up"])
+        self.assertEqual(protocol.score(w, changed), 0)
+        self.assertNotIn("old_answer", protocol.funnel(w, changed)["classes"])  # the old answer is current here
+        self.assertTrue(protocol.funnel(w, changed)["any_wrong"])
+
+    def test_notices_differ_only_in_content_and_the_waiting_rule_is_stated(self):
+        self.assertEqual(protocol.NOTICE_CHANGE.replace("one source record", "no source record"), protocol.NOTICE_NONE)
+        self.assertIn("A finished partner cannot send messages, so waiting\nafter your partner has finished "
+                      "ends the phase without your submission.", protocol.THESIS_SYSTEM)
+        # The stated rule is the implemented one: waiting after the partner finished ends the phase.
+        w = self.world
+        state = protocol.start(w, "qwen", "CN", scripted_prefix(w))
+        first, second = w["first"], 1 - w["first"]
+        state = act(state, first, submit=w["original_truth"])
+        state = act(state, second, wait=True)
+        self.assertEqual((state["terminal"], state["submissions"][second]), ("waiting_deadlock", None))
+
+    def test_repetition_diagnostic_counts_exact_own_repeats(self):
+        w = self.world
+        prefix = scripted_prefix(w)
+        first, second = w["first"], 1 - w["first"]
+        earlier = next(e["action"]["message"] for e in prefix["history"][first]
+                       if e["kind"] == "own_action" and e["action"]["message"])
+        state = protocol.start(w, "qwen", "RV", prefix)
+        state = act(state, first, message=earlier)  # copies its own earlier-phase message
+        state = act(state, second, message="hello")
+        state = act(state, first, message="new text")
+        state = act(state, second, message="hello")  # repeats within this phase
+        state = act(state, first, submit=1)
+        state = act(state, second, submit=1)
+        funnel = protocol.funnel(w, state)
+        self.assertEqual(funnel["repeats_earlier_phase"][first], True)
+        self.assertEqual(funnel["repeats_earlier_phase"][second], False)
+        self.assertEqual(funnel["repeats"], [True, True])
+        clear = protocol.start(w, "qwen", "CV", prefix)
+        clear = act(act(clear, first, message=earlier), second, submit=1)
+        clear = act(clear, first, submit=1)
+        self.assertEqual(protocol.funnel(w, clear)["repeats"], [False, False])
 
     def test_controls_render_the_complete_input(self):
         w = self.world

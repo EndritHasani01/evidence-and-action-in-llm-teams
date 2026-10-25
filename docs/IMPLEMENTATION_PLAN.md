@@ -6,10 +6,25 @@ The user approved full implementation of the
 [thesis project specification](proposals/thesis-project-specification.md), now
 adopted as [specification §13](../PROJECT_SPECIFICATION.md#13-thesis-regime-thesis-recovery-v1)
 with that document as its annex. Design: one natural two-agent I-01 prefix per
-world, four isolated continuations (retain/clear × answer-changing revision /
-no-change reopening), two scalar controls, balanced demote/keep-winner edits,
-192 main (fallback 128) and 16 development worlds, Qwen3.5-9B and Granite
-4.2-8B, primaries Δ_E (revision cost) and Δ_H (history effect) per model.
+world, six isolated continuations (retain/clear × answer-changing revision /
+answer-preserving change / no-change reopening), two scalar controls, balanced
+demote/keep-winner edits, 192 main (fallback 128) and 16 development worlds,
+Qwen3.5-9B and Granite 4.2-8B, primaries Δ_E (revision cost) and Δ_H (history
+effect) per model.
+
+**Amended 25 October 2026 (before any GPU execution)** by the user's approval of
+R1–R3 of the [pre-execution design review](proposals/thesis-pre-execution-design-review-2026-10-25.md):
+answer-preserving cells RP/CP on every world (generator `thesis-worlds-v2`,
+separate seed stream, all earlier input fields unchanged); secondary analyses
+S12–S16 (decomposition Δ_E = Δ_announce + Δ_answer, reopening effect,
+completion and wrong-commitment channels, prefix and holder subgroups,
+self-repetition); a symmetric change notice; one sentence stating the existing
+waiting rule; an exact decoding description. Ceilings: 44 calls per world and
+model, 18,644 attempts per campaign, 100 aggregate GPU-hours unchanged. The
+world count was reassessed and kept at 192 with the 128 fallback (annex §3.10).
+The scripted CPU tokenizer double was recalibrated to 4 bytes per token so that
+rehearsals keep reaching the real 8,192 decision, and `.gitattributes` now pins
+the byte-verified thesis inputs to LF.
 
 **Implemented** in `recovery/thesis/` (worlds, protocol, models, assets,
 checkpoint, run, checks, analysis, notebook facade, CLI), `configs/thesis.json`,
@@ -19,8 +34,8 @@ the committed manifest `configs/thesis-worlds.json` with its separation receipt,
 `Resident`, isolated runtime, setup helpers and the reviewed Qwen loader without
 changing them. **Verified on CPU:** see the
 [implementation evidence](validation/thesis-implementation.md), including the
-real-tokenizer capacity proof (Qwen 7,784, Granite 7,745 ≤ 8,192) and a scripted
-end-to-end rehearsal with a cross-session restore. **Not yet run:** any Kaggle
+real-tokenizer capacity proof (after the amendment Qwen 7,808, Granite 7,769
+≤ 8,192) and a scripted end-to-end rehearsal with a cross-session restore. **Not yet run:** any Kaggle
 session, GPU readiness, Granite loading on T4, development and main. The operator
 guide is [THESIS_KAGGLE.md](THESIS_KAGGLE.md).
 

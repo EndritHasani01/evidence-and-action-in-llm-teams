@@ -86,6 +86,19 @@ class Pipeline(Harness):
             close_controller(ctl)
         first = analyse(self.tmp / "run", draws=200)
         self.assertEqual(first["status"], "complete")
+        # All six sibling cells ran from the one prefix, within the per-world ceiling of 44 calls.
+        with sqlite3.connect(self.tmp / "run" / "study.sqlite") as db:
+            cells = {r[0].split("/")[2] for r in db.execute("SELECT id FROM episodes WHERE id LIKE 'qwen/main-000/%'")}
+            main_calls = db.execute("SELECT COUNT(*) FROM attempts WHERE stage='main' AND call_id LIKE 'qwen/%'").fetchone()[0]
+        self.assertEqual(cells, {"prefix", "RV", "CV", "RP", "CP", "RN", "CN", "control-original", "control-revised"})
+        self.assertLessEqual(main_calls, 44)
+        result = first["models"]["qwen"]
+        for name in ("delta_E", "delta_H", "delta_announce", "delta_answer", "reopening", "delta_H_preserving"):
+            self.assertIn(name, result["estimands"])
+        self.assertEqual(set(result["channels"]), {"completed", "any_wrong"})
+        self.assertEqual(set(result["subgroups"]), {"correct_prefix", "incorrect_prefix", "revised_answer_with_owner",
+                                                    "revised_answer_with_partner"})
+        self.assertIn("agents_repeating_own_message", result["funnel"]["RP"])
         # A new session with an empty working directory restores from the mirror and repeats nothing.
         ctl2 = self.open(self.profile(), run="run2", session="s2", start_new=False)
         try:
@@ -304,6 +317,23 @@ class Gates(Harness):
             with self.assertRaises(Stop) as stop:
                 ctl.freeze(report["id"])
             self.assertIn("no model passed", str(stop.exception))
+        finally:
+            close_controller(ctl)
+
+    def test_forecast_uses_the_44_call_world_and_falls_back_to_128(self):
+        ctl = self.open(self.profile(name="study", gates_informational=False, main_limit=None), scope="main",
+                        study="t-study")
+        try:
+            for model, g in (("qwen", 8.7), ("granite", 9.0)):
+                ctl.put(f"gates/{model}", dict(model=model, complete=True, admitted=True, g_seconds=g))
+            fast = ctl.forecast()
+            expected = 4 + 1.25 * (44 * 192 * (8.7 + 9.0) + 300 * 9.0) / 3600
+            self.assertAlmostEqual(fast["F192"], round(expected, 2), places=2)
+            self.assertEqual(fast["chosen_n"], 192)
+            ctl.put("gates/granite", dict(model="granite", complete=True, admitted=True, g_seconds=25.0))
+            slow = ctl.forecast()  # F(192) about 105 h > 100 h, F(128) about 73 h
+            self.assertGreater(slow["F192"], 100)
+            self.assertEqual(slow["chosen_n"], 128)
         finally:
             close_controller(ctl)
 

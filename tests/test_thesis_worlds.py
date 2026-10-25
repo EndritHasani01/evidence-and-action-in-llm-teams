@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 import unittest
 
-from recovery.thesis import load_config
+from recovery.thesis import CELLS, load_config
 from recovery.thesis.worlds import (build_manifest, check_world, load_manifest, make_world, manifest_bytes,
                                     stratum, verify_manifest, verify_separation)
 
@@ -45,6 +45,24 @@ class Worlds(unittest.TestCase):
                 self.assertNotEqual(world["after"], m1)
                 self.assertEqual(world["revised_truth"], world["after"])
             self.assertEqual(world["holders_original"], [world["owner"]])
+            self.assertEqual(sorted(world["order"]), sorted(CELLS))
+
+    def test_answer_preserving_change_keeps_answer_and_local_maxima(self):
+        for world in self.worlds:
+            owner, row, p_row = world["owner"], world["row"], world["preserving_row"]
+            original, preserving = world["original"], world["preserving"]
+            changed = [(a, j) for a in (0, 1) for j in range(20) if original[a][j] != preserving[a][j]]
+            self.assertEqual(changed, [(owner, p_row)])  # same owner as the revision, one record
+            self.assertNotEqual(p_row, row)  # never the winning record
+            self.assertEqual(world["preserving_before"], original[owner][p_row])
+            self.assertEqual(preserving[owner][p_row], world["preserving_after"])
+            self.assertLess(world["preserving_after"], world["original_truth"])
+            self.assertEqual(max(preserving[0] + preserving[1]), world["original_truth"])
+            self.assertEqual([max(s) for s in preserving], [max(s) for s in original])
+        broken = json.loads(json.dumps(self.worlds[0]))
+        broken["preserving"][broken["owner"]][broken["row"]] = -1000
+        with self.assertRaises(ValueError):
+            check_world(broken)
 
     def test_generation_depends_only_on_seed_and_identity(self):
         a = make_world(self.config["master_seed"], "main", 7)
@@ -67,8 +85,21 @@ class Worlds(unittest.TestCase):
     def test_separation_receipt_matches_a_fresh_audit(self):
         receipt = verify_separation(ROOT)
         self.assertTrue(receipt["passed"])
-        self.assertEqual(receipt["checked_new_inputs"], 416)
+        self.assertEqual(receipt["checked_new_inputs"], 624)  # original, revised and preserving inputs
         self.assertGreaterEqual(receipt["distinct_exposed_inputs"], 114)
+
+    def test_config_ceilings_must_match_the_six_cells(self):
+        import tempfile
+        self.assertEqual((self.config["ceilings"]["main_per_model_per_world"], self.config["ceilings"]["development"]),
+                         (44, 1408))  # 6 prefix + 6 x 6 continuation + 2 controls; 16 worlds x 44 x 2 models
+        with tempfile.TemporaryDirectory() as name:
+            root = Path(name)
+            (root / "configs").mkdir()
+            stale = json.loads((ROOT / "configs/thesis.json").read_text())
+            stale["ceilings"]["main_per_model_per_world"] = 32  # the pre-amendment four-cell value
+            (root / "configs/thesis.json").write_text(json.dumps(stale))
+            with self.assertRaises(ValueError):
+                load_config(root)
 
     def test_tampered_manifest_is_refused(self):
         import shutil

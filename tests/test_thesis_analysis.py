@@ -3,23 +3,50 @@ import random
 import unittest
 
 from recovery.thesis.analysis import (LINEAR, Bootstrap, hoeffding, interval_indices, paired_categories,
-                                      stratified_mean, summarize, value_range, world_value)
-from recovery.thesis.checks import check_analysis
+                                      stratified_mean, subgroup_summary, summarize, value_range, world_value)
+from recovery.thesis.checks import HAND_TABLE, check_analysis
 
-HAND = [dict(RV=0, CV=1, RN=1, CN=1), dict(RV=0, CV=0, RN=1, CN=0), dict(RV=1, CV=0, RN=1, CN=1),
-        dict(RV=0, CV=0, RN=0, CN=0), dict(RV=0, CV=1, RN=1, CN=1), dict(RV=0, CV=0, RN=1, CN=1),
-        dict(RV=0, CV=0, RN=1, CN=0), dict(RV=1, CV=1, RN=1, CN=1)]
+HAND = [dict(ys) for ys in HAND_TABLE]
 
 
 class Analysis(unittest.TestCase):
     def test_hand_scored_example(self):
-        self.assertEqual(len(check_analysis()), 4)
+        self.assertEqual(len(check_analysis()), 5)
         strata = list(range(8))
         self.assertEqual(stratified_mean([world_value(LINEAR["delta_H"][0], ys) for ys in HAND], strata), .125)
         self.assertEqual(stratified_mean([world_value(LINEAR["delta_E"][0], ys) for ys in HAND], strata), .4375)
         self.assertEqual(stratified_mean([world_value(LINEAR["theta"][0], ys) for ys in HAND], strata), .375)
         self.assertEqual(paired_categories(HAND, "RV", "CV"),
                          dict(both=1, only_first=1, only_second=2, neither=4, unknown=0))
+
+    def test_decomposition_and_reopening_hand_values(self):
+        strata = list(range(8))
+        mean = lambda name: stratified_mean([world_value(LINEAR[name][0], ys) for ys in HAND], strata)  # noqa: E731
+        self.assertEqual((mean("delta_announce"), mean("delta_answer"), mean("reopening")), (.125, .3125, .125))
+        self.assertEqual(mean("delta_announce") + mean("delta_answer"), mean("delta_E"))
+        self.assertEqual((mean("delta_announce_retain"), mean("delta_announce_clear")), (.25, 0))
+        self.assertEqual((mean("delta_answer_retain"), mean("delta_answer_clear")), (.375, .25))
+        self.assertEqual(mean("delta_H_preserving"), 0)
+        for name in ("delta_announce", "delta_answer", "delta_H_preserving", "reopening"):
+            self.assertEqual(value_range(LINEAR[name][0]), (-1, 1))
+
+    def test_subgroup_summary_resamples_worlds_and_keeps_members(self):
+        strata = [s for s in range(8) for _ in range(24)]
+        rng = random.Random(4)
+        values = [1.0 if rng.random() < .6 else 0.0 for _ in strata]
+        members = [i % 2 == 0 for i in range(len(strata))]
+        boot = Bootstrap(strata, 2000, 2026102302)
+        result = subgroup_summary(values, members, boot, .95)
+        expected = sum(v for v, m in zip(values, members) if m) / sum(members)
+        self.assertEqual(result["n"], 96)
+        self.assertAlmostEqual(result["estimate"], expected, places=6)
+        self.assertLess(result["interval"][0], expected)
+        self.assertGreater(result["interval"][1], expected)
+        self.assertEqual(result["direction"], "positive")
+        empty = subgroup_summary(values, [False] * len(strata), boot, .95)
+        self.assertEqual((empty["n"], empty["estimate"], empty["interval"]), (0, None, None))
+        rare = subgroup_summary(values, [i == 0 for i in range(len(strata))], boot, .95)
+        self.assertIsNone(rare["interval"])  # some resamples contain no member
 
     def test_ranges_and_interval_indices(self):
         self.assertEqual(value_range(LINEAR["delta_H"][0]), (-1, 1))

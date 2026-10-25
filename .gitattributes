@@ -6,3 +6,8 @@ tests/fixtures/protocol_replies.json text eol=lf
 tests/fixtures/round_traces.json text eol=lf
 tests/fixtures/event_boundaries.json text eol=lf
 tests/fixtures/replay_traces.json text eol=lf
+
+# Thesis inputs are verified byte for byte and hashed into every study binding.
+configs/thesis.json text eol=lf
+configs/thesis-worlds.json text eol=lf
+configs/thesis-worlds-separation.json text eol=lf

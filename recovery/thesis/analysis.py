@@ -18,20 +18,42 @@ from . import CELLS, MODELS
 from . import protocol
 
 LINEAR = {
-    # name: (coefficients over cells, label)
+    # name: (coefficients over cells, label). V = answer-changing revision,
+    # P = answer-preserving change, N = no change; R/C = retain/clear.
     "delta_E": ({"RN": .5, "RV": -.5, "CN": .5, "CV": -.5}, "revision cost: success(no change) - success(revision), mean over retain/clear"),
     "delta_H": ({"CV": 1, "RV": -1}, "history effect after revision: clear - retain"),
     "theta": ({"CV": 1, "RV": -1, "CN": -1, "RN": 1}, "interaction: (CV-RV) - (CN-RN)"),
     "delta_E_retain": ({"RN": 1, "RV": -1}, "revision cost under retain"),
     "delta_E_clear": ({"CN": 1, "CV": -1}, "revision cost under clear"),
     "delta_H_no_change": ({"CN": 1, "RN": -1}, "history effect under no change: CN - RN"),
+    "delta_announce": ({"RN": .5, "RP": -.5, "CN": .5, "CP": -.5},
+                       "announcement cost: success(no change) - success(answer-preserving change), mean over retain/clear"),
+    "delta_answer": ({"RP": .5, "RV": -.5, "CP": .5, "CV": -.5},
+                     "answer-change cost: success(answer-preserving change) - success(revision); delta_E = announce + answer"),
+    "delta_announce_retain": ({"RN": 1, "RP": -1}, "announcement cost under retain: RN - RP"),
+    "delta_announce_clear": ({"CN": 1, "CP": -1}, "announcement cost under clear: CN - CP"),
+    "delta_answer_retain": ({"RP": 1, "RV": -1}, "answer-change cost under retain: RP - RV"),
+    "delta_answer_clear": ({"CP": 1, "CV": -1}, "answer-change cost under clear: CP - CV"),
+    "delta_H_preserving": ({"CP": 1, "RP": -1}, "history effect after an answer-preserving change: CP - RP"),
+    "reopening": ({"prefix": 1, "CN": -1}, "reopening effect: success(original phase) - success(clear, no change)"),
+    "reopening_retain": ({"prefix": 1, "RN": -1}, "original phase - retain/no change (descriptive; history also differs)"),
     "rate_prefix": ({"prefix": 1}, "original-phase success"),
     "rate_RV": ({"RV": 1}, "success retain/revision"),
     "rate_CV": ({"CV": 1}, "success clear/revision"),
+    "rate_RP": ({"RP": 1}, "success retain/answer-preserving change"),
+    "rate_CP": ({"CP": 1}, "success clear/answer-preserving change"),
     "rate_RN": ({"RN": 1}, "success retain/no change"),
     "rate_CN": ({"CN": 1}, "success clear/no change"),
 }
 PRIMARY = ("delta_E", "delta_H")
+DECOMPOSITION = ("delta_announce", "delta_answer")
+# Channels: the same contrasts on two unconditional episode indicators (section 3.9, S13).
+CHANNELS = {
+    "completed": "both agents submitted; with the coefficients of each contrast, positive means its "
+                 "positively weighted cells complete more often",
+    "any_wrong": "at least one submitted value is wrong; with the coefficients of each contrast, negative means "
+                 "its negatively weighted cells commit wrong values more often",
+}
 
 
 def interval_indices(draws, confidence):
@@ -125,6 +147,27 @@ def summarize(values, strata, boot, confidence, value_bounds):
     return result
 
 
+def subgroup_summary(values, members, boot, confidence):
+    """Simple mean over member worlds; worlds are resampled within strata and members kept per draw."""
+    np = boot.np
+    v, m = np.asarray(values, dtype=float), np.asarray(members, dtype=bool)
+    n = int(m.sum())
+    result = dict(n=n, confidence=confidence, estimate=None, interval=None, direction="inconclusive")
+    if n == 0:
+        return result
+    result["estimate"] = round(float(v[m].mean()), 6)
+    counts = m[boot.index].sum(axis=1)
+    if (counts == 0).any():
+        return result  # some resample has no member: no interval is reported
+    dist = np.sort((v[boot.index] * m[boot.index]).sum(axis=1) / counts)
+    lo_i, hi_i = interval_indices(boot.draws, confidence)
+    result["interval"] = [round(float(dist[lo_i]), 6), round(float(dist[hi_i]), 6)]
+    excludes = result["interval"][0] > 0 or result["interval"][1] < 0
+    result["direction"] = ("positive" if excludes and result["estimate"] > 0 else
+                           "negative" if excludes and result["estimate"] < 0 else "inconclusive")
+    return result
+
+
 def paired_categories(ys_list, a, b):
     """For a contrast b - a: both / only b / only a / neither (known pairs only)."""
     counts = dict(both=0, only_first=0, only_second=0, neither=0, unknown=0)
@@ -161,11 +204,19 @@ def read(run):
                 meta=meta, states=states, calls=calls, attempts=attempts, sessions=sessions)
 
 
-def outcomes(data, model, ids):
+def outcomes(data, model, ids, measure="success"):
+    """Per-world cell values of exact success or of a funnel indicator; None while unknown."""
     table = []
     for wid in ids:
         w = data["worlds"][wid]
-        ys = {cell: protocol.score(w, data["states"].get(f"{model}/{wid}/{cell}")) for cell in ("prefix",) + CELLS}
+        ys = {}
+        for cell in ("prefix",) + CELLS:
+            state = data["states"].get(f"{model}/{wid}/{cell}")
+            if measure == "success":
+                ys[cell] = protocol.score(w, state)
+            else:
+                f = protocol.funnel(w, state)
+                ys[cell] = None if f is None else int(f[measure])
         table.append(ys)
     return table
 
@@ -225,27 +276,50 @@ def analyse(run, *, draws=None):
     return result
 
 
+def estimate(table, coefficients, strata, boot, confidence, complete):
+    """Observed estimate, or both missing-outcome bounds when an incomplete main is declared stopped."""
+    entries = {}
+    for fill in ([None] if complete else ["min", "max"]):
+        values = [world_value(coefficients, ys, fill) for ys in table]
+        entries[fill or "observed"] = summarize(values, strata, boot, confidence, value_range(coefficients))
+    if complete:
+        return entries["observed"]
+    lo, hi = entries["min"], entries["max"]
+    agree = lo["direction"] == hi["direction"]
+    return dict(bounds=dict(lower=lo, upper=hi), direction=lo["direction"] if agree else "inconclusive",
+                estimate_range=[lo["estimate"], hi["estimate"]])
+
+
+def revised_holder(world):
+    return "owner" if world["owner"] in world["holders_revised"] else "partner"
+
+
 def model_result(data, model, ids, strata, table, boot, config, complete):
-    out = dict(cells={}, estimands={}, edit_types={}, paired={}, funnel={}, controls={}, costs={},
-               prefix_strata={}, bounds=None)
-    fills = [None] if complete else ["min", "max"]
+    out = dict(cells={}, estimands={}, channels={}, subgroups={}, edit_types={}, paired={}, funnel={},
+               controls={}, costs={}, prefix_strata={}, bounds=None)
     for name, (coefficients, label) in LINEAR.items():
         confidence = config["primary_confidence"] if name in PRIMARY else config["secondary_confidence"]
-        entries = {}
-        for fill in fills:
-            values = [world_value(coefficients, ys, fill) for ys in table]
-            entries[fill or "observed"] = summarize(values, strata, boot, confidence, value_range(coefficients))
-        if complete:
-            entry = entries["observed"]
-        else:
-            lo, hi = entries["min"], entries["max"]
-            agree = lo["direction"] == hi["direction"]
-            entry = dict(bounds=dict(lower=lo, upper=hi), direction=lo["direction"] if agree else "inconclusive",
-                         estimate_range=[lo["estimate"], hi["estimate"]])
+        entry = estimate(table, coefficients, strata, boot, confidence, complete)
         entry["label"] = label
         entry["primary"] = name in PRIMARY
         target = out["cells"] if name.startswith("rate_") else out["estimands"]
         target[name] = entry
+    for measure, label in CHANNELS.items():
+        channel = outcomes(data, model, ids, measure)
+        out["channels"][measure] = dict(label=label, estimands={
+            name: estimate(channel, LINEAR[name][0], strata, boot, config["secondary_confidence"], complete)
+            for name in PRIMARY + DECOMPOSITION})
+    if complete:
+        # Prefix correctness is shared by all six cells of a world, so it is pre-treatment for them.
+        holders = [revised_holder(data["worlds"][wid]) for wid in ids]
+        groups = {"correct_prefix": [ys["prefix"] == 1 for ys in table],
+                  "incorrect_prefix": [ys["prefix"] == 0 for ys in table],
+                  "revised_answer_with_owner": [h == "owner" for h in holders],
+                  "revised_answer_with_partner": [h == "partner" for h in holders]}
+        for group, members in groups.items():
+            out["subgroups"][group] = {name: subgroup_summary([world_value(LINEAR[name][0], ys) for ys in table],
+                                                              members, boot, config["secondary_confidence"])
+                                       for name in PRIMARY}
     for edit in ("demote", "keep"):
         keep = [i for i, wid in enumerate(ids) if data["worlds"][wid]["edit"] == edit]
         sub_strata = [strata[i] for i in keep]
@@ -259,7 +333,13 @@ def model_result(data, model, ids, strata, table, boot, config, complete):
     out["paired"] = {"delta_H (RV vs CV)": paired_categories(table, "RV", "CV"),
                      "delta_E retain (RV vs RN)": paired_categories(table, "RV", "RN"),
                      "delta_E clear (CV vs CN)": paired_categories(table, "CV", "CN"),
-                     "no change (RN vs CN)": paired_categories(table, "RN", "CN")}
+                     "no change (RN vs CN)": paired_categories(table, "RN", "CN"),
+                     "announce retain (RP vs RN)": paired_categories(table, "RP", "RN"),
+                     "announce clear (CP vs CN)": paired_categories(table, "CP", "CN"),
+                     "answer retain (RV vs RP)": paired_categories(table, "RV", "RP"),
+                     "answer clear (CV vs CP)": paired_categories(table, "CV", "CP"),
+                     "preserving (RP vs CP)": paired_categories(table, "RP", "CP"),
+                     "reopening (CN vs prefix)": paired_categories(table, "CN", "prefix")}
     for cell in ("prefix",) + CELLS:
         rows = [protocol.funnel(data["worlds"][wid], data["states"].get(f"{model}/{wid}/{cell}")) for wid in ids]
         rows = [r for r in rows if r]
@@ -276,6 +356,9 @@ def model_result(data, model, ids, strata, table, boot, config, complete):
             needer_episodes=len(needers),
             holder_correct=sum(all(r["holder_correct"]) for r in rows),
             needer_correct=sum(all(r["needer_correct"]) for r in needers),
+            any_wrong=sum(r["any_wrong"] for r in rows),
+            agents_repeating_own_message=sum(sum(r["repeats"]) for r in rows),
+            agents_repeating_earlier_phase_message=sum(sum(r["repeats_earlier_phase"]) for r in rows),
             submission_classes=classes)
     for phase in ("original", "revised"):
         states = [data["states"].get(f"{model}/{wid}/control-{phase}") for wid in ids]
@@ -375,10 +458,22 @@ def write_report(run, out=None, *, draws=None, plots=True):
             lines.append(r["withheld"])
             continue
         lines += ["| Estimand | Estimate and interval | Direction |", "|---|---|---|"]
-        for name in ("delta_E", "delta_H", "theta", "delta_E_retain", "delta_E_clear", "delta_H_no_change"):
-            e = r["estimands"][name]
+        for name, e in r["estimands"].items():
             tag = " (primary, 97.5%)" if e["primary"] else " (95%)"
             lines.append(f"| {name}{tag}: {e['label']} | {fmt_interval(e)} | {e['direction']} |")
+        lines += ["", "Channels (95%; the same contrasts on episode indicators, not an additive decomposition):", "",
+                  "| Indicator | Estimand | Estimate and interval | Direction |", "|---|---|---|---|"]
+        for measure, channel in r["channels"].items():
+            for name, e in channel["estimands"].items():
+                lines.append(f"| {measure} | {name} | {fmt_interval(e)} | {e['direction']} |")
+        if r["subgroups"]:
+            lines += ["", "Subgroups (95%; simple means within the subgroup, worlds resampled within strata):", "",
+                      "| Subgroup | Worlds | delta_E | delta_H |", "|---|---:|---|---|"]
+            for group, entries in r["subgroups"].items():
+                cells = [fmt_interval(entries[n]) if entries[n]["interval"] else
+                         (pct(entries[n]["estimate"]) + " (no interval)" if entries[n]["estimate"] is not None else "n/a")
+                         for n in PRIMARY]
+                lines.append(f"| {group} | {entries['delta_E']['n']} | {cells[0]} | {cells[1]} |")
         lines += ["", "| Cell | Success rate |", "|---|---|"]
         for name, e in r["cells"].items():
             lines.append(f"| {name.removeprefix('rate_')} | {fmt_rate(e)} |")
@@ -388,6 +483,9 @@ def write_report(run, out=None, *, draws=None, plots=True):
             lines.append(f"- {cell}: success {fn['success']}/{fn['episodes']}, completed {fn['completed']}, "
                          f"answer visible to needer {fn['answer_visible_to_needer']}/{fn['needer_episodes']}, "
                          f"holder correct {fn['holder_correct']}, needer correct {fn['needer_correct']}, "
+                         f"any wrong {fn['any_wrong']}, agents repeating an own message "
+                         f"{fn['agents_repeating_own_message']} (from the earlier phase "
+                         f"{fn['agents_repeating_earlier_phase_message']}), "
                          f"terminal {fn['terminal']}, classes {fn['submission_classes']}")
         lines += ["", "Mean cost per world: " + json.dumps(r["costs"])]
     if result["model_differences"]:
@@ -491,17 +589,17 @@ def write_figures(result, out):
     models = [m for m, r in result["models"].items() if "estimands" in r and "estimate" in r["estimands"]["delta_E"]]
     if not models:
         return
-    fig, ax = plt.subplots(figsize=(7, 3.5))
-    names = ["delta_E", "delta_H", "theta"]
+    fig, ax = plt.subplots(figsize=(8, 3.8))
+    names = ["delta_E", "delta_announce", "delta_answer", "delta_H", "reopening"]
     for k, model in enumerate(models):
         for j, name in enumerate(names):
             e = result["models"][model]["estimands"][name]
             x = j + (k - (len(models) - 1) / 2) * 0.2
             ax.errorbar([x], [e["estimate"]], yerr=[[e["estimate"] - e["interval"][0]], [e["interval"][1] - e["estimate"]]],
-                        fmt="o", capsize=4, label=model if j == 0 else None)
+                        fmt="o", capsize=4, color=f"C{k}", label=model if j == 0 else None)
     ax.axhline(0, color="grey", linewidth=0.8)
     ax.set_xticks(range(len(names)))
-    ax.set_xticklabels(["revision cost", "history effect", "interaction"])
+    ax.set_xticklabels(["revision\ncost", "announce-\nment", "answer\nchange", "history\neffect", "reopening"])
     ax.set_ylabel("difference in team success")
     ax.legend()
     fig.tight_layout()

@@ -8,7 +8,7 @@ from copy import deepcopy
 import re
 
 from ..i01.core import CONTROL_SYSTEM, apply_outcome, finish, next_agent  # noqa: F401 (re-exported)
-from . import CELLS, REGIME, REVISION_CELLS, RETAIN_CELLS
+from . import CELLS, CHANGE_CELLS, PRESERVING_CELLS, REGIME, REVISION_CELLS, RETAIN_CELLS
 
 THESIS_SYSTEM = '''You are one of two agents finding the global maximum across your current
 private integer shards. Both agents must separately submit that same GLOBAL
@@ -55,19 +55,24 @@ count, and both agents must submit again in the new phase.
 
 Each agent has at most three calls per phase. Unused calls cannot be transferred.
 Waiting wakes only on a delivered message. If both agents wait, neither can
-send a waking message. Invalid replies use a call and deliver nothing.
+send a waking message. A finished partner cannot send messages, so waiting
+after your partner has finished ends the phase without your submission.
+Invalid replies use a call and deliver nothing.
 There is no correctness feedback. Put no text outside the JSON object.'''
 
 NOTICE_INITIAL = "No environment notice in the initial phase."
 NOTICE_NONE = "Environment event: no source record changed. A new phase began."
-NOTICE_CHANGE = "Environment event: one source record changed before this phase began."
+NOTICE_CHANGE = "Environment event: one source record changed. A new phase began."
 
 
 def cell_shards(world, cell):
-    return world["revised"] if cell in REVISION_CELLS else world["original"]
+    if cell in REVISION_CELLS:
+        return world["revised"]
+    return world["preserving"] if cell in PRESERVING_CELLS else world["original"]
 
 
 def cell_truth(world, cell):
+    """The answer-preserving change keeps the original answer by construction."""
     return world["revised_truth"] if cell in REVISION_CELLS else world["original_truth"]
 
 
@@ -108,10 +113,12 @@ def view(world, state, agent):
     cell = state["cell"]
     if cell == "prefix":
         notice = dict(kind="initial")
-    elif cell in REVISION_CELLS:
-        notice = dict(kind="change", owner=world["owner"], record=world["row"])
+    elif cell in CHANGE_CELLS:
+        # Same notice form for both edits: agents cannot tell whether the answer changed.
+        revision = cell in REVISION_CELLS
+        notice = dict(kind="change", owner=world["owner"], record=world["row" if revision else "preserving_row"])
         if agent == world["owner"]:
-            notice["value"] = world["after"]
+            notice["value"] = world["after" if revision else "preserving_after"]
     else:
         notice = dict(kind="none")
     return dict(agent=agent, phase="initial" if cell == "prefix" else "new",
@@ -218,6 +225,20 @@ def funnel(world, state):
             return "partner_value"
         return "neither_shard"
 
+    def own_messages(agent):
+        """(earlier-phase, this-phase) texts of the agent's own delivered messages."""
+        boundary = state["earlier"][agent]
+        sent = [(i < boundary, e["action"]["message"]) for i, e in enumerate(state["history"][agent])
+                if e["kind"] == "own_action" and e["action"]["message"] is not None]
+        return [m for early, m in sent if early], [m for early, m in sent if not early]
+
+    # Exact-string self-repetition of an agent's own messages (descriptive diagnostic).
+    repeats, repeats_earlier = [], []
+    for agent in (0, 1):
+        earlier, current = own_messages(agent)
+        repeats_earlier.append(any(m in earlier for m in current))
+        repeats.append(repeats_earlier[-1] or len(set(current)) < len(current))
+
     delivered = {}
     for agent in needers:
         texts = [e["text"] for e in state["history"][agent] if e["kind"] == "received_message"]
@@ -231,4 +252,5 @@ def funnel(world, state):
                 completed=both, success=int(state["submissions"] == [truth, truth]),
                 wrong_agreement=both and state["submissions"][0] == state["submissions"][1] != truth,
                 wrong_disagreement=both and state["submissions"][0] != state["submissions"][1],
-                terminal=state["terminal"])
+                any_wrong=any(c not in ("correct", "absent") for c in classes),
+                repeats=repeats, repeats_earlier_phase=repeats_earlier, terminal=state["terminal"])

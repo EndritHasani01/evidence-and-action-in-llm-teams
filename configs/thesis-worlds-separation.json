@@ -1,5 +1,5 @@
 {
- "checked_new_inputs": 416,
+ "checked_new_inputs": 624,
  "distinct_exposed_inputs": 114,
  "passed": true,
  "sources": [
@@ -64,5 +64,5 @@
    "worlds": 29
   }
  ],
- "worlds_sha256": "0ea0567db153f2cd69145a93320b5c1ba8f1cdb26558702f6bc76d449f099413"
+ "worlds_sha256": "b4ffd8937cb69e6d95310607b76a92a2fec23bf6b37ae09f0b0f13788d4dc7ed"
 }

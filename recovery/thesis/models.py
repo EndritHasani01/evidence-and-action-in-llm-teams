@@ -305,8 +305,10 @@ class Factory:
 # ---------------------------------------------------------------------------
 
 class ScriptedTokenizer:
-    """Deterministic reversible tokenizer: one token per 3 UTF-8 bytes (about a
-    real subword tokenizer's density), with a simple chat template."""
+    """Deterministic reversible tokenizer: one token per 4 UTF-8 bytes, close to the
+    pinned tokenizers' measured density on this protocol's text (request overhead
+    1,411 scripted versus 1,472 Qwen and 1,433 Granite tokens on 25 October 2026),
+    with a simple chat template."""
     scripted = True
     eos_token_id = pad_token_id = 0
     chat_template = "SCRIPTED: <system>/<user>/<assistant> chunk template"
@@ -318,7 +320,7 @@ class ScriptedTokenizer:
 
     def encode(self, text, add_special_tokens=False):
         data = text.encode("utf-8")
-        return [sum((b + 1) * 257 ** j for j, b in enumerate(data[i:i + 3])) for i in range(0, len(data), 3)]
+        return [sum((b + 1) * 257 ** j for j, b in enumerate(data[i:i + 4])) for i in range(0, len(data), 4)]
 
     def decode(self, ids, skip_special_tokens=False, clean_up_tokenization_spaces=False):
         out = bytearray()

@@ -12,7 +12,7 @@
   "main_worlds": 192,
   "fallback_main_worlds": 128,
   "strata": 8,
-  "cells": ["RV", "CV", "RN", "CN"],
+  "cells": ["RV", "CV", "RP", "CP", "RN", "CN"],
   "input_tokens": 8192,
   "alternative_input_tokens": 12288,
   "output_tokens": 512,
@@ -26,9 +26,9 @@
   "export_reserve_minutes": 15,
   "ceilings": {
     "readiness": 16,
-    "development": 1024,
+    "development": 1408,
     "reload": 24,
-    "main_per_model_per_world": 32,
+    "main_per_model_per_world": 44,
     "contingency": 300,
     "aggregate_gpu_hours": 100,
     "lost_sessions": 2

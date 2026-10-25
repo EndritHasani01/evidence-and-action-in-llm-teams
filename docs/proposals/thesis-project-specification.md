@@ -4,6 +4,15 @@
 
 The user approved full implementation on 22 October 2026. Sections 3–5 are the
 binding annex of §13; the rest explains, documents and guides operation.
+
+**Amended 25 October 2026, before any GPU execution,** by the user's approval of
+recommendations R1–R3 of the [pre-execution design review](thesis-pre-execution-design-review-2026-10-25.md):
+every world gains a real answer-preserving change as two more sibling cells
+(RP, CP); five prespecified secondary analyses are added (§3.9 S12–S16); the
+change notice is made symmetric with the no-change notice; one sentence states
+the existing waiting rule; and the decoding description is made exact (§3.8).
+The primary estimands, the 192/128 worlds (reassessed in §3.10), the gates,
+the call budget and the models are unchanged.
 Implementation and CPU verification are complete (see the
 [implementation evidence](../validation/thesis-implementation.md) and the
 [operator runbook](../THESIS_KAGGLE.md)). GPU development, main execution and
@@ -35,14 +44,15 @@ turns each, and a submission is final. This is the task the course already ran
 twice.
 
 Each world runs **once naturally** (the *prefix*). The team then resumes in a
-new phase under four conditions, all starting from that same saved moment:
+new phase under six conditions, all starting from that same saved moment:
 
 | | **Retain** the earlier conversation | **Clear** it |
 |---|---|---|
 | **Revision**: one private value changes, and the answer changes | RV | CV |
+| **Answer-preserving change**: another private value changes, the answer does not | RP | CP |
 | **No change**: the team is simply asked to decide again | RN | CN |
 
-Two questions follow directly:
+Two primary questions follow directly:
 
 1. **Does the change itself break the team?** Compare revision with no change.
    The course saw success fall from 50% in the first phase to 10–15% after a
@@ -50,6 +60,10 @@ Two questions follow directly:
    *change* hurt, or merely *being reopened* did.
 2. **After a change, should a team keep or clear its history?** Compare clear
    with retain under revision.
+
+The answer-preserving change splits the first question exactly: does a change
+hurt because it is *announced*, or because the *answer* changes? It also tests
+whether a team keeps a conclusion that remains valid after a real change.
 
 Each model runs this design on the same 192 worlds: Qwen3.5-9B and IBM
 Granite 4.2-8B. Every world also gets two single-call checks in which the model
@@ -67,31 +81,34 @@ interval bounds the practical value of clearing. No result requires a winner.
 | Element | Choice |
 |---|---|
 | Task | Two-agent distributed maximum (SILO-BENCH I-01 Global Maximum, adapted). 20 integers per agent in −1000…1000, ≤3 calls per agent per phase, private final submissions |
-| Change | The unique winning record gets a new value. Half the worlds **demote** it below the runner-up (new answer = runner-up); half **keep it winning** with a different value (new answer = the replacement) |
-| Conditions per world and model | One natural prefix, then four isolated continuations RV, CV, RN, CN, plus two full-information scalar controls |
+| Change | The unique winning record gets a new value. Half the worlds **demote** it below the runner-up (new answer = runner-up); half **keep it winning** with a different value (new answer = the replacement). Every world also has an **answer-preserving change**: one non-winning record of the same owner gets a new value below the winner, so the answer and both local maxima stay the same |
+| Conditions per world and model | One natural prefix, then six isolated continuations RV, CV, RP, CP, RN, CN, plus two full-information scalar controls |
 | Models | Qwen3.5-9B `c202236…` and Granite 4.2-8B `a704214…`, direct (non-thinking) mode, NF4 on Kaggle T4×2 |
 | Sample | 192 main worlds (fallback 128, chosen by measured cost before main), 8 balanced strata; 16 separate development worlds |
-| Primary estimands, per model | **Δ_E** revision cost = success(no change) − success(revision), averaged over retain and clear. **Δ_H** history effect = success(clear) − success(retain) after revision |
-| Analysis | Stratified paired world bootstrap, 10,000 draws, 97.5% intervals for the two primaries per model, all four cell means and paired categories always shown |
+| Primary estimands, per model | **Δ_E** revision cost = success(no change) − success(revision), averaged over retain and clear. **Δ_H** history effect = success(clear) − success(retain) after revision. Secondary: the exact split Δ_E = Δ_announce + Δ_answer, the reopening effect, completion and wrong-commitment channels, prefix and holder subgroups |
+| Analysis | Stratified paired world bootstrap, 10,000 draws, 97.5% intervals for the two primaries per model, all six cell means and paired categories always shown |
 | Gates | Development checks technical health and capability before the change only: scalar controls, legal prefix actions, original-phase success. Nothing after the change can admit or exclude a model |
-| Budget (proposed, new) | ≤13,652 physical attempts and ≤100 aggregate allocated GPU-hours for the whole campaign. At worst-case call counts, measured course throughput predicts roughly 45–75 aggregate GPU-hours |
+| Budget | ≤18,644 physical attempts and ≤100 aggregate allocated GPU-hours for the whole campaign. At worst-case call counts, measured course throughput predicts about 59 aggregate GPU-hours; the expected main load is about 30 |
 | Execution | Python package + one Kaggle notebook of 9 code cells (plus an optional inspector). Online download of pinned code, packages and weights. Durable SQLite store, checkpoint every 20 minutes and after every cell, optional private Hugging Face mirror, automatic restore from the newest checkpoint |
 
 ```mermaid
 flowchart LR
-    W["World: two private shards,<br/>one planned edit"] --> P["Natural prefix<br/>(at most 6 calls, saved once)"]
+    W["World: two private shards,<br/>two planned edits"] --> P["Natural prefix<br/>(at most 6 calls, saved once)"]
     P --> RV["Retain + revision"]
     P --> CV["Clear + revision"]
+    P --> RP["Retain + answer-preserving change"]
+    P --> CP["Clear + answer-preserving change"]
     P --> RN["Retain + no change"]
     P --> CN["Clear + no change"]
     W --> S["Scalar controls:<br/>original and revised input"]
-    RV & CV & RN & CN --> Y["Exact team success,<br/>failure funnel, cost"]
+    RV & CV & RP & CP & RN & CN --> Y["Exact team success,<br/>failure funnel, cost"]
 ```
 
 ### 1.3 Deliberately excluded
 
 The original four-peer, five-family matrix; supplied (scripted) histories; a
-repeated-continuation panel; an answer-preserving-edit panel; supplied-view
+repeated-continuation panel; a separate small answer-preserving-edit panel
+(replaced on 25 October by preserving cells on every world); supplied-view
 diagnostic probes; thinking mode; prompt variants; any solver, verifier,
 forced exchange or host repair. Section 2 explains each exclusion.
 
@@ -146,7 +163,7 @@ Three conclusions shape the design:
 | Controlled supplied histories H0/HS/HSC × revision/no change ([18 Oct proposal](thesis-extension-2026-10-18.md), [22 Oct reasoning](thesis-final-reasoning-2026-10-22.md)) | Effect of showing an old conclusion with the evidence held fixed | Artificial starting state that centralizes recovery in the owner; targets anchoring, which §2.1 does not support as the main failure; needs new packet rendering; less intuitive |
 | HS/HSC four-cell variant ([literature package](../implementation-research/thesis-literature-2026-10-18/prioritized-design-tests.md)) | Same, narrower | Same objection; also drops the empty-history baseline |
 | Natural retain/clear × revision/no change plus repeat, preserving and diagnostic panels ([22 Oct recommendation](thesis-study-recommendation.md)) | Practical policy effect with matched no-change control | **Closest to this design.** Its panels add cost and analysis surface for descriptive estimates with roughly ±17–25 pp precision; it pins a Granite revision with a broken index; its 200 GPU-hour request predates the measured 8.7 s/call |
-| **This design** | Revision cost Δ_E and history effect Δ_H, per model, plus the failure funnel | Selected: smallest design that answers the open question, reuses the executed runtime, and gives each primary roughly ±9 pp |
+| **This design** | Revision cost Δ_E and history effect Δ_H, per model, plus the failure funnel; since 25 October also the exact announcement/answer split of Δ_E | Selected: smallest design that answers the open question, reuses the executed runtime, and gives each primary roughly ±9 pp |
 | Same design, Qwen only | Same, one system | Halves cost and removes Granite risk, but gives no cross-family replication. Not chosen: you approved both models ([§12](#12-summary-status-and-next-approval)) |
 
 ### 2.3 How the conflicting inputs were resolved
@@ -158,11 +175,11 @@ Three conclusions shape the design:
 | Edit population | Course: demote only. All 22 Oct inputs: add winner-keeps-winning stratum | **Both strata, balanced.** It covers decreases and increases, and in half the worlds the answer is a new value that only its owner can see, so it must be communicated |
 | Granite revision | Recommendation: `f8de16cd`. Reasoning: `a7042144` | **`a7042144`.** Verified here: all four weight shards, config, tokenizer and template are byte-identical; only the index file (and signature) differ. The 22 October reasoning found that the old index maps 241/363 tensors to the wrong shard |
 | Repeat panel | Both: 24 worlds × 2 extra trials | **Dropped.** The world bootstrap already includes continuation sampling noise. Repeats would only describe a variance component, for about 19% more main calls |
-| Answer-preserving edit | Both: 32-world panel | **Dropped.** The no-change control answers the main confound. With 32 worlds the panel's roughly ±17–25 pp precision cannot rank anything. Future work |
+| Answer-preserving edit | Both: 32-world panel | **Dropped as a panel** (with 32 worlds its roughly ±17–25 pp precision cannot rank anything). **Amended 25 October:** run on every world as cells RP and CP, which makes it precise and decomposes Δ_E exactly ([review](thesis-pre-execution-design-review-2026-10-25.md) R1) |
 | Supplied diagnostics | Recommendation: 8 per model | **Dropped.** The course diagnostics met 1/4 targets, gated nothing and cannot qualify natural interaction. The natural failure funnel is more informative |
 | Development | Recommendation: 8 qualification + 16 development worlds. Reasoning: 12 | **16 development worlds**, with scalar controls inside them; no separate qualification set |
 | Development gates | Recommendation: includes no-change success ≥16/32. Reasoning: no-change ≥9/12 per policy | **No gate after the boundary.** If reopening alone collapses a team, that is a finding for Δ_E, not a reason to exclude the model |
-| Budget | Recommendation: 17,192 attempts, 200 GPU-h. Reasoning: 20,672 attempts | **13,652 attempts, 100 aggregate GPU-h**, from measured 8.7 allocated GPU-seconds per call and fewer panels |
+| Budget | Recommendation: 17,192 attempts, 200 GPU-h. Reasoning: 20,672 attempts | **13,652 attempts, 100 aggregate GPU-h**, from measured 8.7 allocated GPU-seconds per call and fewer panels. **Amended 25 October:** 18,644 attempts for six cells, same 100 GPU-h |
 | Record labels | `agent-0:record-13` vs `A0.r13` | **`agent 0 record 13`**: plain words, one convention for shards, notices and examples |
 | Durability | Open question for both | **Three layers plus optional private mirror**, because Kaggle discards session files and may not save outputs of crashed runs (§7.5) |
 
@@ -183,8 +200,15 @@ The study treats each model as a fixed, configured system. Both estimands are
 conclusions, length and repetition; revision bundles a new value, its notice and
 a changed answer. No pure memory or attention mechanism is identified.
 
+Secondary question, added 25 October: does a change hurt because it is
+*announced* or because the *answer* changes? The answer-preserving change makes
+this an exact decomposition, Δ_E = Δ_announce + Δ_answer (§3.9), and also tests
+whether a team keeps a conclusion that stays valid after a real change.
+
 Expectations recorded before any thesis data (priors, not gates): Δ_E is
-positive and large for Qwen; Δ_H is small; Granite is unknown.
+positive and large for Qwen; Δ_H is small; Granite is unknown. Added 25
+October, before any thesis data: Δ_answer is larger than Δ_announce, and
+Δ_announce is not zero.
 
 **Contribution.** A matched, exact, uncertainty-aware measurement of revision
 cost and history policy in natural two-agent collaboration, replicated in two
@@ -230,17 +254,28 @@ pattern of [`make_world`](../../recovery/i01/core.py)):
 5. Save the evaluator-only descriptor `holder`: the set of agents whose current
    shard contains the current answer (for demote this can be the owner, the
    partner or both).
-6. Cell order: `Random(seed_for(MASTER, world_id, "order"))` shuffles
-   `[RV, CV, RN, CN]` once; both models use the same order.
+6. **Answer-preserving change** (added 25 October), from a separate stream
+   `Random(seed_for(MASTER, world_id, "preserving"))`, so steps 1–5 are
+   unaffected: choose a record `r′` uniformly from the owner's 19 positions other
+   than `r`, then a replacement uniformly from `{−1000,…,M1−1}` minus that
+   record's current value. `M1` is untouched, so the answer and both agents'
+   local maxima are unchanged. Save the preserving shards, `r′`, and the old and
+   new value.
+7. Cell order: `Random(seed_for(MASTER, world_id, "order"))` shuffles
+   `[RV, CV, RP, CP, RN, CN]` once; both models use the same order.
 
 If 1,000 proposals fail, generation stops with an error. No world is ever
 rejected, replaced or reordered because of a model outcome.
 
 **Manifest.** All 208 worlds are generated once on CPU and committed as
-`configs/thesis-worlds.json`. Every session regenerates them and refuses to run
-unless the bytes match. Before release, exact complete-input overlap is checked
-against every committed historical I-01 manifest (`notebooks/run/*/run.json`)
-and within the new set, reusing [`check_disjoint_inputs`](../../recovery/i01/core.py).
+`configs/thesis-worlds.json` (generator `thesis-worlds-v2` since the 25 October
+amendment; every field of the earlier `v1` worlds is unchanged except the cell
+order). Every session regenerates them and refuses to run unless the bytes
+match. Before release, exact complete-input overlap is checked for all 624 new
+inputs (original, revised and preserving) against every committed historical
+I-01 manifest (`notebooks/run/*/run.json`) and within the new set, reusing
+[`check_disjoint_inputs`](../../recovery/i01/core.py) and extending it to the
+preserving inputs.
 An overlap is a generator defect: change `MASTER` before any model call and
 record why.
 
@@ -257,8 +292,10 @@ renderer extends the assisted renderer in [`messages`](../../recovery/i01/core.p
 with three changes: owner-qualified record names, a no-change notice and the
 new phase rule.
 
-**Proposed system text** (`THESIS_SYSTEM`; changes from `ASSISTED_SYSTEM` are
-the paragraph beginning "Every record" and the sentence beginning "A new phase"):
+**System text** (`THESIS_SYSTEM`; changes from `ASSISTED_SYSTEM` are the
+paragraph beginning "Every record", the sentence beginning "A new phase", and,
+since 25 October, the sentence beginning "A finished partner", which states the
+existing waiting rule):
 
 ```text
 You are one of two agents finding the global maximum across your current
@@ -306,7 +343,9 @@ count, and both agents must submit again in the new phase.
 
 Each agent has at most three calls per phase. Unused calls cannot be transferred.
 Waiting wakes only on a delivered message. If both agents wait, neither can
-send a waking message. Invalid replies use a call and deliver nothing.
+send a waking message. A finished partner cannot send messages, so waiting
+after your partner has finished ends the phase without your submission.
+Invalid replies use a call and deliver nothing.
 There is no correctness feedback. Put no text outside the JSON object.
 ```
 
@@ -341,15 +380,22 @@ Choose one legal action for the current phase. Return only the JSON object.
 |---|---|
 | Prefix (initial phase) | `No environment notice in the initial phase.` |
 | No change | `Environment event: no source record changed. A new phase began.` |
-| Revision, non-owner | `Environment event: one source record changed before this phase began.` newline `Changed record: agent {o} record {r}` |
-| Revision, owner | As above, plus newline `Replacement value for your record agent {o} record {r}: {x}` |
+| Change (revision or answer-preserving), non-owner | `Environment event: one source record changed. A new phase began.` newline `Changed record: agent {o} record {r}` |
+| Change, owner | As above, plus newline `Replacement value for your record agent {o} record {r}: {x}` |
+
+The two change kinds use one notice form; only the named record (`r` for the
+revision, `r′` for the preserving change) and the owner's value differ. The
+change and no-change notices differ only in "one" versus "no" and the
+changed-record lines (made symmetric on 25 October; the change notice
+previously read "…changed before this phase began.").
 
 **Never in any prompt:** the partner's shard, any answer, the edit type, whether
-the answer changed, the runner-up, the condition label, the stratum, the
-holder descriptor, future events, other cells' or other models' transcripts,
-or the partner's private submission (only the finished flag).
+the answer changed, whether a change preserved the answer, the runner-up, the
+condition label, the stratum, the holder descriptor, future events, other
+cells' or other models' transcripts, or the partner's private submission (only
+the finished flag).
 
-#### Worked example: one world, all four starts
+#### Worked example: one world, all six starts
 
 *Illustrative world, not from the generator.* Agent 0 starts first. The demote
 edit changes agent 0 record 13 from 962 to 407.
@@ -359,6 +405,7 @@ agent 0: -412 77 305 -871 640 12 -95 288 803 -330 519 -768 154 [962] -20 711 446
 agent 1: 208 -544 617 90 [931] -277 455 702 -16 383 849 -932 570 11 -480 296 788 64 -705 527
 Original answer 962 (holder: agent 0). Revised answer 931 (holder: agent 1).
 Keep-winner alternative: 962 -> 948, revised answer 948 (holder: agent 0).
+Answer-preserving change: agent 0 record 7 from 288 to -150; answer stays 962.
 ```
 
 The natural prefix happens to be:
@@ -371,13 +418,13 @@ The natural prefix happens to be:
 
 Agent 1's first continuation call in each cell then contains:
 
-| Field | RV | CV | RN | CN |
-|---|---|---|---|---|
-| Phase line | new phase after an earlier phase | same | same | same |
-| Earlier-phase history | `From agent 0: My local maximum is 962 (agent 0 record 13).` and `Your action: message=Mine is 931… submit=962; wait=false` | `(no visible entries)` | identical to RV | `(no visible entries)` |
-| Notice | changed record agent 0 record 13 (no value) | same as RV | no source record changed | same as RN |
-| Current shard | agent 1's original shard (unchanged) | same | same | same |
-| Correct final answer | 931 | 931 | 962 | 962 |
+| Field | RV | CV | RP | CP | RN | CN |
+|---|---|---|---|---|---|---|
+| Phase line | new phase after an earlier phase | same | same | same | same | same |
+| Earlier-phase history | `From agent 0: My local maximum is 962 (agent 0 record 13).` and `Your action: message=Mine is 931… submit=962; wait=false` | `(no visible entries)` | identical to RV | `(no visible entries)` | identical to RV | `(no visible entries)` |
+| Notice | changed record agent 0 record 13 (no value) | same as RV | changed record agent 0 record 7 (no value) | same as RP | no source record changed | same as RN |
+| Current shard | agent 1's original shard (unchanged) | same | same | same | same | same |
+| Correct final answer | 931 | 931 | 962 | 962 | 962 | 962 |
 
 Agent 0 (the owner) sees the same history pattern with its own entries, and in
 RV/CV its shard shows `agent 0 record 13: 407` plus the replacement line in the
@@ -385,7 +432,10 @@ notice. In RV, agent 0 can combine its new local maximum 865 with agent 1's
 retained report of 931, but agent 1 still needs to learn that 865 < 931 before
 it can be sure. In CV both reports must be re-established. In RN, resubmitting
 962 is correct. In the keep variant (962 → 948), agent 1 cannot know 948
-without a new message from agent 0.
+without a new message from agent 0. In RP, agent 1 sees that a record of agent
+0 changed but cannot tell from the notice whether it was the reported maximum;
+the retained report names record 13, so the notice for record 7 is in fact
+irrelevant, and resubmitting 962 is correct. In CP that link is not visible.
 
 ### 3.5 Interaction protocol (unchanged I-01 semantics)
 
@@ -415,20 +465,21 @@ reused without modification:
 1. **Prefix.** `initial_episode(world, "prefix")` with original shards; first
    speaker from the stratum. It always runs to a terminal state; every
    prefix, correct or not, is kept.
-2. **Continuations.** Each of RV, CV, RN, CN starts from a deep copy of the
-   terminal prefix state:
+2. **Continuations.** Each of RV, CV, RP, CP, RN, CN starts from a deep copy of
+   the terminal prefix state:
    - `history`: **retain** = the exact terminal prefix histories of both agents
      (own valid actions, received messages and feedback entries, in order);
      **clear** = empty lists. The earlier-phase boundary is the retained length.
    - `turns = [0,0]`, `submissions = [null,null]`, `waiting = [false,false]`,
      `next = first speaker`, `events = []`, `terminal = null`.
-   - Current shards: revised for RV/CV, original for RN/CN. Notice as in §3.4.
+   - Current shards: revised for RV/CV, preserving for RP/CP, original for
+     RN/CN. Notice as in §3.4.
 3. **Isolation.** Each continuation owns its state. No reply, delivery or
    submission crosses cells, models or worlds. Every call starts with an empty
    model cache. Retention is only the visible literal history; no hidden state,
    private reasoning or cache crosses a call.
 4. **Seeds.** `seed_for(MASTER, model, world, phase_key, agent, invocation)`
-   where `phase_key` is `"prefix"` or `"continuation"`. All four continuation
+   where `phase_key` is `"prefix"` or `"continuation"`. All six continuation
    cells therefore share per-agent per-invocation seeds (a sampling coupling,
    not replay). Controls use `seed_for(MASTER, model, world, "control",
    "original"|"revised")`. Seeds are 63-bit integers stored as JSON integers and
@@ -441,8 +492,10 @@ For every development and main world, each model gets two single calls with
 the course [`CONTROL_SYSTEM`](../../recovery/i01/core.py) prompt and
 `Complete input: [...]` (agent 0's 20 values then agent 1's 20, original order):
 one on the original input, one on the revised input. A control is valid only as
-`{"message":null,"submit":INTEGER,"wait":false}`. Controls never feed into a
-team and never change its scoring. They separate single-call extraction ability
+`{"message":null,"submit":INTEGER,"wait":false}`. The preserving input has the
+original answer and differs from the original input in one non-winning record,
+so the original control covers it; no third control is run. Controls never
+feed into a team and never change its scoring. They separate single-call extraction ability
 from team behavior; a control-team gap is descriptive, not a causal
 communication-failure rate.
 
@@ -454,12 +507,22 @@ communication-failure rate.
 | Architecture (config) | `Qwen3_5ForConditionalGeneration`, loaded text-only through the reviewed loader | `GraniteForCausalLM`, dense, 40 layers, 8 KV heads, head dim 128 |
 | Mode | Native template, `enable_thinking=False` | Native template, `enable_thinking=False` (prompt ends `<think></think>`) |
 | Sampling | temperature 0.7, top-p 0.8, top-k 20 | temperature 1.0, top-p 0.95, **top-k 0 (disabled, explicit)** |
-| Common | sampling on, min-p 0, repetition penalty 1.0, presence penalty 0, 1 beam, no constrained decoding | same |
+| Common | sampling on, min-p 0, repetition penalty 1.0, presence penalty 0 (deliberate, see below), 1 beam, no constrained decoding | same |
 | End of sequence | `248044`, `248046` (existing) | `100257` (the `im_end` token) |
 | Limits | ≤8,192 input tokens, ≤512 generated tokens | same numbers, own tokenizer |
 | Numerics | bitsandbytes NF4, double quantization, FP16 compute; reviewed T4 attention `recovery_t4_sdpa`, prefill chunk 256 | NF4, double quantization, FP16 compute; PyTorch SDPA attention |
 | Placement | one replica per T4, batch 1, no offload, no cross-device split, both GPUs used, replicas loaded one after the other | same |
 | Weight files | 4 shards, 19,306,310,880 bytes | 4 shards, 17,583,228,032 bytes |
+
+**Decoding, stated exactly** (corrected 25 October). Each model uses its card's
+temperature, top-p and top-k. Qwen's card additionally lists
+`presence_penalty=1.5` for non-thinking general tasks; this protocol uses a
+presence penalty of 0 for both models, as the course did. The deviation is
+deliberate: a presence penalty acts on tokens already generated in the same
+reply, so it would penalize copying a number from `message` into `submit`, and
+it does not act on the prompt history from which the observed loops were
+copied. Granite's card gives no presence penalty. "Model-native" elsewhere in
+this document means exactly this.
 
 **Fairness boundary.** Fixed across models: worlds, edits, inputs, prompts,
 protocol, cells, limits, scoring and development opportunities. Allowed to
@@ -476,14 +539,15 @@ the worst reachable request for each tokenizer, as in the existing
 [`check_tokenizer`](../../recovery/i01/checks.py) (assisted Qwen bound 7,634).
 If either bound exceeds 8,192, both models use **12,288** instead, decided on
 CPU before any GPU call. History is never truncated. **Measured on 22 October
-2026 with the pinned tokenizers:** Qwen 7,784 and Granite 7,745 tokens, so the
-input limit is 8,192 (recomputed and bound in every study by the CPU checks).
+2026 with the pinned tokenizers:** Qwen 7,784 and Granite 7,745 tokens; after
+the 25 October prompt amendment Qwen 7,808 and Granite 7,769. The input limit is
+8,192 (recomputed and bound in every study by the CPU checks).
 
 ### 3.9 Outcomes and estimands
 
 For model *m*, world *w* and cell *c*, `Y[m,w,c] = 1` if the episode is terminal
 with both submissions equal to the current answer (revised answer for RV/CV,
-original answer for RN/CN), `0` for any other terminal state, and *unknown* if
+original answer for RP/CP/RN/CN), `0` for any other terminal state, and *unknown* if
 the episode is not terminal. Let `a_s = 1/8` be the stratum weight and
 `mean_s` the mean over main worlds in stratum *s*.
 
@@ -504,7 +568,7 @@ everything retain and clear do differently.
 
 | # | Estimate | Purpose |
 |---|---|---|
-| S1 | The four cell rates and the prefix success rate | Context for every contrast |
+| S1 | The six cell rates and the prefix success rate | Context for every contrast |
 | S2 | Interaction θ = (Y_CV − Y_RV) − (Y_CN − Y_RN) | Is clearing relatively better after a change? Never read without S1 |
 | S3 | Δ_E under retain and under clear separately; Δ_H under no change (Y_CN − Y_RN) | Decompose the 2×2 |
 | S4 | Δ_E and Δ_H within each edit type | Does demote differ from keep? |
@@ -514,7 +578,12 @@ everything retain and clear do differently.
 | S8 | Failure funnel per episode (below) | Where recovery fails |
 | S9 | Scalar control accuracy, original and revised | Single-call capability |
 | S10 | Calls, input/output tokens and ready-model seconds per cell; prefix-inclusive logical cost per policy | Cost beside quality |
-| S11 | Correct-prefix and incorrect-prefix strata, counts only | Descriptive conditioning |
+| S11 | Correct-prefix and incorrect-prefix strata, counts per cell | Descriptive conditioning (intervals in S15) |
+| S12 | **Decomposition** (added 25 Oct): Δ_announce = Σ_s a_s · mean_s(½[(Y_RN − Y_RP) + (Y_CN − Y_CP)]) and Δ_answer = Σ_s a_s · mean_s(½[(Y_RP − Y_RV) + (Y_CP − Y_CV)]); Δ_E = Δ_announce + Δ_answer exactly, world by world. Also each per-policy component and the history effect after a preserving change, Y_CP − Y_RP | Does a change hurt because it is announced, or because the answer changes? Does a valid conclusion survive a real change? |
+| S13 | **Reopening effect** R = Y_prefix − Y_CN, with Y_prefix − Y_RN descriptive | The original phase and CN share inputs and first speaker and differ only by the phase line, the notice and the seeds |
+| S14 | **Channels**: Δ_E, Δ_H, Δ_announce and Δ_answer computed on two unconditional episode indicators, C = both agents submitted and K = at least one submitted value is wrong | Whether an effect works through commitment or through correctness; reported side by side, not as an additive decomposition |
+| S15 | **Subgroups**: Δ_E and Δ_H within correct-prefix and incorrect-prefix worlds, and within worlds whose revised answer stays with the changed owner or moves to the partner | Prefix correctness and holder location are fixed before any continuation, so these are pre-treatment subgroups |
+| S16 | **Self-repetition**: per cell, agents whose message in the phase exactly repeats one of their own earlier messages, and how many repeat an earlier-phase message | Descriptive marker of the copy loops seen in the course |
 
 **Failure funnel** (deterministic, evaluator side, per terminal episode with
 current answer T): *holders* are agents whose current shard contains T;
@@ -523,10 +592,13 @@ standalone integer in any message the needer received in its visible history,
 retained history included (a number match, not proof of understanding); whether
 each holder and needer submitted T; and each other submission's class: absent,
 own local maximum, another value in its own shard, the old answer `M1`
-(revision cells only), or a value from neither shard.
+(revision cells only), or a value from neither shard. In RP and CP the old
+answer is still current, so any wrong submission there is an unnecessary
+revision. The funnel also records whether any submitted value is wrong (S14)
+and the self-repetition flags (S16).
 
 **Qualitative casebook.** For each model, the lowest-index main world in each
-stratum, with its prefix and four cells: 8 worlds × 5 episodes × 2 models = 80
+stratum, with its prefix and six cells: 8 worlds × 7 episodes × 2 models = 112
 episode traces, exported with exact call references. Human coding with a frozen
 rubric is optional and retrospective, with no LLM judge.
 
@@ -541,6 +613,11 @@ strata in index order, worlds in index order within strata.
 **Intervals.** Sort the B = 10,000 draws ascending as `d[0…9999]`. For
 confidence `1 − α`, use `d[⌊Bα/2⌋]` and `d[⌈B(1−α/2)⌉ − 1]`: indices 125 and
 9874 for the 97.5% primary intervals, 250 and 9749 for 95% secondaries.
+
+**Secondary intervals.** All secondary estimates use the same stratified
+draws at 95%. A subgroup estimate (S15) is the simple mean over the subgroup's
+worlds; each draw keeps the resampled worlds that belong to the subgroup. If
+any draw contains no member, the estimate is reported without an interval.
 
 **Multiplicity.** Within each model the two primaries share a Bonferroni split
 (97.5% each). Each model is a separately prespecified experiment. A claim that
@@ -589,6 +666,23 @@ Checks: Δ_E = ½[(.875 − .250) + (.625 − .375)] = .4375. θ = .125 − (.62
 this is why θ is never read alone. Δ_H paired categories: both 1 (w7), clear
 only 2 (w0, w4), retain only 1 (w2), neither 4.
 
+The same worlds with their original-phase and answer-preserving cells (added
+25 October):
+
+| World | prefix | RP | CP | ½[(RN−RP)+(CN−CP)] | ½[(RP−RV)+(CP−CV)] | prefix − CN |
+|---|---:|---:|---:|---:|---:|---:|
+| w0 | 1 | 1 | 1 | 0 | 0.5 | 0 |
+| w1 | 1 | 1 | 0 | 0 | 0.5 | 1 |
+| w2 | 1 | 0 | 1 | 0.5 | 0 | 0 |
+| w3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| w4 | 1 | 1 | 1 | 0 | 0.5 | 0 |
+| w5 | 1 | 0 | 1 | 0.5 | 0.5 | 0 |
+| w6 | 0 | 1 | 0 | 0 | 0.5 | 0 |
+| w7 | 1 | 1 | 1 | 0 | 0 | 0 |
+| **Mean** | .750 | .625 | .625 | **Δ_announce = .125** | **Δ_answer = .3125** | **R = .125** |
+
+Δ_announce + Δ_answer = .4375 = Δ_E, and the identity holds in every row.
+
 *Missing example:* if w3's CV were unknown, Δ_H ∈ [.125, .250] (CV = 0 or 1) and
 Δ_E ∈ [.375, .4375] (CV = 1 or 0).
 
@@ -609,7 +703,29 @@ Formulas: half-width `2.241·sqrt(q/N)` or `2.241·SD/sqrt(N)`. The study can
 resolve effects of about 10–15 points and bound larger ones. It cannot detect
 5-point effects: at q = 0.3 that would need about 1,140 worlds. Ten points is a
 reporting reference, not an equivalence margin. The interaction θ is noisier
-(SD up to 2): at SD 0.8 its 95% half-width is 11.3 pp at N = 192.
+(SD up to 2): at SD 0.8 its 95% half-width is 11.3 pp at N = 192. The
+secondary Δ_announce has the structure of Δ_E: at SD 0.35–0.45 its 95%
+half-width is 5.0–6.4 pp at N = 192 and 6.1–7.8 pp at N = 128. The reopening
+effect at discordance 0.35–0.45 has a 95% half-width of 8.4–9.5 pp at N = 192.
+
+**World count reassessed on 25 October** (before implementation of the
+amendment, with six cells costing 32.2 expected calls per world and model at
+the course's measured 72% use of call slots):
+
+| N | Δ_H 97.5% half-width, q = .25/.30 | Power, Δ_H = 12 pp, one model | Both models | 80% detectable Δ_H (q = .3) | Expected main calls, both models | Expected aggregate GPU-h at 8.7 s/call |
+|---:|---|---:|---:|---:|---:|---:|
+| 96 | 11.4 / 12.5 pp | .46 | .21 | 17.2 pp | 6,190 | 15.0 |
+| 128 | 9.9 / 10.9 pp | .59 | .35 | 14.9 pp | 8,253 | 19.9 |
+| 160 | 8.9 / 9.7 pp | .70 | .49 | 13.3 pp | 10,317 | 24.9 |
+| **192** | **8.1 / 8.9 pp** | **.79** | **.62** | **12.2 pp** | **12,380** | **29.9** |
+
+Moving from 192 to 128 worlds would save about 4,100 expected calls (about 10
+aggregate GPU-hours, or 2.5 wall-hours per model) but widen every interval by
+22%, cut the chance of a replicated 12-point history effect from .62 to .35,
+and leave the subgroup analyses (S15) with about 64 worlds each. Compute is not
+the binding constraint, and the forecast rule of §4.3 already falls back to 128
+worlds without looking at outcomes if measured throughput requires it. The
+target therefore stays at 192, with the nested 128 fallback.
 
 ### 3.11 What each result licenses
 
@@ -621,13 +737,18 @@ reporting reference, not an equivalence margin. The interaction θ is noisier
 | Δ_H > 0 or < 0 | Clearing helps or hurts after a change, as a whole package, with gains/losses and costs shown |
 | Δ_H interval spans 0 with half-width ≈ 9 pp | No policy effect larger than about ±9 pp; clearing is not a fix for this failure |
 | θ > 0 but Δ_H ≈ 0 | Retention helps mainly when nothing changed; clearing is not a recovery improvement |
+| Δ_announce > 0 (95% interval excludes 0) | Announcing a change disrupts the team even when nothing it needs has changed |
+| Δ_announce ≈ 0, Δ_answer > 0 | Irrelevant changes are absorbed; the cost lies in obtaining and adopting new information |
+| Y_RP below Y_RN | A still-valid retained conclusion is abandoned after a real but irrelevant change (over-revision) |
+| R > 0 (reopening) with Δ_E ≈ 0 | Reopening a finished decision is itself the problem in this interface; S14 shows whether through completion or correctness |
+| An effect appears only in the C channel | The change or history policy alters commitment, not what the team concludes |
 | Effects agree in both models | Same direction in two model families under one interface; still not all LLMs |
 | Models disagree | A system-dependent result; report S5 with its uncertainty, no pooled winner |
 | A model fails a development gate | Feasibility finding for that configured system; the other model's study stands alone |
 
 **Limitations to state in the thesis.** One numerical task with little
 expensive computation to preserve; two agents; three calls per agent; one
-announced change; supplied coordination strategy; strict JSON; quantized direct
+announced change per continuation; supplied coordination strategy; strict JSON; quantized direct
 mode; one prefix per world (no prefix-to-prefix variability); history policies
 are bundles; numeric matching in the funnel is not proof of belief; results are
 SILO-derived, not native benchmark scores.
@@ -660,8 +781,8 @@ Per model, in one session if time allows:
    no failure, finite scores, empty fresh cache each call, and observed free
    memory ≥ 1.5 GiB on both GPUs during the envelope. A1/A2 token inequality is
    recorded for review, as in the course; it does not by itself fail.
-3. **Development worlds:** 16 worlds × (prefix + RV, CV, RN, CN + 2 controls),
-   the same code path as main.
+3. **Development worlds:** 16 worlds × (prefix + RV, CV, RP, CP, RN, CN + 2
+   controls), the same code path as main.
 
 Gates per model (all must pass). They use technical health and evidence from before the change only; no post-change correctness, completion or legality can admit or exclude a model:
 
@@ -698,15 +819,18 @@ a session whose end was not observed counts up to its recorded deadline, a
 conservative upper bound):
 
 ```text
-F(N) = H_spent + 4 + 1.25 × (32·N·Σ_m g_m + 300·max_m g_m) / 3600
+F(N) = H_spent + 4 + 1.25 × (44·N·Σ_m g_m + 300·max_m g_m) / 3600
 ```
 
 The 4 hours cover main-session setup, downloads, loads, readiness and exports;
-32 is the worst-case calls per world per model; 300 is the contingency;
-1.25 is the margin. **Choose N = 192 if F(192) ≤ 100; otherwise N = 128 if
-F(128) ≤ 100; otherwise stop and ask.** Both admitted models use the same N.
-Example with g = 9.0 (Qwen), 14.0 (Granite), H_spent = 6: F(192) = 6 + 4 +
-1.25 × (141,312 + 4,200)/3600 = 60.5 → 192.
+44 is the worst-case calls per world per model (32 before the 25 October
+amendment; the code reads it from the configured ceiling); 300 is the
+contingency; 1.25 is the margin. **Choose N = 192 if F(192) ≤ 100; otherwise
+N = 128 if F(128) ≤ 100; otherwise stop and ask.** Both admitted models use the
+same N. Example with g = 9.0 (Qwen), 14.0 (Granite), H_spent = 6: F(192) = 6 +
+4 + 1.25 × (194,304 + 4,200)/3600 = 78.9 → 192. With Qwen at the measured 8.7 s
+and H_spent = 6, the target holds while Granite's g ≤ 21.2 s (32 s before the
+amendment); above that both models run 128 worlds.
 
 **Freeze record** (immutable, written once when `SCOPE="main"` and
 `MAIN_AUTHORIZATION` equals the gate-report ID): admitted models, N, world IDs,
@@ -716,37 +840,41 @@ session verifies it before any main call.
 
 **Main order.** Admitted models in the order Qwen, then Granite; worlds in index
 order. Each GPU takes the lowest-index world not yet started; a world's
-episodes run on one GPU in the order prefix, its four cells in saved order,
+episodes run on one GPU in the order prefix, its six cells in saved order,
 then the two controls. The device is recorded, not designed.
 
 ### 4.4 Attempt ceilings
 
 Counts are **maximum first attempts**, assuming every episode uses all six
-calls (the course used about 73%). Unused capacity never adds worlds.
+calls (the course used 72% of team call slots, 258/360). Unused capacity never
+adds worlds.
 
 | Component | Per model | Both models, N = 192 | Both models, N = 128 |
 |---|---:|---:|---:|
 | First-load readiness | 8 | 16 | 16 |
-| Development: 16 × 32 | 512 | 1,024 | 1,024 |
-| Main: N × 32 (6 prefix + 24 continuation + 2 controls) | 6,144 / 4,096 | 12,288 | 8,192 |
+| Development: 16 × 44 | 704 | 1,408 | 1,408 |
+| Main: N × 44 (6 prefix + 36 continuation + 2 controls) | 8,448 / 5,632 | 16,896 | 11,264 |
 | Reload readiness: 2 per further load, ≤ 12 loads | — | 24 | 24 |
 | Contingency: identical retries of interrupted attempts | — | 300 | 300 |
-| **Campaign ceiling** | | **13,652** | **9,556** |
+| **Campaign ceiling** | | **18,644** | **13,012** |
 
-With one admitted model: 7,508 (N = 192) or 5,460 (N = 128). Each stage stops
+With one admitted model: 10,196 (N = 192) or 7,380 (N = 128). Each stage stops
 dispatch at its ceiling. Historical course attempts are separate; they are not
-charged here and do not enlarge these ceilings.
+charged here and do not enlarge these ceilings. Before the 25 October amendment
+the ceilings were 13,652 and 9,556.
 
 **Aggregate GPU-hour sensitivity** for the full target ceiling (`3 +
-1.25 × 13,652 × g / 3600`, where 3 h is a six-session overhead allowance):
+1.25 × 18,644 × g / 3600`, where 3 h is a six-session overhead allowance):
 
 | g (allocated s/call) | 8.7 (Qwen measured) | 12 | 15 | 20 | 25 |
 |---|---:|---:|---:|---:|---:|
-| Aggregate GPU-hours, N = 192 | 44.2 | 59.9 | 74.1 | 97.8 | 121.5 |
+| Aggregate GPU-hours, N = 192 | 59.3 | 80.7 | 100.1 | 132.5 | 164.8 |
 
-The 100-hour ceiling holds the target up to g ≈ 20.5 s, the fallback up to
-g ≈ 29.2 s. The expected main load at 73% usage and g = 8.7 is about 9,200
-calls, 22 aggregate GPU-hours or 11 wall-hours on T4×2.
+This worst case assumes both models at the same g and every call slot used. The
+100-hour ceiling holds the target up to g ≈ 15.0 s and the fallback up to
+g ≈ 21.5 s; the binding decision is the measured forecast of §4.3. The expected
+main load at 72% usage and g = 8.7 is about 12,400 calls, 30 aggregate
+GPU-hours or 15 wall-hours on T4×2.
 
 ### 4.5 Failure rules
 
@@ -781,6 +909,7 @@ main never stop, replace or reorder worlds.
 | Setup + 19.3 GB weight download + two loads | Measured once: 7.6 minutes from host observation to first call (16 Oct) |
 | Granite NF4/FP16 numerics, memory, speed, JSON compliance on T4 | **Unmeasured GPU gate** (G1–G3) |
 | New prompt text, owner labels and no-change notice behavior | **Unmeasured**; development shows it |
+| Behavior under the answer-preserving change, the symmetric notice and the waiting sentence (25 October) | **Unmeasured**; development shows it, descriptively |
 | Kaggle image still Python 3.13 and compatible with the pinned lock | **Unmeasured until the first session**; setup refuses otherwise |
 | How Kaggle charges T4×2 against the weekly quota | **Unmeasured**; the operator records quota before and after the first GPU session |
 
@@ -790,15 +919,15 @@ main never stop, replace or reorder worlds.
 
 | Check | Pass condition |
 |---|---|
-| Manifest | Regenerated worlds equal `configs/thesis-worlds.json` byte for byte; strata counts 2/16/24 per stratum for dev, fallback and target; disjoint from all committed historical inputs |
-| Generator properties | Unique `M1`; demote replacement < `M2`; keep replacement > `M2` and ≠ `M1`; answers recomputed by an independent max; rejection counts saved |
-| Information witness | A keep world and a demote world exist where the non-owner's first continuation view is identical but the answers differ (the non-owner must receive new information) |
-| Views and privacy | No partner value, answer, edit type, stratum, holder or cell label appears in any rendered request (checked structurally on scripted runs); owner-only replacement line |
-| Literal retention | RV and RN earlier-phase blocks byte-identical to the prefix's visible history; CV and CN empty; current shards and notices differ only as specified |
+| Manifest | Regenerated worlds equal `configs/thesis-worlds.json` byte for byte; strata counts 2/16/24 per stratum for dev, fallback and target; all 624 inputs (original, revised, preserving) disjoint from all committed historical inputs and from each other |
+| Generator properties | Unique `M1`; demote replacement < `M2`; keep replacement > `M2` and ≠ `M1`; preserving change of exactly one non-winning record of the owner, below `M1` and different from its old value, with the answer and both local maxima unchanged; answers recomputed by an independent max; rejection counts saved |
+| Information witness | A keep world and a demote world exist where the non-owner's first continuation view is identical but the answers differ (the non-owner must receive new information); the non-owner's first RV and RP views differ only in the named record although only RV changes the answer |
+| Views and privacy | No partner value, answer, edit type, stratum, holder, cell label or hint that a change preserved the answer appears in any rendered request (checked structurally on scripted runs); owner-only replacement line; one notice form for both change kinds |
+| Literal retention | RV, RP and RN earlier-phase blocks byte-identical to the prefix's visible history; CV, CP and CN empty; current shards and notices differ only as specified |
 | Protocol | Scripted cases for every row of §3.5 and §8 Table A |
 | Capacity | Worst reachable request ≤ input limit for both tokenizers (§3.8), including all adversarial literal families of the existing check |
 | Durability | Scripted kill tests: before reply, after raw reply, after effects, during export; restore and identical retry; lost-session re-execution |
-| Analysis | Synthetic fixtures with known Δ_E, Δ_H, θ signs; the hand-scored example of §3.10 reproduces exactly; missingness bounds; degenerate companion |
+| Analysis | Synthetic fixtures with known Δ_E, Δ_H, θ signs; the hand-scored example of §3.10 reproduces exactly, including Δ_announce, Δ_answer, the reopening effect and the world-by-world identity Δ_E = Δ_announce + Δ_answer; subgroup resampling; missingness bounds; degenerate companion |
 | Notebook | Every code cell calls exactly one facade function; a CPU-only Kaggle session completes `rehearsal` across two sessions with a restore |
 
 ---
@@ -823,7 +952,7 @@ thesis does not use.
 | `recovery/i01/setup.py` | **Reuse functions** | `create_environment`, `invoke`, `PIP_BOOTSTRAP`, hash-pinned install of `configs/i01-runtime.lock` | Called by the thesis installer; no source wheel |
 | `recovery/i01/archive.py` | **Reuse helpers** | `digest`, `atomic_json`, `inventory`, safe ZIP rules | — |
 | `recovery/thesis/worlds.py` | New, ≈150 lines | Generation (§3.3), manifest build and verification, disjointness | `build_manifest(config) -> dict`; `verify_manifest(path)` |
-| `recovery/thesis/protocol.py` | New, ≈250 lines | `THESIS_SYSTEM`, user-message rendering, notices, initial states for prefix and the four cells, permitted views, scoring, funnel classification | `start(world, cell, prefix_state)`, `view(world, state, agent, cell)`, `messages(view)`, `score(world, cell, state)`, `funnel(world, cell, state)` |
+| `recovery/thesis/protocol.py` | New, ≈250 lines | `THESIS_SYSTEM`, user-message rendering, notices, initial states for prefix and the six cells, permitted views, scoring, funnel classification and self-repetition flags | `start(world, cell, prefix_state)`, `view(world, state, agent, cell)`, `messages(view)`, `score(world, cell, state)`, `funnel(world, cell, state)` |
 | `recovery/thesis/models.py` | New, ≈250 lines | Exactly two explicit model entries (no registry); settings; request preparation and exact-request check; Qwen via the reviewed loader; Granite factory (one visible T4, NF4/double/FP16, SDPA, local files only, load audit, fresh `DynamicCache`, finite-score processor, exact-prefix check, peak memory) | `prepare(view, seed, model, tokenizer, control=False, envelope=False)`, `Factory(model, device, snapshot)` |
 | `recovery/thesis/assets.py` | New, ≈100 lines | Pinned metadata and weight download into the scratch cache; size and SHA-256 verification per file (generalizes `setup.download`) | `download(model, scratch, weights: bool) -> receipt` |
 | `recovery/thesis/run.py` | New, ≈450 lines | Study open/init/restore; admission and ceilings; one GPU thread per replica; readiness, development, gates, freeze, main; deadline cutoff; checkpoint cadence; progress lines; lock file | functions behind the CLI below |
@@ -847,7 +976,7 @@ schema. Binding: regime, study ID, source commit, SHA-256 of `configs/thesis.jso
 
 | Object | Identity |
 |---|---|
-| Episode | `{model}/{world}/{cell}` with cell ∈ prefix, RV, CV, RN, CN; controls `{model}/{world}/control-original` and `…/control-revised` |
+| Episode | `{model}/{world}/{cell}` with cell ∈ prefix, RV, CV, RP, CP, RN, CN; controls `{model}/{world}/control-original` and `…/control-revised` |
 | Call | `{episode}/agent-{a}/invocation-{k}` (k from 0); readiness `{model}/readiness/load-{n}/gpu-{g}/{probe}` with probe ∈ A1, B, A2, envelope |
 | Attempt | Row in `attempts` keyed by call and attempt number; `stage` ∈ readiness, development, main, reload; `contingency` flag; status admitted / completed / failed / interrupted / lost |
 | Session | Row per notebook session: start, end, scope, host, GPUs, driver, Python, restored checkpoint, deadline |
@@ -867,14 +996,14 @@ atomically. A completed call is never regenerated.
   "shard_size": 20, "value_range": [-1000, 1000], "turns_per_agent": 3,
   "max_proposals": 1000,
   "development_worlds": 16, "main_worlds": 192, "fallback_main_worlds": 128,
-  "cells": ["RV", "CV", "RN", "CN"],
+  "cells": ["RV", "CV", "RP", "CP", "RN", "CN"],
   "input_tokens": 8192, "alternative_input_tokens": 12288,
   "output_tokens": 512, "feedback_tokens": 32,
   "load_timeout_seconds": 600, "call_timeout_seconds": 180, "termination_seconds": 5,
   "headroom_bytes": 1610612736,
   "checkpoint_minutes": 20, "dispatch_cutoff_minutes": 25,
-  "ceilings": {"readiness": 16, "development": 1024, "reload": 24,
-               "main_per_model_per_world": 32, "contingency": 300,
+  "ceilings": {"readiness": 16, "development": 1408, "reload": 24,
+               "main_per_model_per_world": 44, "contingency": 300,
                "aggregate_gpu_hours": 100},
   "gates": {"controls_min": 26, "legal_fraction_min": 0.90, "original_min": 5,
             "development_provider_failures_max": 1, "main_provider_failures_max": 10},
@@ -978,7 +1107,7 @@ source, then import the facade) before its facade call.
 | 2 | Install | `nb.install()` | Create venv, install the lock; T4×2 required only for `development` and `main` | pip phases, elapsed → Python, GPUs, free disk | Receipt (host, venv, env check) | Verifies and reuses |
 | 3 | Open study | `nb.open_study()` | Restore newest checkpoint or, only if `START_NEW_STUDY=True` and none exists anywhere, initialize | sources searched → coverage summary | **Checkpoint** | Reopens; refuses a live second writer |
 | 4 | CPU checks | `nb.cpu_checks()` | §5 checks, tokenizer files only | check names → passed checks, capacity bounds | Checkpoint (check record) | Repeats checks, no model calls |
-| 5 | Development | `nb.develop()` | Skips unless scope is `development`, `main` or `rehearsal`. ≤ 520 calls per model | heartbeat (§7.4), per-world lines with development outcomes → gate report and its ID | Checkpoints every 20 min and at end | "Complete" with zero new calls once done |
+| 5 | Development | `nb.develop()` | Skips unless scope is `development`, `main` or `rehearsal`. ≤ 704 calls per model | heartbeat (§7.4), per-world lines with development outcomes → gate report and its ID | Checkpoints every 20 min and at end | "Complete" with zero new calls once done |
 | 6 | Freeze | `nb.freeze()` | Skips unless scope is `main` (or `rehearsal`) and the ID matches | → frozen N, models | Checkpoint | Verifies and prints the same record |
 | 7 | Main | `nb.main()` | Frozen scope only, until done or cutoff | heartbeat, per-world terminal reasons, outcomes hidden → coverage per model | Checkpoints every 20 min and at end | Continues where saved |
 | 8 | Report | `nb.report()` | CPU; estimates only when main is complete or stopped | → status, report path | Receipt plus `reports/` | Rebuilds identically |
@@ -1003,11 +1132,11 @@ per finished world. *Illustrative output:*
 ```text
 [22:41:07] MAIN qwen · session 3h12m used, deadline in 7h33m (no new episode after 10h35m)
   worlds    57/192 done · running main-058 on GPU0, main-059 on GPU1
-  episodes  296/960 terminal (prefix 59, RV 58, CV 57, RN 58, CN 57) · outcomes hidden until main completes
+  episodes  404/1,344 terminal (prefix 59, RV 58, CV 57, RP 58, CP 57, RN 58, CN 57) · outcomes hidden until main completes
   calls     1,402 with outcome (1,118 this session) · invalid 9 · timeouts 0 · provider failures 0
   attempts  1,404 · contingency 2/300 · lost 0 · aggregate GPU-h so far 21.6/100
   checkpoint seq 31 at 22:30 (11 min ago) · mirror uploaded 22:31 (sha256 verified)
-[22:41:55] main-057 done on GPU1: prefix B · RV H · CV B · RN B · CN W · 27 calls · 118 s
+[22:41:55] main-057 done on GPU1: prefix B · RV H · CV B · RP B · CP B · RN B · CN W · 39 calls · 170 s
 ```
 
 Terminal codes are B (both submitted), H (horizon exhausted), W (waiting
@@ -1028,7 +1157,7 @@ not to the notebook output.
 lock), `checkpoint.json` (study, sequence, parent sequence, session, source
 commit, binding hashes, counts, file SHA-256s), and `receipts/`. No weights,
 venv or caches. Expected size: about 32 KB of database per call, so about
-440 MB uncompressed at the full ceiling and about 35 MB zipped (the course
+600 MB uncompressed at the full ceiling and about 46 MB zipped (the course
 archive compressed 13:1). Each export is written to a temporary name,
 verified by reopening and an integrity check, then renamed to its final name;
 an interrupted export never replaces a good checkpoint. The newest two local
@@ -1060,7 +1189,8 @@ completion of a browser download are never claimed.
    `SCOPE="development"`, `START_NEW_STUDY=True`, `SESSION_HOURS=11`,
    `CHECKPOINT_REPO`. Note the weekly quota shown by Kaggle.
 3. Run All. Cells 1–4 take about 5 minutes. Cell 5 downloads Qwen, runs readiness
-   and 16 worlds (~520 calls), then Granite. Expected 1.5–3 hours.
+   and 16 worlds (about 520 calls expected, at most 704), then Granite.
+   Expected 2–3.5 hours.
 4. Cell 5 prints the gate report and its ID, for example `dev-3f9a1c2b7e10`.
    Cell 9 writes and uploads the final checkpoint. Note the quota again to
    learn how T4×2 is charged.
@@ -1090,13 +1220,14 @@ completion of a browser download are never claimed.
 | Session | Work | Expected wall time on T4×2 |
 |---|---|---|
 | Kaggle CPU sessions (no GPU) | `rehearsal` twice, including a restore | under 30 min each |
-| GPU 1 | Development for both models, gate report | 1.5–3 h |
-| GPU 2 | Qwen main (192 worlds) | 5.5 h expected, 7.4 h worst case at the measured rate |
+| GPU 1 | Development for both models, gate report | 2–3.5 h |
+| GPU 2 | Qwen main (192 worlds) | 7.5 h expected, 10.2 h worst case at the measured rate; may continue in a second session |
 | GPU 3–4 | Granite main | Unknown until development measures `g`; 1–2 sessions |
 | Local or CPU session | Final report | minutes |
 
-That is roughly 12–21 GPU session hours, which fits one or two weeks of the
-documented quota under either way of charging T4×2. The plan uses no paid compute.
+That is roughly 17–25 GPU session hours if Granite runs at Qwen's measured
+speed, which fits one week of the documented quota if T4×2 is charged per
+session hour and two weeks if it is charged per GPU. The plan uses no paid compute.
 
 ---
 
@@ -1120,14 +1251,18 @@ These are prospective test specifications. None has been run.
 | Agent attributes a partner record to its own shard | No host correction; scored only on submissions | CPU rendering check |
 | No-change cell after a correct prefix | Old submissions appear only as history; both must submit again; Y uses the original answer | CPU unit |
 | Demote vs keep edits | Demote replacement < M2, answer M2; keep replacement > M2 and ≠ M1, answer = replacement | CPU property |
-| Retain vs clear starts | Byte-identical retained history in RV and RN; empty in CV and CN | CPU unit |
+| Answer-preserving change | One non-winning owner record changes below M1; answer and both local maxima unchanged; resubmitting M1 scores 1, any other value is an unnecessary revision | CPU property and unit |
+| Change notices | Revision and preserving notices share one form; change and no-change notices differ only in content | CPU unit |
+| Waiting after the partner finished | Phase ends at once as `waiting_deadlock` with no submission, exactly as the system text now states | CPU unit |
+| Self-repetition | Exact repeats of an agent's own earlier messages are flagged, separately for earlier-phase repeats | CPU unit |
+| Retain vs clear starts | Byte-identical retained history in RV, RP and RN; empty in CV, CP and CN | CPU unit |
 | Different first speakers and owners | Strata balanced; first speaker identical across all phases of a world | CPU unit |
 | Privacy | No forbidden field reaches a request | CPU structural check |
 | Sibling isolation | No cell sees another's actions; each call starts with an empty cache | CPU unit; GPU readiness |
 | Synthetic positive, negative and zero effects | Correct signs for Δ_E, Δ_H, θ | CPU fixtures |
-| No-change-driven interaction (θ > 0, Δ_H = 0) | Report shows all four means and labels θ secondary | CPU fixture |
+| No-change-driven interaction (θ > 0, Δ_H = 0) | Report shows all cell means and labels θ secondary | CPU fixture |
 | All contrasts constant | Hoeffding companion shown; no claim | CPU fixture |
-| Hand-scored example (§3.10) | Exactly .125, .4375, .375 and the stated bounds | CPU fixture |
+| Hand-scored example (§3.10) | Exactly .125, .4375, .375, Δ_announce .125, Δ_answer .3125, R .125, the decomposition identity per world and the stated bounds | CPU fixture |
 
 **Table B: execution, durability and gates**
 
@@ -1147,7 +1282,7 @@ These are prospective test specifications. None has been run.
 | Kaggle image not Python 3.13 | Cell 2 stops before installing; message explains | CPU test of host inventory |
 | Granite produces non-finite scores in readiness | G1 fails; Granite excluded; Qwen continues under the pre-approved rule | CPU scripted; GPU readiness |
 | Both models fail gates | Feasibility report; no main | CPU synthetic |
-| Forecast above 100 h at N = 192 | Freeze chooses 128; above at 128 too: stop and ask | CPU test |
+| Forecast above 100 h at N = 192 | Freeze chooses 128 (44 calls per world in the forecast); above at 128 too: stop and ask | CPU test |
 | Ceiling or contingency exhausted | Dispatch stops, checkpoint written, request for a decision | CPU test |
 | `MAIN_AUTHORIZATION` does not match | Freeze and main refused | CPU test |
 | Campaign ends with main incomplete | No estimates until `declare-stopped`; then bounds and both intervals | CPU fixture |
@@ -1161,7 +1296,7 @@ These are prospective test specifications. None has been run.
 | Current authority | Proposed change for the thesis campaign only |
 |---|---|
 | §§1–2: four peers, five task families, 60/40 worlds, synchronous rounds | Two-agent maximum (I-01), 192/128 main and 16 development worlds; sequential private-final protocol of §12 |
-| §§3–4: retention policies L/B/C/K/F, masks, receipts, prose delay | Four cells: retain/clear × revision/no change from one natural prefix |
+| §§3–4: retention policies L/B/C/K/F, masks, receipts, prose delay | Six cells: retain/clear × answer-changing revision, answer-preserving change or no change, from one natural prefix (four cells until the 25 October amendment) |
 | §12.1: demote-only edit | Balanced demote and keep-winner strata with common eligibility |
 | §12.1: "Only an environment source change … reopens both agents" | Every new phase reopens both agents; truthful no-change notice |
 | §12.1 interface | Owner-qualified record names and the notice texts of §3.4; otherwise unchanged assisted text |
@@ -1169,9 +1304,10 @@ These are prospective test specifications. None has been run.
 | §6 analysis conventions | Eight-stratum paired bootstrap, interval indices of §3.10, missing-outcome bounds, no interim analysis |
 | §8 and §12: one Qwen model (4B fallback) | Two pinned systems, Qwen3.5-9B `c202236…` and Granite 4.2-8B `a704214…`, direct mode, model-native sampling, no fallback model |
 | §3.2 262,144 context; §12 8,192 + 512 | 8,192 + 512 for both, with a CPU-decided uniform 12,288 alternative |
-| §8.4 100-hour plan; §12 500-attempt campaigns | New campaign ceilings: 13,652 attempts and 100 aggregate GPU-hours; course allowances not reused |
+| §8.4 100-hour plan; §12 500-attempt campaigns | New campaign ceilings: 13,652 attempts (18,644 after the 25 October amendment) and 100 aggregate GPU-hours; course allowances not reused |
 | §12 lost-spending handling (block affected worlds) | Mandatory identical re-execution after session loss, from contingency, always from the newest checkpoint |
 | §9 LangGraph checkpoints | Not used; the I-01 SQLite store |
+| This annex as adopted on 22 October (amended 25 October, before any GPU execution) | Answer-preserving cells RP and CP on every world; secondary S12–S16; symmetric change notice; waiting-rule sentence; exact decoding description; ceilings 44 per world and 18,644 per campaign; world count reassessed and kept at 192/128 |
 | §12 Run All and pilot policies | Scopes of §4.1; development gates of §4.2; freeze and authorization of §4.3 |
 
 ### 9.2 Proposed text for `PROJECT_SPECIFICATION.md` §13
@@ -1202,8 +1338,8 @@ links to §13 rather than copying its rules. Earlier proposals stay as history.
 | R1 Adoption | Your approval; §13 added; plan section added | Committed authority text | 1 hour |
 | R2 CPU implementation | Modules of §6.1, manifest generation, notebook, tests | §5 checks pass locally; manifest committed | 6–9 working days; main risk is the Granite factory written without a GPU |
 | R3 Delivery rehearsal | Push the commit; two Kaggle CPU sessions in `rehearsal`, with a deliberate restore | Rehearsal checkpoints restored across sessions; mirror verified | 1 day; free (no GPU quota) |
-| R4 Development (GPU, authorized) | One T4×2 session | Gate report with ID; quota charge observed | 1.5–3 h of GPU; risk: Granite numerics or JSON compliance |
-| R5 Main (GPU, authorized by ID) | Freeze, then 2–4 sessions | Main complete for admitted models | About 11–18 session hours over 1–2 weeks |
+| R4 Development (GPU, authorized) | One T4×2 session | Gate report with ID; quota charge observed | 2–3.5 h of GPU; risk: Granite numerics or JSON compliance |
+| R5 Main (GPU, authorized by ID) | Freeze, then 2–4 sessions | Main complete for admitted models | About 15–21 session hours over 1–2 weeks |
 | R6 Analysis and writing | Report, casebook, thesis chapters | Report rebuilt locally from the newest checkpoint matches Kaggle output | 2–3 weeks; begin writing from the course report now |
 
 Software and CPU checks never authorize GPU work. Only R4 and R5 use a GPU.
@@ -1227,14 +1363,16 @@ Software and CPU checks never authorize GPU work. Only R4 and R5 use a GPU.
 ## 12. Summary, status and next approval
 
 **Recommended project.** One natural two-agent maximum-finding collaboration per
-world, then four matched continuations (retain or clear × revision or no
-change), in Qwen3.5-9B and Granite 4.2-8B, on 192 balanced worlds. The two
-primary questions are whether the change itself reduces completion (Δ_E) and
-whether clearing history helps after a change (Δ_H).
+world, then six matched continuations (retain or clear × answer-changing
+revision, answer-preserving change or no change), in Qwen3.5-9B and Granite
+4.2-8B, on 192 balanced worlds. The two primary questions are whether the change
+itself reduces completion (Δ_E) and whether clearing history helps after a
+change (Δ_H); the preserving change splits Δ_E into announcement and answer
+costs.
 
 **Why it is practical.** It reuses the only runtime that has actually run on
 Kaggle, adds about 3,500 lines in `recovery/thesis/` (protocol, controller,
-checkpoints, analysis, notebook facade), and needs roughly 12–21 GPU
+checkpoints, analysis, notebook facade), and needs roughly 17–25 GPU
 session hours at measured speed, within a new 100-hour ceiling. One notebook of 9 code cells
 downloads everything online, shows progress without flooding output,
 checkpoints every 20 minutes and after each cell, and restores the newest
@@ -1244,7 +1382,8 @@ checkpoint automatically.
 T4 (development gates decide, with a pre-approved Qwen-only continuation);
 whether the Kaggle image still matches the pinned Python 3.13 lock; how T4×2 is
 charged against the weekly quota; whether recovery sits so low that Δ_H is only
-bounded, not detected; how the new labels and phase wording change behavior.
+bounded, not detected; how the new labels, phase wording, waiting sentence
+and preserving change affect behavior.
 
 **Real blockers.** None found. Prerequisites: push the implementation commit to
 the public GitHub repository, and, for the recommended mirror, create a private
@@ -1256,7 +1395,13 @@ specification is adopted as §13 with both models and the optional private mirro
 notebook, manifest and tests are implemented and CPU-verified; see the
 [implementation evidence](../validation/thesis-implementation.md).
 
+**Status (25 October 2026).** You approved R1–R3 of the
+[pre-execution design review](thesis-pre-execution-design-review-2026-10-25.md),
+including the optional items. They are implemented and CPU-verified in this
+annex, the code, the configuration, the regenerated manifest and the tests. No
+GPU, model inference or publication has occurred.
+
 **Next approvals, in order:** (1) a Kaggle CPU `rehearsal` session and its
 restore drill (no GPU; already authorized by adoption); (2) GPU development on
-T4×2, at most 1,040 first attempts plus readiness and contingency; (3) main,
+T4×2, at most 1,408 first attempts plus readiness and contingency; (3) main,
 recorded by the gate-report ID. Publication remains separately authorized.

@@ -41,8 +41,8 @@ authorization; running the notebook in a GPU scope is that act.
 |---|---|---|---|
 | A. CPU rehearsal | `SCOPE="rehearsal"`, `START_NEW_STUDY=True`, no GPU | Whole pipeline with a scripted model on 2+2 worlds; checkpoints and mirror | under 30 min |
 | B. Restore drill | Same, `START_NEW_STUDY=False`, a new session | Cell 3 restores the newest rehearsal checkpoint; no work repeats; the report is identical | under 30 min |
-| C. Development | `SCOPE="development"`, `START_NEW_STUDY=True`, T4 x2 | Downloads each model, readiness, 16 development worlds per model, gate report | 1.5–3 h |
-| D+. Main | `SCOPE="main"`, `MAIN_AUTHORIZATION="dev-..."`, T4 x2, **Save & Run All** | Freeze (once), then main worlds until done or the cutoff | about 5.5–7.5 h for Qwen; Granite measured in C |
+| C. Development | `SCOPE="development"`, `START_NEW_STUDY=True`, T4 x2 | Downloads each model, readiness, 16 development worlds per model (at most 704 calls each), gate report | 2–3.5 h |
+| D+. Main | `SCOPE="main"`, `MAIN_AUTHORIZATION="dev-..."`, T4 x2, **Save & Run All** | Freeze (once), then main worlds until done or the cutoff | Qwen about 7.5 h expected, 10.2 h worst case at the measured rate, so it may need a second session; Granite measured in C |
 | Final | Any scope, or locally | Report from the newest checkpoint | minutes |
 
 After session C, read the gate report printed by cell 5 (also in
@@ -66,6 +66,11 @@ charges T4 x2.
 8. **Report:** rebuilt from the canonical store; estimates appear only when main
    is complete (or after `declare-stopped`).
 9. **Finish:** final checkpoint, mirror upload, download links, session closed.
+
+Every world runs one natural prefix, then six isolated continuations from it
+(retain or clear × answer-changing revision `V`, answer-preserving change `P`
+or no change `N`: `RV CV RP CP RN CN`), then two scalar controls: at most 44
+calls per world and model.
 
 Progress lines appear every minute and after every world. During main,
 outcomes are hidden: you see terminal reasons (B both submitted, H horizon,

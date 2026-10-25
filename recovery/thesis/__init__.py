@@ -10,9 +10,12 @@ import json
 from pathlib import Path
 
 REGIME = "thesis-recovery-v1"
-CELLS = ("RV", "CV", "RN", "CN")
+# Retain/clear x answer-changing revision (V), answer-preserving change (P), no change (N).
+CELLS = ("RV", "CV", "RP", "CP", "RN", "CN")
 REVISION_CELLS = ("RV", "CV")
-RETAIN_CELLS = ("RV", "RN")
+PRESERVING_CELLS = ("RP", "CP")
+CHANGE_CELLS = REVISION_CELLS + PRESERVING_CELLS
+RETAIN_CELLS = ("RV", "RP", "RN")
 MODELS = ("qwen", "granite")
 SOURCE_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_PATH = "configs/thesis.json"
@@ -42,4 +45,10 @@ def load_config(source=None):
     if (config["development_worlds"], config["main_worlds"], config["fallback_main_worlds"],
             config["strata"]) != (16, 192, 128, 8):
         raise ValueError("population sizes must match the adopted specification")
+    # Worst-case calls per world and model: prefix and six cells of 2 x 3 calls, plus two controls.
+    per_world = 2 * config["turns_per_agent"] * (1 + len(CELLS)) + 2
+    ceilings = config["ceilings"]
+    if (ceilings["main_per_model_per_world"] != per_world or
+            ceilings["development"] != config["development_worlds"] * per_world * len(MODELS)):
+        raise ValueError("call ceilings must equal the worst-case calls of the adopted cells")
     return config

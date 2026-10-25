@@ -27,7 +27,7 @@ from ..i01.core import canonical, next_agent
 from ..i01.policy import outcome_action, outcome_feedback
 from ..i01.process import InfrastructureLost, Resident
 from ..i01.store import Store
-from . import (CONFIG_PATH, LOCK_PATH, MODELS, REGIME, SCOPES, SEPARATION_PATH, SOURCE_ROOT,
+from . import (CELLS, CONFIG_PATH, LOCK_PATH, MODELS, REGIME, SCOPES, SEPARATION_PATH, SOURCE_ROOT,
                WORLDS_PATH, digest_file, load_config)
 from . import checkpoint as ckpt
 from . import protocol
@@ -536,11 +536,11 @@ class Controller:
             states[cell] = self.run_episode(slot, model, world, cell)
         controls = [self.run_control(slot, model, world, p) for p in ("original", "revised")]
         code = dict(both_submitted="B", horizon_exhausted="H", waiting_deadlock="W")
-        parts = [f"{c} {code.get(states[c]['terminal'], '?')}" for c in ("prefix", "RV", "CV", "RN", "CN")]
+        parts = [f"{c} {code.get(states[c]['terminal'], '?')}" for c in ("prefix",) + CELLS]
         line = f"{world['id']} done on GPU{slot}: " + " . ".join(parts) + f" . {monotonic() - started:.0f} s"
         if world["group"] == "development":
             ys = {c: protocol.score(world, states[c]) for c in states}
-            line += " | dev outcomes " + " ".join(f"{c}={ys[c]}" for c in ("prefix", "RV", "CV", "RN", "CN"))
+            line += " | dev outcomes " + " ".join(f"{c}={ys[c]}" for c in ("prefix",) + CELLS)
             line += f" controls={controls[0]['correct']}{controls[1]['correct']}"
         self.say(line)
 
@@ -775,7 +775,8 @@ class Controller:
         spent = self.aggregate_hours()
         result = dict(spent_hours=round(spent, 2), admitted=admitted, g_seconds={m: records[m]["g_seconds"] for m in admitted})
         for n in (self.config["main_worlds"], self.config["fallback_main_worlds"]):
-            per = 32 * n * sum(g) + self.config["ceilings"]["contingency"] * (max(g) if g else 0)
+            per = (self.config["ceilings"]["main_per_model_per_world"] * n * sum(g) +
+                   self.config["ceilings"]["contingency"] * (max(g) if g else 0))
             result[f"F{n}"] = round(spent + fc["fixed_hours"] + fc["margin"] * per / 3600, 2)
         cap = self.config["ceilings"]["aggregate_gpu_hours"]
         result["chosen_n"] = (self.config["main_worlds"] if result[f"F{self.config['main_worlds']}"] <= cap else
@@ -800,7 +801,8 @@ class Controller:
                      f"g={r['g_seconds']} s/call")
             outcomes = r["development_outcomes"]
             self.say("           development outcomes (descriptive): " +
-                     " ".join(f"{c} {v['success']}/{v['total']}" for c, v in outcomes.items()))
+                     " ".join(f"{c} {outcomes[c]['success']}/{outcomes[c]['total']}"
+                              for c in ("prefix",) + CELLS if c in outcomes))
         f = self.forecast()
         self.say(f"  forecast: spent {f['spent_hours']} h; F(192)={f['F192']} h; F(128)={f['F128']} h; "
                  f"main size if frozen now: {f['chosen_n']}")
