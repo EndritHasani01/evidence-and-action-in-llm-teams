@@ -774,14 +774,12 @@ class Controller:
         fc = self.config["forecast"]
         spent = self.aggregate_hours()
         result = dict(spent_hours=round(spent, 2), admitted=admitted, g_seconds={m: records[m]["g_seconds"] for m in admitted})
-        for n in (self.config["main_worlds"], self.config["fallback_main_worlds"]):
-            per = (self.config["ceilings"]["main_per_model_per_world"] * n * sum(g) +
-                   self.config["ceilings"]["contingency"] * (max(g) if g else 0))
-            result[f"F{n}"] = round(spent + fc["fixed_hours"] + fc["margin"] * per / 3600, 2)
-        cap = self.config["ceilings"]["aggregate_gpu_hours"]
-        result["chosen_n"] = (self.config["main_worlds"] if result[f"F{self.config['main_worlds']}"] <= cap else
-                              self.config["fallback_main_worlds"] if result[f"F{self.config['fallback_main_worlds']}"] <= cap
-                              else None)
+        n = self.config["main_worlds"]
+        per = (self.config["ceilings"]["main_per_model_per_world"] * n * sum(g) +
+               self.config["ceilings"]["contingency"] * (max(g) if g else 0))
+        result[f"F{n}"] = round(spent + fc["fixed_hours"] + fc["margin"] * per / 3600, 2)
+        # No fallback main size: above the ceiling the campaign stops and asks.
+        result["chosen_n"] = n if result[f"F{n}"] <= self.config["ceilings"]["aggregate_gpu_hours"] else None
         if self.profile.main_limit and result["chosen_n"]:
             result["chosen_n"] = min(result["chosen_n"], self.profile.main_limit)
         return result
@@ -804,7 +802,8 @@ class Controller:
                      " ".join(f"{c} {outcomes[c]['success']}/{outcomes[c]['total']}"
                               for c in ("prefix",) + CELLS if c in outcomes))
         f = self.forecast()
-        self.say(f"  forecast: spent {f['spent_hours']} h; F(192)={f['F192']} h; F(128)={f['F128']} h; "
+        n = self.config["main_worlds"]
+        self.say(f"  forecast: spent {f['spent_hours']} h; F({n})={f[f'F{n}']} h; "
                  f"main size if frozen now: {f['chosen_n']}")
 
     def freeze(self, authorization):
@@ -824,7 +823,7 @@ class Controller:
         if not forecast["admitted"]:
             raise Stop("no model passed the development gates; feasibility report only, no main")
         if forecast["chosen_n"] is None:
-            raise Stop("the forecast exceeds the aggregate GPU-hour ceiling even at 128 worlds; stop and ask")
+            raise Stop("the forecast exceeds the aggregate GPU-hour ceiling; stop and ask")
         n = forecast["chosen_n"]
         ids = [w["id"] for w in self.manifest["worlds"] if w["group"] == "main" and w["index"] < n]
         record = dict(authorization=authorization, gate_report=report["id"], models=forecast["admitted"], n=n,

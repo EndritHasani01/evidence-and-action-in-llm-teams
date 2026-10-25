@@ -8,7 +8,7 @@ adopted as [specification §13](../PROJECT_SPECIFICATION.md#13-thesis-regime-the
 with that document as its annex. Design: one natural two-agent I-01 prefix per
 world, six isolated continuations (retain/clear × answer-changing revision /
 answer-preserving change / no-change reopening), two scalar controls, balanced
-demote/keep-winner edits, 192 main (fallback 128) and 16 development worlds,
+demote/keep-winner edits, 64 main (8 per stratum, no fallback) and 16 development worlds,
 Qwen3.5-9B and Granite 4.2-8B, primaries Δ_E (revision cost) and Δ_H (history
 effect) per model.
 
@@ -22,6 +22,16 @@ self-repetition); a symmetric change notice; one sentence stating the existing
 waiting rule; an exact decoding description. Ceilings: 44 calls per world and
 model, 18,644 attempts per campaign, 100 aggregate GPU-hours unchanged. The
 world count was reassessed and kept at 192 with the 128 fallback (annex §3.10).
+
+**Second amendment, 25 October 2026 (before any GPU execution):** by the user's
+decision the main population is **64 worlds, 8 per stratum** (`main-000`…`main-063`,
+identical to the first 64 worlds of the 192-world manifest), with no fallback
+size. Manifest: 80 worlds, 240 inputs checked for separation. Campaign ceiling
+7,380 attempts; GPU-hour ceiling 100 unchanged; expected main load about 4,130
+calls (10 aggregate GPU-hours). Annex §3.10–3.11 state the consequences: Δ_H
+half-width about 14–15 pp, 80% detection only for effects of roughly 15–25 pp,
+descriptive-only subgroups, and simulated coverage of the nominal 97.5%
+bootstrap intervals of about 95% at 8 worlds per stratum (method unchanged).
 The scripted CPU tokenizer double was recalibrated to 4 bytes per token so that
 rehearsals keep reaching the real 8,192 decision, and `.gitattributes` now pins
 the byte-verified thesis inputs to LF.

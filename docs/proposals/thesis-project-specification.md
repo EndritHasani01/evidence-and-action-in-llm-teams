@@ -11,8 +11,14 @@ every world gains a real answer-preserving change as two more sibling cells
 (RP, CP); five prespecified secondary analyses are added (§3.9 S12–S16); the
 change notice is made symmetric with the no-change notice; one sentence states
 the existing waiting rule; and the decoding description is made exact (§3.8).
-The primary estimands, the 192/128 worlds (reassessed in §3.10), the gates,
-the call budget and the models are unchanged.
+The primary estimands, the gates, the call budget and the models are unchanged.
+
+**Second amendment, 25 October 2026, before any GPU execution,** by the user's
+decision: **64 main worlds (8 per stratum)** instead of 192 with a 128 fallback.
+The 64 are the first 64 main worlds of the earlier manifest, unchanged. All six
+conditions, both models and the analysis method are unchanged; the fallback
+size is removed. The reduced precision and power are stated in §3.10 and the
+limitations in §3.11.
 Implementation and CPU verification are complete (see the
 [implementation evidence](../validation/thesis-implementation.md) and the
 [operator runbook](../THESIS_KAGGLE.md)). GPU development, main execution and
@@ -65,7 +71,7 @@ The answer-preserving change splits the first question exactly: does a change
 hurt because it is *announced*, or because the *answer* changes? It also tests
 whether a team keeps a conclusion that remains valid after a real change.
 
-Each model runs this design on the same 192 worlds: Qwen3.5-9B and IBM
+Each model runs this design on the same 64 worlds: Qwen3.5-9B and IBM
 Granite 4.2-8B. Every world also gets two single-call checks in which the model
 sees all forty numbers, to separate "cannot find a maximum" from "cannot finish
 as a team". The study measures exact team success and records where each
@@ -73,8 +79,9 @@ failure happened: was the needed value delivered, adopted and submitted?
 
 Every outcome is informative. A large revision cost would show that changed
 facts, not reopening, break these teams. No revision cost would show that
-reopening alone causes the collapse. A null history effect with a tight
-interval bounds the practical value of clearing. No result requires a winner.
+reopening alone causes the collapse. A null history effect bounds the
+practical value of clearing, though only coarsely (about ±15 points) with the
+64 worlds of the second amendment. No result requires a winner.
 
 ### 1.2 Design at a glance
 
@@ -84,11 +91,11 @@ interval bounds the practical value of clearing. No result requires a winner.
 | Change | The unique winning record gets a new value. Half the worlds **demote** it below the runner-up (new answer = runner-up); half **keep it winning** with a different value (new answer = the replacement). Every world also has an **answer-preserving change**: one non-winning record of the same owner gets a new value below the winner, so the answer and both local maxima stay the same |
 | Conditions per world and model | One natural prefix, then six isolated continuations RV, CV, RP, CP, RN, CN, plus two full-information scalar controls |
 | Models | Qwen3.5-9B `c202236…` and Granite 4.2-8B `a704214…`, direct (non-thinking) mode, NF4 on Kaggle T4×2 |
-| Sample | 192 main worlds (fallback 128, chosen by measured cost before main), 8 balanced strata; 16 separate development worlds |
+| Sample | 64 main worlds, 8 per stratum (no fallback size); 16 separate development worlds |
 | Primary estimands, per model | **Δ_E** revision cost = success(no change) − success(revision), averaged over retain and clear. **Δ_H** history effect = success(clear) − success(retain) after revision. Secondary: the exact split Δ_E = Δ_announce + Δ_answer, the reopening effect, completion and wrong-commitment channels, prefix and holder subgroups |
 | Analysis | Stratified paired world bootstrap, 10,000 draws, 97.5% intervals for the two primaries per model, all six cell means and paired categories always shown |
 | Gates | Development checks technical health and capability before the change only: scalar controls, legal prefix actions, original-phase success. Nothing after the change can admit or exclude a model |
-| Budget | ≤18,644 physical attempts and ≤100 aggregate allocated GPU-hours for the whole campaign. At worst-case call counts, measured course throughput predicts about 59 aggregate GPU-hours; the expected main load is about 30 |
+| Budget | ≤7,380 physical attempts and ≤100 aggregate allocated GPU-hours for the whole campaign. At worst-case call counts, measured course throughput predicts about 25 aggregate GPU-hours; the expected main load is about 10 |
 | Execution | Python package + one Kaggle notebook of 9 code cells (plus an optional inspector). Online download of pinned code, packages and weights. Durable SQLite store, checkpoint every 20 minutes and after every cell, optional private Hugging Face mirror, automatic restore from the newest checkpoint |
 
 ```mermaid
@@ -163,7 +170,7 @@ Three conclusions shape the design:
 | Controlled supplied histories H0/HS/HSC × revision/no change ([18 Oct proposal](thesis-extension-2026-10-18.md), [22 Oct reasoning](thesis-final-reasoning-2026-10-22.md)) | Effect of showing an old conclusion with the evidence held fixed | Artificial starting state that centralizes recovery in the owner; targets anchoring, which §2.1 does not support as the main failure; needs new packet rendering; less intuitive |
 | HS/HSC four-cell variant ([literature package](../implementation-research/thesis-literature-2026-10-18/prioritized-design-tests.md)) | Same, narrower | Same objection; also drops the empty-history baseline |
 | Natural retain/clear × revision/no change plus repeat, preserving and diagnostic panels ([22 Oct recommendation](thesis-study-recommendation.md)) | Practical policy effect with matched no-change control | **Closest to this design.** Its panels add cost and analysis surface for descriptive estimates with roughly ±17–25 pp precision; it pins a Granite revision with a broken index; its 200 GPU-hour request predates the measured 8.7 s/call |
-| **This design** | Revision cost Δ_E and history effect Δ_H, per model, plus the failure funnel; since 25 October also the exact announcement/answer split of Δ_E | Selected: smallest design that answers the open question, reuses the executed runtime, and gives each primary roughly ±9 pp |
+| **This design** | Revision cost Δ_E and history effect Δ_H, per model, plus the failure funnel; since 25 October also the exact announcement/answer split of Δ_E | Selected: smallest design that answers the open question, reuses the executed runtime, and gave each primary roughly ±9 pp at 192 worlds (about ±14–15 pp at the 64 worlds of the second amendment) |
 | Same design, Qwen only | Same, one system | Halves cost and removes Granite risk, but gives no cross-family replication. Not chosen: you approved both models ([§12](#12-summary-status-and-next-approval)) |
 
 ### 2.3 How the conflicting inputs were resolved
@@ -179,7 +186,7 @@ Three conclusions shape the design:
 | Supplied diagnostics | Recommendation: 8 per model | **Dropped.** The course diagnostics met 1/4 targets, gated nothing and cannot qualify natural interaction. The natural failure funnel is more informative |
 | Development | Recommendation: 8 qualification + 16 development worlds. Reasoning: 12 | **16 development worlds**, with scalar controls inside them; no separate qualification set |
 | Development gates | Recommendation: includes no-change success ≥16/32. Reasoning: no-change ≥9/12 per policy | **No gate after the boundary.** If reopening alone collapses a team, that is a finding for Δ_E, not a reason to exclude the model |
-| Budget | Recommendation: 17,192 attempts, 200 GPU-h. Reasoning: 20,672 attempts | **13,652 attempts, 100 aggregate GPU-h**, from measured 8.7 allocated GPU-seconds per call and fewer panels. **Amended 25 October:** 18,644 attempts for six cells, same 100 GPU-h |
+| Budget | Recommendation: 17,192 attempts, 200 GPU-h. Reasoning: 20,672 attempts | **13,652 attempts, 100 aggregate GPU-h**, from measured 8.7 allocated GPU-seconds per call and fewer panels. **Amended 25 October:** 18,644 attempts for six cells, same 100 GPU-h; **second amendment:** 7,380 attempts for 64 worlds |
 | Record labels | `agent-0:record-13` vs `A0.r13` | **`agent 0 record 13`**: plain words, one convention for shards, notices and examples |
 | Durability | Open question for both | **Three layers plus optional private mirror**, because Kaggle discards session files and may not save outputs of crashed runs (§7.5) |
 
@@ -225,15 +232,17 @@ maximum. Duplicated maxima are scored by value.
 ### 3.3 Worlds, edits and populations
 
 **Identifiers and strata.** World IDs are `dev-00`…`dev-15` and
-`main-000`…`main-191`. For index *i*, stratum `s = i mod 8` gives:
+`main-000`…`main-063`. For index *i*, stratum `s = i mod 8` gives:
 
 | s | Edit type | Changed owner | First speaker |
 |---:|---|---:|---:|
 | 0–3 | demote | `(s // 2) mod 2` | `s mod 2` |
 | 4–7 | keep | `(s // 2) mod 2` | `s mod 2` |
 
-So indices 0…127 contain exactly 16 worlds per stratum: the fallback is the
-first 128 main worlds, nested and balanced. Development has 2 per stratum.
+So the 64 main worlds contain exactly 8 per stratum, and development has 2 per
+stratum. (Before the second amendment the main population was indices 0…191 with
+a nested 128 fallback; because a world depends only on `MASTER` and its
+identifier, `main-000`…`main-063` are exactly the first 64 of those worlds.)
 
 **Generation** (per world, deterministic; reuse `seed_for` and the rejection
 pattern of [`make_world`](../../recovery/i01/core.py)):
@@ -267,11 +276,11 @@ pattern of [`make_world`](../../recovery/i01/core.py)):
 If 1,000 proposals fail, generation stops with an error. No world is ever
 rejected, replaced or reordered because of a model outcome.
 
-**Manifest.** All 208 worlds are generated once on CPU and committed as
+**Manifest.** All 80 worlds (16 development, 64 main) are generated once on CPU and committed as
 `configs/thesis-worlds.json` (generator `thesis-worlds-v2` since the 25 October
 amendment; every field of the earlier `v1` worlds is unchanged except the cell
 order). Every session regenerates them and refuses to run unless the bytes
-match. Before release, exact complete-input overlap is checked for all 624 new
+match. Before release, exact complete-input overlap is checked for all 240 new
 inputs (original, revised and preserving) against every committed historical
 I-01 manifest (`notebooks/run/*/run.json`) and within the new set, reusing
 [`check_disjoint_inputs`](../../recovery/i01/core.py) and extending it to the
@@ -280,8 +289,9 @@ An overlap is a generator defect: change `MASTER` before any model call and
 record why.
 
 **Populations.** Development: 16 worlds, used only for gates, throughput and
-pipeline shakedown, never pooled with main. Main: 192 worlds (or the first 128
-under the fallback). Every main world contributes to every main estimate.
+pipeline shakedown, never pooled with main. Main: 64 worlds, with no fallback
+size. Every main world contributes to every main estimate. The 64 were fixed by
+index before any model output existed; no world was selected by outcome.
 
 ### 3.4 What each agent sees
 
@@ -629,7 +639,7 @@ adjustment. No p-value catalogue.
 every stratum's world contrasts are constant, also report the weighted
 Hoeffding bound already in the specification:
 `h = (U−L)·sqrt(½·ln(2/α)·Σ_w b_w²)` with `b_w = 1/(8·n_s)`, α = 0.025 and range
-[−1, 1]. At N = 192, h = 21.4 pp; at N = 128, 26.2 pp. A nonzero claim then
+[−1, 1]. At N = 64, h = 37.0 pp. A nonzero claim then
 requires both intervals to exclude zero.
 
 **Missing outcomes.** A known terminal failure scores 0. An episode that never
@@ -690,34 +700,78 @@ The same worlds with their original-phase and answer-preserving cells (added
 2.241; 80% detection reference uses 2.241 + 0.842 = 3.083; these are planning
 sensitivities, not measured power):
 
-| Estimand and assumption | N = 192 half-width | N = 192 detects | N = 128 half-width | N = 128 detects |
+| Estimand and assumption | N = 64 half-width | N = 64 detects | For reference: N = 192 half-width | N = 192 detects |
 |---|---:|---:|---:|---:|
-| Δ_H, discordance q = 0.2 | 7.2 pp | 10.0 pp | 8.9 pp | 12.2 pp |
-| Δ_H, q = 0.3 (course: 0.25) | 8.9 pp | 12.2 pp | 10.9 pp | 14.9 pp |
-| Δ_H, q = 0.5 | 11.4 pp | 15.7 pp | 14.0 pp | 19.3 pp |
-| Δ_E, world-contrast SD 0.4 | 6.5 pp | 8.9 pp | 7.9 pp | 10.9 pp |
-| Δ_E, SD 0.5 | 8.1 pp | 11.1 pp | 9.9 pp | 13.6 pp |
-| Δ_E, SD 0.6 | 9.7 pp | 13.3 pp | 11.9 pp | 16.4 pp |
+| Δ_H, discordance q = 0.2 | 12.5 pp | 17.2 pp | 7.2 pp | 10.0 pp |
+| Δ_H, q = 0.3 (course: 0.25) | 15.3 pp | 21.1 pp | 8.9 pp | 12.2 pp |
+| Δ_H, q = 0.5 | 19.8 pp | 27.3 pp | 11.4 pp | 15.7 pp |
+| Δ_E, world-contrast SD 0.4 | 11.2 pp | 15.4 pp | 6.5 pp | 8.9 pp |
+| Δ_E, SD 0.5 | 14.0 pp | 19.3 pp | 8.1 pp | 11.1 pp |
+| Δ_E, SD 0.6 | 16.8 pp | 23.1 pp | 9.7 pp | 13.3 pp |
 
-Formulas: half-width `2.241·sqrt(q/N)` or `2.241·SD/sqrt(N)`. The study can
-resolve effects of about 10–15 points and bound larger ones. It cannot detect
-5-point effects: at q = 0.3 that would need about 1,140 worlds. Ten points is a
-reporting reference, not an equivalence margin. The interaction θ is noisier
-(SD up to 2): at SD 0.8 its 95% half-width is 11.3 pp at N = 192. The
-secondary Δ_announce has the structure of Δ_E: at SD 0.35–0.45 its 95%
-half-width is 5.0–6.4 pp at N = 192 and 6.1–7.8 pp at N = 128. The reopening
-effect at discordance 0.35–0.45 has a 95% half-width of 8.4–9.5 pp at N = 192.
+Formulas: half-width `2.241·sqrt(q/N)` or `2.241·SD/sqrt(N)`. At N = 64 the
+study can resolve effects of about 15–25 points and bound smaller ones only
+loosely. It cannot reliably detect 10-point effects (at q = 0.3 that needs about
+285 worlds) or 5-point effects (about 1,140). Ten points is a reporting
+reference, not an equivalence margin. The interaction θ is noisier (SD up to 2):
+at SD 0.8 its 95% half-width is 19.6 pp. The secondary Δ_announce has the
+structure of Δ_E: at SD 0.35–0.45 its 95% half-width is 8.6–11.0 pp, and a
+10-point Δ_announce is detected with probability about .52. The reopening
+effect at discordance 0.35–0.45 has a 95% half-width of 14.5–16.4 pp.
 
-**World count reassessed on 25 October** (before implementation of the
+**Precision, power and limits at N = 64 (second amendment).** The user set the
+main size to 64 to reduce inference. The consequences, stated before any data:
+
+| Quantity (planning assumptions) | At N = 64 | At N = 192, for comparison |
+|---|---:|---:|
+| Expected main calls, both models (72% of call slots used) | 4,127 | 12,380 |
+| Expected aggregate GPU-hours at 8.7 s/call (wall-hours on T4×2) | 10.0 (5.0) | 29.9 (15.0) |
+| Δ_H, 97.5% half-width at q = 0.25 / 0.30 | 14.0 / 15.3 pp | 8.1 / 8.9 pp |
+| Power to detect Δ_H = 12 / 15 / 20 pp in one model (q = 0.3) | .31 / .48 / .75 | .79 / .94 / >.99 |
+| Probability that a 12 / 20 pp Δ_H is shown in both models | .10 / .57 | .62 / >.99 |
+| Δ_E, power at 20 pp (SD 0.5) | .83 | >.99 |
+| Subgroups (S15): about 32 worlds per prefix group, 50 and 14 by holder location; 95% Δ_H half-width at q = 0.3 | about 19 pp (32), 15 pp (50), 29 pp (14) | about 11 pp (96) |
+| Edit-type splits (S4): 32 worlds each | about 19 pp | about 11 pp |
+| Model difference (S5) for Δ_H, 95% | about 19 pp | about 11 pp |
+
+What the 64-world study can still establish: a large revision cost (Δ_E of
+roughly 20 points or more is detected with probability above .8, and the
+course pattern suggested a cost of that size), a large reopening effect, and
+the direction of the announcement/answer split when one part dominates. What it
+can no longer establish: a modest history effect. The course's observed Δ_H was
++5 points, so the most likely Δ_H result is an interval spanning zero with a
+half-width of about 14–15 points, which bounds the policy effect only coarsely.
+Agreement "in both models" will be shown only for large effects. Subgroup,
+edit-type and model-difference estimates are descriptive only.
+
+**Bootstrap reliability at 8 worlds per stratum.** The analysis method is
+unchanged. A CPU Monte Carlo of the adopted stratified percentile bootstrap
+(probit-correlated binary cells, three rate scenarios × two correlation levels,
+1,500 replications each, 2,000 draws) found that the nominal 97.5% primary
+intervals covered the true value in 94.3–96.3% of replications (Monte Carlo SE
+about 0.4 points), and the nominal 95% secondaries in 91.9–93.9%. At this size
+the primary intervals therefore behave approximately like 95% intervals: an
+interval excluding zero carries a false-positive risk of roughly 4–6% per
+estimand rather than 2.5%. The thesis must report the nominal level together
+with this simulated coverage. The "both models" rule still needs two such
+intervals, so its joint false-positive risk stays small. The main cause is the
+small within-stratum sample: the bootstrap variance of a stratum mean is
+(n_s − 1)/n_s of the unbiased value, 7/8 here. A finite-sample correction (for
+example rescaling the bootstrap deviations by sqrt(n_s/(n_s − 1))) is not part
+of the adopted method.
+
+**World count reassessed on 25 October** (before implementation of the first
 amendment, with six cells costing 32.2 expected calls per world and model at
-the course's measured 72% use of call slots):
+the course's measured 72% use of call slots; superseded the same day by the
+user's decision of 64 worlds, see above):
 
 | N | Δ_H 97.5% half-width, q = .25/.30 | Power, Δ_H = 12 pp, one model | Both models | 80% detectable Δ_H (q = .3) | Expected main calls, both models | Expected aggregate GPU-h at 8.7 s/call |
 |---:|---|---:|---:|---:|---:|---:|
+| **64** | **14.0 / 15.3 pp** | **.31** | **.10** | **21.1 pp** | **4,127** | **10.0** |
 | 96 | 11.4 / 12.5 pp | .46 | .21 | 17.2 pp | 6,190 | 15.0 |
 | 128 | 9.9 / 10.9 pp | .59 | .35 | 14.9 pp | 8,253 | 19.9 |
 | 160 | 8.9 / 9.7 pp | .70 | .49 | 13.3 pp | 10,317 | 24.9 |
-| **192** | **8.1 / 8.9 pp** | **.79** | **.62** | **12.2 pp** | **12,380** | **29.9** |
+| 192 | 8.1 / 8.9 pp | .79 | .62 | 12.2 pp | 12,380 | 29.9 |
 
 Moving from 192 to 128 worlds would save about 4,100 expected calls (about 10
 aggregate GPU-hours, or 2.5 wall-hours per model) but widen every interval by
@@ -725,7 +779,8 @@ aggregate GPU-hours, or 2.5 wall-hours per model) but widen every interval by
 and leave the subgroup analyses (S15) with about 64 worlds each. Compute is not
 the binding constraint, and the forecast rule of §4.3 already falls back to 128
 worlds without looking at outcomes if measured throughput requires it. The
-target therefore stays at 192, with the nested 128 fallback.
+reassessment therefore recommended keeping 192. The user subsequently chose 64
+worlds to reduce inference, accepting the precision and power stated above.
 
 ### 3.11 What each result licenses
 
@@ -735,20 +790,24 @@ target therefore stays at 192, with the nested 128 fallback.
 | Δ_E ≈ 0, both events low | Reopening a finished decision is itself the problem in this interface; the change adds little |
 | Δ_E ≈ 0, both events high | No recovery problem in this regime; the course drop does not replicate |
 | Δ_H > 0 or < 0 | Clearing helps or hurts after a change, as a whole package, with gains/losses and costs shown |
-| Δ_H interval spans 0 with half-width ≈ 9 pp | No policy effect larger than about ±9 pp; clearing is not a fix for this failure |
+| Δ_H interval spans 0 (half-width ≈ 14–15 pp at N = 64) | No policy effect larger than about ±15 pp; smaller effects in either direction remain possible. This bounds clearing coarsely; it does not show that clearing is ineffective |
 | θ > 0 but Δ_H ≈ 0 | Retention helps mainly when nothing changed; clearing is not a recovery improvement |
 | Δ_announce > 0 (95% interval excludes 0) | Announcing a change disrupts the team even when nothing it needs has changed |
 | Δ_announce ≈ 0, Δ_answer > 0 | Irrelevant changes are absorbed; the cost lies in obtaining and adopting new information |
 | Y_RP below Y_RN | A still-valid retained conclusion is abandoned after a real but irrelevant change (over-revision) |
 | R > 0 (reopening) with Δ_E ≈ 0 | Reopening a finished decision is itself the problem in this interface; S14 shows whether through completion or correctness |
 | An effect appears only in the C channel | The change or history policy alters commitment, not what the team concludes |
+| Any interval spans 0 | Absence of evidence for an effect larger than the half-width, never evidence of no effect; at N = 64 half-widths are 9–20 pp |
 | Effects agree in both models | Same direction in two model families under one interface; still not all LLMs |
 | Models disagree | A system-dependent result; report S5 with its uncertainty, no pooled winner |
 | A model fails a development gate | Feasibility finding for that configured system; the other model's study stands alone |
 
 **Limitations to state in the thesis.** One numerical task with little
 expensive computation to preserve; two agents; three calls per agent; one
-announced change per continuation; supplied coordination strategy; strict JSON; quantized direct
+announced change per continuation; 64 main worlds, which gives coarse
+precision (primary half-widths of about 11–17 pp, 80% detection only for
+effects of roughly 15–25 pp) and primary intervals whose simulated coverage is
+about 95% rather than the nominal 97.5%; supplied coordination strategy; strict JSON; quantized direct
 mode; one prefix per world (no prefix-to-prefix variability); history policies
 are bundles; numeric matching in the funnel is not proof of belief; results are
 SILO-derived, not native benchmark scores.
@@ -825,12 +884,12 @@ F(N) = H_spent + 4 + 1.25 × (44·N·Σ_m g_m + 300·max_m g_m) / 3600
 The 4 hours cover main-session setup, downloads, loads, readiness and exports;
 44 is the worst-case calls per world per model (32 before the 25 October
 amendment; the code reads it from the configured ceiling); 300 is the
-contingency; 1.25 is the margin. **Choose N = 192 if F(192) ≤ 100; otherwise
-N = 128 if F(128) ≤ 100; otherwise stop and ask.** Both admitted models use the
-same N. Example with g = 9.0 (Qwen), 14.0 (Granite), H_spent = 6: F(192) = 6 +
-4 + 1.25 × (194,304 + 4,200)/3600 = 78.9 → 192. With Qwen at the measured 8.7 s
-and H_spent = 6, the target holds while Granite's g ≤ 21.2 s (32 s before the
-amendment); above that both models run 128 worlds.
+contingency; 1.25 is the margin. **Run N = 64 if F(64) ≤ 100; otherwise stop
+and ask.** There is no smaller fallback size (second amendment). Both admitted
+models use the same 64 worlds. Example with g = 9.0 (Qwen), 14.0 (Granite),
+H_spent = 6: F(64) = 6 + 4 + 1.25 × (64,768 + 4,200)/3600 = 33.9 → 64. With
+Qwen at the measured 8.7 s and H_spent = 6, the rule admits Granite up to
+g ≈ 75 s per call, far above any plausible value.
 
 **Freeze record** (immutable, written once when `SCOPE="main"` and
 `MAIN_AUTHORIZATION` equals the gate-report ID): admitted models, N, world IDs,
@@ -849,32 +908,35 @@ Counts are **maximum first attempts**, assuming every episode uses all six
 calls (the course used 72% of team call slots, 258/360). Unused capacity never
 adds worlds.
 
-| Component | Per model | Both models, N = 192 | Both models, N = 128 |
-|---|---:|---:|---:|
-| First-load readiness | 8 | 16 | 16 |
-| Development: 16 × 44 | 704 | 1,408 | 1,408 |
-| Main: N × 44 (6 prefix + 36 continuation + 2 controls) | 8,448 / 5,632 | 16,896 | 11,264 |
-| Reload readiness: 2 per further load, ≤ 12 loads | — | 24 | 24 |
-| Contingency: identical retries of interrupted attempts | — | 300 | 300 |
-| **Campaign ceiling** | | **18,644** | **13,012** |
+| Component | Per model | Both models, N = 64 |
+|---|---:|---:|
+| First-load readiness | 8 | 16 |
+| Development: 16 × 44 | 704 | 1,408 |
+| Main: 64 × 44 (6 prefix + 36 continuation + 2 controls) | 2,816 | 5,632 |
+| Reload readiness: 2 per further load, ≤ 12 loads | — | 24 |
+| Contingency: identical retries of interrupted attempts | — | 300 |
+| **Campaign ceiling** | | **7,380** |
 
-With one admitted model: 10,196 (N = 192) or 7,380 (N = 128). Each stage stops
-dispatch at its ceiling. Historical course attempts are separate; they are not
-charged here and do not enlarge these ceilings. Before the 25 October amendment
-the ceilings were 13,652 and 9,556.
+With one admitted model: 4,564. Each stage stops dispatch at its ceiling.
+Historical course attempts are separate; they are not charged here and do not
+enlarge these ceilings. Earlier ceilings: 13,652 (adopted design), 18,644
+(first 25 October amendment, 192 worlds). Development is now about a fifth of
+the expected campaign calls (about 1,030 of 5,160).
 
-**Aggregate GPU-hour sensitivity** for the full target ceiling (`3 +
-1.25 × 18,644 × g / 3600`, where 3 h is a six-session overhead allowance):
+**Aggregate GPU-hour sensitivity** for the full ceiling (`3 + 1.25 × 7,380 × g
+/ 3600`, where 3 h is a six-session overhead allowance):
 
 | g (allocated s/call) | 8.7 (Qwen measured) | 12 | 15 | 20 | 25 |
 |---|---:|---:|---:|---:|---:|
-| Aggregate GPU-hours, N = 192 | 59.3 | 80.7 | 100.1 | 132.5 | 164.8 |
+| Aggregate GPU-hours, N = 64 | 25.3 | 33.8 | 41.4 | 54.2 | 67.1 |
 
-This worst case assumes both models at the same g and every call slot used. The
-100-hour ceiling holds the target up to g ≈ 15.0 s and the fallback up to
-g ≈ 21.5 s; the binding decision is the measured forecast of §4.3. The expected
-main load at 72% usage and g = 8.7 is about 12,400 calls, 30 aggregate
-GPU-hours or 15 wall-hours on T4×2.
+This worst case assumes both models at the same g and every call slot used; the
+100-hour ceiling holds it up to g ≈ 37.9 s. The ceiling stays at 100 rather than
+shrinking with the sample because GPU-hours are charged as 2 × session wall
+time and a lost session counts up to its deadline (about 22 aggregate hours
+each, two allowed), so a tighter ceiling could stop a healthy campaign. The
+expected main load at 72% usage and g = 8.7 is about 4,130 calls, 10 aggregate
+GPU-hours or 5 wall-hours on T4×2.
 
 ### 4.5 Failure rules
 
@@ -919,7 +981,7 @@ main never stop, replace or reorder worlds.
 
 | Check | Pass condition |
 |---|---|
-| Manifest | Regenerated worlds equal `configs/thesis-worlds.json` byte for byte; strata counts 2/16/24 per stratum for dev, fallback and target; all 624 inputs (original, revised, preserving) disjoint from all committed historical inputs and from each other |
+| Manifest | Regenerated worlds equal `configs/thesis-worlds.json` byte for byte; strata counts 2/8 per stratum for development and main; main is exactly `main-000`…`main-063`; all 240 inputs (original, revised, preserving) disjoint from all committed historical inputs and from each other |
 | Generator properties | Unique `M1`; demote replacement < `M2`; keep replacement > `M2` and ≠ `M1`; preserving change of exactly one non-winning record of the owner, below `M1` and different from its old value, with the answer and both local maxima unchanged; answers recomputed by an independent max; rejection counts saved |
 | Information witness | A keep world and a demote world exist where the non-owner's first continuation view is identical but the answers differ (the non-owner must receive new information); the non-owner's first RV and RP views differ only in the named record although only RV changes the answer |
 | Views and privacy | No partner value, answer, edit type, stratum, holder, cell label or hint that a change preserved the answer appears in any rendered request (checked structurally on scripted runs); owner-only replacement line; one notice form for both change kinds |
@@ -995,7 +1057,7 @@ atomically. A completed call is never regenerated.
   "bootstrap_seed": 2026102302,
   "shard_size": 20, "value_range": [-1000, 1000], "turns_per_agent": 3,
   "max_proposals": 1000,
-  "development_worlds": 16, "main_worlds": 192, "fallback_main_worlds": 128,
+  "development_worlds": 16, "main_worlds": 64,
   "cells": ["RV", "CV", "RP", "CP", "RN", "CN"],
   "input_tokens": 8192, "alternative_input_tokens": 12288,
   "output_tokens": 512, "feedback_tokens": 32,
@@ -1131,12 +1193,12 @@ per finished world. *Illustrative output:*
 
 ```text
 [22:41:07] MAIN qwen · session 3h12m used, deadline in 7h33m (no new episode after 10h35m)
-  worlds    57/192 done · running main-058 on GPU0, main-059 on GPU1
-  episodes  404/1,344 terminal (prefix 59, RV 58, CV 57, RP 58, CP 57, RN 58, CN 57) · outcomes hidden until main completes
+  worlds    21/64 done · running main-022 on GPU0, main-023 on GPU1
+  episodes  150/448 terminal (prefix 22, RV 22, CV 21, RP 22, CP 21, RN 21, CN 21) · outcomes hidden until main completes
   calls     1,402 with outcome (1,118 this session) · invalid 9 · timeouts 0 · provider failures 0
   attempts  1,404 · contingency 2/300 · lost 0 · aggregate GPU-h so far 21.6/100
   checkpoint seq 31 at 22:30 (11 min ago) · mirror uploaded 22:31 (sha256 verified)
-[22:41:55] main-057 done on GPU1: prefix B · RV H · CV B · RP B · CP B · RN B · CN W · 39 calls · 170 s
+[22:41:55] main-021 done on GPU1: prefix B · RV H · CV B · RP B · CP B · RN B · CN W · 39 calls · 170 s
 ```
 
 Terminal codes are B (both submitted), H (horizon exhausted), W (waiting
@@ -1157,7 +1219,7 @@ not to the notebook output.
 lock), `checkpoint.json` (study, sequence, parent sequence, session, source
 commit, binding hashes, counts, file SHA-256s), and `receipts/`. No weights,
 venv or caches. Expected size: about 32 KB of database per call, so about
-600 MB uncompressed at the full ceiling and about 46 MB zipped (the course
+240 MB uncompressed at the full ceiling and about 18 MB zipped (the course
 archive compressed 13:1). Each export is written to a temporary name,
 verified by reopening and an integrity check, then renamed to its final name;
 an interrupted export never replaces a good checkpoint. The newest two local
@@ -1221,13 +1283,13 @@ completion of a browser download are never claimed.
 |---|---|---|
 | Kaggle CPU sessions (no GPU) | `rehearsal` twice, including a restore | under 30 min each |
 | GPU 1 | Development for both models, gate report | 2–3.5 h |
-| GPU 2 | Qwen main (192 worlds) | 7.5 h expected, 10.2 h worst case at the measured rate; may continue in a second session |
-| GPU 3–4 | Granite main | Unknown until development measures `g`; 1–2 sessions |
+| GPU 2 | Qwen main (64 worlds), then Granite main if time remains | Qwen 2.5 h expected, 3.4 h worst case at the measured rate; Granite unknown until development |
+| GPU 3 (if needed) | Remaining Granite main | Unknown until development measures `g` |
 | Local or CPU session | Final report | minutes |
 
-That is roughly 17–25 GPU session hours if Granite runs at Qwen's measured
-speed, which fits one week of the documented quota if T4×2 is charged per
-session hour and two weeks if it is charged per GPU. The plan uses no paid compute.
+That is roughly 8–12 GPU session hours if Granite runs at Qwen's measured
+speed, which fits one week of the documented quota under either way of charging
+T4×2. The plan uses no paid compute.
 
 ---
 
@@ -1282,7 +1344,7 @@ These are prospective test specifications. None has been run.
 | Kaggle image not Python 3.13 | Cell 2 stops before installing; message explains | CPU test of host inventory |
 | Granite produces non-finite scores in readiness | G1 fails; Granite excluded; Qwen continues under the pre-approved rule | CPU scripted; GPU readiness |
 | Both models fail gates | Feasibility report; no main | CPU synthetic |
-| Forecast above 100 h at N = 192 | Freeze chooses 128 (44 calls per world in the forecast); above at 128 too: stop and ask | CPU test |
+| Forecast above 100 h at N = 64 | Freeze refuses; stop and ask (no fallback size; 44 calls per world in the forecast) | CPU test |
 | Ceiling or contingency exhausted | Dispatch stops, checkpoint written, request for a decision | CPU test |
 | `MAIN_AUTHORIZATION` does not match | Freeze and main refused | CPU test |
 | Campaign ends with main incomplete | No estimates until `declare-stopped`; then bounds and both intervals | CPU fixture |
@@ -1295,7 +1357,7 @@ These are prospective test specifications. None has been run.
 
 | Current authority | Proposed change for the thesis campaign only |
 |---|---|
-| §§1–2: four peers, five task families, 60/40 worlds, synchronous rounds | Two-agent maximum (I-01), 192/128 main and 16 development worlds; sequential private-final protocol of §12 |
+| §§1–2: four peers, five task families, 60/40 worlds, synchronous rounds | Two-agent maximum (I-01), 64 main worlds (192/128 until the second 25 October amendment) and 16 development worlds; sequential private-final protocol of §12 |
 | §§3–4: retention policies L/B/C/K/F, masks, receipts, prose delay | Six cells: retain/clear × answer-changing revision, answer-preserving change or no change, from one natural prefix (four cells until the 25 October amendment) |
 | §12.1: demote-only edit | Balanced demote and keep-winner strata with common eligibility |
 | §12.1: "Only an environment source change … reopens both agents" | Every new phase reopens both agents; truthful no-change notice |
@@ -1304,10 +1366,11 @@ These are prospective test specifications. None has been run.
 | §6 analysis conventions | Eight-stratum paired bootstrap, interval indices of §3.10, missing-outcome bounds, no interim analysis |
 | §8 and §12: one Qwen model (4B fallback) | Two pinned systems, Qwen3.5-9B `c202236…` and Granite 4.2-8B `a704214…`, direct mode, model-native sampling, no fallback model |
 | §3.2 262,144 context; §12 8,192 + 512 | 8,192 + 512 for both, with a CPU-decided uniform 12,288 alternative |
-| §8.4 100-hour plan; §12 500-attempt campaigns | New campaign ceilings: 13,652 attempts (18,644 after the 25 October amendment) and 100 aggregate GPU-hours; course allowances not reused |
+| §8.4 100-hour plan; §12 500-attempt campaigns | New campaign ceilings: 13,652 attempts (18,644 after the first and 7,380 after the second 25 October amendment) and 100 aggregate GPU-hours; course allowances not reused |
 | §12 lost-spending handling (block affected worlds) | Mandatory identical re-execution after session loss, from contingency, always from the newest checkpoint |
 | §9 LangGraph checkpoints | Not used; the I-01 SQLite store |
 | This annex as adopted on 22 October (amended 25 October, before any GPU execution) | Answer-preserving cells RP and CP on every world; secondary S12–S16; symmetric change notice; waiting-rule sentence; exact decoding description; ceilings 44 per world and 18,644 per campaign; world count reassessed and kept at 192/128 |
+| This annex after the first 25 October amendment (second amendment, same day, before any GPU execution) | 64 main worlds, 8 per stratum, the first 64 of the earlier manifest; fallback size removed; campaign ceiling 7,380; precision, power, bootstrap coverage and limitations restated for N = 64 (§3.10–3.11) |
 | §12 Run All and pilot policies | Scopes of §4.1; development gates of §4.2; freeze and authorization of §4.3 |
 
 ### 9.2 Proposed text for `PROJECT_SPECIFICATION.md` §13
@@ -1339,7 +1402,7 @@ links to §13 rather than copying its rules. Earlier proposals stay as history.
 | R2 CPU implementation | Modules of §6.1, manifest generation, notebook, tests | §5 checks pass locally; manifest committed | 6–9 working days; main risk is the Granite factory written without a GPU |
 | R3 Delivery rehearsal | Push the commit; two Kaggle CPU sessions in `rehearsal`, with a deliberate restore | Rehearsal checkpoints restored across sessions; mirror verified | 1 day; free (no GPU quota) |
 | R4 Development (GPU, authorized) | One T4×2 session | Gate report with ID; quota charge observed | 2–3.5 h of GPU; risk: Granite numerics or JSON compliance |
-| R5 Main (GPU, authorized by ID) | Freeze, then 2–4 sessions | Main complete for admitted models | About 15–21 session hours over 1–2 weeks |
+| R5 Main (GPU, authorized by ID) | Freeze, then 1–2 sessions | Main complete for admitted models | About 6–9 session hours |
 | R6 Analysis and writing | Report, casebook, thesis chapters | Report rebuilt locally from the newest checkpoint matches Kaggle output | 2–3 weeks; begin writing from the course report now |
 
 Software and CPU checks never authorize GPU work. Only R4 and R5 use a GPU.
@@ -1365,14 +1428,14 @@ Software and CPU checks never authorize GPU work. Only R4 and R5 use a GPU.
 **Recommended project.** One natural two-agent maximum-finding collaboration per
 world, then six matched continuations (retain or clear × answer-changing
 revision, answer-preserving change or no change), in Qwen3.5-9B and Granite
-4.2-8B, on 192 balanced worlds. The two primary questions are whether the change
+4.2-8B, on 64 balanced worlds. The two primary questions are whether the change
 itself reduces completion (Δ_E) and whether clearing history helps after a
 change (Δ_H); the preserving change splits Δ_E into announcement and answer
 costs.
 
 **Why it is practical.** It reuses the only runtime that has actually run on
 Kaggle, adds about 3,500 lines in `recovery/thesis/` (protocol, controller,
-checkpoints, analysis, notebook facade), and needs roughly 17–25 GPU
+checkpoints, analysis, notebook facade), and needs roughly 8–12 GPU
 session hours at measured speed, within a new 100-hour ceiling. One notebook of 9 code cells
 downloads everything online, shows progress without flooding output,
 checkpoints every 20 minutes and after each cell, and restores the newest
@@ -1399,7 +1462,9 @@ notebook, manifest and tests are implemented and CPU-verified; see the
 [pre-execution design review](thesis-pre-execution-design-review-2026-10-25.md),
 including the optional items. They are implemented and CPU-verified in this
 annex, the code, the configuration, the regenerated manifest and the tests. No
-GPU, model inference or publication has occurred.
+GPU, model inference or publication has occurred. Later the same day you set
+the main population to 64 worlds (second amendment); that is also implemented
+and CPU-verified. Its reduced precision and power are documented in §3.10–3.11.
 
 **Next approvals, in order:** (1) a Kaggle CPU `rehearsal` session and its
 restore drill (no GPU; already authorized by adoption); (2) GPU development on

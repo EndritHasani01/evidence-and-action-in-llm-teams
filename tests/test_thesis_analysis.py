@@ -57,6 +57,7 @@ class Analysis(unittest.TestCase):
         strata = [s for s in range(8) for _ in range(24)]
         self.assertAlmostEqual(hoeffding(strata, 2, .025), .2137, places=3)
         self.assertAlmostEqual(hoeffding([s for s in range(8) for _ in range(16)], 2, .025), .2617, places=3)
+        self.assertAlmostEqual(hoeffding([s for s in range(8) for _ in range(8)], 2, .025), .3700, places=3)  # N = 64
 
     def synthetic(self, effect, seed=1, n=24):
         rng = random.Random(seed)

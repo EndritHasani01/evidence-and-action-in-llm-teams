@@ -1086,23 +1086,27 @@ section's annex, with its scopes, ceilings, gates and failure rules in its
 section 4. In brief: one natural two-agent I-01 prefix per world, then six
 isolated continuations (retain or clear × answer-changing revision, real
 answer-preserving change, or truthful no-change reopening) and two
-full-information scalar controls; balanced demote and keep-winner edits; 192
-main worlds (fallback 128 by the measured-cost rule) and 16 development worlds;
+full-information scalar controls; balanced demote and keep-winner edits; 64
+main worlds (8 per stratum, no fallback size) and 16 development worlds;
 Qwen3.5-9B `c202236235762e1c871ad0ccb60c8ee5ba337b9a` and Granite 4.2-8B
 `a7042144125ce5ae64f89610e8289647fc000b9a` in direct mode with each card's
 temperature, top-p and top-k and a deliberate presence penalty of 0; two primary
 estimands per model (revision cost Δ_E and history effect Δ_H) with 97.5%
 stratified paired world-bootstrap intervals, and prespecified secondary
 estimates including the exact split Δ_E = Δ_announce + Δ_answer; no interim
-analysis; campaign ceilings of 18,644 physical attempts and 100 aggregate
+analysis; campaign ceilings of 7,380 physical attempts and 100 aggregate
 allocated GPU-hours.
 
 Amended 25 October 2026, before any GPU execution, by the user's approval of
 R1–R3 of the [pre-execution design review](docs/proposals/thesis-pre-execution-design-review-2026-10-25.md):
 the answer-preserving cells, secondary analyses S12–S16, a symmetric change
 notice, one sentence stating the existing waiting rule, and an exact decoding
-description. The primary estimands, world counts, gates, models and call budget
-per agent are unchanged; the 192/128 world counts were reassessed and kept.
+description. The primary estimands, gates, models and call budget per agent are
+unchanged. A second amendment the same day, also before any GPU execution, set
+the main population to 64 worlds (8 per stratum, the first 64 of the earlier
+192) by the user's decision; the annex §3.10–3.11 state the resulting precision
+(primary half-widths of about 11–17 pp), power and limitations, including that
+the nominal 97.5% bootstrap intervals cover about 95% at this size.
 
 Adoption authorizes CPU implementation and verification, including Kaggle CPU
 sessions in the `cpu` and `rehearsal` scopes. GPU development requires a separate

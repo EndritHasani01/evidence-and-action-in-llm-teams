@@ -174,10 +174,9 @@ def verify_manifest(source=None, config=None):
     for world in manifest["worlds"]:
         check_world(world)
     counts = strata_counts(manifest["worlds"])
-    main = [w for w in manifest["worlds"] if w["group"] == "main"]
-    fallback = strata_counts([w for w in main if w["index"] < config["fallback_main_worlds"]])["main"]
-    if counts["development"] != [2] * 8 or counts["main"] != [24] * 8 or fallback != [16] * 8:
-        raise ValueError("strata are not balanced 2/16/24 per stratum")
+    per_stratum = dict(development=config["development_worlds"] // 8, main=config["main_worlds"] // 8)
+    if counts != {group: [n] * 8 for group, n in per_stratum.items()}:
+        raise ValueError("strata are not balanced 2/8 per stratum (development/main)")
     keys = set()
     for world in manifest["worlds"]:
         for phase in INPUTS:
@@ -186,7 +185,7 @@ def verify_manifest(source=None, config=None):
                 raise ValueError("duplicate input within the thesis manifest")
             keys.add(key)
     return dict(passed=True, sha256=digest_bytes(expected), worlds=len(manifest["worlds"]),
-                strata=dict(development=counts["development"], main=counts["main"], fallback=fallback))
+                strata=dict(development=counts["development"], main=counts["main"]))
 
 
 def load_manifest(source=None):
@@ -268,12 +267,12 @@ def build_separation(source=None):
 def verify_separation(source=None):
     """A source extract without history relies on the committed release receipt."""
     source = Path(source or SOURCE_ROOT)
-    _, sha = load_manifest(source)
+    manifest, sha = load_manifest(source)
     path = source / SEPARATION_PATH
     if not path.is_file():
         raise ValueError("missing configs/thesis-worlds-separation.json release receipt")
     receipt = json.loads(path.read_text(encoding="utf-8"))
-    if not receipt.get("passed") or receipt.get("worlds_sha256") != sha or receipt.get("checked_new_inputs") != len(INPUTS) * 208:
+    if not receipt.get("passed") or receipt.get("worlds_sha256") != sha or receipt.get("checked_new_inputs") != len(INPUTS) * len(manifest["worlds"]):
         raise ValueError("input-separation receipt does not match the committed manifest")
     if (source / "notebooks/run").is_dir():
         fresh = build_separation(source)

@@ -42,7 +42,7 @@ authorization; running the notebook in a GPU scope is that act.
 | A. CPU rehearsal | `SCOPE="rehearsal"`, `START_NEW_STUDY=True`, no GPU | Whole pipeline with a scripted model on 2+2 worlds; checkpoints and mirror | under 30 min |
 | B. Restore drill | Same, `START_NEW_STUDY=False`, a new session | Cell 3 restores the newest rehearsal checkpoint; no work repeats; the report is identical | under 30 min |
 | C. Development | `SCOPE="development"`, `START_NEW_STUDY=True`, T4 x2 | Downloads each model, readiness, 16 development worlds per model (at most 704 calls each), gate report | 2–3.5 h |
-| D+. Main | `SCOPE="main"`, `MAIN_AUTHORIZATION="dev-..."`, T4 x2, **Save & Run All** | Freeze (once), then main worlds until done or the cutoff | Qwen about 7.5 h expected, 10.2 h worst case at the measured rate, so it may need a second session; Granite measured in C |
+| D+. Main | `SCOPE="main"`, `MAIN_AUTHORIZATION="dev-..."`, T4 x2, **Save & Run All** | Freeze (once), then the 64 main worlds until done or the cutoff | Qwen about 2.5 h expected, 3.4 h worst case at the measured rate; Granite measured in C. Both models usually fit one session |
 | Final | Any scope, or locally | Report from the newest checkpoint | minutes |
 
 After session C, read the gate report printed by cell 5 (also in

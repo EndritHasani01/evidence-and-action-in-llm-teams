@@ -144,7 +144,7 @@ def check_analysis():
     assert (low, high, e_low, e_high) == (0.125, 0.25, 0.375, 0.4375)
     from .analysis import hoeffding, interval_indices
     assert interval_indices(10000, 0.975) == (125, 9874) and interval_indices(10000, 0.95) == (250, 9749)
-    assert round(hoeffding([s for s in range(8) for _ in range(24)], 2, 0.025), 3) == 0.214
+    assert round(hoeffding([s for s in range(8) for _ in range(8)], 2, 0.025), 3) == 0.370  # N = 64
     return ["hand-scored estimands", "decomposition identity", "missingness bounds", "interval indices",
             "Hoeffding companion"]
 

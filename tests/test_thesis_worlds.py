@@ -20,12 +20,18 @@ class Worlds(unittest.TestCase):
     def test_committed_manifest_regenerates_byte_for_byte(self):
         receipt = verify_manifest(ROOT, self.config)
         self.assertEqual(receipt["sha256"], self.sha)
-        self.assertEqual(receipt["worlds"], 208)
-        self.assertEqual(receipt["strata"]["development"], [2] * 8)
-        self.assertEqual(receipt["strata"]["main"], [24] * 8)
-        self.assertEqual(receipt["strata"]["fallback"], [16] * 8)
+        self.assertEqual(receipt["worlds"], 80)
+        self.assertEqual(receipt["strata"], dict(development=[2] * 8, main=[8] * 8))
 
-    def test_strata_mapping_and_nested_fallback(self):
+    def test_main_is_the_first_64_indices_eight_per_stratum(self):
+        main = [w for w in self.worlds if w["group"] == "main"]
+        self.assertEqual([w["id"] for w in main], [f"main-{i:03d}" for i in range(64)])
+        self.assertEqual([sum(w["stratum"] == s for w in main) for s in range(8)], [8] * 8)
+        # World content depends only on the master seed and the identifier, so these 64 are the
+        # same worlds that indices 0-63 of the earlier 192-world manifest contained.
+        self.assertEqual(main[5], make_world(self.config["master_seed"], "main", 5))
+
+    def test_strata_mapping(self):
         self.assertEqual(stratum(0), dict(stratum=0, edit="demote", owner=0, first=0))
         self.assertEqual(stratum(5), dict(stratum=5, edit="keep", owner=0, first=1))
         self.assertEqual(stratum(14), dict(stratum=6, edit="keep", owner=1, first=0))
@@ -85,7 +91,7 @@ class Worlds(unittest.TestCase):
     def test_separation_receipt_matches_a_fresh_audit(self):
         receipt = verify_separation(ROOT)
         self.assertTrue(receipt["passed"])
-        self.assertEqual(receipt["checked_new_inputs"], 624)  # original, revised and preserving inputs
+        self.assertEqual(receipt["checked_new_inputs"], 240)  # original, revised and preserving inputs of 80 worlds
         self.assertGreaterEqual(receipt["distinct_exposed_inputs"], 114)
 
     def test_config_ceilings_must_match_the_six_cells(self):

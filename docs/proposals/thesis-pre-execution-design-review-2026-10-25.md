@@ -8,6 +8,8 @@ optional R3(b) and R3(c). They are now part of the adopted annex
 implemented and CPU-verified ([implementation evidence](../validation/thesis-implementation.md)).
 Before implementation, the world count was reassessed and kept at 192 with the
 128 fallback ([annex §3.10](thesis-project-specification.md#310-statistical-analysis)).
+Later the same day the user set the main population to **64 worlds** (8 per
+stratum); the annex records the resulting precision, power and limitations.
 The body below is the review as written; section 10 records the decisions.
 
 This review assesses the adopted thesis design
@@ -559,7 +561,7 @@ As in annex §4, with the 6-cell schedule. Additionally record:
 | R2: prespecified secondary analyses (implemented as annex S12–S16, including the holder-location split) | **Approved 25 October 2026; implemented and CPU-verified** |
 | R3(a): decoding description | **Approved 25 October 2026; done** (annex §3.8, §13) |
 | R3(b), R3(c): notice symmetry and waiting sentence | **Approved 25 October 2026; implemented and CPU-verified** |
-| World count | **Reassessed before implementation; 192 with the 128 fallback kept** (annex §3.10) |
+| World count | Reassessed before implementation and kept at 192/128; **superseded the same day by the user's decision of 64 main worlds, 8 per stratum, no fallback** (annex second amendment, §3.10–3.11) |
 | GPU development, main execution, publication | **Not authorized**; the annex §4.1 authorization sequence still applies |
 
 ---

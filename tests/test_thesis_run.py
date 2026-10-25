@@ -320,20 +320,21 @@ class Gates(Harness):
         finally:
             close_controller(ctl)
 
-    def test_forecast_uses_the_44_call_world_and_falls_back_to_128(self):
+    def test_forecast_uses_the_44_call_world_and_has_no_fallback(self):
         ctl = self.open(self.profile(name="study", gates_informational=False, main_limit=None), scope="main",
                         study="t-study")
         try:
             for model, g in (("qwen", 8.7), ("granite", 9.0)):
                 ctl.put(f"gates/{model}", dict(model=model, complete=True, admitted=True, g_seconds=g))
             fast = ctl.forecast()
-            expected = 4 + 1.25 * (44 * 192 * (8.7 + 9.0) + 300 * 9.0) / 3600
-            self.assertAlmostEqual(fast["F192"], round(expected, 2), places=2)
-            self.assertEqual(fast["chosen_n"], 192)
-            ctl.put("gates/granite", dict(model="granite", complete=True, admitted=True, g_seconds=25.0))
-            slow = ctl.forecast()  # F(192) about 105 h > 100 h, F(128) about 73 h
-            self.assertGreater(slow["F192"], 100)
-            self.assertEqual(slow["chosen_n"], 128)
+            expected = 4 + 1.25 * (44 * 64 * (8.7 + 9.0) + 300 * 9.0) / 3600
+            self.assertAlmostEqual(fast["F64"], round(expected, 2), places=2)
+            self.assertEqual(fast["chosen_n"], 64)
+            self.assertEqual([k for k in fast if k.startswith("F")], ["F64"])
+            ctl.put("gates/granite", dict(model="granite", complete=True, admitted=True, g_seconds=85.0))
+            slow = ctl.forecast()  # F(64) about 104.5 h > 100 h: no smaller fallback, stop and ask
+            self.assertGreater(slow["F64"], 100)
+            self.assertIsNone(slow["chosen_n"])
         finally:
             close_controller(ctl)
 

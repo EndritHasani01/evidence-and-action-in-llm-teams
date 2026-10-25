@@ -42,9 +42,10 @@ def load_config(source=None):
         raise ValueError("configs/thesis.json is not the adopted thesis-recovery-v1 configuration")
     if tuple(config["cells"]) != CELLS or tuple(config["models"]) != MODELS:
         raise ValueError("cells and models must match the adopted specification")
-    if (config["development_worlds"], config["main_worlds"], config["fallback_main_worlds"],
-            config["strata"]) != (16, 192, 128, 8):
+    if (config["development_worlds"], config["main_worlds"], config["strata"]) != (16, 64, 8):
         raise ValueError("population sizes must match the adopted specification")
+    if "fallback_main_worlds" in config:
+        raise ValueError("the 64-world design has no fallback main size")
     # Worst-case calls per world and model: prefix and six cells of 2 x 3 calls, plus two controls.
     per_world = 2 * config["turns_per_agent"] * (1 + len(CELLS)) + 2
     ceilings = config["ceilings"]
