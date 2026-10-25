@@ -1,0 +1,71 @@
+{
+  "regime": "thesis-recovery-v1",
+  "schema": 1,
+  "master_seed": 2026102301,
+  "bootstrap_seed": 2026102302,
+  "agents": 2,
+  "shard_size": 20,
+  "value_range": [-1000, 1000],
+  "turns_per_agent": 3,
+  "max_proposals": 1000,
+  "development_worlds": 16,
+  "main_worlds": 192,
+  "fallback_main_worlds": 128,
+  "strata": 8,
+  "cells": ["RV", "CV", "RN", "CN"],
+  "input_tokens": 8192,
+  "alternative_input_tokens": 12288,
+  "output_tokens": 512,
+  "feedback_tokens": 32,
+  "load_timeout_seconds": 600,
+  "call_timeout_seconds": 180,
+  "termination_seconds": 5,
+  "headroom_bytes": 1610612736,
+  "checkpoint_minutes": 20,
+  "dispatch_cutoff_minutes": 25,
+  "export_reserve_minutes": 15,
+  "ceilings": {
+    "readiness": 16,
+    "development": 1024,
+    "reload": 24,
+    "main_per_model_per_world": 32,
+    "contingency": 300,
+    "aggregate_gpu_hours": 100,
+    "lost_sessions": 2
+  },
+  "forecast": {"fixed_hours": 4, "margin": 1.25},
+  "gates": {
+    "controls_min": 26,
+    "legal_fraction_min": 0.9,
+    "original_min": 5,
+    "development_provider_failures_max": 1,
+    "main_provider_failures_max": 10
+  },
+  "bootstrap_draws": 10000,
+  "primary_confidence": 0.975,
+  "secondary_confidence": 0.95,
+  "models": {
+    "qwen": {
+      "repo": "Qwen/Qwen3.5-9B",
+      "revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "top_k": 20,
+      "attention": "recovery_t4_sdpa",
+      "eos_token_ids": [248044, 248046],
+      "pad_token_id": 248044,
+      "transport_token_id": 248046
+    },
+    "granite": {
+      "repo": "ibm-granite/granite-4.2-8b",
+      "revision": "a7042144125ce5ae64f89610e8289647fc000b9a",
+      "temperature": 1.0,
+      "top_p": 0.95,
+      "top_k": 0,
+      "attention": "sdpa",
+      "eos_token_ids": [100257],
+      "pad_token_id": 100257,
+      "transport_token_id": 100257
+    }
+  }
+}

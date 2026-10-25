@@ -23,4 +23,4 @@ report = ["matplotlib>=3.7,<4"]
 i01-course = "recovery.i01.cli:main"
 
 [tool.setuptools]
-packages = ["recovery", "recovery.i01"]
+packages = ["recovery", "recovery.i01", "recovery.thesis"]

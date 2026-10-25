@@ -1,0 +1,68 @@
+{
+ "checked_new_inputs": 416,
+ "distinct_exposed_inputs": 114,
+ "passed": true,
+ "sources": [
+  {
+   "path": "notebooks/run/assisted-v1/latest/reports/analysis.json",
+   "sha256": "2424684dcbb974018f886cba6bf4cb851998362a79f8d38afb54bdde1db8a77c",
+   "worlds": 28
+  },
+  {
+   "path": "notebooks/run/assisted-v1/latest/run.json",
+   "sha256": "c69b4b40bd77b4908c4280ce74539656348a82f838c91e6f9aa57101a1a03e04",
+   "worlds": 28
+  },
+  {
+   "path": "notebooks/run/course-7-working/latest/reports/analysis.json",
+   "sha256": "2fe5f2547c0640bd0b3d11f18204bacd91989f47fe3126ce5db4b3ca54183316",
+   "worlds": 29
+  },
+  {
+   "path": "notebooks/run/course-7-working/latest/run.json",
+   "sha256": "4c84fb593003098146a26a2c9f9ac740d5fb9b106e753409f93492ac211f11ba",
+   "worlds": 29
+  },
+  {
+   "path": "notebooks/run/assisted-v1/latest.zip",
+   "sha256": "5dd5ba2af2a2b85df32f4d0fdd2e6e58105e4649dfc5ba2737f129624dd278c3",
+   "worlds": 28
+  },
+  {
+   "path": "notebooks/run/course-1/latest.zip",
+   "sha256": "b5d2df95fcb1238dfac849af0795a691a36307937691914bf36a6bde92b3f68c",
+   "worlds": 29
+  },
+  {
+   "path": "notebooks/run/course-2/latest.zip",
+   "sha256": "3dc4040b82d75325cbce1103db04326c8af5cd2e635bb8f87549deeba6add782",
+   "worlds": 29
+  },
+  {
+   "path": "notebooks/run/course-3/latest.zip",
+   "sha256": "7524c6a553a76ab2dd218fbeb45a5160db7de9b5661c1da395fa11d03168e739",
+   "worlds": 29
+  },
+  {
+   "path": "notebooks/run/course-4/latest.zip",
+   "sha256": "2622779267ab656710d9e245d2946a0399afd4beb4e5adf36f94f1144ca3a459",
+   "worlds": 29
+  },
+  {
+   "path": "notebooks/run/course-5/latest.zip",
+   "sha256": "e70724265ed35c5232b85fbc9e769b05fd7cde5972dd4f6d3e7e82b8f0f910c8",
+   "worlds": 29
+  },
+  {
+   "path": "notebooks/run/course-6/latest.zip",
+   "sha256": "8b48977d6389940f92eb694d67a636362de0f5ee27127b8223d452ff57b19c79",
+   "worlds": 29
+  },
+  {
+   "path": "notebooks/run/course-7-working/latest.zip",
+   "sha256": "e4e2ce613dc8949ed6d5224e09bff19b96ee97f5d53065a80437e68b42cc4aca",
+   "worlds": 29
+  }
+ ],
+ "worlds_sha256": "0ea0567db153f2cd69145a93320b5c1ba8f1cdb26558702f6bc76d449f099413"
+}

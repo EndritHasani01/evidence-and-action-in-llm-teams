@@ -6,6 +6,11 @@ Final authoritative specification · 5 October 2026
 
 This document governs implementation, execution, evaluation, and reporting. It supersedes conflicting instructions in [FINAL_PROJECT_SPECIFICATION_PLAN.md](research/06_final_design/FINAL_PROJECT_SPECIFICATION_PLAN.md), the numbered blueprint, research/addition directories, old configurations, and dependency lists. Those artifacts preserve the design history and supporting evidence; they are not additional requirements.
 
+**Current thesis regime (22 October 2026):** [§13](#13-thesis-regime-thesis-recovery-v1)
+adopts `thesis-recovery-v1`, the two-agent revision-cost and history-policy study.
+It is implemented and CPU-verified; GPU development and main execution are not
+yet authorized or run. Sections 1–12.1 below keep their own historical meaning.
+
 **Status:** M1–M2 are implemented and verified on CPU: exact worlds/schedules,
 permitted views, scripted state/retention/delivery/replay, attainability and native
 token capacity. Durable runner integration, the hardware/capability pilot, main
@@ -1064,3 +1069,33 @@ The annex §7 acceptance requirements govern implementation verification. Actual
 T4/model/latency/headroom gates remain unrun until separately authorized. Reuse
 the existing implementation and durable evidence infrastructure; introduce no
 new outcome store, runtime framework or scientific registry.
+
+## 13. Thesis regime thesis-recovery-v1
+
+Adopted 22 October 2026 by the user's explicit instruction to fully implement the
+[thesis project specification](docs/proposals/thesis-project-specification.md).
+This section governs only studies initialized with `configs/thesis.json`
+(regime `thesis-recovery-v1`). Sections 1–12.1, their configurations, inputs,
+stores, results and allowances keep their own meaning; nothing is reused,
+imported or pooled from them, and the course attempt allowances are not reopened.
+
+The exact contract is sections 3–5 of that document, incorporated as this
+section's annex, with its scopes, ceilings, gates and failure rules in its
+section 4. In brief: one natural two-agent I-01 prefix per world, then four
+isolated continuations (retain or clear × answer-changing revision or truthful
+no-change reopening) and two full-information scalar controls; balanced demote
+and keep-winner edits; 192 main worlds (fallback 128 by the measured-cost rule)
+and 16 development worlds; Qwen3.5-9B `c202236235762e1c871ad0ccb60c8ee5ba337b9a`
+and Granite 4.2-8B `a7042144125ce5ae64f89610e8289647fc000b9a` in direct mode with
+model-native sampling; two primary estimands per model (revision cost Δ_E and
+history effect Δ_H) with 97.5% stratified paired world-bootstrap intervals; no
+interim analysis; campaign ceilings of 13,652 physical attempts and 100 aggregate
+allocated GPU-hours.
+
+Adoption authorizes CPU implementation and verification, including Kaggle CPU
+sessions in the `cpu` and `rehearsal` scopes. GPU development requires a separate
+explicit authorization. Main execution requires a further explicit authorization,
+recorded by entering the development gate-report ID as `MAIN_AUTHORIZATION`.
+Publication remains separately authorized. If a development gate excludes exactly
+one model, main proceeds with the other model alone; if both fail, the campaign
+stops with a feasibility report and no main inference.

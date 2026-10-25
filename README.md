@@ -1,5 +1,14 @@
 # Recovery in distributed LLM teams
 
+Current thesis regime (22 October 2026): `thesis-recovery-v1` is adopted in
+[specification §13](PROJECT_SPECIFICATION.md#13-thesis-regime-thesis-recovery-v1)
+([annex](docs/proposals/thesis-project-specification.md)) and implemented in
+`recovery/thesis/` with the Kaggle notebook `notebooks/thesis_kaggle.ipynb`.
+Operate it with the [thesis runbook](docs/THESIS_KAGGLE.md); CPU verification is
+recorded in [the implementation evidence](docs/validation/thesis-implementation.md).
+No GPU development or main execution has been authorized or run. The course
+summaries below keep their historical meaning.
+
 Current course development: the approved assisted I-01 design is adopted in
 [specification §12.1](PROJECT_SPECIFICATION.md#121-assisted-i-01-course-regime-16-october-2026).
 The [current runbook](docs/I01_KAGGLE.md) describes its 37 finite cells, four
