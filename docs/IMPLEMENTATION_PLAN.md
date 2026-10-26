@@ -32,6 +32,17 @@ calls (10 aggregate GPU-hours). Annex §3.10–3.11 state the consequences: Δ_H
 half-width about 14–15 pp, 80% detection only for effects of roughly 15–25 pp,
 descriptive-only subgroups, and simulated coverage of the nominal 97.5%
 bootstrap intervals of about 95% at 8 worlds per stratum (method unchanged).
+
+**Kaggle execution hardening (25 October 2026, CPU-verified, no GPU):** the
+session deadline is capped inside Kaggle's 12-hour limit from the container's
+start; a kernel restart continues the same session; restore refuses a recent
+checkpoint of an unfinished session (possible concurrent writer) and a configured
+but unavailable mirror; the fallback source packet holds committed bytes; install
+failures are recorded stops; cell 1 retries the source download; the heartbeat
+shows a measured time-left estimate. The runbook now prescribes rehearsal, restore
+drill and a no-GPU preflight of the real study before development. Details and
+what still needs real Kaggle evidence: [implementation evidence](validation/thesis-implementation.md),
+[runbook](THESIS_KAGGLE.md).
 The scripted CPU tokenizer double was recalibrated to 4 bytes per token so that
 rehearsals keep reaching the real 8,192 decision, and `.gitattributes` now pins
 the byte-verified thesis inputs to LF.

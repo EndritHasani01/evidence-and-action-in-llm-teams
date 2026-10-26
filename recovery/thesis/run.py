@@ -132,6 +132,7 @@ class Controller:
         self.last_checkpoint = monotonic()
         self.counts = self._attempt_counts()
         self.session_calls = 0
+        self.pace = None  # worlds finished by the current run_worlds call, for the time-left estimate
         self.call_timeout = profile.call_timeout or config["call_timeout_seconds"]
 
     # ---------------------------------------------------------------- basics
@@ -547,6 +548,7 @@ class Controller:
     def run_worlds(self, model, ids):
         queue = deque(i for i in ids if not self.world_complete(model, self.worlds[i]))
         lock, errors = threading.Lock(), []
+        self.pace = dict(started=monotonic(), done=0, todo=len(queue))
 
         def worker(slot):
             current = None
@@ -563,6 +565,8 @@ class Controller:
                             self.stop(f"integrity: {model} reload readiness failed on GPU{slot}")
                     self.run_world(slot, model, self.worlds[current])
                     current = None
+                    with lock:
+                        self.pace["done"] += 1
                 except WorkerLost as error:
                     self.say(f"{error}; reloading GPU{slot}")
                     self.slots[slot] = None
@@ -628,10 +632,14 @@ class Controller:
         attempts = sum(self.counts.values())
         contingency = sum(n for (st, cg), n in self.counts.items() if cg == 1)
         left = timedelta(seconds=max(0, int(self.remaining())))
+        pace, estimate = self.pace, ""
+        if pace and pace["done"] >= 2:  # measured in this session; never shown before two worlds finish
+            seconds = (monotonic() - pace["started"]) / pace["done"] * (pace["todo"] - pace["done"])
+            estimate = f" . about {timedelta(seconds=int(seconds))} left for {model} at this session's measured pace"
         return (f"{label} {model} . worlds {complete}/{len(ids)} complete . calls this session {self.session_calls} . "
                 f"attempts {attempts} (contingency {contingency}/{self.config['ceilings']['contingency']}) . "
                 f"aggregate GPU-h {self.aggregate_hours():.1f}/{self.config['ceilings']['aggregate_gpu_hours']} . "
-                f"deadline in {left}")
+                f"deadline in {left}{estimate}")
 
     # ---------------------------------------------------------------- stages
     def require_checks(self):
@@ -961,6 +969,15 @@ def open_controller(run, *, study, source=None, source_commit, scope, session, s
             if manifest_ckpt["binding"] != binding:
                 raise Stop("the newest checkpoint was made with a different source/config/inputs; "
                            "use the matching SOURCE_COMMIT (reports can still be built read-only)")
+            # A running session exports at least every checkpoint interval. A recent checkpoint from a
+            # session that has not finished may mean a concurrent writer on another host.
+            written = datetime.fromisoformat(manifest_ckpt["created_at"])
+            quiet = written + timedelta(minutes=config["checkpoint_minutes"] + 10)
+            if manifest_ckpt["session"] != session and manifest_ckpt.get("session_closed") is not True and clock() < quiet:
+                raise Stop(f"the newest checkpoint (seq {manifest_ckpt['seq']}) was written at {written:%H:%M} UTC by "
+                           f"session {manifest_ckpt['session'][:8]}, which has not finished; another session may still "
+                           f"be running this study. Stop it (or let it finish), or run this cell again after "
+                           f"{quiet:%H:%M} UTC")
             ckpt.restore(path, run)
             store = Store(db_path, binding)
             store.put_meta("checkpoint_seq", manifest_ckpt["seq"])

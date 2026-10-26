@@ -950,6 +950,8 @@ GPU-hours or 5 wall-hours on T4×2.
 | Unconfirmed process termination | Stop dispatch until confirmed or the session ends |
 | Stage ceiling, contingency or GPU-hour ceiling reached | Stop dispatch, checkpoint, ask |
 | More than two lost sessions in the campaign | Stop and ask; check the execution environment |
+| Restore would use a checkpoint written less than 30 minutes ago (checkpoint interval + 10) by a different session that has not finished (added 25 October, operational) | Refuse to restore: another session may still be writing. Stop or finish it, or retry after the stated time. Prevents two diverging lineages with equal sequence numbers |
+| A checkpoint mirror is configured but unavailable (no `HF_TOKEN`, or the Hub does not answer) when a session must restore (added 25 October, operational) | Stop before any model call; the mirror may hold a newer checkpoint than the attached inputs. Work continues once it answers, or after the operator clears the mirror setting |
 
 **Why re-execution after session loss is allowed.** The course blocked worlds
 whose tail of calls was lost. This specification instead re-executes them,
@@ -1165,15 +1167,15 @@ source, then import the facade) before its facade call.
 
 | # | Cell | Calls | Scope and maximum work | Shows while running → at the end | Leaves behind | Rerun |
 |---|---|---|---|---|---|---|
-| 1 | Settings and source | assigns settings; downloads the GitHub tarball for `SOURCE_COMMIT` (or uses an attached source packet); `nb.start(...)` | Source only | → study, scope, session, deadline, source commit, mirror on/off | Receipt (settings, source file count) | Keeps the first deadline of this kernel; reuses the extracted source |
-| 2 | Install | `nb.install()` | Create venv, install the lock; T4×2 required only for `development` and `main` | pip phases, elapsed → Python, GPUs, free disk | Receipt (host, venv, env check) | Verifies and reuses |
-| 3 | Open study | `nb.open_study()` | Restore newest checkpoint or, only if `START_NEW_STUDY=True` and none exists anywhere, initialize | sources searched → coverage summary | **Checkpoint** | Reopens; refuses a live second writer |
+| 1 | Settings and source | checks the 40-character `SOURCE_COMMIT`; downloads the GitHub tarball for it (three attempts) or uses an attached source packet; `nb.start(...)` | Source only | → study, scope, session, deadline (capped 15 minutes inside the Kaggle session's 12-hour limit), source commit, mirror on/off | Receipt (settings, source file count) | Keeps the session and deadline of this Kaggle session, also after a kernel restart; reuses the extracted source; stops if `CHECKPOINT_REPO` is set without `HF_TOKEN` |
+| 2 | Install | `nb.install()` | Create venv, install the lock; T4×2 required only for `development` and `main` | pip phases, elapsed → Python, GPUs, free disk | Receipt (host, venv, env check); a failed install is a recorded stop, not an error | Verifies and reuses |
+| 3 | Open study | `nb.open_study()` | Restore newest checkpoint or, only if `START_NEW_STUDY=True` and none exists anywhere, initialize | sources searched → coverage summary | **Checkpoint** | Reopens; refuses a live second writer, an unreachable configured mirror, or a recent checkpoint of an unfinished session |
 | 4 | CPU checks | `nb.cpu_checks()` | §5 checks, tokenizer files only | check names → passed checks, capacity bounds | Checkpoint (check record) | Repeats checks, no model calls |
 | 5 | Development | `nb.develop()` | Skips unless scope is `development`, `main` or `rehearsal`. ≤ 704 calls per model | heartbeat (§7.4), per-world lines with development outcomes → gate report and its ID | Checkpoints every 20 min and at end | "Complete" with zero new calls once done |
 | 6 | Freeze | `nb.freeze()` | Skips unless scope is `main` (or `rehearsal`) and the ID matches | → frozen N, models | Checkpoint | Verifies and prints the same record |
 | 7 | Main | `nb.main()` | Frozen scope only, until done or cutoff | heartbeat, per-world terminal reasons, outcomes hidden → coverage per model | Checkpoints every 20 min and at end | Continues where saved |
 | 8 | Report | `nb.report()` | CPU; estimates only when main is complete or stopped | → status, report path | Receipt plus `reports/` | Rebuilds identically |
-| 9 | Save and finish | `nb.finish()` | Final checkpoint, mirror, links | → newest checkpoint, whether an off-session copy exists | **Checkpoint** | Idempotent |
+| 9 | Save and finish | `nb.finish()` | Marks the session finished; final checkpoint, mirror, links | → newest checkpoint, whether an off-session copy exists | **Checkpoint** | Idempotent |
 | — | Inspect (optional, commented out) | `nb.show(model=…, world=…, cell=…)` | Read-only | → full trace | None | Read-only |
 
 **Run All behavior by scope.** `cpu`: cells 5–7 print "skipped: scope".
@@ -1225,6 +1227,11 @@ verified by reopening and an integrity check, then renamed to its final name;
 an interrupted export never replaces a good checkpoint. The newest two local
 checkpoints are kept and `latest.json` records the newest one.
 
+**Mirror verification.** After each upload the remote file's size is compared
+and its content confirmed by its LFS SHA-256 or, for a small non-LFS file, its
+Git blob hash. Listing uses one batched metadata request. Each checkpoint
+manifest records whether its writing session had finished (`session_closed`).
+
 **Restore rule (cell 3).** Search the local run directory, every
 `thesis-checkpoint-<STUDY_ID>-*.zip` under `/kaggle/input`, and the mirror.
 Verify each candidate. Select the **highest sequence** for `STUDY_ID`. Refuse
@@ -1264,7 +1271,9 @@ completion of a browser download are never claimed.
    host crashes after checkpoint seq 23 (at 4h02m) was mirrored.
 2. In a new session, Run All with the same settings. Cell 3 finds seq 23 on the
    mirror (the crashed version saved no output), restores it, marks 2 admitted
-   attempts `lost`, and records the unknown 8-minute tail.
+   attempts `lost`, and records the unknown 8-minute tail. (Had the new session
+   started less than 30 minutes after seq 23 was written, cell 3 would first ask
+   to wait: it cannot tell a crashed session from one that is still running.)
 3. Cell 7 retries the 2 lost attempts once from contingency, recomputes the
    unrecorded 8-minute tail as ordinary calls with identical requests and seeds,
    then continues at `main-112`.
@@ -1277,11 +1286,20 @@ completion of a browser download are never claimed.
    store and gives identical tables.
 3. Download the newest checkpoint, `reports/` and the executed notebook. Delete nothing.
 
+**Session time.** The deadline is `SESSION_HOURS` from cell 1, capped 15 minutes
+inside the 12-hour limit measured from the start of the Kaggle session's
+container (read from `/proc`), and stored in scratch space so that a kernel
+restart in the same Kaggle session continues the same session record rather than
+leaving a "lost" session that would be charged up to its deadline. The source
+packet for the GitHub fallback is built from the committed bytes
+(`git -c core.autocrlf=false archive`), so its file hashes, including the runtime
+lock in the study binding, equal those of GitHub's archive on any operating system.
+
 ### 7.7 Session plan
 
 | Session | Work | Expected wall time on T4×2 |
 |---|---|---|
-| Kaggle CPU sessions (no GPU) | `rehearsal` twice, including a restore | under 30 min each |
+| Kaggle CPU sessions (no GPU) | `rehearsal` twice, including a restore; then `cpu` with `START_NEW_STUDY=True` to create the real study and run its CPU checks | under 30 min each |
 | GPU 1 | Development for both models, gate report | 2–3.5 h |
 | GPU 2 | Qwen main (64 worlds), then Granite main if time remains | Qwen 2.5 h expected, 3.4 h worst case at the measured rate; Granite unknown until development |
 | GPU 3 (if needed) | Remaining Granite main | Unknown until development measures `g` |

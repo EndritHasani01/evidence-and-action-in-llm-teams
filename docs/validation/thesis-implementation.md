@@ -7,6 +7,50 @@ explicit instruction to fully implement it. Status vocabulary follows
 **verified on CPU** by the named checks. Nothing is pilot-tested or empirically
 executed: no Kaggle session, GPU, model weights or inference were used.
 
+## Kaggle execution hardening, 25 October 2026
+
+An independent audit of the notebook and execution pipeline for the 64-world
+design. Scientific settings, prompts, protocol, worlds, analyses and
+authorization boundaries are unchanged. **Implemented** and **verified on CPU**
+only; no GPU, weights, inference, Kaggle session or experiment run.
+
+| Risk found | Change | Where |
+|---|---|---|
+| The deadline counted 11 h from cell 1, not from the Kaggle session start; a late cell 1 or a kernel restart could pass Kaggle's 12-hour limit, and a killed *Save & Run All* version keeps no output | Deadline capped 15 minutes inside 12 hours from the container's start (PID 1 start time from `/proc`); warning when under an hour remains | `recovery/thesis/notebook.py` |
+| A kernel restart created a new session; the old one counted as "lost" and was charged up to its deadline | Session identity stored in scratch and reused within the same container (same session ID and deadline) | `recovery/thesis/notebook.py` |
+| Two sessions on different hosts could both restore and write diverging lineages with equal sequence numbers (the lock file only works on one host) | Checkpoint manifests record `session_closed`; restore refuses a checkpoint written in the last 30 minutes by an unfinished other session, with the time when it may proceed | `recovery/thesis/checkpoint.py`, `recovery/thesis/run.py`; annex §4.5 |
+| A configured but unavailable mirror (missing `HF_TOKEN`, Hub error) could let a session restore an older checkpoint from attached inputs | Missing token stops the session before installing; an unreachable mirror stops `open` when it would restore | `recovery/thesis/notebook.py`, `recovery/thesis/__main__.py`; annex §4.5 |
+| The fallback source packet built on this Windows checkout contained CRLF files (verified: `git archive` applies `core.autocrlf`), so its runtime-lock hash, part of the study binding, differed from GitHub's archive and a study could not continue across the two sources | `git -c core.autocrlf=false archive`; a test compares packet members with `git cat-file` | `scripts/build_thesis_source.py` |
+| An install failure raised an exception, ending a *Save & Run All* version without receipts | Recorded stop with log location; the partial venv is removed; later cells skip and cells 8–9 still run | `recovery/thesis/notebook.py` |
+| Cell 1 downloaded the source once, with no retry and an opaque error when Internet is off; an unset `SOURCE_COMMIT` failed late | Commit format check; three attempts with backoff and an actionable message; pip retries raised from 2 to 5 | `scripts/build_thesis_notebook.py`, `notebooks/thesis_kaggle.ipynb`, `recovery/thesis/notebook.py` |
+| Mirror listing made one API call per checkpoint; small (non-LFS) files were verified by size only | One batched metadata request; Git blob hash verification for small files; LFS SHA-256 as before | `recovery/thesis/checkpoint.py` |
+| No measured sense of how long a stage would still take | Heartbeat shows the time left at this session's measured pace once two worlds have finished (never an unmeasured guess) | `recovery/thesis/run.py` |
+| Rerunning cell 1 kept an earlier stop, so a fixed setting still skipped every cell | A cell-1 rerun is a fresh attempt; the store still re-checks every stop condition | `recovery/thesis/notebook.py` |
+| Docs described 192 worlds and an interactive development session that can end when the tab closes | Runbook and notebook text rewritten: no-GPU preflight of the real study (session C), *Save & Run All* for GPU sessions, 64-world timings, new stop messages | `docs/THESIS_KAGGLE.md`, notebook intro |
+
+Reviewed and left unchanged, with reasons: batch size 1 and one replica per T4
+(specified; a second replica per GPU would not keep the 1.5 GiB headroom gate for
+Qwen); prefetching the next model's weights during inference (saves a few minutes
+per session for added concurrency); caching the venv in `/kaggle/working`
+(about 6 GB in every saved version); pinning the runtime lock to LF (the course
+run recorded the hash of its CRLF working copy).
+
+Checks that passed (Windows 11, Python 3.11.9, CPU only):
+
+| Check | Evidence |
+|---|---|
+| Thesis unit tests | **69 tests OK** (72 s) with real tokenizers; new tests cover the `/proc` parsing (including a command name containing ") "), the deadline cap, kernel-restart continuation and a new container, the missing-token stop, install failure as a stop, the source packet's committed bytes, the unfinished-session restore guard and its expiry, the CLI mirror-required stop, the time-left estimate, `session_closed`, and Hub-mirror upload verification (LFS and Git-blob paths, corruption refused, batched listing, public repository refused) against a fake API |
+| Notebook | Regenerated from the builder; cell 1 compiles; 10 code cells, each after the first a single facade call. The notebook had been re-serialized by an open editor (cell ids, LF endings); regenerating restored the builder output |
+| CLI rehearsal and restore drill | All commands exit 0 in both sessions; the second session restored seq 6 immediately because the first had finished (`session_closed` true only on the finish checkpoint), made zero new calls (235 attempts both) and produced identical analyses |
+| Guard through the CLI | After an unfinished session wrote seq 12, `open` in another run directory exited 3 with "another session may still be running … run this cell again after 21:04 UTC" and restored nothing |
+| Full repository suite | `python -m unittest discover -s tests`: 723 tests in 40 minutes; 717 passed, 4 failed, 2 errored. The six are exactly the course-era tests that already failed on the clean parent commit (listed under "Regression of existing tests" below); no other test changed state |
+
+Still to be shown on Kaggle (no CPU check can establish them): the current image
+still runs Python 3.13 and installs the lock; the real Hub mirror (upload,
+listing, restore); `/proc`-based session-start detection on Kaggle's container;
+`/kaggle/temp` space and the download speed for about 37 GB of weights; Granite
+loading, memory, speed and JSON legality on T4; the quota charge for T4 x2.
+
 ## Second amendment of 25 October 2026: 64 main worlds
 
 By the user's decision the main population is 64 worlds, 8 per stratum, with

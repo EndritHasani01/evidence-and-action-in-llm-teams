@@ -21,8 +21,10 @@ ROOT = Path(__file__).resolve().parents[1]
 def build(commit, output):
     if len(commit) != 40 or any(c not in "0123456789abcdef" for c in commit):
         raise SystemExit("--commit must be a full 40-character commit")
-    data = subprocess.run(["git", "archive", "--format=tar", commit, "recovery", "configs", "pyproject.toml"],
-                          cwd=ROOT, check=True, capture_output=True).stdout
+    # core.autocrlf=false keeps the committed bytes (as GitHub's archive does); a Windows checkout with
+    # autocrlf would otherwise write CRLF files whose hashes no longer match the study binding.
+    data = subprocess.run(["git", "-c", "core.autocrlf=false", "archive", "--format=tar", commit,
+                           "recovery", "configs", "pyproject.toml"], cwd=ROOT, check=True, capture_output=True).stdout
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     target = output / f"thesis-source-{commit[:12]}.zip"

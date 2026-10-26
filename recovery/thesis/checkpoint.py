@@ -8,6 +8,7 @@ renamed; an interrupted export never replaces a good checkpoint.
 
 from contextlib import closing
 from datetime import datetime, timezone
+import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import re
@@ -60,8 +61,10 @@ def export(run, store, *, study, session, reason, mirror=None, progress=print):
         for name in ("inputs", "receipts"):
             if (run / name).exists():
                 shutil.copytree(run / name, bundle / name)
+        row = store.db.execute("SELECT evidence FROM sessions WHERE id=?", (f"session/{session}",)).fetchone()
+        closed = bool(row and json.loads(row[0]).get("closed"))  # lets a later restore tell a finished writer
         manifest = dict(format=FORMAT, study=study, seq=seq, parent_seq=seq - 1, session=session,
-                        reason=reason, created_at=utc(), binding=store.meta("binding"),
+                        session_closed=closed, reason=reason, created_at=utc(), binding=store.meta("binding"),
                         counts=counts(bundle / "study.sqlite"), files=inventory(bundle))
         atomic_json(bundle / "checkpoint.json", manifest)
         partial = Path(temp) / (final.name + ".partial")
@@ -196,42 +199,52 @@ class DirectoryMirror:
         return target
 
 
+def _git_blob_id(path):
+    data = Path(path).read_bytes()
+    return hashlib.sha1(b"blob %d\0" % len(data) + data).hexdigest()
+
+
 class HubMirror:
     """Private Hugging Face dataset; refuses a public repository."""
 
-    def __init__(self, repo, token):
-        from huggingface_hub import HfApi
+    def __init__(self, repo, token, api=None):
         if not repo or not token:
             raise ValueError("mirror needs a repository name and the HF_TOKEN secret")
-        self.repo, self.api = repo, HfApi(token=token)
+        if api is None:
+            from huggingface_hub import HfApi
+            api = HfApi(token=token)
+        self.repo, self.api = repo, api
         self.api.create_repo(repo, repo_type="dataset", private=True, exist_ok=True)
         if not self.api.repo_info(repo, repo_type="dataset").private:
             raise ValueError(f"{repo} is public; checkpoints are only mirrored to a private dataset")
 
     def upload(self, path):
+        """Upload, then confirm the remote bytes: LFS SHA-256, or the Git blob hash for a small file."""
         path = Path(path)
         remote = f"checkpoints/{path.name}"
         self.api.upload_file(path_or_fileobj=str(path), path_in_repo=remote, repo_id=self.repo,
                              repo_type="dataset", commit_message=f"checkpoint {path.name}")
         info = self.api.get_paths_info(self.repo, [remote], repo_type="dataset")
-        lfs = getattr(info[0], "lfs", None) if info else None
-        sha = getattr(lfs, "sha256", None)
-        if sha is not None and sha != digest(path):
-            raise ValueError("mirror SHA-256 differs from the local checkpoint")
         if not info or getattr(info[0], "size", None) != path.stat().st_size:
             raise ValueError("mirror size differs from the local checkpoint")
-        return dict(uploaded=True, location=f"{self.repo}:{remote}", sha256_verified=sha is not None)
+        sha = getattr(getattr(info[0], "lfs", None), "sha256", None)
+        if sha is not None and sha != digest(path):
+            raise ValueError("mirror SHA-256 differs from the local checkpoint")
+        blob = None
+        if sha is None and getattr(info[0], "xet_hash", None) is None and getattr(info[0], "blob_id", None):
+            blob = info[0].blob_id
+            if blob != _git_blob_id(path):
+                raise ValueError("mirror Git blob hash differs from the local checkpoint")
+        return dict(uploaded=True, location=f"{self.repo}:{remote}", sha256_verified=sha is not None,
+                    content_verified=sha is not None or blob is not None)
 
     def list(self, study):
-        result = []
-        for remote in self.api.list_repo_files(self.repo, repo_type="dataset"):
-            name = remote.rsplit("/", 1)[-1]
-            match = NAME.match(name)
-            if match and match["study"] == study:
-                info = self.api.get_paths_info(self.repo, [remote], repo_type="dataset")
-                lfs = getattr(info[0], "lfs", None) if info else None
-                result.append(dict(seq=int(match["seq"]), location=remote, sha256=getattr(lfs, "sha256", None)))
-        return result
+        remotes = [remote for remote in self.api.list_repo_files(self.repo, repo_type="dataset")
+                   if (m := NAME.match(remote.rsplit("/", 1)[-1])) and m["study"] == study]
+        infos = {i.path: i for i in self.api.get_paths_info(self.repo, remotes, repo_type="dataset")} if remotes else {}
+        return [dict(seq=int(NAME.match(remote.rsplit("/", 1)[-1])["seq"]), location=remote,
+                     sha256=getattr(getattr(infos.get(remote), "lfs", None), "sha256", None))
+                for remote in remotes]
 
     def fetch(self, location, destination):
         from huggingface_hub import hf_hub_download

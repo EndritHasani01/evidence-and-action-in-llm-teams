@@ -119,6 +119,11 @@ def main(argv=None):
             mirror = mirror_from(args)
         except Exception as error:  # an unreachable mirror never blocks work; local checkpoints continue
             banner("WARNING", f"checkpoint mirror unavailable ({type(error).__name__}: {error}); continuing without it")
+    if args.command == "open" and args.mirror_repo and mirror is None and not (args.run / "study.sqlite").exists():
+        # Restoring now could pick an older checkpoint than the one the configured mirror holds.
+        banner("STOPPED", "the configured checkpoint mirror is unavailable, so the newest checkpoint cannot be "
+                          "confirmed; run this cell again, or set CHECKPOINT_REPO = \"\" to use attached inputs only")
+        return 3
     try:
         ctl = open_controller(args.run, study=args.study, source=args.source, source_commit=args.source_commit,
                               scope=args.scope, session=session, session_start=session_start, deadline=deadline,

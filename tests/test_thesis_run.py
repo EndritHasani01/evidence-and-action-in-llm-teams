@@ -49,11 +49,11 @@ class Harness(unittest.TestCase):
         return Profile(**base)
 
     def open(self, profile, *, run="run", session="s1", start_new=True, scope="rehearsal",
-             study="t-rehearsal", deadline=None, roots=(), commit="test", restore=True):
+             study="t-rehearsal", deadline=None, roots=(), commit="test", restore=True, clock=NOW):
         ctl = open_controller(self.tmp / run, study=study, source=ROOT, source_commit=commit, scope=scope,
-                              session=session, session_start=NOW(), deadline=deadline or NOW() + timedelta(hours=11),
+                              session=session, session_start=clock(), deadline=deadline or clock() + timedelta(hours=11),
                               scratch=self.tmp / "scratch", start_new=start_new, roots=roots, mirror=self.mirror,
-                              progress=self.lines.append, profile=profile, restore_allowed=restore)
+                              progress=self.lines.append, profile=profile, restore_allowed=restore, clock=clock)
         if ctl.meta("input_limit") is None:
             ctl.bind("input_limit", 8192)
         ctl.put("checks", dict(passed=True, binding=ctl.store.meta("binding")))
@@ -81,6 +81,7 @@ class Pipeline(Harness):
             self.assertEqual((frozen["n"], frozen["models"]), (1, ["qwen", "granite"]))
             status = ctl.main()
             self.assertEqual(status, {"qwen": dict(complete=1, intended=1), "granite": dict(complete=1, intended=1)})
+            ctl.touch_session(closed=True)  # what the finish cell records before its final checkpoint
             ctl.maybe_checkpoint(force=True, reason="test")
         finally:
             close_controller(ctl)
@@ -252,7 +253,8 @@ class Faults(Harness):
             ctl.ownership.close()
         lost_dir = self.tmp / "run"
         shutil.rmtree(lost_dir)  # the session and its working directory are gone
-        ctl = self.open(self.profile(), session="s2", start_new=False, roots=[self.tmp / "mirror"])
+        later = lambda: NOW() + timedelta(hours=1)  # noqa: E731 - the loss is noticed after the quiet window
+        ctl = self.open(self.profile(), session="s2", start_new=False, roots=[self.tmp / "mirror"], clock=later)
         try:
             self.assertEqual(ctl.meta("checkpoint_seq"), receipt["seq"])
             self.assertEqual([r[1] for r in self.attempts(ctl, in_flight)], ["lost"])
@@ -262,6 +264,42 @@ class Faults(Harness):
             self.assertIsNotNone(ctl.meta("gate_report"))
         finally:
             close_controller(ctl)
+
+    def test_recent_checkpoint_of_an_unfinished_session_is_not_restored(self):
+        ctl = self.open(self.profile())
+        try:
+            receipt = ctl.maybe_checkpoint(force=True, reason="mid-stage")  # session s1 is still running
+        finally:
+            ctl.store.close()
+            ctl.ownership.close()
+        with self.assertRaises(Stop) as stop:
+            self.open(self.profile(), run="elsewhere", session="s2", start_new=False)
+        self.assertIn("another session may still be running", str(stop.exception))
+        self.assertFalse((self.tmp / "elsewhere" / "study.sqlite").exists())  # nothing was restored
+        later = lambda: NOW() + timedelta(minutes=31)  # noqa: E731
+        ctl = self.open(self.profile(), run="elsewhere", session="s2", start_new=False, clock=later)
+        try:
+            self.assertEqual(ctl.meta("checkpoint_seq"), receipt["seq"])
+        finally:
+            close_controller(ctl)
+
+    def test_cli_open_refuses_to_restore_without_the_configured_mirror(self):
+        import contextlib
+        import io
+        import os
+        from recovery.thesis.__main__ import main
+        saved = os.environ.pop("HF_TOKEN", None)
+        try:
+            with contextlib.redirect_stdout(io.StringIO()) as out:
+                code = main(["open", "--run", str(self.tmp / "cli"), "--study", "t-rehearsal", "--scope", "rehearsal",
+                             "--source", str(ROOT), "--mirror-repo", "someone/thesis-checkpoints",
+                             "--scratch", str(self.tmp / "scratch")])
+        finally:
+            if saved is not None:
+                os.environ["HF_TOKEN"] = saved
+        self.assertEqual(code, 3)
+        self.assertIn("mirror is unavailable", out.getvalue())
+        self.assertFalse((self.tmp / "cli" / "study.sqlite").exists())
 
     def test_newer_checkpoint_elsewhere_refuses_stale_local_study(self):
         ctl = self.open(self.profile())
@@ -277,6 +315,23 @@ class Faults(Harness):
         with self.assertRaises(Stop) as stop:
             self.open(self.profile(), start_new=False, roots=[self.tmp / "mirror"])
         self.assertIn("newer checkpoint", str(stop.exception))
+
+
+class Progress(Harness):
+    def test_time_left_appears_only_after_two_measured_worlds(self):
+        from time import monotonic
+        ctl = self.open(self.profile())
+        try:
+            ctl.slot_model = "qwen"
+            ids = ["main-000", "main-001"]
+            self.assertNotIn("left for", ctl.status_line("MAIN", ids))
+            ctl.pace = dict(started=monotonic() - 100, done=1, todo=10)
+            self.assertNotIn("left for", ctl.status_line("MAIN", ids))
+            ctl.pace = dict(started=monotonic() - 100, done=4, todo=10)
+            line = ctl.status_line("MAIN", ids)
+            self.assertIn("about 0:02:30 left for qwen at this session's measured pace", line)
+        finally:
+            close_controller(ctl)
 
 
 class Gates(Harness):

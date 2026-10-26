@@ -19,11 +19,32 @@ import uuid
 
 REPOSITORY = "EndritHasani01/evidence-and-action-in-llm-teams"
 SCOPES = ("cpu", "rehearsal", "development", "main")
+KAGGLE_SESSION_HOURS = 12.0   # documented hard limit of a Kaggle GPU session
+SESSION_MARGIN_MINUTES = 15   # the deadline stays this far inside that limit
 STATE = {}
 
 
 def _now():
     return datetime.now(timezone.utc)
+
+
+def _container_start(proc="/proc", ticks=None):
+    """When this Kaggle session's container started (its PID 1), or None without Linux /proc."""
+    try:
+        uptime = float((Path(proc) / "uptime").read_text().split()[0])
+        fields = (Path(proc) / "1" / "stat").read_text().rsplit(")", 1)[1].split()
+        ticks = ticks or os.sysconf("SC_CLK_TCK")
+        age = uptime - int(fields[19]) / ticks  # field 22: start time in clock ticks after boot
+    except (OSError, ValueError, IndexError, AttributeError):
+        return None
+    return _now() - timedelta(seconds=max(0.0, age))
+
+
+def _read_json(path):
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
 
 
 def _receipt(name, value):
@@ -59,11 +80,35 @@ def start(*, source_commit, study, scope, session_hours, start_new_study=False, 
     recorded = (root / ".source-commit").read_text().strip() if (root / ".source-commit").exists() else None
     if recorded != source_commit:
         raise ValueError(f"downloaded source is {recorded}, not SOURCE_COMMIT {source_commit}")
+    # One session per Kaggle container: a cell rerun or a kernel restart keeps the session and its
+    # deadline, and the deadline never passes the container's 12-hour limit.
+    container = _container_start()
+    marker = Path(scratch) / "session.json"
+    saved = _read_json(marker)
     if STATE.get("kernel_pid") == os.getpid():
         session, started, deadline = STATE["session"], STATE["session_start"], STATE["deadline"]  # reruns keep it
+    elif (saved and container is not None and saved.get("source_commit") == source_commit
+          and abs(datetime.fromisoformat(saved["container_start"]) - container) < timedelta(minutes=2)):
+        session, started = saved["session"], datetime.fromisoformat(saved["session_start"])
+        deadline = datetime.fromisoformat(saved["deadline"])
+        _banner("NOTE", f"the kernel restarted inside the same Kaggle session; continuing session {session[:8]} "
+                        "and its deadline")
     else:
         session, started = str(uuid.uuid4()), _now()
         deadline = started + timedelta(hours=float(session_hours))
+        if container is not None:
+            limit = container + timedelta(hours=KAGGLE_SESSION_HOURS, minutes=-SESSION_MARGIN_MINUTES)
+            if deadline > limit:
+                deadline = limit
+                print(f"Deadline capped at {limit:%H:%M} UTC: this Kaggle session started at {container:%H:%M} UTC "
+                      f"and ends {KAGGLE_SESSION_HOURS:.0f} hours later.", flush=True)
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.write_text(json.dumps(dict(session=session, session_start=started.isoformat(), deadline=deadline.isoformat(),
+                                      source_commit=source_commit,
+                                      container_start=container.isoformat() if container else None)), encoding="utf-8")
+    if (deadline - _now()).total_seconds() < 3600:
+        _banner("WARNING", f"less than an hour remains before this session's deadline ({deadline:%H:%M} UTC); "
+                           "GPU stages stop early. Start a fresh session for GPU work")
     study_id = study + "-rehearsal" if scope == "rehearsal" else study
     token = ""
     if checkpoint_repo:
@@ -72,28 +117,34 @@ def start(*, source_commit, study, scope, session_hours, start_new_study=False, 
             token = UserSecretsClient().get_secret("HF_TOKEN")
         except Exception:
             token = os.environ.get("HF_TOKEN", "")
-        if not token:
-            _banner("WARNING", "CHECKPOINT_REPO is set but the HF_TOKEN secret is missing; no mirror this session")
     STATE.update(kernel_pid=os.getpid(), session=session, session_start=started, deadline=deadline,
                  source_commit=source_commit, study=study_id, scope=scope, start_new=bool(start_new_study),
                  authorization=main_authorization.strip(), repo=checkpoint_repo if token else "", token=token,
                  source=root, working=Path(working), scratch=Path(scratch), inputs=inputs,
                  run=Path(working) / "thesis" / study_id,
                  receipts=Path(working) / "thesis-receipts" / session, python=STATE.get("python"),
-                 stopped=STATE.get("stopped"))
+                 stopped=None)  # a rerun of cell 1 is a fresh attempt; the store re-checks every stop condition
     files = _source_manifest(root)
     _receipt("settings", dict(kind="preparation receipt", session=session, scope=scope, study=study_id,
                               source_commit=source_commit, session_start=started.isoformat(),
                               deadline=deadline.isoformat(), mirror=bool(STATE["repo"]),
                               start_new_study=bool(start_new_study), source_files=len(files)))
+    hours_left = (deadline - _now()).total_seconds() / 3600
     print(f"Study {study_id} · scope {scope} · session {session[:8]} · deadline {deadline:%Y-%m-%d %H:%M} UTC "
-          f"({float(session_hours):.1f} h from now) · source {source_commit[:12]} ({len(files)} files) · "
+          f"({hours_left:.1f} h from now) · source {source_commit[:12]} ({len(files)} files) · "
           f"mirror {'on' if STATE['repo'] else 'off'}")
+    if checkpoint_repo and not token:
+        # Restoring without the configured mirror could silently continue from an older checkpoint.
+        _stop("CHECKPOINT_REPO is set but the HF_TOKEN secret is not available: attach it under "
+              "Add-ons > Secrets, or set CHECKPOINT_REPO = \"\" to work from attached inputs only")
     return dict(session=session, deadline=deadline.isoformat(), run=str(STATE["run"]))
 
 
 def install():
     """Cell 2: pinned virtual environment in scratch space (reused within a session)."""
+    if STATE.get("stopped"):
+        _banner("SKIPPED", f"install: an earlier cell stopped ({STATE['stopped']})")
+        return None
     root, scratch = STATE["source"], STATE["scratch"]
     sys.path.insert(0, str(root)) if str(root) not in sys.path else None
     from recovery.i01.setup import PIP_BOOTSTRAP, create_environment, host_inventory, invoke
@@ -121,11 +172,17 @@ def install():
                PIP_DEFAULT_TIMEOUT="60")
     (scratch / "tmp").mkdir(parents=True, exist_ok=True)
     if not (venv / ".installed").exists():
-        python = create_environment(venv, scratch, receipts, env)
-        invoke(command(python, root, "-m", "pip", "--isolated", "--cache-dir", scratch / "pip-cache", "install",
-                       "--only-binary=:all:", "--require-hashes", "--retries", "2",
-                       "--index-url", "https://pypi.org/simple", "--extra-index-url", "https://download.pytorch.org/whl/cu128",
-                       "-r", root / "configs/i01-runtime.lock"), receipts / "dependencies.log", 3600, env=env)
+        try:
+            python = create_environment(venv, scratch, receipts, env)
+            invoke(command(python, root, "-m", "pip", "--isolated", "--cache-dir", scratch / "pip-cache", "install",
+                           "--only-binary=:all:", "--require-hashes", "--retries", "5",
+                           "--index-url", "https://pypi.org/simple", "--extra-index-url", "https://download.pytorch.org/whl/cu128",
+                           "-r", root / "configs/i01-runtime.lock"), receipts / "dependencies.log", 3600, env=env)
+        except Exception as error:  # an expected stop: later cells skip and Save & Run All still saves receipts
+            shutil.rmtree(venv, ignore_errors=True)
+            _stop(f"installing the pinned environment failed ({type(error).__name__}: {str(error)[-600:]}); "
+                  f"logs in {receipts}. Check that Internet is on, then run cell 2 again")
+            return None
         (venv / ".installed").write_text(STATE["source_commit"])
     result = subprocess.run(command(python, root, "-m", "recovery.thesis", "env-check", "--source", root),
                             env=env, capture_output=True, text=True, timeout=300)
